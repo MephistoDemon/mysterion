@@ -11,11 +11,11 @@ import path from 'path'
 if (process.env.NODE_ENV !== 'development') {
   global.__appPath = app.getAppPath()
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
-  global.__mysteriumClientBin = path.resolve(global.__appPath, '../../bin/mysterium_client --node andy')
+  global.__mysteriumClientBin = path.resolve(global.__appPath, '../../bin/mysterium_client')
 } else {
   global.__appPath = path.resolve(__dirname, '../../') // path from this file
   global.__static = require('path').join(global.__appPath, '/static').replace(/\\/g, '\\\\')
-  global.__mysteriumClientBin = path.resolve(global.__appPath + '/mystclient/mac/mysterium_client --node andy')
+  global.__mysteriumClientBin = path.resolve(global.__appPath + '/mystclient/mac/mysterium_client')
 }
 
 let mainWindow

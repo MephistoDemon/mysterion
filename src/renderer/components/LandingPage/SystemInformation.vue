@@ -1,39 +1,35 @@
 <template>
   <div>
+    <button class="alt" @click="connect()">Connect</button><br/>
     <div class="title">Status</div>
-    <div class="items">
-      <div class="item">
-        <button class="alt" @click="connect()">Connect</button><br/>
-        <div class="value">{{ status }}</div>
-      </div>
-    </div>
+    <div class="value">{{ error }}</div>
+    <div class="value">{{ status }}</div>
   </div>
 </template>
 
 <script>
   const remote = require('electron').remote
-  const exec = require('child_process').exec
+  const spawn = require('child_process').spawn
   export default {
     data () {
       return {
-        status: 'waiting for user'
+        status: 'waiting for user',
+        error: ''
       }
     },
     methods: {
       connect () {
         this.status = 'connecting'
-        exec(remote.getGlobal('__mysteriumClientBin'), // dev env
-          (error, stdout, stderr) => {
-            this.status = stdout
-            console.log(`stdout: ${stdout}`)
-            console.log(`stderr: ${stderr}`)
-            if (error !== null) {
-              console.log(`exec error: ${error}`)
-            }
-          })
-      },
-      open (link) {
-        this.$electron.shell.openExternal(link)
+        let mystProcess = spawn(remote.getGlobal('__mysteriumClientBin'), ['--node', 'andy']) // dev env
+        mystProcess.stdout.on('data', (data) => {
+          this.status += data
+        })
+        mystProcess.stderr.on('data', (data) => {
+          this.error += data
+        })
+        mystProcess.on('close', (code) => {
+          this.status += 'myst process exited'
+        })
       }
     }
 
@@ -48,19 +44,19 @@
     letter-spacing: .25px;
     margin-top: 10px;
   }
-
-  .items { margin-top: 8px; }
-
-  .item {
-    margin-bottom: 6px;
-    .name {
-      color: #6a6a6a;
-      margin-right: 6px;
-    }
-    .value {
-      color: #35495e;
-      font-weight: bold;
-    }
+  
+  button {
+    font-size: .8em;
+    cursor: pointer;
+    outline: none;
+    padding: 0.75em 2em;
+    border-radius: 2em;
+    display: inline-block;
+    color: #fff;
+    background-color: #4fc08d;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+    border: 1px solid #4fc08d;
   }
 
 </style>
