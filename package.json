@@ -1,11 +1,12 @@
 {
   "name": "mysterion",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "Andrej Novikov <jazzaiman@gmail.com>",
   "description": "mysterium client desktop interface application",
   "license": null,
   "main": "./dist/electron/main.js",
   "scripts": {
+    "copy:bins": "./copy_binaries.sh",
     "build": "node .electron-vue/build.js && electron-builder",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
@@ -16,7 +17,7 @@
     "pack": "npm run pack:main && npm run pack:renderer",
     "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
-    "postinstall": "npm run lint:fix"
+    "postinstall": "npm run copy:bins && npm run lint:fix"
   },
   "build": {
     "productName": "mysterion",
@@ -28,10 +29,7 @@
       "dist/electron/**/*"
     ],
     "extraFiles": [
-      {
-        "from": "mystclient/${os}/mysterium_client",
-        "to": "bin/mysterium_client"
-      }
+      "./bin/mysterium_client"
     ],
     "dmg": {
       "contents": [

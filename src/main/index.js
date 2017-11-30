@@ -2,21 +2,13 @@
 
 import { app, BrowserWindow, Tray, Menu } from 'electron'
 import path from 'path'
+import config from './config'
 
+config(global)
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
 */
-// TODO: clear/export this conditional
-if (process.env.NODE_ENV !== 'development') {
-  global.__appPath = app.getAppPath()
-  global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
-  global.__mysteriumClientBin = path.resolve(global.__appPath, '../../bin/mysterium_client')
-} else {
-  global.__appPath = path.resolve(__dirname, '../../') // path from this file
-  global.__static = require('path').join(global.__appPath, '/static').replace(/\\/g, '\\\\')
-  global.__mysteriumClientBin = path.resolve(global.__appPath + '/mystclient/mac/mysterium_client')
-}
 
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development'
