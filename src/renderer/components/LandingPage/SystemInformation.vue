@@ -1,38 +1,36 @@
 <template>
   <div>
-    <button class="alt" @click="connect()">Connect</button><br/>
-    <div class="title">Status</div>
-    <div class="value">{{ error }}</div>
-    <div class="value">{{ status }}</div>
+    <button class="alt" @click="connect(host)">Connect</button><br/>
+    <button class="alt" @click="kill()">kill</button><br/>
+    <input type="text" v-model="host" placeholder="hostname" />
+    <div class="title">Status <span v-if="connected==1" style="color:green">CONNECTED</span> </div>
+    <pre class="log">{{ error }}</pre>
+    <pre class="log">{{ status }}</pre>
   </div>
 </template>
 
 <script>
-  const remote = require('electron').remote
-  const spawn = require('child_process').spawn
+  import {mapState} from 'vuex'
+
   export default {
+    computed: mapState({
+      status: state => state.myst_cli.log,
+      error: state => state.myst_cli.err,
+      connected: state => state.myst_cli.status
+    }),
     data () {
       return {
-        status: 'waiting for user',
-        error: ''
+        host: ''
       }
     },
     methods: {
-      connect () {
-        this.status = 'connecting'
-        let mystProcess = spawn(remote.getGlobal('__mysteriumClientBin'), ['--node', 'andy']) // dev env
-        mystProcess.stdout.on('data', (data) => {
-          this.status += data
-        })
-        mystProcess.stderr.on('data', (data) => {
-          this.error += data
-        })
-        mystProcess.on('close', (code) => {
-          this.status += 'myst process exited'
-        })
+      connect (host) {
+        this.$store.dispatch('connect', host)
+      },
+      kill () {
+        this.$store.dispatch('kill')
       }
     }
-
   }
 </script>
 
@@ -44,7 +42,11 @@
     letter-spacing: .25px;
     margin-top: 10px;
   }
-  
+  .log {
+    max-width: 500px;
+    overflow: scroll;
+  }
+
   button {
     font-size: .8em;
     cursor: pointer;

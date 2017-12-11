@@ -5,19 +5,16 @@ import path from 'path'
 import config from './config'
 
 config(global)
-/**
- * Set `__static` path to static files in production
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
-*/
 
 let mainWindow
+let tray
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
 function createTray () {
-  let trayIconPath = path.join(global.__static, '/icons/tray.png')
-  let tray = new Tray(trayIconPath)
+  let trayIconPath = path.join(__static, 'icons', 'tray.png')
+  tray = new Tray(trayIconPath)
   tray.setToolTip('Mysterium')
   let contextMenu = Menu.buildFromTemplate([
     {
