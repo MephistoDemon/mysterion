@@ -3,8 +3,11 @@
 import { app, BrowserWindow, Tray, Menu } from 'electron'
 import path from 'path'
 import config from './config'
+import mystProcess from './mystProcess'
+import store from '../renderer/store'
 
 config(global)
+mystProcess.config(store.commit)
 
 let mainWindow
 let tray
@@ -55,12 +58,15 @@ function createWindow () {
 app.on('ready', () => {
   createWindow()
   createTray()
+  mystProcess.spawn()
 })
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+
+  mystProcess.kill()
 })
 
 app.on('activate', () => {

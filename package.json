@@ -4,6 +4,7 @@
   "author": "Andrej Novikov <jazzaiman@gmail.com>",
   "description": "mysterium client desktop interface application",
   "license": null,
+  "private": true,
   "main": "./dist/electron/main.js",
   "scripts": {
     "copy:bins": "./copy_binaries.sh",

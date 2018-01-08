@@ -1,8 +1,4 @@
-import {remote} from 'electron'
-// import {spawn, execFileSync} from 'child_process'
-var childProcess = require('child_process')
-
-let mystProcess
+import mystProcess from '../../../main/mystProcess'
 
 const state = {
   status: 0,
@@ -26,24 +22,11 @@ const mutations = {
 }
 
 const actions = {
-  connect ({commit}, host) {
-    mystProcess = childProcess.spawn(remote.getGlobal('__mysteriumClientBin'),
-      ['--node', host, '-runtime-dir', remote.app.getPath('temp')])
-    // TODO: should be userData as soon as mysterium_client fixes spaces in -runtime-dir issues
-    mystProcess.stdout.on('data', (data) => {
-      commit('LOG_INFO', data)
-      commit('CONNECTED')
-    })
-    mystProcess.stderr.on('data', (data) => {
-      commit('LOG_ERROR', data)
-    })
-    mystProcess.on('close', (code) => {
-      commit('DISCONNECTED')
-    })
+  spawn ({commit}) {
+    mystProcess.spawn(commit)
   },
   kill ({commit}) {
-    mystProcess.kill()
-    commit('DISCONNECTED')
+    mystProcess.kill(commit)
   }
 }
 
