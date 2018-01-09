@@ -1,4 +1,6 @@
-import axios from 'axios'
+// import tequilapi from '../../../api/tequilapi'
+
+const tequilapi = require('../../../api/tequilapi')
 const state = {
   uptime: ''
 }
@@ -11,8 +13,8 @@ const mutations = {
 
 const actions = {
   healthcheck: async function ({commit}) {
-    const res = await axios.get('127.0.0.1:4050/healthcheck')
-    commit('HEALTHCHECK', res.data)
+    let data = tequilapi.healthcheck()
+    commit('HEALTHCHECK', data)
   }
 }
 
