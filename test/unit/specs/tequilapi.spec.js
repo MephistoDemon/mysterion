@@ -1,6 +1,5 @@
 import { expect } from 'chai'
 import tequilastore from '../../../src/renderer/store/modules/tequilapi'
-// import tequilaClient from '../../../src/api/tequilapi'
 
 const tequilapiFake = {
   getIdentities: function () {
@@ -20,7 +19,6 @@ const tequilapiFake = {
 }
 
 describe('tequilapi', () => {
-  // const { actions, mutations, state } = tequilastore(tequilaClient)
   const { actions, mutations, state } = tequilastore(tequilapiFake)
   it('getsIdentities_action', done => {
     testAction(actions.getIdentities, null, {}, [

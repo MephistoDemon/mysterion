@@ -15,7 +15,6 @@ function spawn () {
   }
   mystProcess = childProcess.spawn(global.__mysteriumClientBin,
     ['-runtime-dir', app.getPath('userData')])
-  // TODO: should be userData as soon as mysterium_client fixes spaces in -runtime-dir issues
   mystProcess.stdout.on('data', (data) => {
     commit('LOG_INFO', data)
     commit('CONNECTED')
