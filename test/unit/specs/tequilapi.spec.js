@@ -1,50 +1,36 @@
 import { expect } from 'chai'
 import tequilastore from '../../../src/renderer/store/modules/tequilapi'
-import tequilaClient from '../../../src/api/tequilapi'
-import axios from 'axios'
+// import tequilaClient from '../../../src/api/tequilapi'
 
-// const tequilapiClient = {
-//   getIdentities: function () {
-//     let res = new Promise((resolve) => {
-//       setTimeout(() => {
-//         resolve({ identities: [] })
-//       }, 100)
-//     })
-//     return res
-//   },
-//   healthcheck: function () {
-//     let res = new Promise((resolve) => {
-//       setTimeout(() => {
-//         resolve({ uptime: 'fake time' })
-//       }, 100)
-//     })
-//     return res
-//   }
-// }
+const tequilapiFake = {
+  getIdentities: function () {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({ data: { identities: [{ id: 'fake' }] } })
+      }, 100)
+    })
+  },
+  healthcheck: function () {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({ data: { uptime: 'fake time', process: 3 } })
+      }, 100)
+    })
+  }
+}
 
 describe('tequilapi', () => {
-  // const actions = tequilastore.actionsFactory(tequilapiClient)
-  it('axios gets something', done => {
-    axios.get('http://localhost:4050/healthcheck').then(res => {
-      expect(res).to.exist()
-      done()
-      console.log('got response health')
-    }, res => {
-      expect(res).to.exist()
-      done()
-    })
-  })
-
-  const { actions, mutations, state } = tequilastore(tequilaClient)
+  // const { actions, mutations, state } = tequilastore(tequilaClient)
+  const { actions, mutations, state } = tequilastore(tequilapiFake)
   it('getsIdentities_action', done => {
     testAction(actions.getIdentities, null, {}, [
-      { type: 'GOT_IDS', payload: { identities: [''] } }
+      { type: 'GOT_IDS', payload: { identities: [{ id: 'fake' }] } }
     ], done)
   })
 
   it('healthcheck_action', done => {
     testAction(actions.healthcheck, null, {}, [
-      { type: 'HEALTHCHECK', payload: { uptime: 'fake time' } }
+      { type: 'HEALTHCHECK', payload: { uptime: 'fake time', process: 3 } }
     ], done)
   })
 
@@ -65,7 +51,7 @@ const testAction = (action, payload, state, expectedMutations, done) => {
 
     try {
       expect(mutation.type).to.equal(type)
-      if (payload) {
+      if (mutation.payload) {
         expect(mutation.payload).to.deep.equal(payload)
       }
     } catch (error) {

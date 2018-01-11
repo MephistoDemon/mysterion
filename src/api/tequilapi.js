@@ -3,13 +3,8 @@ import axios from 'axios'
 const teqAddr = 'http://localhost:4050'
 const teqAxio = axios.create({ baseURL: teqAddr })
 
-async function healthcheck () {
-  try {
-    const res = await teqAxio.get('/healthcheck')
-    return res
-  } catch (err) {
-    console.dir(err)
-  }
+function healthcheck () {
+  return teqAxio.get('/healthcheck')
 }
 
 function getIdentities () {
@@ -17,7 +12,7 @@ function getIdentities () {
 }
 
 function createIdentity (password) {
-  return teqAxio.put('/identites', { password: password })
+  return teqAxio.put('/identities', { password: password })
 }
 
 export default {
