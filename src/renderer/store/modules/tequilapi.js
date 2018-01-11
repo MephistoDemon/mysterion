@@ -16,7 +16,7 @@ const mutations = {
   },
   HEALTHCHECK (state, data) {
     state.uptime = data.uptime
-    state.processId = data.processId
+    state.processId = data.processIdt
   },
   GOT_IDS (state, data) {
     state.identites = data
