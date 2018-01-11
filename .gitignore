@@ -3,6 +3,7 @@ dist/web/*
 build/*
 !build/icons
 node_modules/
+test/unit/coverage/
 npm-debug.log
 npm-debug.log.*
 !.gitkeep
