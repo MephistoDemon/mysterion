@@ -1,5 +1,8 @@
 <template>
   <div>
+
+    <button class="alt" @click="getIdentities()">getId:s</button><br/>
+    <button class="alt" @click="healthcheck()">health</button><br/>
     <button class="alt" @click="connect(host)">Connect</button><br/>
     <button class="alt" @click="kill()">kill</button><br/>
     <input type="text" v-model="host" placeholder="hostname" />
@@ -24,6 +27,12 @@
       }
     },
     methods: {
+      healthcheck () {
+        this.$store.dispatch('healthcheck')
+      },
+      getIdentities () {
+        this.$store.dispatch('getIdentities')
+      },
       connect (host) {
         this.$store.dispatch('connect', host)
       },

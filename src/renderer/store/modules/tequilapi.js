@@ -6,6 +6,9 @@ const state = {
 const mutations = {
   HEALTHCHECK (state, data) {
     state.uptime = data.uptime
+  },
+  GOT_IDS (state, data) {
+    state.identites = data.identities
   }
 }
 
