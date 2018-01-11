@@ -1,25 +1,31 @@
-// import tequilapi from '../../../api/tequilapi'
 
-const tequilapi = require('../../../api/tequilapi')
 const state = {
   uptime: ''
 }
 
 const mutations = {
   HEALTHCHECK (state, data) {
-    state.uptime = data
+    state.uptime = data.uptime
   }
 }
 
-const actions = {
-  healthcheck: async function ({commit}) {
-    let data = tequilapi.healthcheck()
-    commit('HEALTHCHECK', data)
+function factory (tequilapi) {
+  const actions = {
+    getIdentities: async function ({commit}) {
+      const data = await tequilapi.getIdentities()
+      commit('GOT_IDS', data)
+    },
+    healthcheck: function ({commit}) {
+      tequilapi.healthcheck().then((data) => {
+        commit('HEALTHCHECK', data)
+      })
+    }
+  }
+  return {
+    state,
+    mutations,
+    actions
   }
 }
 
-export default {
-  state,
-  mutations,
-  actions
-}
+export default factory

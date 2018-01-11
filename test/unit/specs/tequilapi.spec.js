@@ -1,24 +1,44 @@
-/* eslint-disable global-require */
 import { expect } from 'chai'
-const tequilapiInjector = require('!!vue-loader?inject!../../../src/renderer/store/modules/tequilapi')
+import tequilastore from '../../../src/renderer/store/modules/tequilapi'
+import tequilaClient from '../../../src/api/tequilapi'
 
-const actions = tequilapiInjector({
-  '../../../api/tequilapi': {
-    actions: {
-      async healthcheck () {
-        setTimeout(() => {
-          return { uptime: 'fake time' }
-        }, 100)
-      }
-    }
-  }
-})
+// const tequilapiClient = {
+//   getIdentities: function () {
+//     let res = new Promise((resolve) => {
+//       setTimeout(() => {
+//         resolve({ identities: [] })
+//       }, 100)
+//     })
+//     return res
+//   },
+//   healthcheck: function () {
+//     let res = new Promise((resolve) => {
+//       setTimeout(() => {
+//         resolve({ uptime: 'fake time' })
+//       }, 100)
+//     })
+//     return res
+//   }
+// }
 
 describe('tequilapi', () => {
-  it('healthcheck', done => {
-    testAction(actions, null, {}, [
-      { type: 'HEALTHCHECK', payload: { uptime: 'fake time 3' } }
+  // const actions = tequilastore.actionsFactory(tequilapiClient)
+  const { actions, mutations, state } = tequilastore(tequilaClient)
+  it('getsIdentities_action', done => {
+    testAction(actions.getIdentities, null, {}, [
+      { type: 'GOT_IDS', payload: { identities: [''] } }
     ], done)
+  })
+  it('healthcheck_action', done => {
+    testAction(actions.healthcheck, null, {}, [
+      { type: 'HEALTHCHECK', payload: { uptime: 'fake time' } }
+    ], done)
+  })
+
+  it('healthcheck_state', done => {
+    mutations.HEALTHCHECK(state, { uptime: '15m' })
+    expect(state.uptime).to.eql('15m')
+    done()
   })
 })
 
@@ -46,7 +66,6 @@ const testAction = (action, payload, state, expectedMutations, done) => {
   }
 
   // call the action with mocked store and arguments
-  console.log(action)
   action({ commit, state }, payload)
 
   // check if no mutations should have been dispatched

@@ -1,10 +1,19 @@
 import axios from 'axios'
 
-async function healthcheck () {
-  const res = await axios.get('127.0.0.1:4050/healthcheck')
-  return res.data
-}
+const teqAddr = 'http://localhost:4050'
+const teqAxio = axios.create({ baseURL: teqAddr })
 
+function healthcheck () {
+  return axios.get('/healthcheck')
+}
+function getIdentities () {
+  return teqAddr.get('/identities')
+}
+function createIdentity (password) {
+  return teqAxio.put('/identites', { password: password })
+}
 export default {
-  healthcheck
+  healthcheck,
+  getIdentities,
+  createIdentity
 }
