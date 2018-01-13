@@ -1,9 +1,10 @@
-// import tequilapi from '../../../api/tequilapi'
-
 const state = {
   error: {
-    data: {},
-    message: ''
+    message: 'ddd',
+    request: {},
+    response: {
+      data: {}
+    }
   },
   uptime: '',
   mystCli: {},
@@ -21,7 +22,7 @@ const mutations = {
     state.error = err
   },
   HEALTHCHECK (state, data) {
-    state.mystCli = { ...state.mystCli, ...data } // object extend
+    state.mystCli = {...state.mystCli, ...data} // object extend
   },
   GOT_IDS (state, data) {
     state.identites = data
@@ -30,15 +31,19 @@ const mutations = {
 
 function factory (tequilapi) {
   const actions = {
-    async init ({commit}) {
-      try {
-        const res = await tequilapi.getIdentities()
-        commit('SET_CURRENT_ID', res.data.identities[0])
-        const proposals = await tequilapi.getProposals()
-        commit('SET_PROPOSAL_LIST', proposals)
-      } catch (err) {
-        commit('TEQUILAPI_FAILED_REQUEST', err)
-      }
+    init ({commit}) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          const identitiesRes = await tequilapi.getIdentities()
+          commit('SET_CURRENT_ID', identitiesRes.data.identities[0])
+          const proposalsRes = await tequilapi.getProposals()
+          commit('SET_PROPOSAL_LIST', proposalsRes.data.proposals)
+          resolve()
+        } catch (err) {
+          commit('TEQUILAPI_FAILED_REQUEST', err)
+          reject(err)
+        }
+      })
     },
     async getIdentities ({commit}) {
       try {
