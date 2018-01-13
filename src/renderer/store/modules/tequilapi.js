@@ -1,3 +1,4 @@
+// import tequilapi from '../../../api/tequilapi'
 
 const state = {
   error: {
@@ -5,18 +6,22 @@ const state = {
     message: ''
   },
   uptime: '',
-  processId: undefined,
-  identites: []
+  mystCli: {},
+  currentId: ''
 }
 
 const mutations = {
-  TEQUILAPI_FAILED_REQUEST (state, data) {
-    state.error.data = data
-    state.error.message = 'Failed request to mysterium client'
+  SET_PROPOSAL_LIST (state, proposals) {
+    state.proposals = proposals
+  },
+  SET_CURRENT_ID (state, id) {
+    state.currentId = id
+  },
+  TEQUILAPI_FAILED_REQUEST (state, err) {
+    state.error = err
   },
   HEALTHCHECK (state, data) {
-    state.uptime = data.uptime
-    state.processId = data.processIdt
+    state.mystCli = { ...state.mystCli, ...data } // object extend
   },
   GOT_IDS (state, data) {
     state.identites = data
@@ -25,17 +30,33 @@ const mutations = {
 
 function factory (tequilapi) {
   const actions = {
-    getIdentities: function ({commit}) {
-      tequilapi.getIdentities().then(res => {
-        commit('GOT_IDS', res.data)
-      }, res => {
-        commit('TEQUILAPI_FAILED_REQUEST', res)
-      })
+    async init ({commit}) {
+      try {
+        const res = await tequilapi.getIdentities()
+        commit('SET_CURRENT_ID', res.data.identities[0])
+        const proposals = await tequilapi.getProposals()
+        commit('SET_PROPOSAL_LIST', proposals)
+      } catch (err) {
+        commit('TEQUILAPI_FAILED_REQUEST', err)
+      }
     },
-    healthcheck: function ({commit}) {
-      tequilapi.healthcheck().then((res) => {
+    async getIdentities ({commit}) {
+      try {
+        const res = await tequilapi.getIdentities()
+        commit('GOT_IDS', res.data)
+      } catch (err) {
+        commit('TEQUILAPI_FAILED_REQUEST', err)
+        throw (err)
+      }
+    },
+    async healthcheck ({commit}) {
+      try {
+        const res = await tequilapi.healthcheck()
         commit('HEALTHCHECK', res.data)
-      })
+      } catch (err) {
+        commit('TEQUILAPI_FAILED_REQUEST', err)
+        throw (err)
+      }
     }
   }
   return {

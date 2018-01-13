@@ -9,12 +9,12 @@ function config (_commit) {
 }
 
 function spawn () {
-  console.log('connecting')
   if (mystProcess) {
     mystProcess.kill()
   }
   mystProcess = childProcess.spawn(global.__mysteriumClientBin,
     ['-runtime-dir', app.getPath('userData')])
+
   mystProcess.stdout.on('data', (data) => {
     commit('LOG_INFO', data)
     commit('CONNECTED')

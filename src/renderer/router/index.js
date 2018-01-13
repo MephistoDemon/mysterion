@@ -7,8 +7,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'landing-page',
-      component: require('@/components/LandingPage').default
+      name: 'loading-screen',
+      component: require('@/components/LoadingScreen/').default
+    },
+    {
+      path: '/info',
+      name: 'sysinfo',
+      component: require('@/components/LandingPage/SystemInformation').default
     },
     {
       path: '*',

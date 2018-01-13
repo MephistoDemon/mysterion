@@ -1,15 +1,35 @@
 import { expect } from 'chai'
 import tequilastore from '../../../src/renderer/store/modules/tequilapi'
+// import tequilapi from '../../../src/api/tequilapi'
+
+const rejectErr = new Error('Tequila is dead. Network Error')
+
+const tequilapiFake_Reject = {
+  getIdentities () {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject(rejectErr)
+      }, 100)
+    })
+  },
+  healthcheck () {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject(rejectErr)
+      }, 100)
+    })
+  }
+}
 
 const tequilapiFake = {
-  getIdentities: function () {
+  getIdentities () {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({ data: { identities: [{ id: 'fake' }] } })
       }, 100)
     })
   },
-  healthcheck: function () {
+  healthcheck () {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({ data: { uptime: 'fake time', process: 3 } })
@@ -18,12 +38,29 @@ const tequilapiFake = {
   }
 }
 
+describe('tequilapi_rejected', () => {
+  const {actions} = tequilastore(tequilapiFake_Reject)
+  it('healthcheck_rejected', done => {
+    testAction(actions.healthcheck, null, {}, [
+      { type: 'TEQUILAPI_FAILED_REQUEST', payload: rejectErr }
+    ], done)
+  })
+
+  it('getsIdentities_rejected', done => {
+    testAction(actions.getIdentities, null, {}, [
+      { type: 'TEQUILAPI_FAILED_REQUEST', payload: rejectErr }
+    ], done)
+  })
+})
+
 describe('tequilapi', () => {
   const { actions, mutations, state } = tequilastore(tequilapiFake)
-  it('getsIdentities_action', done => {
-    testAction(actions.getIdentities, null, {}, [
-      { type: 'GOT_IDS', payload: { identities: [{ id: 'fake' }] } }
-    ], done)
+  describe('getIdetities', () => {
+    it('dispatches mutation', done => {
+      testAction(actions.getIdentities, null, {}, [
+        { type: 'GOT_IDS', payload: { identities: [{ id: 'fake' }] } }
+      ], done)
+    })
   })
 
   it('healthcheck_action', done => {
@@ -34,7 +71,7 @@ describe('tequilapi', () => {
 
   it('healthcheck_state', done => {
     mutations.HEALTHCHECK(state, { uptime: '15m' })
-    expect(state.uptime).to.eql('15m')
+    expect(state.mystCli.uptime).to.eql('15m')
     done()
   })
 })
@@ -50,7 +87,7 @@ const testAction = (action, payload, state, expectedMutations, done) => {
     try {
       expect(mutation.type).to.equal(type)
       if (mutation.payload) {
-        expect(mutation.payload).to.deep.equal(payload)
+        expect(payload).to.eql(mutation.payload)
       }
     } catch (error) {
       done(error)

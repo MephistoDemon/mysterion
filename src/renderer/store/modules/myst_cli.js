@@ -8,6 +8,7 @@ const state = {
 
 const mutations = {
   LOG_INFO (state, log) {
+    console.log('log' + log)
     state.log += log
   },
   LOG_ERROR (state, log) {

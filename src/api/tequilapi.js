@@ -7,6 +7,10 @@ function healthcheck () {
   return teqAxio.get('/healthcheck')
 }
 
+function getProposals () {
+  return teqAxio.get('/proposals')
+}
+
 function getIdentities () {
   return teqAxio.get('/identities')
 }
@@ -18,5 +22,6 @@ function createIdentity (password) {
 export default {
   healthcheck,
   getIdentities,
+  getProposals,
   createIdentity
 }

@@ -1,14 +1,8 @@
 <template>
   <div>
-
-    <button class="alt" @click="getIdentities()">getId:s</button><br/>
-    <button class="alt" @click="healthcheck()">health</button><br/>
-    <button class="alt" @click="connect(host)">Connect</button><br/>
-    <button class="alt" @click="kill()">kill</button><br/>
-    <input type="text" v-model="host" placeholder="hostname" />
-    <div class="title">Status <span v-if="connected==1" style="color:green">CONNECTED</span> </div>
     <pre class="log">{{ error }}</pre>
     <pre class="log">{{ status }}</pre>
+    <pre class="log">{{ currentId }}</pre>
   </div>
 </template>
 
@@ -17,6 +11,7 @@
 
   export default {
     computed: mapState({
+      currentId: state => state.tequilapi.currentId.id,
       status: state => state.myst_cli.log,
       error: state => state.myst_cli.err,
       connected: state => state.myst_cli.status
