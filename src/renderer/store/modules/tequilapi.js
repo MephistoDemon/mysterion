@@ -8,7 +8,8 @@ const state = {
   },
   uptime: '',
   mystCli: {},
-  currentId: ''
+  currentId: '',
+  proposals: []
 }
 
 const mutations = {
@@ -29,15 +30,30 @@ const mutations = {
   }
 }
 
+const getPassword = () => ''
+
 function factory (tequilapi) {
   const actions = {
     init ({commit}) {
       return new Promise(async (resolve, reject) => {
-        try {
-          const identitiesRes = await tequilapi.getIdentities()
-          commit('SET_CURRENT_ID', identitiesRes.data.identities[0])
+        try { // TODO: Untangle below
+          const identityPromise = tequilapi.getIdentities().then((res) => {
+            if (res.data.identities.length === 0) {
+              tequilapi.createIdentity(getPassword()).then((res) => {
+                commit('SET_CURRENT_ID', res.data)
+              }, (res) => {
+                // TODO: Try to make all errors uniform
+                let err = new Error('Identity Creation Failed')
+                err.res = res
+                commit('TEQUILAPI_FAILED_REQUEST', err)
+              })
+            } else {
+              commit('SET_CURRENT_ID', res.data.identities[0])
+            }
+          })
           const proposalsRes = await tequilapi.getProposals()
           commit('SET_PROPOSAL_LIST', proposalsRes.data.proposals)
+          await identityPromise
           resolve()
         } catch (err) {
           commit('TEQUILAPI_FAILED_REQUEST', err)

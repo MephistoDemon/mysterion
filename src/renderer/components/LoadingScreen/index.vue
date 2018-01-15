@@ -16,12 +16,11 @@
 
   export default {
     async mounted () {
-      console.log(this.$store.state.tequilapi.error)
       try {
         await this.$store.dispatch('init')
         this.$router.push('/info')
       } catch (err) {
-        console.dir(err)
+        // or no catch ?
       }
     },
     computed: mapState({

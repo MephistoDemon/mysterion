@@ -4,7 +4,7 @@ import tequilastore from '../../../src/renderer/store/modules/tequilapi'
 
 const rejectErr = new Error('Tequila is dead. Network Error')
 
-const tequilapiFake_Reject = {
+const tequilapiFakeReject = {
   getIdentities () {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -39,7 +39,7 @@ const tequilapiFake = {
 }
 
 describe('tequilapi_rejected', () => {
-  const {actions} = tequilastore(tequilapiFake_Reject)
+  const {actions} = tequilastore(tequilapiFakeReject)
   it('healthcheck_rejected', done => {
     testAction(actions.healthcheck, null, {}, [
       { type: 'TEQUILAPI_FAILED_REQUEST', payload: rejectErr }
