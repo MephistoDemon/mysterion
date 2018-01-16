@@ -31,8 +31,7 @@
       "dist/electron/**/*"
     ],
     "extraFiles": [
-      "./bin/mysterium_client",
-      "./bin/openvpn"
+      "./bin/mysterium_client"
     ],
     "dmg": {
       "contents": [

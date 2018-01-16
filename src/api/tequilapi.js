@@ -13,7 +13,7 @@ export default {
       throw (err)
     }
   },
-  async put (path) {
+  async post (path) {
     try {
       const res = await teqAxio.get(path)
       return res.data

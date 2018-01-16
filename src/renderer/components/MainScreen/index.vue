@@ -1,6 +1,7 @@
 <template>
   <div>
     <b>Connect/Disconnect</b>
+    <p>{{currentId}}</p>
     <p>{{proposals}}</p>
   </div>
 </template>
@@ -11,7 +12,8 @@
     name: 'main',
     computed: {
       ...mapState({
-        proposals: state => state.tequilapi.proposals
+        proposals: state => state.tequilapi.proposals,
+        currentId: state => state.tequilapi.currentId
       }) }
   }
 </script>

@@ -2,9 +2,9 @@
   <div>
     <h1 class="h1">Loading</h1>
     <p>{{currentId}}</p>
+    <p>{{proposals}}</p>
     <p>{{error.message}}</p>
-
-    <router-link to="/info">info</router-link>
+    <!--<router-link to="/info">info</router-link>-->
 
   </div>
 </template>
@@ -16,13 +16,14 @@
     async mounted () {
       try {
         await this.$store.dispatch('init')
-        this.$router.push('/main')
+        // this.$router.push('/main')
       } catch (err) {
         this.$router.push('/info')
       }
     },
     computed: mapState({
       currentId: state => state.tequilapi.currentId,
+      proposals: state => state.tequilapi.proposals,
       error: state => state.tequilapi.error
     }),
     name: 'loading-screen'
