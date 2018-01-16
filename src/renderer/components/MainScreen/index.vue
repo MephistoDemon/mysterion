@@ -1,5 +1,6 @@
 <template>
   <div>
+    <router-link to="/">loading screen</router-link>
     <b>Connect/Disconnect</b>
     <p>{{currentId}}</p>
     <p>{{proposals}}</p>

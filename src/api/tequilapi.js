@@ -13,9 +13,13 @@ export default {
       throw (err)
     }
   },
-  async post (path) {
+  async post (path, body) {
     try {
-      const res = await teqAxio.get(path)
+      const prom = teqAxio.post(path, body, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }})
+      const res = await prom
       return res.data
     } catch (err) {
       throw (err)
