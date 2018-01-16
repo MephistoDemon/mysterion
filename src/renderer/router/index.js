@@ -11,6 +11,11 @@ export default new Router({
       component: require('@/components/LoadingScreen/').default
     },
     {
+      path: '/main',
+      name: 'main',
+      component: require('@/components/MainScreen/').default
+    },
+    {
       path: '/info',
       name: 'sysinfo',
       component: require('@/components/LandingPage/SystemInformation').default

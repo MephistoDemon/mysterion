@@ -3,8 +3,6 @@
     <h1 class="h1">Loading</h1>
     <p>{{currentId}}</p>
     <p>{{error.message}}</p>
-    <p>{{error.request.responseURL}}</p>
-    <p>{{error.response.data.message}}</p>
 
     <router-link to="/info">info</router-link>
 
@@ -18,9 +16,9 @@
     async mounted () {
       try {
         await this.$store.dispatch('init')
-        this.$router.push('/info')
+        this.$router.push('/main')
       } catch (err) {
-        // or no catch ?
+        this.$router.push('/info')
       }
     },
     computed: mapState({

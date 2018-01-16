@@ -34,46 +34,52 @@ const getPassword = () => ''
 
 function factory (tequilapi) {
   const actions = {
-    init ({commit}) {
-      return new Promise(async (resolve, reject) => {
+    async fetchIdentity ({dispatch, commit}) {
+      const identities = await dispatch('getIdentities')
+      if (identities.length !== 0) {
+        commit('SET_CURRENT_ID', identities[0])
+        return identities[0]
+      } else {
+        tequilapi.put('/identities', getPassword()).then((res) => {
+          return res
+        }, (res) => {
+          // TODO: Try to make all errors uniform
+          let err = new Error('Loading failed. Identity creation error, please contact customer support')
+          err.res = res
+          commit('TEQUILAPI_FAILED_REQUEST', err)
+          throw (err)
+        })
+      }
+    },
+    init ({dispatch, commit}) {
+      return new Promise(async (resolve) => {
         try { // TODO: Untangle below
-          const identityPromise = tequilapi.getIdentities().then((res) => {
-            if (res.data.identities.length === 0) {
-              tequilapi.createIdentity(getPassword()).then((res) => {
-                commit('SET_CURRENT_ID', res.data)
-              }, (res) => {
-                // TODO: Try to make all errors uniform
-                let err = new Error('Identity Creation Failed')
-                err.res = res
-                commit('TEQUILAPI_FAILED_REQUEST', err)
-              })
-            } else {
-              commit('SET_CURRENT_ID', res.data.identities[0])
-            }
-          })
-          const proposalsRes = await tequilapi.getProposals()
-          commit('SET_PROPOSAL_LIST', proposalsRes.data.proposals)
+          const identityPromise = await dispatch('fetchIdentity')
+          const proposals = await tequilapi.get('/proposals')
+          commit('SET_CURRENT_ID', identityPromise)
+          commit('SET_PROPOSAL_LIST', proposals)
+          console.log(identityPromise)
           await identityPromise
           resolve()
         } catch (err) {
           commit('TEQUILAPI_FAILED_REQUEST', err)
-          reject(err)
+          throw (err)
         }
       })
     },
     async getIdentities ({commit}) {
       try {
-        const res = await tequilapi.getIdentities()
-        commit('GOT_IDS', res.data)
+        const res = await tequilapi.get('/identities')
+        return res.identities
       } catch (err) {
         commit('TEQUILAPI_FAILED_REQUEST', err)
         throw (err)
       }
     },
-    async healthcheck ({commit}) {
+    healthcheck: async function ({commit}) {
       try {
-        const res = await tequilapi.healthcheck()
-        commit('HEALTHCHECK', res.data)
+        const res = await tequilapi.get('/healthcheck')
+        commit('HEALTHCHECK', res)
       } catch (err) {
         commit('TEQUILAPI_FAILED_REQUEST', err)
         throw (err)
