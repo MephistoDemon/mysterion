@@ -1,12 +1,6 @@
 const state = {
   init: '',
-  error: {
-    message: '',
-    request: {},
-    response: {
-      data: {}
-    }
-  },
+  error: {},
   uptime: '',
   mystCli: {},
   currentId: '',
@@ -20,11 +14,11 @@ const mutations = {
   PROPOSAL_LIST_SUCCESS (state, proposals) {
     state.proposals = proposals
   },
+  REQUEST_FAIL (state, err) {
+    state.error = err
+  },
   IDENTITY_GET_SUCCESS (state, id) {
     state.currentId = id
-  },
-  TEQUILAPI_REQUEST_FAIL (state, err) {
-    state.error = err
   },
   HEALTHCHECK_SUCCESS (state, data) {
     state.mystCli = {...state.mystCli, ...data} // object mystCli extend with data
@@ -43,16 +37,17 @@ function factory (tequilapi) {
         const newIdentity = await tequilapi.post('/identities', {password: await getPassword()})
         return newIdentity
       } catch (err) {
-        commit('TEQUILAPI_REQUEST_FAIL', err)
+        commit('REQUEST_FAIL', err)
         throw (err)
       }
     },
     async identityList ({commit}) {
       try {
         const res = await tequilapi.get('/identities')
+        commit('IDENTITY_LIST_SUCCESS', res.identities)
         return res.identities
       } catch (err) {
-        commit('TEQUILAPI_REQUEST_FAIL', err)
+        commit('REQUEST_FAIL', err)
         throw (err)
       }
     },
@@ -62,7 +57,7 @@ function factory (tequilapi) {
         commit('PROPOSAL_LIST_SUCCESS', proposalRes.proposals)
         return proposalRes.proposals
       } catch (err) {
-        commit('TEQUILAPI_REQUEST_FAIL', err)
+        commit('REQUEST_FAIL', err)
         throw (err)
       }
     },
@@ -71,7 +66,7 @@ function factory (tequilapi) {
         const res = await tequilapi.get('/healthcheck')
         commit('HEALTHCHECK_SUCCESS', res)
       } catch (err) {
-        commit('TEQUILAPI_REQUEST_FAIL', err)
+        commit('REQUEST_FAIL', err)
         throw (err)
       }
     }

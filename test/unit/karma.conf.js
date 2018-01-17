@@ -32,7 +32,10 @@ module.exports = config => {
   config.set({
     browsers: ['visibleElectron'],
     client: {
-      useIframe: false
+      useIframe: false,
+      mocha: {
+        require: [require.resolve('mocha-steps')]
+      }
     },
     coverageReporter: {
       dir: './coverage',
@@ -52,7 +55,8 @@ module.exports = config => {
     preprocessors: {
       './index.js': ['webpack', 'sourcemap']
     },
-    reporters: ['spec', 'coverage'],
+    reporters: ['spec' ],
+    // reporters: ['spec', 'coverage'],
     singleRun: true,
     webpack: webpackConfig,
     webpackMiddleware: {

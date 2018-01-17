@@ -6,6 +6,7 @@
     "assert": true,
     "expect": true,
     "should": true,
+    "step": true,
     "__static": true
   }
 }

@@ -11,8 +11,7 @@
 
   async function identityGet ({dispatch, commit}) {
     const identities = await dispatch('identityList')
-    if (identities.length !== 0) {
-      commit('IDENTITY_GET_SUCCESS', identities[0])
+    if (identities && identities.length !== 0) {
       return identities[0]
     } else {
       try {
@@ -30,12 +29,14 @@
       try {
         this.$store.commit('INIT_PENDING')
         const identityPromise = identityGet(this.$store)
-        await this.$store.dispatch('proposalList')
-        await identityPromise
+        const proposalPromise = this.$store.dispatch('proposalList')
+        let [identity] = await Promise.all([identityPromise, proposalPromise])
+        this.$store.commit('IDENTITY_GET_SUCCESS', identity)
         this.$store.commit('INIT_SUCCESS')
         this.$router.push('/main')
       } catch (err) {
         this.$store.commit('INIT_FAIL', err)
+        throw (err)
       }
     },
     computed: mapState({
