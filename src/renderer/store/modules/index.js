@@ -3,6 +3,6 @@ import mystCli from './myst_cli'
 import tequila from '../../../api/tequilapi'
 
 export default {
-  tequilapi: tequilapi(tequila),
+  tequilapi: tequilapi(tequila()),
   myst_cli: mystCli
 }

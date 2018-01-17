@@ -12,73 +12,86 @@ import MockAdapter from 'axios-mock-adapter'
 
 Vue.use(Vuex)
 
-const mock = new MockAdapter(tequilapi.__axio)
+
+const delay = (ms=0) => new Promise(resolve => setTimeout(resolve, ms))
+const serialDelay = (ms=0) => { (async (ms) => { await delay(ms) })() } // async iife
 
 const mountVM = async (vm) => await vm.$mount()
+
 describe('loading screen', () => {
-  const store = new Vuex.Store({modules: {tequilapi: {...teqStore(tequilapi)}}})
+  const teq = tequilapi()
+  const mock = new MockAdapter(teq.__axio)
+  mock.onGet('/proposals').replyOnce(200, {proposals: [{ id: '0xCEEDBEEF' }]})
+  mock.onGet('/identities').replyOnce(200, {identities: [{ id: '0xC001FACE' }]})
+  const store = new Vuex.Store({modules: {tequilapi: {...teqStore(teq)}}})
   const vm = new Vue({
     template: '<div><test></test></div>',
     components: { 'test': loadingScreen },
     store,
     router
   })
+  vm.$mount()
+  serialDelay()
 
   describe('renders and fetches data', () => {
-    mock.onGet('/proposals').reply(200, {proposals: {}})
-    mock.onGet('/identities').reply(200, {identities: { id: '0xC001FACE' }})
 
-    it('renders', async () => {
-      await mountVM(vm)
+    it('renders', (done) => {
       expect(vm.$el.querySelector('.h1').textContent).to.equal('Loading')
+      expect(vm.$el.querySelector('.status').textContent).to.equal('success')
+      done()
     })
-    it('assigns first fetched ID to state.tequilapi.currentId', async () => {
-      try{
-        await mountVM(vm)
-        expect(vm.$store.state.tequilapi.currentId).to.eql({ id: '0xC001FACE' })
-      } catch (err){
-        expect(err.message).to.be.undefined
-      }
+    it('assigns first fetched ID to state.tequilapi.currentId', (done) => {
+      expect(vm.$store.state.tequilapi.currentId).to.eql({ id: '0xC001FACE' })
+      done()
     })
-    it('fetches & assigns proposals[] to state.tequilapi.proposals', async () => {
-      await mountVM(vm)
+    it('fetches & assigns proposals[] to state.tequilapi.proposals', (done) => {
       expect(vm.$store.state.tequilapi.proposals).to.eql([ { id: '0xCEEDBEEF' } ])
+      done()
     })
-    it('switches view', async () => {
-      await mountVM(vm)
+    it('switches view', (done) => {
       expect(vm.$route.path).to.eql('/main')
-    })
-  })
-})
-
-describe('loading screen when no identities returned', () => {
-  const store = new Vuex.Store({modules: {tequilapi: {...teqStore(tequilapi)}}})
-  mock.reset()
-  mock.onGet('/identities').reply(200, {identities: []})
-  const vm = new Vue({
-    template: '<div><test></test></div>',
-    components: { 'test': loadingScreen },
-    store
-  })
-  describe('fetches identity', () => {
-    mock.onPut('/identities').reply(200, { id: '0xC001FACE' })
-    it('calls to create new identity and sets currentId', (done) => {
-      expect(vm.$store.state.tequilapi.currentId).to.eql({id: '0xC001FACE'})
       done()
     })
   })
 })
 
-describe('loading screen failing to create new ID', () => {
-  const store = new Vuex.Store({modules: {tequilapi: {...teqStore(tequilapi)}}})
-  const vm = new Vue({
-    template: '<div><test></test></div>',
-    components: { 'test': loadingScreen },
-    store
-  })
+describe('loading screen when no identities returned', () => {
+  describe('fetches identity', () => {
+    const teq = tequilapi()
+    const mock = new MockAdapter(teq.__axio)
+    const store = new Vuex.Store({modules: {tequilapi: {...teqStore(teq)}}})
+   // mock.reset()
+   // mock.onGet('/identities').reply(200, {identities: []})
+   mock.onPut( '/identities').replyOnce(200, { id: '0xC001FACY' })
 
-  it('sets state.tequilapi.error when account creation failed', async () => {
-    await mountVM(vm)
-    expect(vm.$store.state.tequilapi.error.message).to.eql('Request failed with status code 404')
+    const vm = new Vue({
+      template: '<div><test></test></div>',
+      components: { 'test': loadingScreen },
+      store
+    })
+    vm.$mount()
+    serialDelay()
+    it('calls to create new identity and sets currentId', (done) => {
+      console.log(vm.$store.state.tequilapi.currentId.id)
+      expect(vm.$store.state.tequilapi.currentId).to.eql({id: '0xC001FACY'})
+      done()
+    })
   })
 })
+
+// describe('loading screen failing to create new ID', () => {
+//   const mock = new MockAdapter(Object.assign({}, tequilapi.__axio))
+//   const store = new Vuex.Store({modules: {tequilapi: {...teqStore(tequilapi)}}})
+//   const vm = new Vue({
+//     template: '<div><test></test></div>',
+//     components: { 'test': loadingScreen },
+//     store
+//   })
+//   vm.$mount()
+//   serialDelay()
+//
+//   it('sets state.tequilapi.error when account creation failed', (done) => {
+//     expect(vm.$store.state.tequilapi.error.message).to.eql('Request failed with status code 404')
+//     done()
+//   })
+// })

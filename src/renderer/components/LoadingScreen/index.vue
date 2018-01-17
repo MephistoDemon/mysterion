@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 class="h1">Loading</h1>
-    <p>{{initStatus}}</p>
+    <p class="status">{{initStatus}}</p>
     <p>{{error.message}}</p>
   </div>
 </template>
