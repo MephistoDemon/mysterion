@@ -12,7 +12,8 @@ function spawn () {
   if (mystProcess) {
     mystProcess.kill()
   }
-  mystProcess = childProcess.spawn(global.__mysteriumClientBin,
+  mystProcess = childProcess.spawn(
+    global.__mysteriumClientBin,
     ['-runtime-dir', app.getPath('userData')])
 
   mystProcess.stdout.on('data', (data) => {
