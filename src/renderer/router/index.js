@@ -16,11 +16,6 @@ export default new Router({
       component: require('@/components/MainScreen/').default
     },
     {
-      path: '/info',
-      name: 'sysinfo',
-      component: require('@/components/LandingPage/SystemInformation').default
-    },
-    {
       path: '*',
       redirect: '/'
     }

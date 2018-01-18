@@ -32,10 +32,7 @@ module.exports = config => {
   config.set({
     browsers: ['visibleElectron'],
     client: {
-      useIframe: false,
-      mocha: {
-        require: [require.resolve('mocha-steps')]
-      }
+      useIframe: false
     },
     coverageReporter: {
       dir: './coverage',

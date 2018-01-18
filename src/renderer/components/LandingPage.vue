@@ -2,8 +2,6 @@
   <div id="wrapper">
     <img id="logo" src="~@/assets/logo.png" alt="mysterium">
     <main>
-      <system-information></system-information>
-
     </main>
   </div>
 </template>
@@ -13,7 +11,6 @@
 
   export default {
     name: 'landing-page',
-    components: { SystemInformation }
   }
 </script>
 

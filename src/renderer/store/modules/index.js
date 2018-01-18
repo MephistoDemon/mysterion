@@ -1,8 +1,8 @@
-import tequilapi from './tequilapi.js'
+import tequilStore from './tequil.js'
 import mystCli from './myst_cli'
-import tequila from '../../../api/tequilapi'
+import tequilAPI from '../../../api/tequilapi'
 
 export default {
-  tequilapi: tequilapi(tequila()),
+  tequil: tequilStore(tequilAPI()),
   myst_cli: mystCli
 }

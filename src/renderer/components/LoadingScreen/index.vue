@@ -9,39 +9,35 @@
 <script>
   import {mapState} from 'vuex'
 
-  async function identityGet ({dispatch, commit}) {
+  async function identityGet ({dispatch}) {
     const identities = await dispatch('identityList')
     if (identities && identities.length !== 0) {
       return identities[0]
     } else {
-      try {
-        const newIdentity = await dispatch('identityCreate')
-        return newIdentity
-      } catch (err) {
-        commit('TEQUILAPI_REQUEST_FAIL', err)
-        throw (err)
-      }
+      const newIdentity = await dispatch('identityCreate')
+      return newIdentity
     }
   }
 
   export default {
     async mounted () {
+      const {commit, dispatch} = this.$store
       try {
-        this.$store.commit('INIT_PENDING')
+        commit('INIT_PENDING')
         const identityPromise = identityGet(this.$store)
-        const proposalPromise = this.$store.dispatch('proposalList')
+        const proposalPromise = dispatch('proposalList')
         let [identity] = await Promise.all([identityPromise, proposalPromise])
-        this.$store.commit('IDENTITY_GET_SUCCESS', identity)
-        this.$store.commit('INIT_SUCCESS')
+        commit('IDENTITY_GET_SUCCESS', identity)
+        commit('INIT_SUCCESS')
         this.$router.push('/main')
       } catch (err) {
-        this.$store.commit('INIT_FAIL', err)
+        commit('INIT_FAIL', err)
         throw (err)
       }
     },
     computed: mapState({
-      initStatus: state => state.tequilapi.init,
-      error: state => state.tequilapi.error
+      initStatus: state => state.tequil.init,
+      error: state => state.tequil.error
     }),
     name: 'loading-screen'
   }
