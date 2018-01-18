@@ -1,8 +1,15 @@
-import tequilStore from './tequil.js'
+// import tequilStore from './tequil.js'
+import main from './main'
 import mystCli from './myst_cli'
+import identity from './identity'
+import proposal from './proposal'
 import tequilAPI from '../../../api/tequilapi'
 
+const tequilapi = tequilAPI()
+
 export default {
-  tequil: tequilStore(tequilAPI()),
-  myst_cli: mystCli
+  main,
+  identity: identity(tequilapi),
+  proposal: proposal(tequilapi),
+  myst_cli: mystCli(tequilapi)
 }

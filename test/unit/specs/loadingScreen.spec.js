@@ -4,7 +4,9 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import router from '@/router'
-import teqStore from '@/store/modules/tequil'
+import idStore from '@/store/modules/identity'
+import propStore from '@/store/modules/proposal'
+import mainStore from '@/store/modules/main'
 import loadingScreen from '@/components/LoadingScreen'
 import tequilAPI from '@/../api/tequilapi'
 
@@ -16,21 +18,32 @@ const mountVM = async (vm) => {
   await vm.$mount()
 }
 
+async function mountComponent (tequilapi) {
+  const store = new Vuex.Store({
+    modules: {
+      identity: {...idStore(tequilapi)},
+      proposal: {...propStore(tequilapi)},
+      main: mainStore
+    },
+  })
+  const vm = new Vue({
+    template: '<div><test></test></div>',
+    components: {'test': loadingScreen},
+    store,
+    router
+  })
+  await mountVM(vm)
+  return vm
+}
+
 describe('loading screen', () => {
   let vm
   before(async () => {
-    const teq = tequilAPI()
-    const mock = new MockAdapter(teq.__axio)
+    const tequilapi = tequilAPI()
+    const mock = new MockAdapter(tequilapi.__axio)
     mock.onGet('/proposals').reply(200, {proposals: [{id: '0xCEEDBEEF'}]})
     mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
-    const store = new Vuex.Store({modules: {tequil: {...teqStore(teq)}}})
-    vm = new Vue({
-      template: '<div><test></test></div>',
-      components: {'test': loadingScreen},
-      store,
-      router
-    })
-    await mountVM(vm)
+    vm = await mountComponent(tequilapi)
   })
 
   it('renders and fetches data', () => {
@@ -38,10 +51,10 @@ describe('loading screen', () => {
     expect(vm.$el.querySelector('.status').textContent).to.equal('success')
   })
   it('assigns first fetched ID to state.tequilapi.currentId', () => {
-    expect(vm.$store.state.tequil.currentId).to.eql({id: '0xC001FACE'})
+    expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACE'})
   })
   it('fetches & assigns proposals[] to state.tequilapi.proposals', () => {
-    expect(vm.$store.state.tequil.proposals).to.eql([{id: '0xCEEDBEEF'}])
+    expect(vm.$store.state.proposal.list).to.eql([{id: '0xCEEDBEEF'}])
   })
   it('switches view', () => {
     expect(vm.$route.path).to.eql('/main')
@@ -52,23 +65,16 @@ describe('loading screen when no identities returned', () => {
   let vm
 
   before(async () => {
-    const teq = tequilAPI()
-    const mock = new MockAdapter(teq.__axio)
+    const tequilapi = tequilAPI()
+    const mock = new MockAdapter(tequilapi.__axio)
     mock.onGet('/identities').replyOnce(200, {identities: []})
     mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
     mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
-    const store = new Vuex.Store({modules: {tequil: {...teqStore(teq)}}})
-    vm = new Vue({
-      template: '<div><test></test></div>',
-      components: {'test': loadingScreen},
-      store,
-      router
-    })
-    await mountVM(vm)
+    vm = await mountComponent(tequilapi)
   })
 
   it('calls to create new identity and sets currentId', () => {
     expect(vm.$el.querySelector('.status').textContent).to.equal('success')
-    expect(vm.$store.state.tequil.currentId).to.eql({id: '0xC001FACY'})
+    expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACY'})
   })
 })

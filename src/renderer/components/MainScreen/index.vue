@@ -13,8 +13,8 @@
     name: 'main',
     computed: {
       ...mapState({
-        proposals: state => state.tequil.proposals,
-        currentId: state => state.tequil.currentId
+        proposals: state => state.proposal.list,
+        currentId: state => state.identity.current
       }) }
   }
 </script>

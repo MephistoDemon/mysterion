@@ -28,6 +28,7 @@
         const proposalPromise = dispatch('proposalList')
         let [identity] = await Promise.all([identityPromise, proposalPromise])
         commit('IDENTITY_GET_SUCCESS', identity)
+        console.log(await dispatch('healthcheck'))
         commit('INIT_SUCCESS')
         this.$router.push('/main')
       } catch (err) {
@@ -36,8 +37,8 @@
       }
     },
     computed: mapState({
-      initStatus: state => state.tequil.init,
-      error: state => state.tequil.error
+      initStatus: state => state.main.init,
+      error: state => state.main.error
     }),
     name: 'loading-screen'
   }
