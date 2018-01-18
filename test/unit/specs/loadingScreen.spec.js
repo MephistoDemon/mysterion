@@ -47,7 +47,7 @@ describe('loading screen', () => {
   })
 
   it('renders and fetches data', () => {
-    expect(vm.$el.querySelector('.h1').textContent).to.equal('Loading')
+    expect(vm.$el.querySelector('.h4').textContent).to.equal('Loading')
     expect(vm.$el.querySelector('.status').textContent).to.equal('success')
   })
   it('assigns first fetched ID to state.tequilapi.currentId', () => {
@@ -55,9 +55,6 @@ describe('loading screen', () => {
   })
   it('fetches & assigns proposals[] to state.tequilapi.proposals', () => {
     expect(vm.$store.state.proposal.list).to.eql([{id: '0xCEEDBEEF'}])
-  })
-  it('switches view', () => {
-    expect(vm.$route.path).to.eql('/main')
   })
 })
 

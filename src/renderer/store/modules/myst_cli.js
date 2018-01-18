@@ -19,6 +19,9 @@ const mutations = {
   },
   DISCONNECTED (state) {
     state.status = 0
+  },
+  HEALTHCHECK_SUCCESS (state, res) {
+    state.health = res
   }
 }
 
