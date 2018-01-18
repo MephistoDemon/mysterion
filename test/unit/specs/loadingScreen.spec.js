@@ -13,7 +13,7 @@ import MockAdapter from 'axios-mock-adapter'
 Vue.use(Vuex)
 
 const mountVM = async (vm) => {
-  await vm.$mount();
+  await vm.$mount()
 }
 
 describe('loading screen', () => {
