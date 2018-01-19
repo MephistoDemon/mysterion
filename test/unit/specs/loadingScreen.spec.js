@@ -25,6 +25,7 @@ async function mountComponent (tequilapi) {
       proposal: {...propStore(tequilapi)},
       main: mainStore
     },
+    strict: false
   })
   const vm = new Vue({
     template: '<div><test></test></div>',

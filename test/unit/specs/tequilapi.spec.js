@@ -1,3 +1,4 @@
+/* eslint no-unused-expressions: 0 */
 import {expect} from 'chai'
 import MockAdapter from 'axios-mock-adapter'
 import tequilAPI from '../../../src/api/tequilapi'
@@ -18,7 +19,7 @@ describe('tequilAPI', () => {
   })
 })
 
-describe('tequilAPI healthcheck throws errors', () => {
+describe('tequilAPI error handling', () => {
   it('throws network error', async () => {
     mock.onGet('/healthcheck').networkError()
     try {
@@ -42,12 +43,13 @@ describe('tequilAPI healthcheck throws errors', () => {
 
   it('throws 404', async () => {
     mock.reset()
-    mock.onGet('/healthcheck').reply(404)
+    mock.onGet('/healthcheck').reply(404, {message: 'What is wrong'})
     try {
       const health = await tequilApi.get('/healthcheck')
       expect(health).to.not.exist
     } catch (err) {
       expect(err.message).to.eql('Request failed with status code 404')
+      expect(err.response.data.message).to.eql('What is wrong')
     }
   })
 })
