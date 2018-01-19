@@ -1,9 +1,6 @@
 const state = {
-  init: '',
-  error: {},
-  uptime: '',
-  mystCli: {},
-  current: ''
+  error: null,
+  current: null
 }
 
 const mutations = {
@@ -27,7 +24,7 @@ function factory (tequilapi) {
   const actions = {
     async identityCreate ({commit}) {
       try {
-        const newIdentity = await tequilapi.post('/identities', {password: await getPassword()})
+        const newIdentity = await tequilapi.identity.create(await getPassword())
         return newIdentity
       } catch (err) {
         commit('REQUEST_FAIL', err)
@@ -36,7 +33,7 @@ function factory (tequilapi) {
     },
     async identityList ({commit}) {
       try {
-        const res = await tequilapi.get('/identities')
+        const res = await tequilapi.identity.list()
         commit('IDENTITY_LIST_SUCCESS', res.identities)
         return res.identities
       } catch (err) {

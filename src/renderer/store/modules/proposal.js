@@ -1,6 +1,6 @@
 const state = {
-  error: {},
-  list: []
+  error: null,
+  list: null
 }
 
 const mutations = {
@@ -16,7 +16,7 @@ function factory (tequilapi) {
   const actions = {
     async proposalList ({commit}) {
       try {
-        const proposalRes = await tequilapi.get('/proposals')
+        const proposalRes = await tequilapi.proposal.list()
         commit('PROPOSAL_LIST_SUCCESS', proposalRes.proposals)
         return proposalRes.proposals
       } catch (err) {

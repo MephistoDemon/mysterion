@@ -9,6 +9,7 @@ const projectRoot = path.resolve(__dirname, '../../src/renderer')
 
 // Set BABEL_ENV to use proper preset config
 process.env.BABEL_ENV = 'test'
+process.env.TEST_COVERAGE = 'false'
 
 let webpackConfig = merge(baseConfig, {
   devtool: '#inline-source-map',
@@ -27,6 +28,9 @@ delete webpackConfig.output.libraryTarget
 // apply vue option to apply isparta-loader on js
 webpackConfig.module.rules
   .find(rule => rule.use.loader === 'vue-loader').use.options.loaders.js = 'babel-loader'
+
+const reporters = ['spec']
+if (process.env.TEST_COVERAGE === 'true') reporters.push('coverage')
 
 module.exports = config => {
   config.set({
@@ -52,8 +56,7 @@ module.exports = config => {
     preprocessors: {
       './index.js': ['webpack', 'sourcemap']
     },
-    reporters: ['spec' ],
-    // reporters: ['spec', 'coverage'],
+    reporters: reporters,
     singleRun: true,
     webpack: webpackConfig,
     webpackMiddleware: {
