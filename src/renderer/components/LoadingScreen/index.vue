@@ -2,7 +2,7 @@
   <div class="aligner">
     <div class="aligner-item">
       <div>
-        <img src="~@/assets/logo.png" />
+        <img src="~@/assets/head.png" />
         <h1 class="h4">Loading</h1>
         <p class="status">{{initStatus}}</p>
 
