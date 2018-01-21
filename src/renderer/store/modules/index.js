@@ -1,4 +1,3 @@
-// import tequilStore from './tequil.js'
 import main from './main'
 import mystCli from './myst_cli'
 import identity from './identity'
