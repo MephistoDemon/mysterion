@@ -1,5 +1,5 @@
 import main from './main'
-import mystCli from './myst_cli'
+import mystCli from './mystProcess'
 import identity from './identity'
 import proposal from './proposal'
 import tequilAPI from '../../../api/tequilapi'

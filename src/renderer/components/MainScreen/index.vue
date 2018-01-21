@@ -15,7 +15,8 @@
       ...mapState({
         proposals: state => state.proposal.list,
         currentId: state => state.identity.current
-      }) }
+      })
+    }
   }
 </script>
 

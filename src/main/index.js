@@ -3,12 +3,12 @@
 import { app, BrowserWindow, Tray, Menu } from 'electron'
 import path from 'path'
 import config from './config'
-import mystProcess from './mystProcess'
-import store from '../renderer/store'
+import mystClient from './mystProcess'
+import state from '../renderer/store'
 
-config(global)
-mystProcess.config(store.commit)
+config(global)  // sets some global variables, path to mystClient binary etc
 
+let mystProcess
 let mainWindow
 let tray
 const winURL = process.env.NODE_ENV === 'development'
@@ -61,15 +61,18 @@ function createWindow () {
 app.on('ready', () => {
   createWindow()
   createTray()
-  mystProcess.spawn()
+  mystProcess = mystClient.spawn()
+  routeLogsFromMystClientToState(mystProcess, state)
 })
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
 
-  mystProcess.kill()
+app.on('before-quit', () => {
+  mystProcess.kill('SIGTERM')
 })
 
 app.on('activate', () => {
@@ -77,6 +80,18 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
+function routeLogsFromMystClientToState (mystProcess, state) {
+  mystProcess.stdout.on('data', (data) => {
+    state.commit('LOG_INFO', data)
+  })
+  mystProcess.stderr.on('data', (data) => {
+    state.commit('LOG_ERROR', data)
+  })
+  mystProcess.on('close', (data) => {
+    state.commit('MYST_PROCESS_CLOSE', data)
+  })
+}
 
 /**
  * Auto Updater
