@@ -6,4 +6,5 @@ fi
 
 source .env
 
+mkdir -p ./bin
 cp ${MYSTERIUM_CLIENT_BIN} ./bin/

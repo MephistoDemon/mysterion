@@ -1,14 +1,14 @@
-/**
- * The file enables `@/store/index.js` to import all vuex modules
- * in a one-shot manner. There should not be any reason to edit this file.
- */
+import main from './main'
+import mystCli from './mystProcess'
+import identity from './identity'
+import proposal from './proposal'
+import tequilAPI from '../../../api/tequilapi'
 
-const files = require.context('.', false, /\.js$/)
-const modules = {}
+const tequilapi = tequilAPI()
 
-files.keys().forEach(key => {
-  if (key === './index.js') return
-  modules[key.replace(/(\.\/|\.js)/g, '')] = files(key).default
-})
-
-export default modules
+export default {
+  main,
+  identity: identity(tequilapi),
+  proposal: proposal(tequilapi),
+  myst_cli: mystCli(tequilapi)
+}

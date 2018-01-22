@@ -3,21 +3,21 @@
 import { app, BrowserWindow, Tray, Menu } from 'electron'
 import path from 'path'
 import config from './config'
+import mystClient from './mystProcess'
+import state from '../renderer/store'
 
-config(global)
-/**
- * Set `__static` path to static files in production
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
-*/
+config(global) // sets some global variables, path to mystClient binary etc
 
+let mystProcess
 let mainWindow
+let tray
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
 function createTray () {
-  let trayIconPath = path.join(global.__static, '/icons/tray.png')
-  let tray = new Tray(trayIconPath)
+  let trayIconPath = path.join(__static, 'icons', 'tray.png')
+  tray = new Tray(trayIconPath)
   tray.setToolTip('Mysterium')
   let contextMenu = Menu.buildFromTemplate([
     {
@@ -43,9 +43,12 @@ function createWindow () {
   * Initial window options
   */
   mainWindow = new BrowserWindow({
-    height: 563,
-    useContentSize: true,
-    width: 1000
+    height: 500,
+    width: 1000 // width for devtools, and suggested styles below
+    // useContentSize: true,
+    // frame: false,
+    // titleBarStyle: 'hidden',
+    // resizable: false
   })
 
   mainWindow.loadURL(winURL)
@@ -58,6 +61,8 @@ function createWindow () {
 app.on('ready', () => {
   createWindow()
   createTray()
+  mystProcess = mystClient.spawn()
+  routeLogsFromMystClientToState(mystProcess, state)
 })
 
 app.on('window-all-closed', () => {
@@ -66,11 +71,27 @@ app.on('window-all-closed', () => {
   }
 })
 
+app.on('before-quit', () => {
+  mystProcess.kill('SIGTERM')
+})
+
 app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
   }
 })
+
+function routeLogsFromMystClientToState (mystProcess, state) {
+  mystProcess.stdout.on('data', (data) => {
+    state.commit('LOG_INFO', data)
+  })
+  mystProcess.stderr.on('data', (data) => {
+    state.commit('LOG_ERROR', data)
+  })
+  mystProcess.on('close', (data) => {
+    state.commit('MYST_PROCESS_CLOSE', data)
+  })
+}
 
 /**
  * Auto Updater
