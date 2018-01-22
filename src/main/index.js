@@ -6,7 +6,7 @@ import config from './config'
 import mystClient from './mystProcess'
 import state from '../renderer/store'
 
-config(global)  // sets some global variables, path to mystClient binary etc
+config(global) // sets some global variables, path to mystClient binary etc
 
 let mystProcess
 let mainWindow
