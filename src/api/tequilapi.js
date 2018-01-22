@@ -30,11 +30,7 @@ function adapterFactory (teqAddr) {
       return res.data
     },
     async post (path, body) {
-      const prom = teqAxio.post(path, body, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      })
+      const prom = teqAxio.post(path, body)
       const res = await prom
       return res.data
     }

@@ -28,10 +28,10 @@ function factory (tequilapi) {
     async healthcheck ({commit}) {
       try {
         const res = await tequilapi.get('/healthcheck')
-        commit('HEALTHCHECK_SUCCESS', res)
+        commit(type.HEALTHCHECK_SUCCESS, res)
         return res
       } catch (err) {
-        commit('REQUEST_FAIL', err)
+        commit(type.REQUEST_FAIL, err)
         throw (err)
       }
     }
