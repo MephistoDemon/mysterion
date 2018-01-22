@@ -1,22 +1,24 @@
+import type from '../types'
+
 const state = {
   log: '',
   err: ''
 }
 
 const mutations = {
-  LOG_INFO (state, log) {
+  [type.LOG_INFO] (state, log) {
     console.log('[mystClient]: ' + log)
     state.log += log
   },
-  LOG_ERROR (state, log) {
+  [type.LOG_ERROR] (state, log) {
     console.log('[mystClientErr]: ' + log)
     state.err += log
   },
-  HEALTHCHECK_SUCCESS (state, res) {
+  [type.HEALTHCHECK_SUCCESS] (state, res) {
     state.running = true
     state.health = res
   },
-  MYST_PROCESS_CLOSE () {
+  [type.MYST_PROCESS_CLOSE] () {
     state.running = false
   }
 }
