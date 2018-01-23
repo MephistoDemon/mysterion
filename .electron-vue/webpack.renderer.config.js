@@ -62,16 +62,6 @@ let rendererConfig = {
         use: 'node-loader'
       },
       {
-        test: /\.less$/,
-        exclude: /\.*/,
-        use: {
-          loader: 'less-loader'
-          // loaders: {
-          //   less: 'css-loader!less-loader'
-          // }
-        }
-      },
-      {
         test: /\.svg$/,
         exclude: /node_modules/,
         use: {

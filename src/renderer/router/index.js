@@ -14,7 +14,6 @@ import TutorialDecentralized4 from '@/pages/tutorial/TutorialDecentralized4'
 Vue.use(Router)
 
 const router = new Router({
-  mode: 'history',
   linkActiveClass: 'is-active',
   routes: [
     {
