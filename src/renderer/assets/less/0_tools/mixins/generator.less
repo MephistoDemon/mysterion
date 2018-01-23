@@ -1,0 +1,71 @@
+// USAGE:
+// .generator(PROPERTY, VALUES, 'LABELS OR EMPTY', 'UNIT OR EMPTY', BREAKPOINTS OR EMPTY);
+
+.forvalues(@values, @c) {
+  & {
+    .loopvalues(@i: 1) when (@i =< length(@values)) {
+      @s: extract(@values, @i);
+      @c();
+      .loopvalues(@i + 1);
+    }
+    .loopvalues();
+  }
+}
+
+.make-values(@values, @property, @unit, @modifier: '', @labels: '') {
+  .forvalues(@values, {
+    @mod: ~"@{modifier}";
+    @prop: ~"@{property}";
+    @label: extract(@labels, @i);
+    & when (@labels ='') {
+      & when (isnumber(@s)) {
+        @label: round(@s);
+        @name: ~"@{label}@{mod}";
+        &@{name} {
+          @{prop}: ~"@{s}@{unit}";
+        }
+      }
+      & when not (isnumber(@s)) {
+        @label: round(@s);
+        @name: ~"@{label}@{mod}";
+        &@{name} {
+          @{prop}: ~"@{s}@{unit}";
+        }
+      }
+    }
+    & when not (@labels ='') {
+      @name: ~"@{label}@{mod}";
+      &@{name} {
+        @{prop}: ~"@{s}@{unit}";
+      }
+    }
+  }
+  );
+}
+
+.generate-sizes(@values, @unit) {}
+
+.forMedia(@media, @d) {
+  & {
+    .loopMedia(@j: 1) when (@j =< length(@media)) {
+      @m: extract(@media, @j);
+      @d();
+      .loopMedia(@j + 1);
+    }
+    .loopMedia();
+  }
+}
+
+.generator(@property, @values, @labels: '', @unit: '', @breakpoints: '') {
+  .make-values(@values, @property, @unit, '', @labels);
+  & when not (@breakpoints ='') {
+    .forMedia(@breakpoints, {
+      @breakpoint: ~"screen and (min-width: @{m}px)";
+      @size: ~"@{m}";
+      @media @breakpoint {
+        .make-values(@values, @property, @unit, ~"--@{size}", @labels);
+      }
+    }
+    );
+  }
+}

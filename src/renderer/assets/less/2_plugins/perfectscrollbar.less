@@ -1,0 +1,30 @@
+.ps {
+  -ms-touch-action: auto;
+  touch-action: auto;
+  overflow: hidden !important;
+  -ms-overflow-style: none;
+  @supports (-ms-overflow-style: none) {
+    overflow: auto !important;
+  }
+  @media screen and (-ms-high-contrast: active),
+  (-ms-high-contrast: none) {
+    overflow: auto !important;
+  }
+  &>.ps {
+    &__scrollbar-y-rail {
+      z-index: 2;
+      position: absolute;
+      opacity: 1;
+      right: 0;
+      width: 10px;
+      background-color: #f0f0f0;
+      &>.ps__scrollbar-y {
+        position: absolute;
+        background-color: #fff;
+        border: solid 1px #a2a2a2;
+        right: 0;
+        left: 0;
+      }
+    }
+  }
+}

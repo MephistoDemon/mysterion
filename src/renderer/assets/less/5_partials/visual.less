@@ -1,0 +1,140 @@
+.visual {
+  &__container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    width: 100%;
+    max-width: 65rem;
+    min-height: 100vh;
+    background-repeat: no-repeat;
+    background-position: 50% 42%;
+    background-size: 92% auto;
+    background-image: url('../../img/map@2x.png');
+    padding: 2rem 1.5rem 12.4rem 1.5rem;
+    margin: 0 auto;
+  }
+  &__object {
+    transition: transform 500ms @easeInOut;
+    height: 25.4rem;
+    width: 25.4rem;
+    position: relative;
+    flex: 0 0 25.4rem;
+    path {
+      transition: fill 800ms @easeOutBack 300ms;
+      &.head {
+        &__logo {
+          transition-delay: 200ms;
+        }
+      }
+    }
+    &.is-loading {
+      transform: scale(0.655);
+    }
+    &.not-connected {
+      path {
+        transition: fill 500ms @easeOutQuad 0ms;
+        &.head {
+          &__eye {
+            fill: @greyDarker;
+          }
+          &__iris {
+            fill: @greyDarker;
+          }
+          &__mouth {
+            fill: @greyDark;
+          }
+          &__logo {
+            fill: @greyDark;
+          }
+        }
+      }
+    }
+  }
+  &__media {
+    position: absolute;
+    top: 2rem;
+    bottom: 2rem;
+    left: -43.8%;
+    text-align: center;
+    right: -43.8%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 2;
+    transition: transform 1000ms @easeInOut, background-color 500ms @easeInOut;
+    &.is-loading {
+      animation: pulse-in 3s @easeInOut 900ms infinite;
+    }
+  }
+  &__circles {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+  }
+  &__circle {
+    position: absolute;
+    border-radius: 50%;
+    background-color: @mainLight;
+    z-index: 2;
+    transition: transform 1000ms @easeInOut, background-color 500ms @easeOutBack;
+    animation: pulse-out 1500ms @easeInOut 0ms 0;
+    animation-fill-mode: forwards;
+    &.is-pulsing {
+      animation-iteration-count: infinite;
+    }
+    &--dark {
+      background-color: @main;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1;
+      animation-delay: 400ms;
+      &.is-disabled {
+        background-color: @g6;
+      }
+    }
+    &--default {
+      top: 8%;
+      left: 8%;
+      right: 8%;
+      bottom: 8%;
+      animation-delay: 200ms;
+      &.is-disabled {
+        background-color: @g7;
+      }
+    }
+    &--light {
+      top: 15%;
+      left: 15%;
+      right: 15%;
+      bottom: 15%;
+      z-index: 3;
+      background-color: @mainLighter;
+      &.is-disabled {
+        background-color: @g8;
+      }
+    }
+  }
+  &__image {
+    position: relative;
+    height: 100%;
+    &--head {
+      height: 73%;
+      top: -0.7rem;
+    }
+    &--networking {
+    }
+  }
+}

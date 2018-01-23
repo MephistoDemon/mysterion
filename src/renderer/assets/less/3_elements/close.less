@@ -1,0 +1,43 @@
+.close {
+  width: 7.6rem;
+  height: 7.6rem;
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+  display: block;
+  &:before,
+  &:after {
+    content: '';
+    position: absolute;
+    top: 2.3rem;
+    right: 1.2rem;
+    height: 0.3rem;
+    width: 2.4rem;
+    background-color: @grey;
+  }
+  &:before {
+    transform: rotate(45deg);
+  }
+  &:after {
+    transform: rotate(-45deg);
+  }
+  &--s {
+    width: 3.2rem;
+    height: 3.2rem;
+    &:before,
+    &:after {
+      top: 1.6rem;
+      right: 1.6rem;
+      height: 0.2rem;
+      width: 1.6rem;
+    }
+  }
+  &--white {
+    &:before,
+    &:after {
+      background-color: @white
+    }
+  }
+}

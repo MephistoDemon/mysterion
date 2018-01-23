@@ -10,6 +10,6 @@ testsContext.keys().forEach(testsContext)
 // you can also change this to match only the subset of files that
 // you want coverage for.
 if (process.env.TEST_COVERAGE === 'true') {
-  const srcContext = require.context('../../src/renderer', true, /^\.\/(?!main(\.js)?$)/)
+  const srcContext = require.context('../../src/renderer', true, /^\.\/(?!main(\.js)?$|.*\.less$|.*\.svg$)/)
   srcContext.keys().forEach(srcContext)
 }

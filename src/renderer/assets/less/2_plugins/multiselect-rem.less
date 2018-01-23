@@ -1,0 +1,345 @@
+@color1: @white;
+@color2: #41b883;
+@color3: #35495e;
+@color4: #e8e8e8;
+@color5: #999999;
+@color6: #adadad;
+@color7: #f3f3f3;
+@color8: #ff6a6a;
+
+@spinnerBg: @color1;
+@spinnerBorderColor: @color2;
+@multiselectColor: @color3;
+@multiselectBg: @color1;
+@multiselectBorderColorHover: darken(@color4, 10%);
+@multiselectBorderColorFocus: darken(@color4, 25%);
+@multiselectTagsBgColor: @color1;
+@multiselectTagsBorder: 1px solid @color4;
+@multiselectTagColor: @color1;
+@multiselectTagBgColor: @color2;
+@multiselectTagIconColor: darken(@color2, 20%);
+@multiselectTagIconColorHover: darken(@color2, 8%);
+@multiselectTagIconColorBgHover: @color1;
+@multiselectCurrentBorderColor: @color4;
+@multiselectBorderColor: @color5;
+@multiselectColor: @color5;
+@multiselectPlaceholderColor: @color6;
+@multiselectContentBgColor: @color1;
+@multiselectContentBorderColor: @color4;
+@multiselectOptionHighlightBgColor: @color2;
+@multiselectOptionHighlightColor: @color1;
+@multiselectOptionSelectedBgColor: @color7;
+@multiselectOptionSelectedColor: @color3;
+@multiselectOptionHighlightSelectedBgColor: @color8;
+@multiselectOptionHighlightSelectedColor: @color1;
+@multiselectDisabledBgColor: darken(@color1, 7%);
+@multiselectDisabledColor: darken(@color1, 35%);
+@multiselectDisabledOptionBgColor: darken(@color2, 3%);
+
+@multiselectTagIcon: '\00D7';
+@multiselectTagsBorderRadius: 0;
+.multiselect {
+  display: block;
+  position: relative;
+  width: 100%;
+  min-height: 2.5em;
+  text-align: left;
+  color: @multiselectColor;
+  box-sizing: content-box;
+  * {
+    box-sizing: border-box;
+  }
+  &:focus {
+    outline: none;
+  }
+  &__spinner {
+    position: absolute;
+    right: 1px;
+    top: 1px;
+    width: 3em;
+    height: 2.1875em;
+    background: @spinnerBg;
+    display: block;
+    &:before,
+    &:after {
+      position: absolute;
+      content: '';
+      top: 50%;
+      left: 50%;
+      margin: 0.875em 0 0 0.875em;
+      width: 1em;
+      height: 1em;
+      border-radius: 100%;
+      border-color: @spinnerBorderColor transparent transparent;
+      border-style: solid;
+      border-width: 2px;
+      box-shadow: 0 0 0 1px transparent;
+    }
+    &:before {
+      animation: spinning 2.4s cubic-bezier(0.41, 0.26, 0.2, 0.62);
+      animation-iteration-count: infinite;
+    }
+    &:after {
+      animation: spinning 2.4s cubic-bezier(0.51, 0.09, 0.21, 0.8);
+      animation-iteration-count: infinite;
+    }
+  }
+  &__loading-transition {
+    transition: opacity 0.4s ease-in-out;
+    opacity: 1;
+  }
+  &__loading-enter,
+  &__loading-leave {
+    opacity: 0;
+  }
+  &__input,
+  &__single {
+    font-family: inherit;
+    font-size: 1em;
+  }
+
+  &--active {
+    z-index: 50;
+    &__current,
+    &__input,
+    &__tags {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    &__select {
+      transform: rotateZ(180deg);
+    }
+  }
+  &__input,
+  &__single {
+    position: relative;
+    display: inline-block;
+    min-height: 1.25em;
+    line-height: 1.25em;
+    border: none;
+    border-radius: @multiselectTagsBorderRadius;
+    background: @multiselectBg;
+    padding: 1px 0 0 0.3125em;
+    width: auto;
+    transition: border 0.1s ease;
+    box-sizing: border-box;
+    margin-bottom: 0.5em;
+    &:hover {
+      border-color: @multiselectBorderColorHover;
+    }
+    &:focus {
+      border-color: @multiselectBorderColorFocus;
+      outline: none;
+    }
+  }
+  &__single {
+    padding-left: 0.375em;
+    margin-bottom: 0.5em;
+  }
+  &__tags {
+    min-height: 2.5em;
+    display: block;
+    padding: 0.5em 2.5em 0 0.5em;
+    border-radius: @multiselectTagsBorderRadius;
+    border: @multiselectTagsBorder;
+    background: @multiselectTagsBgColor;
+  }
+  &__tag {
+    position: relative;
+    display: inline-block;
+    padding: 0.25em 1.625em 0.25em 0.625em;
+    border-radius: @multiselectTagsBorderRadius;
+    margin-right: 0.625em;
+    color: @multiselectTagColor;
+    line-height: 1;
+    background: @multiselectTagBgColor;
+    margin-bottom: 0.5em;
+  }
+  &__tag-icon {
+    cursor: pointer;
+    margin-left: 7px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    font-weight: 700;
+    font-style: initial;
+    width: 1.375em;
+    text-align: center;
+    line-height: 1.375em;
+    transition: all 0.2s ease;
+    border-radius: @multiselectTagsBorderRadius;
+
+    &:after {
+      content: @multiselectTagIcon;
+      color: @multiselectTagIconColor;
+      font-size: 0.875em;
+    }
+    &:focus,
+    &:hover {
+      background: @multiselectTagIconColorHover;
+
+      &:after {
+        color: @multiselectTagIconColorBgHover;
+      }
+    }
+  }
+  &__current {
+    line-height: 1em;
+    min-height: 2.5em;
+    box-sizing: border-box;
+    display: block;
+    overflow: hidden;
+    padding: 0.5em 0.75em 0;
+    padding-right: 1.875em;
+    white-space: nowrap;
+    margin: 0;
+    text-decoration: none;
+    border-radius: @multiselectTagsBorderRadius;
+    border: 1px solid @multiselectCurrentBorderColor;
+    cursor: pointer;
+  }
+  &__select {
+    line-height: 1em;
+    display: block;
+    position: absolute;
+    box-sizing: border-box;
+    width: 2.5em;
+    height: 2.375em;
+    right: 1px;
+    top: 1px;
+    padding: 0.25em 0.5em;
+    margin: 0;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:before {
+      position: relative;
+      right: 0;
+      top: 65%;
+      color: @multiselectColor;
+      margin-top: 0.25em;
+      border-style: solid;
+      border-width: 0.3125em 0.3125em 0 0.3125em;
+      border-color: @multiselectBorderColor transparent transparent transparent;
+      content: '';
+    }
+  }
+  &__placeholder {
+    color: @multiselectPlaceholderColor;
+    display: inline-block;
+    margin-bottom: 0.625em;
+    padding-top: 0.125em;
+
+    &--active & {
+      display: none;
+    }
+  }
+  &__content {
+    position: absolute;
+    list-style: none;
+    display: block;
+    background: @multiselectContentBgColor;
+    width: 100%;
+    max-height: 15em;
+    overflow: auto;
+    padding: 0;
+    margin: 0;
+    border: 1px solid @multiselectContentBorderColor;
+    border-top: none;
+    border-bottom-left-radius: @multiselectTagsBorderRadius;
+    border-bottom-right-radius: @multiselectTagsBorderRadius;
+    z-index: 50;
+
+    &::webkit-scrollbar {
+      display: none;
+    }
+  }
+  &__option {
+    display: block;
+    padding: 0.75em;
+    min-height: 2.5em;
+    line-height: 1em;
+    font-weight: 300;
+    text-decoration: none;
+    text-transform: none;
+    vertical-align: middle;
+    position: relative;
+    cursor: pointer;
+
+    &:after {
+      top: 0;
+      right: 0;
+      position: absolute;
+      line-height: 2.5em;
+      padding-right: 0.75em;
+      padding-left: 1.25em;
+    }
+    &--highlight {
+      background: @multiselectOptionHighlightBgColor;
+      outline: none;
+      color: @multiselectOptionHighlightColor;
+
+      &:after {
+        content: attr(data-select);
+        color: @multiselectOptionHighlightColor;
+      }
+    }
+    &--selected {
+      background: @multiselectOptionSelectedBgColor;
+      color: @multiselectOptionSelectedColor;
+      font-weight: bold;
+
+      &:after {
+        content: attr(data-selected);
+        font-weight: 300;
+        color: darken(@multiselectOptionSelectedBgColor, 20%);
+      }
+    }
+  }
+  &__option--selected.multiselect__option--highlight {
+    background: @multiselectOptionHighlightSelectedBgColor;
+    color: @multiselectOptionHighlightSelectedColor;
+    font-weight: lighter;
+
+    &:after {
+      content: attr(data-deselect);
+      color: @multiselectOptionHighlightSelectedColor;
+    }
+  }
+  &--disabled {
+    background: @multiselectDisabledBgColor;
+    pointer-events: none;
+
+    &__current,
+    &__select {
+      background: @multiselectDisabledBgColor;
+      color: @multiselectDisabledColor;
+    }
+  }
+  &__option--disabled {
+    background: @multiselectDisabledBgColor;
+    color: @multiselectDisabledColor;
+    cursor: text;
+    pointer-events: none;
+
+    &:visited {
+      color: @multiselectDisabledColor;
+    }
+
+    &:hover,
+    &:focus {
+      background: @multiselectDisabledOptionBgColor;
+    }
+  }
+  &-transition {
+    transition: all 0.3s ease;
+  }
+  &-enter,
+  &-leave {
+    opacity: 0;
+    max-height: 0 !important;
+  }
+}
