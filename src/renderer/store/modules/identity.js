@@ -27,6 +27,7 @@ function factory (tequilapi) {
         return newIdentity
       } catch (err) {
         commit(type.REQUEST_FAIL, err)
+
         throw (err)
       }
     },
