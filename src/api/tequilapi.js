@@ -9,7 +9,10 @@ export default function (teqAddr = 'http://localhost:4050') {
   const api = {
     identity: {
       list: async () => axioAdapter.get(idPath),
-      create: async (password) => axioAdapter.post(idPath, {password})
+      create: async (passphrase) => axioAdapter.post(idPath, {passphrase}),
+      unlock: async ({id, passphrase}) => {
+        axioAdapter.put(idPath + '/' + id + '/unlock', {passphrase})
+      }
     },
     proposal: {
       list: async () => axioAdapter.get(propPath)
@@ -30,8 +33,11 @@ function adapterFactory (teqAddr) {
       return res.data
     },
     async post (path, body) {
-      const prom = teqAxio.post(path, body)
-      const res = await prom
+      const res = await teqAxio.post(path, body)
+      return res.data
+    },
+    async put (path, data, params) {
+      const res = await teqAxio.put(path, data, {params})
       return res.data
     }
   }
