@@ -8,7 +8,8 @@
             </div>
             <div class="control__placeholder"/>
             <div class="control__bottom">
-                <country-select class="control__countries" :class="{'is-disabled': status!==-1}"/>
+                {{ country }}
+                <country-select class="control__countries" v-model="country" :class="{'is-disabled': status!==-1}"/>
                 <div class="control__action btn"
                      :class="{'btn--transparent':status===0||status===1}"
                      @click="connectAction"
@@ -56,11 +57,11 @@
     data () {
       return {
         hasError: false,
-        status: -1
+        status: -1,
+        country: null
       }
     },
     computed: {
-      // ...mapGetters(['status', 'loading', 'country']),
       statusTitle () {
         return 'Disconnected'
       },

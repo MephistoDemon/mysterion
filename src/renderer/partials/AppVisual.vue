@@ -47,7 +47,6 @@
     computed: {
       ...mapGetters(['loading', 'visual', 'route']),
       visualState () {
-        console.log(this.$router)
         var classes = []
         if (this.loading) {
           classes = ['is-loading', 'is-pulsing']
