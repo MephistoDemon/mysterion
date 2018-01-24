@@ -62,22 +62,11 @@ let rendererConfig = {
         use: 'node-loader'
       },
       {
-        test: /\.less$/,
-        exclude: /\.*/,
-        use: {
-          loader: 'less-loader'
-          // loaders: {
-          //   less: 'css-loader!less-loader'
-          // }
-        }
-      },
-      {
         test: /\.svg$/,
         exclude: /node_modules/,
         use: {
-          loader: 'vue-svg-loader', // `vue-svg` for webpack 1.x
+          loader: 'vue-svg-loader',
           options: {
-            // optional [svgo](https://github.com/svg/svgo) options
             svgo: {
               plugins: [
                 {removeDoctype: true},
