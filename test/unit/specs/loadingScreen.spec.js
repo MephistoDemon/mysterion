@@ -1,3 +1,4 @@
+/* eslint no-unused-expressions: 0 */
 import {expect} from 'chai'
 
 import Vue from 'vue'
@@ -7,7 +8,7 @@ import router from '@/router'
 import idStore from '@/store/modules/identity'
 import propStore from '@/store/modules/proposal'
 import mainStore from '@/store/modules/main'
-import loadingScreen from '@/components/LoadingScreen'
+import loadingScreen from '@/pages/Loading'
 import tequilAPI from '@/../api/tequilapi'
 
 import MockAdapter from 'axios-mock-adapter'
@@ -48,9 +49,9 @@ describe('loading screen', () => {
     vm = await mountComponent(tequilapi)
   })
 
-  it('renders and fetches data', () => {
-    expect(vm.$el.querySelector('.h4').textContent).to.equal('Loading')
-    expect(vm.$el.querySelector('.status').textContent).to.equal('success')
+  it('loads without errors', () => {
+    expect(vm.$store.state.main.init).to.eql('success')
+    expect(vm.$store.state.main.error).to.eql({})
   })
   it('assigns first fetched ID to state.tequilapi.currentId', () => {
     expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACE'})
@@ -73,11 +74,12 @@ describe('loading screen when no identities returned', () => {
     vm = await mountComponent(tequilapi)
   })
 
-  it('calls to create new identity and sets currentId', () => {
-    expect(vm.$el.querySelector('.status').textContent).to.equal('success')
-    expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACY'})
+  it('loads without errors', () => {
+    expect(vm.$store.state.main.init).to.eql('success')
+    expect(vm.$store.state.main.error).to.eql({})
   })
-  it('unlocks created identity', () => {
+  it('creates and unlocks identity', () => {
+    expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACY'})
     expect(vm.$store.state.identity.unlocked).to.be.true
   })
   it('sets store.main.newUser true', () => {
