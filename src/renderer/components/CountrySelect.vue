@@ -73,7 +73,6 @@
         if (typeof country === 'object') {
           return country.label
         }
-        // console.log(country)
       },
       imagePath (code) {
         if (!code) {
