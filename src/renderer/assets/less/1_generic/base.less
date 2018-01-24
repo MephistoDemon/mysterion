@@ -13,10 +13,7 @@ html {
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  // overflow: hidden;
-  // @media screen and (min-width: unit(@break, px)) {
-  //   font-size: ~'calc(@{vw} + @{fsz})';
-  // }
+
 }
 
 body,
@@ -25,15 +22,9 @@ body,
   margin: 0;
   background-color: @bg;
   color: @text;
-  font-size: @f;
+  font-size: @fontSize;
   position: relative;
-  line-height: 1.1;
   font-weight: 300;
-  // height: 100%;
-  // overflow: hidden;
-  // height: 100vh;
-  // width: 100vw;
-  position: relative;
   font-family: 'Ubuntu', sans-serif;
   ::-webkit-selection {
     color: @white;
@@ -63,14 +54,6 @@ a {
   }
 }
 
-table {
-  width: 100%;
-  border: solid 1px @greyDarker;
-  color: @greyDarker;
-  font-size: 1.1rem;
-  font-weight: 400;
-  line-height: 1.27;
-}
 thead {
   font-weight: 700;
   text-align: center;
@@ -86,17 +69,6 @@ td {
     background-color: @greyDarker;
     color: @white;
     border-bottom: solid 1px @white;
-  }
-}
-tbody {
-  tr {
-    &:last-child {
-      td {
-        &:first-child {
-          border-bottom: solid 1px @greyDarker;
-        }
-      }
-    }
   }
 }
 
@@ -137,18 +109,6 @@ h2 {
   font-size: 3rem;
 }
 
-h3 {
-}
-
-h4 {
-}
-
-h5 {
-}
-
-p {
-}
-
 svg:not(:root) {
   overflow: visible;
 }
@@ -156,26 +116,6 @@ svg:not(:root) {
 option {
   width: 100%;
   display: block;
-}
-
-blockquote {
-  margin: 3rem 0 0;
-  padding: 0.8rem 0;
-  color: @text;
-  font-family: 'Gotham', sans-serif;
-  text-align: center;
-  font-size: 2.4rem;
-  font-weight: 400;
-  line-height: 1.25;
-  background-size: 7.4rem 6rem;
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  @media @tablet {
-    background-size: 11.2rem 9rem;
-    margin-top: 2.1rem;
-    padding: 7.2rem 0;
-    font-size: 3rem;
-  }
 }
 
 ul {
