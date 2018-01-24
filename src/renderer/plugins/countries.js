@@ -1,4 +1,4 @@
-export default {
+const countries = {
   'aw': 'Aruba',
   'af': 'Afghanistan',
   'ao': 'Angola',
@@ -238,4 +238,16 @@ export default {
   'za': 'South Africa',
   'zm': 'Zambia',
   'zw': 'Zimbabwe'
+}
+
+function GetName (code) {
+  if (typeof countries[code] !== 'undefined') {
+    return countries[code]
+  }
+
+  return 'N/A'
+}
+
+export default {
+  GetName
 }

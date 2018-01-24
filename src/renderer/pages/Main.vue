@@ -7,7 +7,7 @@
         <div class="control__location">current IP:188.69.215.83 (USA)</div>
       </div>
       <div class="control__bottom">
-        <country-select class="control__countries" :class="{'is-disabled': status!==-1}"/>
+        <country-select v-model="country" class="control__countries" :class="{'is-disabled': status!==-1}"/>
         <div class="control__action btn"
              :class="{'btn--transparent':status===0||status===1}"
              @click="connectAction"
@@ -55,11 +55,11 @@
     data () {
       return {
         hasError: false,
-        status: -1
+        status: -1,
+        country: null
       }
     },
     computed: {
-      // ...mapGetters(['status', 'loading', 'country']),
       statusTitle () {
         return 'Disconnected'
       },

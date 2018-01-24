@@ -41,18 +41,20 @@ module.exports = config => {
     coverageReporter: {
       dir: './coverage',
       reporters: [
-        { type: 'lcov', subdir: '.' },
-        { type: 'text-summary' }
+        {type: 'lcov', subdir: '.'},
+        {type: 'text-summary'}
       ]
     },
     customLaunchers: {
       'visibleElectron': {
         base: 'Electron',
-        flags: ['--show']
+        flags: ['']
       }
     },
     frameworks: ['mocha', 'chai'],
-    files: ['../../test/unit/index.js'],
+    files: [
+      '../../test/unit/index.js',
+    ],
     preprocessors: {
       './index.js': ['webpack', 'sourcemap']
     },
