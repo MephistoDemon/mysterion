@@ -14,22 +14,13 @@ const getters = {
 }
 
 const mutations = {
-  [type.INIT_SUCCESS] (state) {
-    state.init = 'success'
-  },
-  [type.INIT_PENDING] (state) {
-    state.init = 'pending'
-  },
-  [type.INIT_FAIL] (state, err) {
-    state.init = 'fail'
-    state.error = err
-  },
-  [type.SET_NAV] (state, open) {
-    state.navOpen = open
-  },
-  [type.SET_VISUAL] (state, visual) {
-    state.visual = visual
-  }
+
+  [type.SET_NAV] (state, open) { state.navOpen = open },
+  [type.SET_VISUAL] (state, visual) { state.visual = visual },
+  [type.INIT_SUCCESS] (state) { state.init = 'success' },
+  [type.INIT_PENDING] (state) { state.init = 'pending' },
+  [type.INIT_FAIL] (state, err) { state.init = 'fail'; state.error = err },
+  [type.INIT_NEW_USER] (state) { state.newUser = true }
 }
 
 const actions = {
