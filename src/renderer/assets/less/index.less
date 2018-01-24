@@ -5,18 +5,10 @@
 @import '0_tools/variables';
 // easing function
 @import '0_tools/mixins/easings';
-// LESS responsive utilities generator
-/////// USAGE:
-/////// .generator(PROPERTY, VALUES, LABELS OR '', UNIT OR '', BREAKPOINTS OR '');
-// @import '0_tools/mixins/generator';
-// clearfix
-@import '0_tools/mixins/clearfix';
 //// GENERIC - all kind of resets, fonts and raw styling
 // Fonts
 @import '1_generic/fonts';
 // standard normalize import
-// @import '1_generic/normalize';
-// reset form inputs, box-sizing etc.
 @import '1_generic/reset';
 // global animation transition
 @import '1_generic/animations';
@@ -26,7 +18,6 @@
 @import '2_plugins/vendor/multiselect.less';
 // PLUGINS  - JS plugins custom styles
 @import '2_plugins/multiselect.less';
-// @import '2_plugins/flag-icon.less';
 // ELEMENTS - reusable/shared small UI pieces
 @import '3_elements/btn';
 @import '3_elements/burger';
@@ -50,12 +41,9 @@
 @import '6_pages/post';
 
 //// UTILITIES - functional styling
-@import '7_utilities/clearfix';
+//@import '7_utilities/clearfix';
 
 // //// HACKS
 // /////// Browser-specific hacks
-@import '8_hacks/ie';
-@import '8_hacks/ie8';
-@import '8_hacks/ios';
 // /////// Plain dirty hacks -- use this, when you don't know what youre doing
-@import '8_hacks/shame';
+//@import '8_hacks/shame';
