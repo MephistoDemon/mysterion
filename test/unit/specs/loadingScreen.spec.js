@@ -4,7 +4,6 @@ import {expect} from 'chai'
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import router from '@/router'
 import idStore from '@/store/modules/identity'
 import propStore from '@/store/modules/proposal'
 import mainStore from '@/store/modules/main'
@@ -31,8 +30,7 @@ async function mountComponent (tequilapi) {
   const vm = new Vue({
     template: '<div><test></test></div>',
     components: {'test': loadingScreen},
-    store,
-    router
+    store
   })
   await mountVM(vm)
   return vm
