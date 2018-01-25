@@ -1,0 +1,45 @@
+.status {
+	text-align: center;
+	padding: 1rem 3.8rem;
+	line-height: 1;
+	&__container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-content: stretch;
+    align-items: stretch;
+	}
+	&__block {
+    flex: 1 1 auto;
+    padding: 0.2rem 1rem;
+    position: relative;
+    &:before {
+    	content: '';
+    	position: absolute;
+    	width: 1px;
+    	top: 2.5rem;
+    	right: 0;
+    	bottom: 1.6rem;
+    	background-color: @greyLighter;
+    }
+    &:last-child {
+    	&:before {
+    		display: none;
+    	}
+    }
+	}
+	&__label {
+		color: @g8;
+		font-size: 1.6rem;
+		padding-bottom: 1rem;
+	}
+	&__value {
+		font-size: 3rem;
+		color: @main;
+	}
+	&__unit {
+		color: @grey;
+		font-size: 2.1rem;
+	}
+}

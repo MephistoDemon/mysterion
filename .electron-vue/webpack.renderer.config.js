@@ -3,7 +3,7 @@
 process.env.BABEL_ENV = 'renderer'
 
 const path = require('path')
-const { dependencies } = require('../package.json')
+const {dependencies} = require('../package.json')
 const webpack = require('webpack')
 
 const BabiliWebpackPlugin = require('babili-webpack-plugin')
@@ -62,6 +62,21 @@ let rendererConfig = {
         use: 'node-loader'
       },
       {
+        test: /\.svg$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'vue-svg-loader',
+          options: {
+            svgo: {
+              plugins: [
+                {removeDoctype: true},
+                {removeComments: true}
+              ]
+            }
+          }
+        }
+      },
+      {
         test: /\.vue$/,
         use: {
           loader: 'vue-loader',
@@ -69,13 +84,14 @@ let rendererConfig = {
             extractCSS: process.env.NODE_ENV === 'production',
             loaders: {
               sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1',
-              scss: 'vue-style-loader!css-loader!sass-loader'
+              scss: 'vue-style-loader!css-loader!sass-loader',
+              less: 'vue-style-loader!css-loader!less-loader'
             }
           }
         }
       },
       {
-        test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+        test: /\.(png|jpe?g|gif)(\?.*)?$/,
         use: {
           loader: 'url-loader',
           query: {

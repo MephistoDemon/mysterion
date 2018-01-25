@@ -1,0 +1,40 @@
+.btn {
+  transition: border-color 220ms @easeOutQuad,
+    background-color 220ms @easeOutQuad, color 220ms @easeOutQuad;
+  display: inline-block;
+  width: 100%;
+  border-radius: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  color: @white;
+  background-color: @main;
+  border: solid 2px @main;
+  position: relative;
+  text-decoration: none;
+  font-weight: 400;
+  padding: 0.5rem 1.8rem;
+  font-size: 2.6rem;
+  &:hover {
+    background-color: @mainLight;
+    border-color: @mainLight;
+  }
+  &--transparent {
+    background-color: transparent;
+    color: @main;
+    &:hover {
+      background-color: transparent;
+      color: @mainLight;
+      border-color: @mainLight;
+    }
+  }
+  &--black {
+    border-color: #000;
+    background-color: transparent;
+    color: #000;
+    &:hover {
+      background-color: transparent;
+      color: @mainLight;
+      border-color: @mainLight;
+    }
+  }
+}

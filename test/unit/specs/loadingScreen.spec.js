@@ -1,13 +1,13 @@
+/* eslint no-unused-expressions: 0 */
 import {expect} from 'chai'
 
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import router from '@/router'
 import idStore from '@/store/modules/identity'
 import propStore from '@/store/modules/proposal'
 import mainStore from '@/store/modules/main'
-import loadingScreen from '@/components/LoadingScreen'
+import loadingScreen from '@/pages/Loading'
 import tequilAPI from '@/../api/tequilapi'
 
 import MockAdapter from 'axios-mock-adapter'
@@ -30,8 +30,7 @@ async function mountComponent (tequilapi) {
   const vm = new Vue({
     template: '<div><test></test></div>',
     components: {'test': loadingScreen},
-    store,
-    router
+    store
   })
   await mountVM(vm)
   return vm
@@ -44,12 +43,13 @@ describe('loading screen', () => {
     const mock = new MockAdapter(tequilapi.__axio)
     mock.onGet('/proposals').reply(200, {proposals: [{id: '0xCEEDBEEF'}]})
     mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
+    mock.onPut('/identities/0xC001FACE/unlock').reply(200)
     vm = await mountComponent(tequilapi)
   })
 
-  it('renders and fetches data', () => {
-    expect(vm.$el.querySelector('.h4').textContent).to.equal('Loading')
-    expect(vm.$el.querySelector('.status').textContent).to.equal('success')
+  it('loads without errors', () => {
+    expect(vm.$store.state.main.init).to.eql('success')
+    expect(vm.$store.state.main.error).to.eql({})
   })
   it('assigns first fetched ID to state.tequilapi.currentId', () => {
     expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACE'})
@@ -68,11 +68,19 @@ describe('loading screen when no identities returned', () => {
     mock.onGet('/identities').replyOnce(200, {identities: []})
     mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
     mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
+    mock.onPut('/identities/0xC001FACY/unlock').replyOnce(200)
     vm = await mountComponent(tequilapi)
   })
 
-  it('calls to create new identity and sets currentId', () => {
-    expect(vm.$el.querySelector('.status').textContent).to.equal('success')
+  it('loads without errors', () => {
+    expect(vm.$store.state.main.init).to.eql('success')
+    expect(vm.$store.state.main.error).to.eql({})
+  })
+  it('creates and unlocks identity', () => {
     expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACY'})
+    expect(vm.$store.state.identity.unlocked).to.be.true
+  })
+  it('sets store.main.newUser true', () => {
+    expect(vm.$store.state.main.newUser).to.be.true
   })
 })

@@ -1,0 +1,25 @@
+.burger {
+  height: 2.4rem;
+  width: 3.5rem;
+  position: relative;
+  &__bar {
+    background-color: @g8;
+    display: block;
+    width: 3.5rem;
+    height: 0.5rem;
+    position: absolute;
+    top: 0.9rem;
+    left: 0;
+    &--1 {
+      transform: translate3d(0, -0.9rem, 0);
+      transition: transform 300ms @easeOutQuad;
+    }
+    &--2 {
+      transition: opacity 300ms @easeOutQuad;
+    }
+    &--3 {
+      transform: translate3d(0, 0.9rem, 0);
+      transition: transform 300ms @easeOutQuad;
+    }
+  }
+}

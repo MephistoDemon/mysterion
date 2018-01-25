@@ -1,0 +1,49 @@
+///////// ITCSS - https://www.xfive.co/blog/itcss-scalable-maintainable-css-architecture/
+@charset "utf-8";
+//// TOOLS - Global settings, variables and mixins
+// global variables
+@import '0_tools/variables';
+// easing function
+@import '0_tools/mixins/easings';
+//// GENERIC - all kind of resets, fonts and raw styling
+// Fonts
+@import '1_generic/fonts';
+// standard normalize import
+@import '1_generic/reset';
+// global animation transition
+@import '1_generic/animations';
+// raw element styling
+@import '1_generic/base';
+//// PLUGINS - VENDOR  - JS plugins common styles
+@import '2_plugins/vendor/multiselect.less';
+// PLUGINS  - JS plugins custom styles
+@import '2_plugins/multiselect.less';
+// ELEMENTS - reusable/shared small UI pieces
+@import '3_elements/btn';
+@import '3_elements/burger';
+@import '3_elements/close';
+@import '3_elements/error';
+// COMPONENTS - larger reusable/shared UI blocks
+@import '4_components/countries';
+@import '4_components/footer';
+@import '4_components/steps';
+@import '4_components/stats';
+@import '4_components/tutorial';
+// PARTIALS - layout chunks
+@import '5_partials/app';
+@import '5_partials/modal';
+@import '5_partials/nav';
+@import '5_partials/page';
+@import '5_partials/visual';
+
+// // PAGES - page-specific layouts
+@import '6_pages/control';
+@import '6_pages/post';
+
+//// UTILITIES - functional styling
+//@import '7_utilities/clearfix';
+
+// //// HACKS
+// /////// Browser-specific hacks
+// /////// Plain dirty hacks -- use this, when you don't know what youre doing
+//@import '8_hacks/shame';

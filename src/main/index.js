@@ -44,7 +44,7 @@ function createWindow () {
   */
   mainWindow = new BrowserWindow({
     height: 500,
-    width: 1000 // width for devtools, and suggested styles below
+    width: 500 // width for devtools, and suggested styles below
     // useContentSize: true,
     // frame: false,
     // titleBarStyle: 'hidden',
