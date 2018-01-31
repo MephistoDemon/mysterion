@@ -9,7 +9,7 @@
       <div class="control__bottom">
         <country-select v-model="country" class="control__countries" :class="{'is-disabled': status!==-1}"/>
         <div class="control__action btn"
-             :class="{'btn--transparent':status===0||status===1}"
+             :class="{'btn--transparent':status!==-1}"
              @click="connectAction"
              v-text="statusActionText"></div>
       </div>
@@ -46,6 +46,14 @@
 
 <script>
   import CountrySelect from '@/components/CountrySelect'
+  import type from '../store/types'
+  import {mapGetters} from 'vuex'
+  import config from '../config'
+
+  async function updateStatus (that) {
+    await that.$store.dispatch(type.CONNECTION_STATUS)
+    that.timeout = setTimeout(updateStatus.bind(null, that), config.statusUpdateTimeout)
+  }
 
   export default {
     name: 'Main',
@@ -55,13 +63,23 @@
     data () {
       return {
         hasError: false,
-        status: -1,
         country: null
       }
     },
     computed: {
+      ...mapGetters(['connectionStatus']),
+      status () {
+        switch (this.connectionStatus) {
+          case 'NotConnected': return -1
+          case 'Connecting': return 0
+          case 'Connected': return 1
+        }
+      },
       statusTitle () {
-        return 'Disconnected'
+        switch (this.connectionStatus) {
+          case 'NotConnected': return 'Disconnected'
+          default: return this.connectionStatus
+        }
       },
       statusActionText () {
         return 'Connect'
@@ -69,8 +87,16 @@
     },
     methods: {
       connectAction () {
-
+        if (this.status === 1) {
+          // connect
+        }
       }
+    },
+    mounted () {
+      updateStatus(this)
+    },
+    beforeDestroy () {
+      clearTimeout(this.timeout)
     }
   }
 </script>

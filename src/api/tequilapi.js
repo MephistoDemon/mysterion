@@ -2,6 +2,7 @@ import axios from 'axios'
 
 const idPath = '/identities'
 const propPath = '/proposals'
+const connectionPath = '/connection'
 const healthcheckPath = '/healthcheck'
 
 export default function (teqAddr = 'http://localhost:4050') {
@@ -16,6 +17,9 @@ export default function (teqAddr = 'http://localhost:4050') {
     },
     proposal: {
       list: async () => axioAdapter.get(propPath)
+    },
+    connection: {
+      status: async () => axioAdapter.get(connectionPath)
     },
     async healthcheck () {
       axioAdapter.get(healthcheckPath)

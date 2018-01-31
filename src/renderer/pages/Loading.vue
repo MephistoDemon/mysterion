@@ -2,6 +2,7 @@
 <script>
   import {mapState} from 'vuex'
   import type from '@/store/types'
+  import config from '@/config'
 
   async function identityGet ({dispatch, commit}) {
     const identities = await dispatch(type.IDENTITY_LIST)
@@ -26,9 +27,9 @@
         commit(type.IDENTITY_GET_SUCCESS, identity)
         await dispatch(type.IDENTITY_UNLOCK)
         await proposalPromise
-        commit(type.INIT_SUCCESS)
 
-        await delay(2000)
+        await delay(config.loadingScreenDelay)
+        commit(type.INIT_SUCCESS)
         this.$router.push('/main')
       } catch (err) {
         commit(type.INIT_FAIL, err)

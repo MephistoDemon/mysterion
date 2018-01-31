@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="app">
     <app-nav class="app__nav" v-if="!loading" />
-    <router-view class="app__page" v-if="!loading" />
+    <router-view class="app__page" />
     <transition name="fade" v-if="visual">
       <app-visual class="app__visual" />
     </transition>

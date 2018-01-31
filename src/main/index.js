@@ -43,12 +43,12 @@ function createWindow () {
   * Initial window options
   */
   mainWindow = new BrowserWindow({
-    height: 500,
-    width: 500 // width for devtools, and suggested styles below
+    height: 600,
+    width: (process.env.NODE_ENV === 'development') ? 1200 : 500, // width for devtools, and suggested styles below
+    resizable: false
     // useContentSize: true,
     // frame: false,
     // titleBarStyle: 'hidden',
-    // resizable: false
   })
 
   mainWindow.loadURL(winURL)
