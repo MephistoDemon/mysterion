@@ -1,15 +1,15 @@
 import fs from 'fs'
-import Sudo from 'sudo-prompt'
+import sudo from 'sudo-prompt'
 import path from 'path'
 
 const DaemonDirectory = '/Library/LaunchDaemons'
 const PropertyListFile = 'net.mysterium.client.mysteriumclient'
 
 class Daemon {
-  constructor (workingDir, logDir, clientPath) {
+  constructor (tempDir, logDir, clientPath) {
     this.logDir = logDir
     this.clientPath = clientPath
-    this.workingDir = workingDir
+    this.tempDir = tempDir
   }
 
   exists () {
@@ -60,18 +60,22 @@ class Daemon {
   }
 
   install () {
-    let tempPlistFile = path.join(this.workingDir, 'mysterium.plist')
-
-    fs.writeFileSync(tempPlistFile, this.template())
+    let tempPlistFile = path.join(this.tempDir, 'mysterium.plist')
 
     let command = `sh -c 'cp ${tempPlistFile} ${this.getDaemonFileName()} && launchctl load ${this.getDaemonFileName()}'`
-    return new Promise((resolve, reject) => {
-      Sudo.exec(command, {name: 'Mysterion'}, (error, stdout, stderr) => {
-        fs.unlink(tempPlistFile)
-        if (error) {
-          return reject(error)
+
+    return new Promise(async (resolve, reject) => {
+      await fs.writeFile(tempPlistFile, this.template(), (err) => {
+        if (err) {
+          reject(new Error('Could not create a temp plist file.'))
         }
-        return resolve(stdout)
+
+        sudo.exec(command, {name: 'Mysterion'}, (error, stdout, stderr) => {
+          if (error) {
+            return reject(error)
+          }
+          return resolve(stdout)
+        })
       })
     })
   }

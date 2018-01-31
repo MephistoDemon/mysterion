@@ -6,6 +6,7 @@ import path from 'path'
 import config from './config'
 // import state from '../renderer/store'
 import Daemon from '../libraries/osx/daemon'
+import http from 'http'
 
 config(global) // sets some global variables, path to mystClient binary etc
 
@@ -60,22 +61,32 @@ function createWindow () {
 }
 
 app.on('ready', async () => {
-  createWindow()
-  createTray()
-  if (os.platform() === 'darwin') {
-    let daemon = new Daemon(
-      '/tmp',
-      '/var/log/net.mysterium.client.mysteriumclient',
-      '/Users/ignas/Code/go/src/github.com/mysterium/node/build/client/mysterium_client'
-    )
+  if (os.platform() !== 'darwin') {
+    createWindow()
+    createTray()
+    return
+  }
 
-    if (!daemon.exists()) {
-      daemon.install().then(out => {
-        console.log('it worked!', out)
-      }).catch((err) => {
-        console.log('ERROR', err)
-      })
-    }
+  let daemon = new Daemon(
+    app.getPath('temp'),
+    app.getPath('userData'),
+    global.__mysteriumClientBin
+  )
+
+  if (!daemon.exists()) {
+    daemon.install().then(() => {
+      // hack to spawn mysterium_client before the window is rendered
+      http.get('http://127.0.0.1:4050')
+      createWindow()
+      createTray()
+    }).catch((error) => {
+      console.error(error)
+      app.quit()
+    })
+  } else {
+    http.get('http://127.0.0.1:4050')
+    createWindow()
+    createTray()
   }
 })
 
