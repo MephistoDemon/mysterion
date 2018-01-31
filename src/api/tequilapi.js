@@ -19,7 +19,9 @@ export default function (teqAddr = 'http://localhost:4050') {
       list: async () => axioAdapter.get(propPath)
     },
     connection: {
-      status: async () => axioAdapter.get(connectionPath)
+      status: async () => axioAdapter.get(connectionPath),
+      ip: async () => axioAdapter.get(connectionPath + '/ip'),
+      statistics: async () => axioAdapter.get(connectionPath + '/statistics')
     },
     async healthcheck () {
       axioAdapter.get(healthcheckPath)
