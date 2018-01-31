@@ -4,7 +4,7 @@ const idPath = '/identities'
 const propPath = '/proposals'
 const healthcheckPath = '/healthcheck'
 
-export default function (teqAddr = 'http://localhost:4050') {
+export default function (teqAddr = 'http://127.0.0.1:4050') {
   const {teqAxio, axioAdapter} = adapterFactory(teqAddr)
   const api = {
     identity: {

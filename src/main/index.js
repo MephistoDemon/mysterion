@@ -1,14 +1,15 @@
 'use strict'
 
-import { app, BrowserWindow, Tray, Menu } from 'electron'
+import {app, BrowserWindow, Tray, Menu} from 'electron'
+import os from 'os'
 import path from 'path'
 import config from './config'
-import mystClient from './mystProcess'
-import state from '../renderer/store'
+// import state from '../renderer/store'
+import Daemon from '../libraries/osx/daemon'
 
 config(global) // sets some global variables, path to mystClient binary etc
 
-let mystProcess
+// let mystProcess
 let mainWindow
 let tray
 const winURL = process.env.NODE_ENV === 'development'
@@ -40,11 +41,11 @@ function createTray () {
 
 function createWindow () {
   /**
-  * Initial window options
-  */
+   * Initial window options
+   */
   mainWindow = new BrowserWindow({
-    height: 500,
-    width: 500 // width for devtools, and suggested styles below
+    height: 1000,
+    width: 1000 // width for devtools, and suggested styles below
     // useContentSize: true,
     // frame: false,
     // titleBarStyle: 'hidden',
@@ -58,11 +59,24 @@ function createWindow () {
   })
 }
 
-app.on('ready', () => {
+app.on('ready', async () => {
   createWindow()
   createTray()
-  mystProcess = mystClient.spawn()
-  routeLogsFromMystClientToState(mystProcess, state)
+  if (os.platform() === 'darwin') {
+    let daemon = new Daemon(
+      '/tmp',
+      '/var/log/net.mysterium.client.mysteriumclient',
+      '/Users/ignas/Code/go/src/github.com/mysterium/node/build/client/mysterium_client'
+    )
+
+    if (!daemon.exists()) {
+      daemon.install().then(out => {
+        console.log('it worked!', out)
+      }).catch((err) => {
+        console.log('ERROR', err)
+      })
+    }
+  }
 })
 
 app.on('window-all-closed', () => {
@@ -72,7 +86,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('before-quit', () => {
-  mystProcess.kill('SIGTERM')
+  // mystProcess.kill('SIGTERM')
 })
 
 app.on('activate', () => {
@@ -80,18 +94,6 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
-function routeLogsFromMystClientToState (mystProcess, state) {
-  mystProcess.stdout.on('data', (data) => {
-    state.commit('LOG_INFO', data)
-  })
-  mystProcess.stderr.on('data', (data) => {
-    state.commit('LOG_ERROR', data)
-  })
-  mystProcess.on('close', (data) => {
-    state.commit('MYST_PROCESS_CLOSE', data)
-  })
-}
 
 /**
  * Auto Updater
