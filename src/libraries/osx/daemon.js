@@ -59,8 +59,12 @@ class Daemon {
 
   install () {
     let tempPlistFile = path.join(this.tempDir, 'mysterium.plist')
-
-    let command = `sh -c 'cp ${tempPlistFile} ${this.getDaemonFileName()} && launchctl load ${this.getDaemonFileName()}'`
+    let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
+    let command = `sh -c '
+      cp ${tempPlistFile} ${this.getDaemonFileName()} \
+      && launchctl load ${this.getDaemonFileName()} \
+      && launchctl setenv PATH "${envPath}" \
+    '`
 
     return new Promise(async (resolve, reject) => {
       await fs.writeFile(tempPlistFile, this.template(), (err) => {
@@ -68,7 +72,7 @@ class Daemon {
           reject(new Error('Could not create a temp plist file.'))
         }
 
-        sudo.exec(command, {name: 'Mysterion'}, (error, stdout, stderr) => {
+        sudo.exec(command.replace(/\n/, ''), {name: 'Mysterion'}, (error, stdout, stderr) => {
           if (error) {
             return reject(error)
           }
