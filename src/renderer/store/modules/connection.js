@@ -14,32 +14,11 @@ const state = {
 }
 
 const getters = {
+  status: state => state.status,
   connection: state => state,
   ip: state => state.ip,
-  isConnected: (state) => {
-    return state.status === 'Connected'
-  },
-  isDisconnected: state => state.status === 'NotConnected',
-  isConnecting: state => (state.status === 'Connecting'),
-  isDisconnecting: state => (state.status === 'Disconnecting'),
-  buttonText: (state) => {
-    let text = 'Connect'
-    switch (state.status) {
-      case 'Connected':
-        text = 'Disconnect'
-        break
-      case 'Connecting':
-        text = 'Connecting'
-        break
-      case 'NotConnected':
-        text = 'Connect'
-        break
-      case 'Disconnecting':
-        text = 'Disconnecting'
-        break
-    }
-    return text
-  }
+  isConnected: state => state.status === 'Connected',
+  isDisconnected: state => state.status === 'NotConnected'
 }
 
 const mutations = {
