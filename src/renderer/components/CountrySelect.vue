@@ -61,7 +61,14 @@
     },
     computed: {
       ...mapState({
-        countries: (state) => state.proposal.list.map(proposalToCountry)
+        countries: (state) => {
+          let countries = []
+          if (typeof state.proposal.list !== 'undefined') {
+            countries = state.proposal.list.map(proposalToCountry)
+          }
+
+          return countries
+        }
       })
     },
     methods: {

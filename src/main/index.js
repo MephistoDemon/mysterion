@@ -9,7 +9,6 @@ import Daemon from '../libraries/osx/daemon'
 import http from 'http'
 
 config(global) // sets some global variables, path to mystClient binary etc
-
 // let mystProcess
 let mainWindow
 let tray
@@ -66,7 +65,6 @@ app.on('ready', async () => {
     createTray()
     return
   }
-
   let daemon = new Daemon(
     app.getPath('temp'),
     app.getPath('userData'),

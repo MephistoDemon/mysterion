@@ -27,6 +27,12 @@ const mutations = {
   }
 }
 
+const getters = {
+  currentIdentity (state) {
+    return state.current.id
+  }
+}
+
 const getPassword = async () => ''
 
 function factory (tequilapi) {
@@ -66,7 +72,8 @@ function factory (tequilapi) {
   return {
     state,
     mutations,
-    actions
+    actions,
+    getters
   }
 }
 

@@ -42,8 +42,6 @@ class Daemon {
                         <string>4050</string>
                     </dict>
              </dict>
-             <key>Debug</key>
-             <true/>
             <key>inetdCompatibility</key>
             <dict>
              <key>Wait</key>
