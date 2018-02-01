@@ -21,23 +21,7 @@
               <i class="error__close close close--s close--white" @click="hasError=false"></i>
             </div>
           </transition>
-          <div class="stats__container">
-            <div class="stats__block">
-              <div class="stats__label">TIME</div>
-              <div class="stats__value">{{connection.stats.duration}}</div>
-              <div class="stats__unit">H:M:S</div>
-            </div>
-            <div class="stats__block">
-              <div class="stats__label">DOWNLOADED</div>
-              <div class="stats__value">{{connection.stats.bytesReceived}}</div>
-              <div class="stats__unit">MB</div>
-            </div>
-            <div class="stats__block">
-              <div class="stats__label">UPLOADED</div>
-              <div class="stats__value">{{connection.stats.bytesSent}}</div>
-              <div class="stats__unit">MB</div>
-            </div>
-          </div>
+          <stats-display :connection="connection"/>
         </div>
       </div>
     </div>
@@ -49,6 +33,7 @@
   import type from '../store/types'
   import {mapGetters} from 'vuex'
   import config from '../config'
+  import StatsDisplay from '../components/StatsDisplay'
 
   async function updateStatusRun (that) {
     await that.$store.dispatch(type.CONNECTION_STATUS)
@@ -58,6 +43,7 @@
   export default {
     name: 'Main',
     components: {
+      StatsDisplay,
       CountrySelect
     },
     data () {

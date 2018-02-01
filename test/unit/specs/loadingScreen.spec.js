@@ -3,6 +3,7 @@ import {expect} from 'chai'
 
 import Vue from 'vue'
 import Vuex from 'vuex'
+import Router from 'vue-router'
 
 import idStore from '@/store/modules/identity'
 import propStore from '@/store/modules/proposal'
@@ -11,9 +12,13 @@ import loadingScreen from '@/pages/Loading'
 import tequilAPI from '@/../api/tequilapi'
 
 import MockAdapter from 'axios-mock-adapter'
+import config from '@/config'
 
 Vue.use(Vuex)
+Vue.use(Router)
 
+const router = new Router({routes: []})
+const delay = time => new Promise(resolve => setTimeout(() => resolve(), time))
 const mountVM = async (vm) => {
   await vm.$mount()
 }
@@ -30,7 +35,8 @@ async function mountComponent (tequilapi) {
   const vm = new Vue({
     template: '<div><test></test></div>',
     components: {'test': loadingScreen},
-    store
+    store,
+    router
   })
   await mountVM(vm)
   return vm
@@ -47,8 +53,9 @@ describe('loading screen', () => {
     vm = await mountComponent(tequilapi)
   })
 
-  it('loads without errors', () => {
-    expect(vm.$store.state.main.init).to.eql('success')
+  it('loads without errors', async () => {
+    await delay(config.loadingScreenDelay)
+    expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
     expect(vm.$store.state.main.error).to.eql({})
   })
   it('assigns first fetched ID to state.tequilapi.currentId', () => {
@@ -56,6 +63,9 @@ describe('loading screen', () => {
   })
   it('fetches & assigns proposals[] to state.tequilapi.proposals', () => {
     expect(vm.$store.state.proposal.list).to.eql([{id: '0xCEEDBEEF'}])
+  })
+  it('routes to main', () => {
+    expect(vm.$route.path).to.be.eql('/main')
   })
 })
 
@@ -72,8 +82,9 @@ describe('loading screen when no identities returned', () => {
     vm = await mountComponent(tequilapi)
   })
 
-  it('loads without errors', () => {
-    expect(vm.$store.state.main.init).to.eql('success')
+  it('loads without errors', async () => {
+    await delay(config.loadingScreenDelay)
+    expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
     expect(vm.$store.state.main.error).to.eql({})
   })
   it('creates and unlocks identity', () => {
@@ -82,5 +93,8 @@ describe('loading screen when no identities returned', () => {
   })
   it('sets store.main.newUser true', () => {
     expect(vm.$store.state.main.newUser).to.be.true
+  })
+  it('routes to main', () => {
+    expect(vm.$route.path).to.be.eql('/main')
   })
 })

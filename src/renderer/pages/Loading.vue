@@ -32,6 +32,7 @@
         commit(type.INIT_SUCCESS)
         this.$router.push('/main')
       } catch (err) {
+        console.log(err.stack)
         commit(type.INIT_FAIL, err)
         throw (err)
       }
