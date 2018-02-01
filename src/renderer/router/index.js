@@ -78,10 +78,6 @@ const router = new Router({
         visual: 'quit'
       },
       component: TutorialDecentralized4
-    },
-    {
-      path: '*',
-      redirect: '/'
     }
   ]
 })

@@ -2,9 +2,10 @@ import axios from 'axios'
 
 const idPath = '/identities'
 const propPath = '/proposals'
+const conPath = '/connection'
 const healthcheckPath = '/healthcheck'
 
-export default function (teqAddr = 'http://localhost:4050') {
+export default function (teqAddr = 'http://127.0.0.1:4050') {
   const {teqAxio, axioAdapter} = adapterFactory(teqAddr)
   const api = {
     identity: {
@@ -16,6 +17,13 @@ export default function (teqAddr = 'http://localhost:4050') {
     },
     proposal: {
       list: async () => axioAdapter.get(propPath)
+    },
+    connection: {
+      connect: async ({identity, nodeId}) => axioAdapter.put(conPath, {
+        identity: identity,
+        nodeKey: nodeId
+      }),
+      disconnect: async () => axioAdapter.delete(conPath)
     },
     async healthcheck () {
       axioAdapter.get(healthcheckPath)
@@ -38,6 +46,10 @@ function adapterFactory (teqAddr) {
     },
     async put (path, data, params) {
       const res = await teqAxio.put(path, data, {params})
+      return res.data
+    },
+    async delete (path) {
+      const res = await teqAxio.delete(path)
       return res.data
     }
   }
