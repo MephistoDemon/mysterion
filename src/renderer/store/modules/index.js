@@ -1,9 +1,9 @@
 import main from './main'
+import connection from './connection'
 import mystCli from './mystProcess'
 import identity from './identity'
 import proposal from './proposal'
 import tequilAPI from '../../../api/tequilapi'
-import connection from './connection'
 
 const tequilapi = tequilAPI()
 

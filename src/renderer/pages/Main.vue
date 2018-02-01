@@ -8,10 +8,8 @@
       </div>
       <div class="control__bottom">
         <country-select v-model="country" class="control__countries" :class="{'is-disabled': status!==-1}"/>
-        <div class="control__action btn"
-             :class="{'btn--transparent':status!==-1}"
-             @click="connectAction"
-             v-text="statusActionText"></div>
+        {{country}}
+        <connection-button :node-id="nodeIdentity"></connection-button>
       </div>
       <div class="control__footer">
         <div class="footer__stats stats">
@@ -34,6 +32,7 @@
   import {mapGetters} from 'vuex'
   import config from '../config'
   import StatsDisplay from '../components/StatsDisplay'
+  import ConnectionButton from '@/components/ConnectionButton'
 
   async function updateStatusRun (that) {
     await that.$store.dispatch(type.CONNECTION_STATUS)
@@ -43,8 +42,9 @@
   export default {
     name: 'Main',
     components: {
-      StatsDisplay,
-      CountrySelect
+      CountrySelect,
+      ConnectionButton,
+      StatsDisplay
     },
     data () {
       return {
@@ -53,7 +53,7 @@
       }
     },
     computed: {
-      ...mapGetters(['connection', 'ip']),
+      ...mapGetters(['connection', 'ip', 'statusText']),
       status () {
         switch (this.connection.status) {
           case 'NotConnected': return -1
@@ -67,12 +67,13 @@
           default: return this.connection.status
         }
       },
-      statusActionText () {
-        return 'Connect'
+      nodeIdentity () {
+        return this.country ? this.country.id : ''
       }
     },
     methods: {
       connectAction () {
+        // TODO: HANDLE THIS WITH CONNECT ACTION
         if (this.status === -1) {
           updateStatusRun(this)
         }

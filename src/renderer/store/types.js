@@ -40,4 +40,5 @@ export default {
 
   SET_NAV: 'SET_NAV',
   SET_VISUAL: 'SET_VISUAL'
+
 }

@@ -1,14 +1,13 @@
 'use strict'
 
-import { app, BrowserWindow, Tray, Menu } from 'electron'
+import {app, BrowserWindow, Tray, Menu} from 'electron'
+import os from 'os'
 import path from 'path'
 import config from './config'
-import mystClient from './mystProcess'
-import state from '../renderer/store'
+import Daemon from '../libraries/osx/daemon'
+import http from 'http'
 
 config(global) // sets some global variables, path to mystClient binary etc
-
-let mystProcess
 let mainWindow
 let tray
 const winURL = process.env.NODE_ENV === 'development'
@@ -58,11 +57,33 @@ function createWindow () {
   })
 }
 
-app.on('ready', () => {
-  createWindow()
-  createTray()
-  mystProcess = mystClient.spawn()
-  routeLogsFromMystClientToState(mystProcess, state)
+app.on('ready', async () => {
+  if (os.platform() !== 'darwin') {
+    createWindow()
+    createTray()
+    return
+  }
+  let daemon = new Daemon(
+    app.getPath('temp'),
+    app.getPath('userData'),
+    global.__mysteriumClientBin
+  )
+
+  if (!daemon.exists()) {
+    daemon.install().then(() => {
+      // hack to spawn mysterium_client before the window is rendered
+      http.get('http://127.0.0.1:4050')
+      createWindow()
+      createTray()
+    }).catch((error) => {
+      console.error(error)
+      app.quit()
+    })
+  } else {
+    http.get('http://127.0.0.1:4050')
+    createWindow()
+    createTray()
+  }
 })
 
 app.on('window-all-closed', () => {
@@ -72,7 +93,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('before-quit', () => {
-  mystProcess.kill('SIGTERM')
+  // mystProcess.kill('SIGTERM')
 })
 
 app.on('activate', () => {
@@ -80,18 +101,6 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
-function routeLogsFromMystClientToState (mystProcess, state) {
-  mystProcess.stdout.on('data', (data) => {
-    state.commit('LOG_INFO', data)
-  })
-  mystProcess.stderr.on('data', (data) => {
-    state.commit('LOG_ERROR', data)
-  })
-  mystProcess.on('close', (data) => {
-    state.commit('MYST_PROCESS_CLOSE', data)
-  })
-}
 
 /**
  * Auto Updater
