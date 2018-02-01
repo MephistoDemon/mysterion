@@ -74,7 +74,7 @@ app.on('ready', async () => {
   if (!daemon.exists()) {
     daemon.install().then(() => {
       // hack to spawn mysterium_client before the window is rendered
-      http.get('http://127.0.0.1:4050')
+      http.get('http://127.0.0.1:4050', function () {})
       createWindow()
       createTray()
     }).catch((error) => {
@@ -82,7 +82,7 @@ app.on('ready', async () => {
       app.quit()
     })
   } else {
-    http.get('http://127.0.0.1:4050')
+    http.get('http://127.0.0.1:4050', function () {})
     createWindow()
     createTray()
   }
