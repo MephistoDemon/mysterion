@@ -23,7 +23,10 @@ export default function (teqAddr = 'http://127.0.0.1:4050') {
         identity: identity,
         nodeKey: nodeId
       }),
-      disconnect: async () => axioAdapter.delete(conPath)
+      disconnect: async () => axioAdapter.delete(conPath),
+      status: async () => axioAdapter.get(conPath),
+      ip: async () => axioAdapter.get(conPath + '/ip'),
+      statistics: async () => axioAdapter.get(conPath + '/statistics')
     },
     async healthcheck () {
       axioAdapter.get(healthcheckPath)

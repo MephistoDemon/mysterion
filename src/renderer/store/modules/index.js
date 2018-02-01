@@ -9,9 +9,8 @@ const tequilapi = tequilAPI()
 
 export default {
   main,
-  connection: connection(tequilapi),
+  connection,
   identity: identity(tequilapi),
   proposal: proposal(tequilapi),
   myst_cli: mystCli(tequilapi)
-
 }

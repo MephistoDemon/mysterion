@@ -2,7 +2,7 @@ import type from '../types'
 
 const state = {
   error: null,
-  list: null
+  list: []
 }
 
 const mutations = {

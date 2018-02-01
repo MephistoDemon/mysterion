@@ -23,19 +23,38 @@
     },
     computed: {
       ...mapGetters({
-        isConnecting: 'isConnecting',
-        isDisconnecting: 'isDisconnecting',
-        buttonText: 'buttonText',
+        status: 'status',
         identity: 'currentIdentity'
-      })
+      }),
+      buttonText: (comp) => {
+        let text = 'Connect'
+        switch (comp.$store.getters.status) {
+          case 'Connected':
+            text = 'Disconnect'
+            break
+          case 'Connecting':
+            text = 'Connecting'
+            break
+          case 'NotConnected':
+            text = 'Connect'
+            break
+          case 'Disconnecting':
+            text = 'Disconnecting'
+            break
+        }
+        return text
+      },
+      isConnecting: comp => comp.$store.getters.status === 'Connecting',
+      isDisconnecting: comp => comp.$store.getters.status === 'Disconnecting',
+      isConnected: comp => comp.$store.getters.status === 'Connected'
     },
     methods: {
       connect: function () {
-        if (this.$store.getters.isConnecting || this.$store.getters.isDisconnecting) {
+        if (this.isConnecting || this.isDisconnecting) {
           return
         }
 
-        if (this.$store.getters.isConnected) {
+        if (this.isConnected) {
           this.$store.dispatch('disconnect')
           return
         }

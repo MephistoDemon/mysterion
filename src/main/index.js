@@ -4,12 +4,10 @@ import {app, BrowserWindow, Tray, Menu} from 'electron'
 import os from 'os'
 import path from 'path'
 import config from './config'
-// import state from '../renderer/store'
 import Daemon from '../libraries/osx/daemon'
 import http from 'http'
 
 config(global) // sets some global variables, path to mystClient binary etc
-// let mystProcess
 let mainWindow
 let tray
 const winURL = process.env.NODE_ENV === 'development'
@@ -41,15 +39,15 @@ function createTray () {
 
 function createWindow () {
   /**
-   * Initial window options
-   */
+  * Initial window options
+  */
   mainWindow = new BrowserWindow({
-    height: 1000,
-    width: 1000 // width for devtools, and suggested styles below
+    height: 600,
+    width: (process.env.NODE_ENV === 'development') ? 1200 : 500, // width for devtools, and suggested styles below
+    resizable: false
     // useContentSize: true,
     // frame: false,
     // titleBarStyle: 'hidden',
-    // resizable: false
   })
 
   mainWindow.loadURL(winURL)

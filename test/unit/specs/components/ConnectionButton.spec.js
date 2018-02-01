@@ -20,7 +20,7 @@ const mountWithStore = function () {
         }
       },
       connection: {
-        ...conStore(null),
+        ...conStore,
         actions: {
           connect ({commit}, identity, nodeId) {
             commit(type.CONNECTION_STATUS, 'Connected')

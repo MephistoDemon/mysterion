@@ -1,92 +1,89 @@
 import type from '../types'
+import tequilAPI from '../../../api/tequilapi'
+
+const tequilapi = tequilAPI()
 
 const state = {
-  status: ''
-}
-
-const getters = {
-  isConnected: (state) => {
-    return state.status === 'Connected'
-  },
-  isDisconnected: state => state.status === 'NotConnected',
-  isConnecting: state => (state.status === 'Connecting'),
-  isDisconnecting: state => (state.status === 'Disconnecting'),
-  buttonText: (state) => {
-    let text = 'Connect'
-    switch (state.status) {
-      case 'Connected':
-        text = 'Disconnect'
-        break
-      case 'Connecting':
-        text = 'Connecting'
-        break
-      case 'NotConnected':
-        text = 'Connect'
-        break
-      case 'Disconnecting':
-        text = 'Disconnecting'
-        break
-    }
-
-    return text
-  },
-  statusText: (state) => {
-    let text = 'Disconnected'
-    switch (state.status) {
-      case 'Connected':
-        text = 'Connected'
-        break
-      case 'Connecting':
-        text = 'Connecting'
-        break
-      case 'NotConnected':
-        text = 'Disconnected'
-        break
-      case 'Disconnecting':
-        text = 'Disconnecting'
-        break
-    }
-
-    return text
+  ip: null,
+  status: 'NotConnected',
+  stats: {
+    bytesReceived: '-;-',
+    bytesSent: '@__@',
+    duration: 'u.u'
   }
 }
 
+const getters = {
+  status: state => state.status,
+  connection: state => state,
+  ip: state => state.ip,
+  isConnected: state => state.status === 'Connected',
+  isDisconnected: state => state.status === 'NotConnected'
+}
+
 const mutations = {
+  [type.CONNECTION_IP_SET] (state, data) {
+    state.ip = data.ip
+  },
+  [type.CONNECTION_STATUS_SET] (state, data) {
+    state.status = data.status
+    state.stats = data.stats
+    state.ip = data.ip
+  },
   [type.CONNECTION_STATUS] (state, status) {
     state.status = status
   }
 }
 
-function factory (tequilapi) {
-  const actions = {
-    async connect ({commit}, identity, nodeId) {
-      try {
-        const res = await tequilapi.connection.connect(identity, nodeId)
-        commit(type.CONNECTION_STATUS, res.status)
-        return res
-      } catch (err) {
-        commit(type.REQUEST_FAIL, err)
-        throw (err)
-      }
-    },
-    async disconnect ({commit}) {
-      try {
-        const res = await tequilapi.connection.disconnect()
-        commit(type.CONNECTION_STATUS, res.status)
-        return res
-      } catch (err) {
-        commit(type.REQUEST_FAIL, err)
-        throw (err)
-      }
+const actions = {
+  async [type.CONNECTION_IP_GET] ({commit}) {
+    try {
+      const res = await tequilapi.connection.ip()
+      commit(type.CONNECTION_IP_SET, res)
+      return res.ip
+    } catch (err) {
+      commit(type.REQUEST_FAIL, err)
+      throw err
     }
-  }
+  },
+  async [type.CONNECTION_STATUS] ({commit}) {
+    try {
+      const statusPromise = tequilapi.connection.status()
+      const statsPromise = tequilapi.connection.statistics()
+      const ipPromise = tequilapi.connection.ip()
+      const [status, stats, ip] = await Promise.all([statusPromise, statsPromise, ipPromise])
+      commit(type.CONNECTION_STATUS_SET, {status: status.status, stats, ip: ip.ip})
+    } catch (err) {
+      commit(type.REQUEST_FAIL, err)
+      throw (err)
+    }
+  },
 
-  return {
-    state,
-    mutations,
-    getters,
-    actions
+  async connect ({commit}, identity, nodeId) {
+    try {
+      const res = await tequilapi.connection.connect(identity, nodeId)
+      commit(type.CONNECTION_STATUS, res.status)
+      return res
+    } catch (err) {
+      commit(type.REQUEST_FAIL, err)
+      throw (err)
+    }
+  },
+  async disconnect ({commit}) {
+    try {
+      const res = await tequilapi.connection.disconnect()
+      commit(type.CONNECTION_STATUS, res.status)
+      return res
+    } catch (err) {
+      commit(type.REQUEST_FAIL, err)
+      throw (err)
+    }
   }
 }
 
-export default factory
+export default {
+  state,
+  mutations,
+  actions,
+  getters
+}
