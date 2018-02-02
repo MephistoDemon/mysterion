@@ -30,14 +30,8 @@
   import CountrySelect from '@/components/CountrySelect'
   import type from '../store/types'
   import {mapGetters} from 'vuex'
-  import config from '../config'
   import StatsDisplay from '../components/StatsDisplay'
   import ConnectionButton from '@/components/ConnectionButton'
-
-  async function updateStatusRun (that) {
-    await that.$store.dispatch(type.CONNECTION_STATUS)
-    that.timeout = setTimeout(updateStatusRun.bind(null, that), config.statusUpdateTimeout)
-  }
 
   export default {
     name: 'Main',
@@ -71,19 +65,10 @@
         return this.country ? this.country.id : ''
       }
     },
-    methods: {
-      connectAction () {
-        // TODO: HANDLE THIS WITH CONNECT ACTION
-        if (this.status === -1) {
-          updateStatusRun(this)
-        }
-      }
-    },
     mounted () {
-      this.$store.dispatch(type.CONNECTION_IP_GET)
+      this.$store.dispatch(type.CONNECTION_IP)
     },
     beforeDestroy () {
-      clearTimeout(this.timeout)
     }
   }
 </script>
