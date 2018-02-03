@@ -14,9 +14,9 @@
       <div class="control__footer">
         <div class="footer__stats stats">
           <transition name="slide-up">
-            <div class="stats__error error" v-if="hasError">
-              <div class="error__text">Error message: Ups! We did it again!</div>
-              <i class="error__close close close--s close--white" @click="hasError=false"></i>
+            <div class="stats__error error" v-if="showReqErr">
+              <div class="error__text">{{requestErr.message}}</div>
+              <i class="error__close close close--s close--white" @click="hideErr()"></i>
             </div>
           </transition>
           <stats-display :connection="connection"/>
@@ -29,31 +29,26 @@
 <script>
   import CountrySelect from '@/components/CountrySelect'
   import type from '../store/types'
-  import {mapGetters} from 'vuex'
-  import config from '../config'
+  import {mapGetters, mapMutations} from 'vuex'
   import StatsDisplay from '../components/StatsDisplay'
   import ConnectionButton from '@/components/ConnectionButton'
-
-  async function updateStatusRun (that) {
-    await that.$store.dispatch(type.CONNECTION_STATUS)
-    that.timeout = setTimeout(updateStatusRun.bind(null, that), config.statusUpdateTimeout)
-  }
+  import AppError from '@/partials/AppError'
 
   export default {
     name: 'Main',
     components: {
       CountrySelect,
       ConnectionButton,
-      StatsDisplay
+      StatsDisplay,
+      AppError
     },
     data () {
       return {
-        hasError: false,
         country: null
       }
     },
     computed: {
-      ...mapGetters(['connection', 'ip', 'statusText']),
+      ...mapGetters(['connection', 'ip', 'statusText', 'requestErr', 'showReqErr']),
       status () {
         switch (this.connection.status) {
           case 'NotConnected': return -1
@@ -72,18 +67,12 @@
       }
     },
     methods: {
-      connectAction () {
-        // TODO: HANDLE THIS WITH CONNECT ACTION
-        if (this.status === -1) {
-          updateStatusRun(this)
-        }
-      }
+      ...mapMutations({ hideErr: type.HIDE_REQ_ERR })
     },
     mounted () {
-      this.$store.dispatch(type.CONNECTION_IP_GET)
+      this.$store.dispatch(type.CONNECTION_IP)
     },
     beforeDestroy () {
-      clearTimeout(this.timeout)
     }
   }
 </script>

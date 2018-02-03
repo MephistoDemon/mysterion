@@ -10,6 +10,7 @@
 
 <script>
   import {mapGetters} from 'vuex'
+  import type from '../store/types'
 
   export default {
     name: 'connection-button',
@@ -55,11 +56,11 @@
         }
 
         if (this.isConnected) {
-          this.$store.dispatch('disconnect')
+          this.$store.dispatch(type.DISCONNECT)
           return
         }
 
-        this.$store.dispatch('connect', {
+        this.$store.dispatch(type.CONNECT, {
           identity: this.identity,
           nodeId: this.nodeId
         })
