@@ -5,7 +5,7 @@ import path from 'path'
 const DaemonDirectory = '/Library/LaunchDaemons'
 const PropertyListFile = 'net.mysterium.client.mysteriumclient'
 
-class Daemon {
+class Installer {
   constructor (tempDir, logDir, clientPath) {
     this.logDir = logDir
     this.clientPath = clientPath
@@ -83,4 +83,4 @@ class Daemon {
   }
 }
 
-export default Daemon
+export default Installer

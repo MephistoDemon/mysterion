@@ -1,10 +1,9 @@
 'use strict'
 
 import {app, BrowserWindow, Tray, Menu} from 'electron'
-import os from 'os'
 import path from 'path'
 import config from './config'
-import Daemon from '../libraries/osx/daemon'
+import Installer from '../libraries/mysterium-client'
 import http from 'http'
 
 config(global) // sets some global variables, path to mystClient binary etc
@@ -66,14 +65,13 @@ function createWindow () {
 }
 
 app.on('ready', async () => {
-  let daemon = new Daemon(
+  let intaller = new Installer(
     app.getPath('temp'),
     app.getPath('userData'),
     global.__mysteriumClientBin
   )
-
-  if (!daemon.exists()) {
-    daemon.install()
+  if (!intaller.exists()) {
+    intaller.install()
       .then(startApplication)
       .catch((error) => {
         console.error(error)
