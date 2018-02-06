@@ -1,9 +1,12 @@
 import axios from 'axios'
 
+const timeout = 5000
+
 const idPath = '/identities'
 const propPath = '/proposals'
 const conPath = '/connection'
 const healthcheckPath = '/healthcheck'
+const stopPath = '/stop'
 
 export default function (teqAddr = 'http://127.0.0.1:4050') {
   const {teqAxio, axioAdapter} = adapterFactory(teqAddr)
@@ -31,13 +34,14 @@ export default function (teqAddr = 'http://127.0.0.1:4050') {
     async healthcheck () {
       axioAdapter.get(healthcheckPath)
     },
+    stop: async () => axioAdapter.post(stopPath),
     __axio: teqAxio // we need this for mocking
   }
   return api
 }
 
 function adapterFactory (teqAddr) {
-  const teqAxio = axios.create({baseURL: teqAddr})
+  const teqAxio = axios.create({baseURL: teqAddr, timeout: timeout})
   const axioAdapter = {
     async get (path) {
       const res = await teqAxio.get(path)
