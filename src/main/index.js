@@ -14,6 +14,14 @@ const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
+function startApplication () {
+  // hack to spawn mysterium_client before the window is rendered
+  http.get('http://127.0.0.1:4050', function () {})
+
+  createWindow()
+  createTray()
+}
+
 function createTray () {
   let trayIconPath = path.join(__static, 'icons', 'tray.png')
   tray = new Tray(trayIconPath)
@@ -58,11 +66,6 @@ function createWindow () {
 }
 
 app.on('ready', async () => {
-  if (os.platform() !== 'darwin') {
-    createWindow()
-    createTray()
-    return
-  }
   let daemon = new Daemon(
     app.getPath('temp'),
     app.getPath('userData'),
@@ -70,19 +73,14 @@ app.on('ready', async () => {
   )
 
   if (!daemon.exists()) {
-    daemon.install().then(() => {
-      // hack to spawn mysterium_client before the window is rendered
-      http.get('http://127.0.0.1:4050', function () {})
-      createWindow()
-      createTray()
-    }).catch((error) => {
-      console.error(error)
-      app.quit()
-    })
+    daemon.install()
+      .then(startApplication)
+      .catch((error) => {
+        console.error(error)
+        app.quit()
+      })
   } else {
-    http.get('http://127.0.0.1:4050', function () {})
-    createWindow()
-    createTray()
+    startApplication()
   }
 })
 
