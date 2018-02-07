@@ -18,9 +18,10 @@ const mysteriumConfig = new MysteriumConfig(
   app.getPath('temp'),
   app.getPath('userData')
 )
+const tequilAPI = tequilAPI()
 
 function startApplication () {
-  let process = new MysteriumProcess(mysteriumConfig, tequilAPI())
+  let process = new MysteriumProcess(mysteriumConfig, tequilAPI)
   process.start()
 
   createWindow()
