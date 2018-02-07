@@ -1,9 +1,11 @@
-import http from 'http'
-
 class Process {
+  constructor (tequilapi) {
+    this.tequilapi = tequilapi
+  }
+
   start () {
     // hack to spawn mysterium_client before the window is rendered
-    http.get('http://127.0.0.1:4050', function () {})
+    this.tequilapi.healthcheck()
   }
 }
 

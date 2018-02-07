@@ -15,4 +15,4 @@ switch (platform) {
     throw new Error('MysteriumClient is not available on platform: ' + platform)
 }
 
-export default {Installer, Process}
+export {Installer, Process}
