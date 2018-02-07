@@ -25,30 +25,34 @@ class Installer {
     const template = `<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
       <plist version="1.0">
-         <dict>
-             <key>Label</key>
-             <string>net.mysterium.client.mysteriumclient</string>
-             <key>Program</key>
-             <string>${this.config.clientBin}</string>
-             <key>Sockets</key>
-             <dict>
-                    <key>Listener</key>
-                    <dict>
-                        <key>SockType</key>
-                        <string>stream</string>
-                        <key>SockServiceName</key>
-                        <string>4050</string>
-                    </dict>
-             </dict>
-            <key>inetdCompatibility</key>
+      <dict>
+        <key>Label</key>
+          <string>net.mysterium.client.mysteriumclient</string>
+          <key>Program</key>
+          <string>${this.config.clientBin}</string>
+          <key>ProgramArguments</key>
+          <array>
+            <string>--runtime-dir</string>
+            <string>${this.config.runtimeDir}</string>
+          </array>
+          <dict>
+            <key>Listener</key>
             <dict>
-             <key>Wait</key>
-             <false/>
+              <key>SockType</key>
+              <string>stream</string>
+              <key>SockServiceName</key>
+              <string>4050</string>
             </dict>
-            <key>StandardOutPath</key>
-            <string>${this.config.logDir}/stdout.log</string>
-            <key>StandardErrorPath</key>
-            <string>${this.config.logDir}/stderr.log</string>
+          </dict>
+          <key>inetdCompatibility</key>
+          <dict>
+            <key>Wait</key>
+            <false/>
+          </dict>
+          <key>StandardOutPath</key>
+          <string>${this.config.logDir}/stdout.log</string>
+          <key>StandardErrorPath</key>
+          <string>${this.config.logDir}/stderr.log</string>
          </dict>
       </plist>`
 
