@@ -69,9 +69,9 @@ const actions = {
     const res = await tequilapi.connection.status()
     commit(type.CONNECTION_STATUS, res.status)
   },
-  async [type.CONNECT] ({commit, dispatch}, identity, nodeId) {
+  async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
     try {
-      const res = await tequilapi.connection.connect(identity, nodeId)
+      const res = await tequilapi.connection.connect(consumerId, providerId)
       commit(type.CONNECTION_STATUS, res.status)
       dispatch(type.STATUS_UPDATER_RUN)
       return res

@@ -15,7 +15,7 @@
   export default {
     name: 'connection-button',
     props: {
-      nodeId: {
+      providerId: {
         type: String
       }
     },
@@ -25,7 +25,7 @@
     computed: {
       ...mapGetters({
         status: 'status',
-        identity: 'currentIdentity'
+        consumerId: 'currentIdentity'
       }),
       buttonText: (comp) => {
         let text = 'Connect'
@@ -61,8 +61,8 @@
         }
 
         this.$store.dispatch(type.CONNECT, {
-          identity: this.identity,
-          nodeId: this.nodeId
+          consumerId: this.consumerId,
+          providerId: this.providerId
         })
       }
     }

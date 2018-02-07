@@ -19,9 +19,9 @@ export default function (teqAddr = 'http://127.0.0.1:4050') {
       list: async () => axioAdapter.get(propPath)
     },
     connection: {
-      connect: async ({identity, nodeId}) => axioAdapter.put(conPath, {
-        identity: identity,
-        nodeKey: nodeId
+      connect: async ({consumerId, providerId}) => axioAdapter.put(conPath, {
+        consumerId: consumerId,
+        providerId: providerId
       }),
       disconnect: async () => axioAdapter.delete(conPath),
       status: async () => axioAdapter.get(conPath),

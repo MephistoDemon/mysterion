@@ -9,7 +9,7 @@
       <div class="control__bottom">
         <country-select v-model="country" class="control__countries" :class="{'is-disabled': status!==-1}"/>
         {{country}}
-        <connection-button :node-id="nodeIdentity"></connection-button>
+        <connection-button :provider-id="providerIdentity"></connection-button>
       </div>
       <div class="control__footer">
         <div class="footer__stats stats">
@@ -62,7 +62,7 @@
           default: return this.connection.status
         }
       },
-      nodeIdentity () {
+      providerIdentity () {
         return this.country ? this.country.id : ''
       }
     },
