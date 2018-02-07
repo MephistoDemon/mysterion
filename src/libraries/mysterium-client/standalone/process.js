@@ -6,9 +6,13 @@ class Process {
   }
 
   start () {
-    spawn(this.config.clientBin, [
+    this.child = spawn(this.config.clientBin, [
       '-runtime-dir', this.config.runtimeDir
     ])
+  }
+
+  stop () {
+    this.child.kill('SIGTERM')
   }
 }
 
