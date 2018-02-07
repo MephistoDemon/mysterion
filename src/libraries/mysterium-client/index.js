@@ -1,4 +1,5 @@
 import os from 'os'
+import Config from './config'
 import LaunchDaemonInstaller from './launch-daemon/installer'
 import LaunchDaemonProcess from './launch-daemon/process'
 
@@ -15,4 +16,4 @@ switch (platform) {
     throw new Error('MysteriumClient is not available on platform: ' + platform)
 }
 
-export {Installer, Process}
+export {Config, Installer, Process}
