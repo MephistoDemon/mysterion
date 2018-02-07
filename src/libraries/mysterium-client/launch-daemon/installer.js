@@ -22,7 +22,7 @@ class Installer {
   }
 
   template () {
-    const template = `<?xml version="1.0" encoding="UTF-8"?>
+    return `<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
       <plist version="1.0">
       <dict>
@@ -32,6 +32,8 @@ class Installer {
           <string>${this.config.clientBin}</string>
           <key>ProgramArguments</key>
           <array>
+            <string>--config-dir</string>
+            <string>${this.config.configDir}</string>
             <string>--runtime-dir</string>
             <string>${this.config.runtimeDir}</string>
           </array>
@@ -55,8 +57,6 @@ class Installer {
           <string>${this.config.logDir}/stderr.log</string>
          </dict>
       </plist>`
-
-    return template
   }
 
   install () {

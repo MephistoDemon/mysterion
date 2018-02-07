@@ -6,5 +6,6 @@ if [ ! -f .env ]; then
 fi
 source .env
 
-mkdir -p ./bin
-cp ${MYSTERIUM_CLIENT_BIN} ./bin/
+mkdir -p ./bin \
+    && cp ${MYSTERIUM_CLIENT_BIN} ./bin/ \
+    && cp -r ${MYSTERIUM_CLIENT_CONFIG} ./bin/config
