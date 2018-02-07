@@ -3,8 +3,7 @@
 import {app, BrowserWindow, Tray, Menu} from 'electron'
 import path from 'path'
 import config from './config'
-import Installer from '../libraries/mysterium-client'
-import http from 'http'
+import {Installer, Process} from '../libraries/mysterium-client'
 
 config(global) // sets some global variables, path to mystClient binary etc
 let mainWindow
@@ -14,8 +13,8 @@ const winURL = process.env.NODE_ENV === 'development'
   : `file://${__dirname}/index.html`
 
 function startApplication () {
-  // hack to spawn mysterium_client before the window is rendered
-  http.get('http://127.0.0.1:4050', function () {})
+  let intaller = new Process()
+  intaller.start()
 
   createWindow()
   createTray()
