@@ -1,11 +1,10 @@
 'use strict'
 
 import {app, BrowserWindow, Tray, Menu} from 'electron'
-import os from 'os'
 import path from 'path'
 import config from './config'
-import Daemon from '../libraries/osx/daemon'
-import http from 'http'
+import {Config as MysteriumConfig, Installer as MysteriumInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
+import TequilAPI from '../api/tequilapi'
 
 config(global) // sets some global variables, path to mystClient binary etc
 let mainWindow
@@ -13,6 +12,21 @@ let tray
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
+
+const mysteriumConfig = new MysteriumConfig(
+  global.__mysteriumClientBin,
+  app.getPath('temp'),
+  app.getPath('userData')
+)
+const tequilAPI = TequilAPI()
+let mysteriumProcess = new MysteriumProcess(mysteriumConfig, tequilAPI)
+
+function startApplication () {
+  mysteriumProcess.start()
+
+  createWindow()
+  createTray()
+}
 
 function createTray () {
   let trayIconPath = path.join(__static, 'icons', 'tray.png')
@@ -58,31 +72,16 @@ function createWindow () {
 }
 
 app.on('ready', async () => {
-  if (os.platform() !== 'darwin') {
-    createWindow()
-    createTray()
-    return
-  }
-  let daemon = new Daemon(
-    app.getPath('temp'),
-    app.getPath('userData'),
-    global.__mysteriumClientBin
-  )
-
-  if (!daemon.exists()) {
-    daemon.install().then(() => {
-      // hack to spawn mysterium_client before the window is rendered
-      http.get('http://127.0.0.1:4050', function () {})
-      createWindow()
-      createTray()
-    }).catch((error) => {
-      console.error(error)
-      app.quit()
-    })
+  let installer = new MysteriumInstaller(mysteriumConfig)
+  if (!installer.exists()) {
+    installer.install()
+      .then(startApplication)
+      .catch((error) => {
+        console.error(error)
+        app.quit()
+      })
   } else {
-    http.get('http://127.0.0.1:4050', function () {})
-    createWindow()
-    createTray()
+    startApplication()
   }
 })
 
@@ -93,7 +92,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('before-quit', () => {
-  // mystProcess.kill('SIGTERM')
+  mysteriumProcess.stop()
 })
 
 app.on('activate', () => {

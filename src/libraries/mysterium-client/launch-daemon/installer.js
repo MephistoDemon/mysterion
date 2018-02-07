@@ -5,11 +5,9 @@ import path from 'path'
 const DaemonDirectory = '/Library/LaunchDaemons'
 const PropertyListFile = 'net.mysterium.client.mysteriumclient'
 
-class Daemon {
-  constructor (tempDir, logDir, clientPath) {
-    this.logDir = logDir
-    this.clientPath = clientPath
-    this.tempDir = tempDir
+class Installer {
+  constructor (config) {
+    this.config = config
   }
 
   exists () {
@@ -31,7 +29,7 @@ class Daemon {
              <key>Label</key>
              <string>net.mysterium.client.mysteriumclient</string>
              <key>Program</key>
-             <string>${this.clientPath}</string>
+             <string>${this.config.clientBin}</string>
              <key>Sockets</key>
              <dict>
                     <key>Listener</key>
@@ -48,9 +46,9 @@ class Daemon {
              <false/>
             </dict>
             <key>StandardOutPath</key>
-            <string>${this.logDir}/stdout.log</string>
+            <string>${this.config.logDir}/stdout.log</string>
             <key>StandardErrorPath</key>
-            <string>${this.logDir}/stderr.log</string>
+            <string>${this.config.logDir}/stderr.log</string>
          </dict>
       </plist>`
 
@@ -58,7 +56,7 @@ class Daemon {
   }
 
   install () {
-    let tempPlistFile = path.join(this.tempDir, 'mysterium.plist')
+    let tempPlistFile = path.join(this.config.runtimeDir, 'mysterium.plist')
     let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
     let command = `sh -c '
       cp ${tempPlistFile} ${this.getDaemonFileName()} \
@@ -83,4 +81,4 @@ class Daemon {
   }
 }
 
-export default Daemon
+export default Installer
