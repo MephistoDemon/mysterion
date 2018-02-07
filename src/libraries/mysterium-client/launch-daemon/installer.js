@@ -3,7 +3,7 @@ import sudo from 'sudo-prompt'
 import path from 'path'
 
 const DaemonDirectory = '/Library/LaunchDaemons'
-const PropertyListFile = 'net.mysterium.client.mysteriumclient'
+const PropertyListFile = 'network.mysterium.mysteriumclient.plist'
 
 class Installer {
   constructor (config) {
@@ -18,7 +18,7 @@ class Installer {
   }
 
   getDaemonFileName () {
-    return path.join(DaemonDirectory, PropertyListFile + '.plist')
+    return path.join(DaemonDirectory, PropertyListFile)
   }
 
   template () {
@@ -60,7 +60,7 @@ class Installer {
   }
 
   install () {
-    let tempPlistFile = path.join(this.config.runtimeDir, 'mysterium.plist')
+    let tempPlistFile = path.join(this.config.runtimeDir, PropertyListFile)
     let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
     let command = `sh -c '
       cp ${tempPlistFile} ${this.getDaemonFileName()} \
