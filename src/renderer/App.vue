@@ -1,33 +1,71 @@
 <template>
-  <div id="app" class="app">
-    <app-nav class="app__nav" v-if="!loading" />
-    <router-view class="app__page" />
-    <transition name="fade" v-if="visual">
-      <app-visual class="app__visual" />
-    </transition>
-  </div>
+    <div id="app" class="app">
+        <div id="content">
+            <app-modal v-if="!isRunning" :close="false">
+                <app-error :error="error"></app-error>
+            </app-modal>
+            <app-nav class="app__nav" v-if="!loading"/>
+            <router-view class="app__page"/>
+            <transition name="fade" v-if="visual">
+                <app-visual class="app__visual"/>
+            </transition>
+        </div>
+    </div>
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
-
+  import {mapGetters} from 'vuex'
   import AppVisual from '@/partials/AppVisual'
   import AppModal from '@/partials/AppModal'
   import AppNav from '@/partials/AppNav'
+  import AppError from '@/partials/AppError'
+  import SendNotification from '../libraries/notifications'
+
+  let sendNotificationOnError = true
+
+  const healthCheckInterval = 2000
+  const healthCheck = async function (component) {
+    // if the app is quitting we shouldn't continue checking the client
+    if (component.$store.getters.isQuitting) {
+      return
+    }
+
+    try {
+      await component.$store.dispatch('healthCheck')
+      sendNotificationOnError = true
+    } catch (e) {
+      if (sendNotificationOnError === true) {
+        SendNotification(component.error.message, component.error.hint, 5)
+        sendNotificationOnError = false
+      }
+    }
+
+    setTimeout(() => healthCheck(component), healthCheckInterval)
+  }
 
   export default {
     components: {
       AppVisual,
       AppModal,
-      AppNav
+      AppNav,
+      AppError
     },
     name: 'App',
     computed: {
-      ...mapGetters(['loading', 'visual'])
+      ...mapGetters(['loading', 'visual', 'isRunning'])
+    },
+    data () {
+      return {
+        error: {
+          message: 'Mysterium client seems to be down.',
+          hint: 'Please wait while it re-launches. If this message persists, please contact support.'
+        }
+      }
+    },
+    async mounted () {
+      await healthCheck(this)
     }
   }
 </script>
 
-<style src="@/assets/less/index.less" lang="less">
-
-</style>
+<style src="@/assets/less/index.less" lang="less"></style>

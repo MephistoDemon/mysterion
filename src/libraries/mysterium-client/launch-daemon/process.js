@@ -5,7 +5,7 @@ class Process {
 
   start () {
     // hack to spawn mysterium_client before the window is rendered
-    this.tequilapi.healthcheck()
+    this.tequilapi.healthCheck()
   }
 
   stop () {

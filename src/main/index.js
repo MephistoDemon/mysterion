@@ -56,9 +56,9 @@ function createWindow () {
   * Initial window options
   */
   mainWindow = new BrowserWindow({
-    height: 600,
+    height: (process.env.NODE_ENV === 'development') ? 1200 : 600,
     width: (process.env.NODE_ENV === 'development') ? 1200 : 500, // width for devtools, and suggested styles below
-    resizable: false
+    resizable: process.env.NODE_ENV === 'development'
     // useContentSize: true,
     // frame: false,
     // titleBarStyle: 'hidden',

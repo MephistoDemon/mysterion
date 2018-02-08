@@ -1,45 +1,45 @@
 import type from '../types'
 
 const state = {
-  log: '',
-  err: ''
+  running: false,
+  quitting: false
 }
 
 const mutations = {
-  [type.LOG_INFO] (state, log) {
-    console.log('[mystClient]: ' + log)
-    state.log += log
+  [type.MYST_PROCESS_QUITTING] (state, quitting = false) {
+    state.quitting = quitting
   },
-  [type.LOG_ERROR] (state, log) {
-    console.log('[mystClientErr]: ' + log)
-    state.err += log
-  },
-  [type.HEALTHCHECK_SUCCESS] (state, res) {
-    state.running = true
-    state.health = res
-  },
-  [type.MYST_PROCESS_CLOSE] () {
-    state.running = false
+  [type.MYST_PROCESS_ALIVE] (state, alive = false) {
+    state.running = alive
   }
 }
 
-function factory (tequilapi) {
+const getters = {
+  isQuitting: (store) => store.quitting,
+  isRunning: (store) => store.running
+}
+
+function factory (tequilApi) {
   const actions = {
-    async healthcheck ({commit}) {
+    async healthCheck (context) {
       try {
-        const res = await tequilapi.get('/healthcheck')
-        commit(type.HEALTHCHECK_SUCCESS, res)
+        const res = await tequilApi.healthCheck({timeout: 500})
+        context.commit(type.MYST_PROCESS_ALIVE, true)
         return res
       } catch (err) {
-        commit(type.REQUEST_FAIL, err)
+        context.commit(type.MYST_PROCESS_ALIVE, false)
         throw (err)
       }
+    },
+    quit ({commit}) {
+      commit(type.MYST_PROCESS_QUITTING, true)
     }
   }
 
   return {
     state,
     mutations,
+    getters,
     actions
   }
 }
