@@ -7,7 +7,8 @@ class Process {
 
   start () {
     this.child = spawn(this.config.clientBin, [
-      '-runtime-dir', this.config.runtimeDir
+      '--config-dir', this.config.configDir,
+      '--runtime-dir', this.config.runtimeDir
     ])
   }
 

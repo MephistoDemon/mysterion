@@ -3,7 +3,7 @@
 import {app, BrowserWindow, Tray, Menu} from 'electron'
 import path from 'path'
 import config from './config'
-import {Config as MysteriumConfig, Installer as MysteriumInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
+import {Installer as MysteriumInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
 import TequilAPI from '../api/tequilapi'
 
 config(global) // sets some global variables, path to mystClient binary etc
@@ -13,13 +13,8 @@ const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
-const mysteriumConfig = new MysteriumConfig(
-  global.__mysteriumClientBin,
-  app.getPath('temp'),
-  app.getPath('userData')
-)
 const tequilAPI = TequilAPI()
-let mysteriumProcess = new MysteriumProcess(mysteriumConfig, tequilAPI)
+let mysteriumProcess = new MysteriumProcess(global.__mysteriumClientConfig, tequilAPI)
 
 function startApplication () {
   mysteriumProcess.start()
@@ -72,7 +67,7 @@ function createWindow () {
 }
 
 app.on('ready', async () => {
-  let installer = new MysteriumInstaller(mysteriumConfig)
+  let installer = new MysteriumInstaller(global.__mysteriumClientConfig)
   if (!installer.exists()) {
     installer.install()
       .then(startApplication)
