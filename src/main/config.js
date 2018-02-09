@@ -2,15 +2,22 @@
 
 import {app} from 'electron'
 import path from 'path'
+import {Config as MysteriumConfig} from '../libraries/mysterium-client'
 
 export default function (global) {
-  if (process.env.NODE_ENV !== 'development') {
-    let appPath = app.getAppPath()
-    global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
-    global.__mysteriumClientBin = path.resolve(appPath, '../../bin/mysterium_client')
-  } else {
-    let appPath = path.resolve(__dirname, '../../') // path from this file
-    global.__static = require('path').join(appPath, '/static').replace(/\\/g, '\\\\')
-    global.__mysteriumClientBin = path.resolve(appPath + '/bin/mysterium_client')
+  let appPath = app.getAppPath()
+  if (process.env.NODE_ENV === 'development') {
+    // path from this file
+    appPath = path.resolve(__dirname, '../../')
   }
+
+  global.__static = path.join(appPath, 'static').replace(/\\/g, '\\\\')
+
+  global.__mysteriumClientConfig = new MysteriumConfig(
+    path.join(appPath, 'bin', 'mysterium_client'),
+    path.join(appPath, 'bin', 'config'),
+    app.getPath('temp'),
+    // TODO migrate to logs directory in later versions, see https://github.com/electron/electron/pull/10191
+    app.getPath('userData')
+  )
 }

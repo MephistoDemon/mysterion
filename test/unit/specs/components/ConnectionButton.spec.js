@@ -22,7 +22,7 @@ const mountWithStore = function () {
       connection: {
         ...conStore,
         actions: {
-          [type.CONNECT] ({commit}, identity, nodeId) {
+          [type.CONNECT] ({commit}, consumerId, providerId) {
             commit(type.CONNECTION_STATUS, 'Connected')
           },
           [type.DISCONNECT] ({commit}) {

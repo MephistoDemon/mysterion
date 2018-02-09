@@ -3,7 +3,7 @@ import sudo from 'sudo-prompt'
 import path from 'path'
 
 const DaemonDirectory = '/Library/LaunchDaemons'
-const PropertyListFile = 'net.mysterium.client.mysteriumclient'
+const PropertyListFile = 'network.mysterium.mysteriumclient.plist'
 
 class Installer {
   constructor (config) {
@@ -18,45 +18,49 @@ class Installer {
   }
 
   getDaemonFileName () {
-    return path.join(DaemonDirectory, PropertyListFile + '.plist')
+    return path.join(DaemonDirectory, PropertyListFile)
   }
 
   template () {
-    const template = `<?xml version="1.0" encoding="UTF-8"?>
+    return `<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
       <plist version="1.0">
-         <dict>
-             <key>Label</key>
-             <string>net.mysterium.client.mysteriumclient</string>
-             <key>Program</key>
-             <string>${this.config.clientBin}</string>
-             <key>Sockets</key>
-             <dict>
-                    <key>Listener</key>
-                    <dict>
-                        <key>SockType</key>
-                        <string>stream</string>
-                        <key>SockServiceName</key>
-                        <string>4050</string>
-                    </dict>
-             </dict>
-            <key>inetdCompatibility</key>
+      <dict>
+        <key>Label</key>
+          <string>net.mysterium.client.mysteriumclient</string>
+          <key>Program</key>
+          <string>${this.config.clientBin}</string>
+          <key>ProgramArguments</key>
+          <array>
+            <string>--config-dir</string>
+            <string>${this.config.configDir}</string>
+            <string>--runtime-dir</string>
+            <string>${this.config.runtimeDir}</string>
+          </array>
+          <dict>
+            <key>Listener</key>
             <dict>
-             <key>Wait</key>
-             <false/>
+              <key>SockType</key>
+              <string>stream</string>
+              <key>SockServiceName</key>
+              <string>4050</string>
             </dict>
-            <key>StandardOutPath</key>
-            <string>${this.config.logDir}/stdout.log</string>
-            <key>StandardErrorPath</key>
-            <string>${this.config.logDir}/stderr.log</string>
+          </dict>
+          <key>inetdCompatibility</key>
+          <dict>
+            <key>Wait</key>
+            <false/>
+          </dict>
+          <key>StandardOutPath</key>
+          <string>${this.config.logDir}/stdout.log</string>
+          <key>StandardErrorPath</key>
+          <string>${this.config.logDir}/stderr.log</string>
          </dict>
       </plist>`
-
-    return template
   }
 
   install () {
-    let tempPlistFile = path.join(this.config.runtimeDir, 'mysterium.plist')
+    let tempPlistFile = path.join(this.config.runtimeDir, PropertyListFile)
     let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
     let command = `sh -c '
       cp ${tempPlistFile} ${this.getDaemonFileName()} \
