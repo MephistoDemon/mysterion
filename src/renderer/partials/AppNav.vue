@@ -39,10 +39,10 @@
                 </li>
             </ul>
             <div class="nav__logout">
-                <router-link class="nav__trigger" to="/quit">
+                <a class="nav__trigger" href="#" @click="quit()">
                     <icon-quit class="nav__icon nav__icon--quit"/>
                     <span class="nav__text">quit</span>
-                </router-link>
+                </a>
             </div>
         </div>
         <transition name="fade">
@@ -52,7 +52,8 @@
 </template>
 
 <script>
-  import {mapGetters, mapActions} from 'vuex'
+  import { remote } from 'electron'
+  import { mapGetters, mapActions } from 'vuex'
   import IconEye from '@/assets/img/icon--eye.svg'
   import IconCube from '@/assets/img/icon--cube.svg'
   import IconShare from '@/assets/img/icon--share.svg'
@@ -74,7 +75,10 @@
       ...mapGetters(['navOpen'])
     },
     methods: {
-      ...mapActions(['switchNav'])
+      ...mapActions(['switchNav']),
+      quit () {
+        remote.app.quit()
+      }
     },
     mounted () {
     }

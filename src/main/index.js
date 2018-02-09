@@ -27,6 +27,7 @@ function createTray () {
   let trayIconPath = path.join(__static, 'icons', 'tray.png')
   tray = new Tray(trayIconPath)
   tray.setToolTip('Mysterium')
+  // TODO: hide "Toggle DevTools" when not in development
   let contextMenu = Menu.buildFromTemplate([
     {
       label: 'Toggle DevTools',
@@ -86,8 +87,8 @@ app.on('window-all-closed', () => {
   }
 })
 
-app.on('before-quit', () => {
-  mysteriumProcess.stop()
+app.on('before-quit', async () => {
+  await mysteriumProcess.stop()
 })
 
 app.on('activate', () => {

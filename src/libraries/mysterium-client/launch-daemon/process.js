@@ -8,8 +8,12 @@ class Process {
     this.tequilapi.healthcheck()
   }
 
-  stop () {
-    // TODO Implement kill here
+  async stop () {
+    try {
+      await this.tequilapi.stop()
+    } catch (err) {
+      console.log('Error response while stopping client process:', err)
+    }
   }
 }
 
