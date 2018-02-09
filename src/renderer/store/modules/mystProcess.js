@@ -23,7 +23,7 @@ function factory (tequilApi) {
   const actions = {
     async healthCheck (context) {
       try {
-        const res = await tequilApi.healthCheck({timeout: 500})
+        const res = await tequilApi.healthCheck(500)
         context.commit(type.MYST_PROCESS_ALIVE, true)
         return res
       } catch (err) {

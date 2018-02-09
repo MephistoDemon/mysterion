@@ -3,7 +3,11 @@
 import {app, BrowserWindow, Tray, Menu} from 'electron'
 import path from 'path'
 import config from './config'
-import {Config as MysteriumConfig, Installer as MysteriumInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
+import {
+  Config as MysteriumConfig,
+  Installer as MysteriumInstaller,
+  Process as MysteriumProcess
+} from '../libraries/mysterium-client'
 import TequilAPI from '../api/tequilapi'
 
 config(global) // sets some global variables, path to mystClient binary etc
@@ -53,8 +57,8 @@ function createTray () {
 
 function createWindow () {
   /**
-  * Initial window options
-  */
+   * Initial window options
+   */
   mainWindow = new BrowserWindow({
     height: (process.env.NODE_ENV === 'development') ? 1200 : 600,
     width: (process.env.NODE_ENV === 'development') ? 1200 : 500, // width for devtools, and suggested styles below
@@ -86,6 +90,8 @@ app.on('ready', async () => {
 })
 
 app.on('window-all-closed', () => {
+  // OSX handles window closing differently than other OSs.
+  // Closing a window doesn't mean closing the app
   if (process.platform !== 'darwin') {
     app.quit()
   }

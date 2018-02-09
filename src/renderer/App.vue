@@ -19,9 +19,9 @@
   import AppModal from '@/partials/AppModal'
   import AppNav from '@/partials/AppNav'
   import AppError from '@/partials/AppError'
-  import SendNotification from '../libraries/notifications'
+  import ShowNotification from '../libraries/notifications'
 
-  let sendNotificationOnError = true
+  let showNotificationOnError = true
 
   const healthCheckInterval = 2000
   const healthCheck = async function (component) {
@@ -32,11 +32,11 @@
 
     try {
       await component.$store.dispatch('healthCheck')
-      sendNotificationOnError = true
+      showNotificationOnError = true
     } catch (e) {
-      if (sendNotificationOnError === true) {
-        SendNotification(component.error.message, component.error.hint, 5)
-        sendNotificationOnError = false
+      if (showNotificationOnError === true) {
+        ShowNotification(component.error.message, component.error.hint, 5)
+        showNotificationOnError = false
       }
     }
 
