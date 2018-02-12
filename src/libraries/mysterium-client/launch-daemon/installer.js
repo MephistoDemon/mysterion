@@ -34,6 +34,8 @@ class Installer {
           <array>
             <string>--config-dir</string>
             <string>${this.config.configDir}</string>
+            <string>--data-dir</string>
+            <string>${this.config.dataDir}</string>
             <string>--runtime-dir</string>
             <string>${this.config.runtimeDir}</string>
           </array>

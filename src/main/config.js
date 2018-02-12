@@ -16,6 +16,7 @@ export default function (global) {
   global.__mysteriumClientConfig = new MysteriumConfig(
     path.join(appPath, 'bin', 'mysterium_client'),
     path.join(appPath, 'bin', 'config'),
+    app.getPath('userData'),
     app.getPath('temp'),
     // TODO migrate to logs directory in later versions, see https://github.com/electron/electron/pull/10191
     app.getPath('userData')
