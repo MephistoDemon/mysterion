@@ -1,7 +1,7 @@
 <template>
     <div id="app" class="app">
         <div id="content">
-            <app-modal v-if="!isRunning" :close="false">
+            <app-modal v-if="!clientIsRunning" :close="false">
                 <app-error :error="error"></app-error>
             </app-modal>
             <app-nav class="app__nav" v-if="!loading"/>
@@ -15,44 +15,23 @@
 
 <script>
   import {mapGetters} from 'vuex'
+  import type from '@/store/types'
   import AppVisual from '@/partials/AppVisual'
   import AppModal from '@/partials/AppModal'
   import AppNav from '@/partials/AppNav'
   import AppError from '@/partials/AppError'
-  import ShowNotification from '../libraries/notifications'
-
-  let showNotificationOnError = true
-
-  const healthCheckInterval = 2000
-  const healthCheck = async function (component) {
-    // if the app is quitting we shouldn't continue checking the client
-    if (component.$store.getters.isQuitting) {
-      return
-    }
-
-    try {
-      await component.$store.dispatch('healthCheck')
-      showNotificationOnError = true
-    } catch (e) {
-      if (showNotificationOnError === true) {
-        ShowNotification(component.error.message, component.error.hint, 5)
-        showNotificationOnError = false
-      }
-    }
-
-    setTimeout(() => healthCheck(component), healthCheckInterval)
-  }
+  import {ipcRenderer} from 'electron'
 
   export default {
+    name: 'App',
     components: {
       AppVisual,
       AppModal,
       AppNav,
       AppError
     },
-    name: 'App',
     computed: {
-      ...mapGetters(['loading', 'visual', 'isRunning'])
+      ...mapGetters(['loading', 'visual', 'clientIsRunning'])
     },
     data () {
       return {
@@ -63,7 +42,16 @@
       }
     },
     async mounted () {
-      await healthCheck(this)
+      let oldClientIsRunning = true
+
+      ipcRenderer.send('renderer.booted', true)
+      ipcRenderer.on('healthcheck', (event, clientIsRunning) => {
+        // if the client was down, but now up, we need to unlock the identity once again
+        if (clientIsRunning === true && oldClientIsRunning === false) {
+          this.$store.dispatch(type.IDENTITY_UNLOCK)
+        }
+        this.$store.dispatch('setClientRunningState', oldClientIsRunning = clientIsRunning)
+      })
     }
   }
 </script>

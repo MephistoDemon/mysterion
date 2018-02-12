@@ -6,13 +6,13 @@
 
   async function identityGet ({dispatch, commit}) {
     const identities = await dispatch(type.IDENTITY_LIST)
-    if (identities && identities.length !== 0) {
+    if (identities && identities.length > 0) {
       return identities[0]
-    } else {
-      const newIdentity = await dispatch(type.IDENTITY_CREATE)
-      commit(type.INIT_NEW_USER)
-      return newIdentity
     }
+
+    const newIdentity = await dispatch(type.IDENTITY_CREATE)
+    commit(type.INIT_NEW_USER)
+    return newIdentity
   }
 
   const delay = time => new Promise(resolve => setTimeout(() => resolve(), time))
@@ -32,15 +32,16 @@
         commit(type.INIT_SUCCESS)
         this.$router.push('/main')
       } catch (err) {
-        console.log(err.stack)
         commit(type.INIT_FAIL, err)
         throw (err)
       }
     },
-    computed: mapState({
-      initStatus: state => state.main.init,
-      error: state => state.main.error
-    }),
+    computed: {
+      ...mapState({
+        initStatus: state => state.main.init,
+        error: state => state.main.error
+      })
+    },
     name: 'loading-screen'
   }
 </script>
