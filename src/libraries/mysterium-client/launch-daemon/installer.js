@@ -37,15 +37,16 @@ class Installer {
             <string>--runtime-dir</string>
             <string>${this.config.runtimeDir}</string>
           </array>
-          <dict>
-            <key>Listener</key>
+          <key>Sockets</key>
             <dict>
-              <key>SockType</key>
-              <string>stream</string>
-              <key>SockServiceName</key>
-              <string>4050</string>
+              <key>Listener</key>
+              <dict>
+                <key>SockType</key>
+                <string>stream</string>
+                <key>SockServiceName</key>
+                <string>4050</string>
+              </dict>
             </dict>
-          </dict>
           <key>inetdCompatibility</key>
           <dict>
             <key>Wait</key>

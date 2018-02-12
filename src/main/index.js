@@ -31,23 +31,25 @@ function createTray () {
   let trayIconPath = path.join(__static, 'icons', 'tray.png')
   tray = new Tray(trayIconPath)
   tray.setToolTip('Mysterium')
-  // TODO: hide "Toggle DevTools" when not in development
-  let contextMenu = Menu.buildFromTemplate([
-    {
-      label: 'Toggle DevTools',
-      accelerator: 'Alt+Command+I',
-      click: function () {
-        mainWindow.show()
-        mainWindow.toggleDevTools()
-      }
-    },
+  let template = [
     {
       label: 'Quit',
       click: () => {
         app.quit()
       }
     }
-  ])
+  ]
+  if (process.env.NODE_ENV === 'development') {
+    template = [{
+      label: 'Toggle DevTools',
+      accelerator: 'Alt+Command+I',
+      click: function () {
+        mainWindow.show()
+        mainWindow.toggleDevTools()
+      }
+    }, ...template]
+  }
+  const contextMenu = Menu.buildFromTemplate(template)
   tray.setContextMenu(contextMenu)
 }
 
