@@ -32,6 +32,7 @@ class Installer {
           <string>${this.config.clientBin}</string>
           <key>ProgramArguments</key>
           <array>
+            <string>${this.config.clientBin}</string>
             <string>--config-dir</string>
             <string>${this.config.configDir}</string>
             <string>--data-dir</string>
@@ -54,6 +55,8 @@ class Installer {
             <key>Wait</key>
             <false/>
           </dict>
+          <key>WorkingDirectory</key>
+          <string>${this.config.runtimeDir}</string>
           <key>StandardOutPath</key>
           <string>${this.config.logDir}/stdout.log</string>
           <key>StandardErrorPath</key>

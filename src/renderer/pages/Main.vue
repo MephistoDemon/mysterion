@@ -15,7 +15,10 @@
         <div class="footer__stats stats">
           <transition name="slide-up">
             <div class="stats__error error" v-if="showReqErr">
-              <div class="error__text">{{requestErr.message}}</div>
+              <div class="error__text">
+                <div v-if="!requestErr.response">{{requestErr.message}}</div>
+                <div v-if="requestErr.response">{{requestErr.response.data.message}}</div>
+              </div>
               <i class="error__close close close--s close--white" @click="hideErr()"></i>
             </div>
           </transition>
