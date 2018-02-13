@@ -18,11 +18,14 @@ const tequilAPI = TequilAPI()
 let mysteriumProcess = new MysteriumProcess(global.__mysteriumClientConfig, tequilAPI)
 let processMonitoring = new ProcessMonitoring(tequilAPI)
 
-function startApplication () {
-  mysteriumProcess.start()
-    .then(() => processMonitoring.start())
-    .catch(() => processMonitoring.start())
-
+async function startApplication () {
+  try {
+    await mysteriumProcess.start()
+  } catch (err) {
+    console.log('touched the daemon, now he woke up')
+  } finally {
+    processMonitoring.start()
+  }
   createWindow()
   createTray()
 }
@@ -76,15 +79,13 @@ function createWindow () {
 app.on('ready', async () => {
   let installer = new MysteriumInstaller(global.__mysteriumClientConfig)
   if (!installer.exists()) {
-    installer.install()
-      .then(startApplication)
-      .catch((error) => {
-        console.error(error)
-        app.quit()
-      })
-  } else {
-    startApplication()
+    try {
+      await installer.install()
+    } catch (err) {
+      console.error(err)
+    }
   }
+  startApplication()
 })
 
 app.on('window-all-closed', () => {
