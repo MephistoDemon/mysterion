@@ -22,8 +22,8 @@
     "postinstall": "npm run copy:bins && npm run lint:fix"
   },
   "build": {
-    "productName": "mysterion",
-    "appId": "org.simulatedgreg.electron-vue",
+    "productName": "Mysterion",
+    "appId": "network.mysterium.Mysterion",
     "directories": {
       "output": "build"
     },
@@ -31,7 +31,8 @@
       "dist/electron/**/*"
     ],
     "extraFiles": [
-      "./bin/mysterium_client"
+      "./bin/mysterium_client",
+      "./bin/config"
     ],
     "dmg": {
       "contents": [
