@@ -1,6 +1,6 @@
 import main from './main'
 import connection from './connection'
-import mystCli from './mystProcess'
+import clientProcess from './clientProcess'
 import identity from './identity'
 import proposal from './proposal'
 import tequilAPI from '../../../api/tequilapi'
@@ -12,5 +12,5 @@ export default {
   connection,
   identity: identity(tequilapi),
   proposal: proposal(tequilapi),
-  myst_cli: mystCli(tequilapi)
+  clientProcess: clientProcess(tequilapi)
 }

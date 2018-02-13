@@ -23,7 +23,7 @@ describe('tequilAPI error handling', () => {
   it('throws network error', async () => {
     mock.onGet('/healthcheck').networkError()
     try {
-      const a = await tequilApi.healthcheck()
+      const a = await tequilApi.healthCheck()
       expect(a).to.be.undefined
     } catch (err) {
       expect(err.message).to.eql('Network Error')
@@ -34,7 +34,7 @@ describe('tequilAPI error handling', () => {
     mock.reset()
     mock.onGet('/healthcheck').timeout()
     try {
-      const a = await tequilApi.healthcheck()
+      const a = await tequilApi.healthCheck()
       expect(a).to.be.undefined
     } catch (err) {
       expect(err.message).to.include('timeout')
@@ -45,7 +45,7 @@ describe('tequilAPI error handling', () => {
     mock.reset()
     mock.onGet('/healthcheck').reply(404, {message: 'What is wrong'})
     try {
-      const health = await tequilApi.healthcheck()
+      const health = await tequilApi.healthCheck()
       expect(health).to.not.exist
     } catch (err) {
       expect(err.message).to.eql('Request failed with status code 404')

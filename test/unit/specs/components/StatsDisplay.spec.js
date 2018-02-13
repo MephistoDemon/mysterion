@@ -24,7 +24,6 @@ describe('StatsDisplay', () => {
   it('renders and displays stats', () => {
     const vm = mount(initialConnectionState)
     const els = vm.$el.querySelectorAll('.stats__value')
-    console.log(els[0].textContent)
     expect(els[0].textContent).to.contain('u.u')
     expect(els[1].textContent).to.contain('-;-')
     expect(els[2].textContent).to.contain('@__@')

@@ -2,6 +2,7 @@
 
 import {app, BrowserWindow, Tray, Menu} from 'electron'
 import path from 'path'
+import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 import config from './config'
 import {Installer as MysteriumInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
 import TequilAPI from '../api/tequilapi'
@@ -15,9 +16,12 @@ const winURL = process.env.NODE_ENV === 'development'
 
 const tequilAPI = TequilAPI()
 let mysteriumProcess = new MysteriumProcess(global.__mysteriumClientConfig, tequilAPI)
+let processMonitoring = new ProcessMonitoring(tequilAPI)
 
 function startApplication () {
   mysteriumProcess.start()
+    .then(() => processMonitoring.start())
+    .catch(() => processMonitoring.start())
 
   createWindow()
   createTray()
@@ -51,12 +55,12 @@ function createTray () {
 
 function createWindow () {
   /**
-  * Initial window options
-  */
+   * Initial window options
+   */
   mainWindow = new BrowserWindow({
-    height: 600,
+    height: (process.env.NODE_ENV === 'development') ? 1200 : 600,
     width: (process.env.NODE_ENV === 'development') ? 1200 : 500, // width for devtools, and suggested styles below
-    resizable: false
+    resizable: process.env.NODE_ENV === 'development'
     // useContentSize: true,
     // frame: false,
     // titleBarStyle: 'hidden',
@@ -84,12 +88,15 @@ app.on('ready', async () => {
 })
 
 app.on('window-all-closed', () => {
+  // OSX handles window closing differently than other OSs.
+  // closing a window doesn't mean closing the app
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
-app.on('before-quit', async () => {
+app.on('will-quit', async () => {
+  processMonitoring.stop()
   await mysteriumProcess.stop()
 })
 

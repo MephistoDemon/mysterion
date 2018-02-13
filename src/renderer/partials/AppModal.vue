@@ -1,6 +1,6 @@
 <template>
     <div class="modal">
-        <i class="modal__close close" @click="$store.dispatch('switchModal', null)"></i>
+        <i class="modal__close close" @click="$store.dispatch('switchModal', null)" v-if="close"></i>
         <div class="modal__dialog" :class="{'modal__dialog--s':size==='s'}">
             <slot></slot>
         </div>
@@ -16,6 +16,9 @@
     props: {
       size: {
         default: null
+      },
+      close: {
+        default: true
       }
     },
     computed: {},
