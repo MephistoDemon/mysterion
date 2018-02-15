@@ -3,7 +3,8 @@ import sudo from 'sudo-prompt'
 import path from 'path'
 
 const DaemonDirectory = '/Library/LaunchDaemons'
-const PropertyListFile = 'network.mysterium.mysteriumclient.plist'
+const InverseDomainPackageName = 'network.mysterium.mysteriumclient'
+const PropertyListFile = InverseDomainPackageName + '.plist'
 
 class Installer {
   constructor (config) {
@@ -27,7 +28,7 @@ class Installer {
       <plist version="1.0">
       <dict>
         <key>Label</key>
-          <string>net.mysterium.client.mysteriumclient</string>
+          <string>${InverseDomainPackageName}</string>
           <key>Program</key>
           <string>${this.config.clientBin}</string>
           <key>ProgramArguments</key>
