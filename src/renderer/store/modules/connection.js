@@ -23,13 +23,17 @@ const getters = {
 }
 
 const mutations = {
-  [type.CONNECTION_IP] (state, data) {
-    state.ip = data.ip
+  [type.CONNECTION_IP] (state, ip) {
+    if (ip !== null) {
+      state.ip = ip
+    }
   },
   [type.CONNECTION_STATUS_ALL] (state, data) {
     state.status = data.status
     state.stats = data.stats
-    state.ip = data.ip
+    if (data.ip !== null) {
+      state.ip = data.ip
+    }
   },
   [type.CONNECTION_STATUS] (state, status) {
     state.status = status
@@ -45,9 +49,9 @@ const actions = {
   },
   async [type.CONNECTION_IP] ({commit}) {
     try {
-      const res = await tequilapi.connection.ip()
-      commit(type.CONNECTION_IP, res)
-      return res.ip
+      const ip = await tequilapi.connection.ip()
+      commit(type.CONNECTION_IP, ip)
+      return ip
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
       throw err
@@ -59,7 +63,7 @@ const actions = {
       const statsPromise = tequilapi.connection.statistics()
       const ipPromise = tequilapi.connection.ip()
       const [status, stats, ip] = await Promise.all([statusPromise, statsPromise, ipPromise])
-      commit(type.CONNECTION_STATUS_ALL, {status: status.status, stats, ip: ip.ip})
+      commit(type.CONNECTION_STATUS_ALL, {status: status.status, stats, ip})
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
       throw (err)
