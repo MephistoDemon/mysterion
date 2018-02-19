@@ -76,8 +76,10 @@ const actions = {
       dispatch(type.STATUS_UPDATER_RUN)
       return res
     } catch (err) {
+      let error = new Error('Connection to node failed')
+      error.original = err
       commit(type.REQUEST_FAIL, err)
-      throw (err)
+      throw (error)
     }
   },
   async [type.DISCONNECT] ({commit, dispatch}) {
