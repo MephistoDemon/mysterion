@@ -3,6 +3,26 @@ import connection from '@/store/modules/connection'
 import type from '@/store/types'
 
 describe('mutations', () => {
+  describe('CONNECTION_STATUS', () => {
+    const connectionStatus = connection.mutations[type.CONNECTION_STATUS]
+
+    it('updates status', () => {
+      const state = {}
+      connectionStatus(state, 'TESTING')
+      expect(state).to.eql({ status: 'TESTING' })
+    })
+  })
+
+  describe('CONNECTION_STATS', () => {
+    const connectionStats = connection.mutations[type.CONNECTION_STATS]
+
+    it('updates stats', () => {
+      const state = {}
+      connectionStats(state, {some_stat: 'some value'})
+      expect(state).to.eql({ stats: {some_stat: 'some value'} })
+    })
+  })
+
   describe('CONNECTION_IP', () => {
     const connectionIp = connection.mutations[type.CONNECTION_IP]
 
@@ -16,40 +36,6 @@ describe('mutations', () => {
       const state = { ip: 'old' }
       connectionIp(state, null)
       expect(state).to.eql({ ip: 'old' })
-    })
-  })
-
-  describe('CONNECTION_STATUS_ALL', () => {
-    const connectionStatusAll = connection.mutations[type.CONNECTION_STATUS_ALL]
-
-    it('updates all statuses', () => {
-      const state = {}
-      connectionStatusAll(state, {
-        status: 'status',
-        stats: 'stats',
-        ip: 'ip'
-      })
-      expect(state).to.eql({
-        status: 'status',
-        stats: 'stats',
-        ip: 'ip'
-      })
-    })
-
-    it('updates all statuses except ip when ip is unavailable', () => {
-      const state = {
-        ip: 'old ip'
-      }
-      connectionStatusAll(state, {
-        status: 'new status',
-        stats: 'new stats',
-        ip: null
-      })
-      expect(state).to.eql({
-        status: 'new status',
-        stats: 'new stats',
-        ip: 'old ip'
-      })
     })
   })
 })
