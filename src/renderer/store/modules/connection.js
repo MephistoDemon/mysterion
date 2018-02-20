@@ -51,7 +51,6 @@ const actions = {
     try {
       const ip = await tequilapi.connection.ip()
       commit(type.CONNECTION_IP, ip)
-      return ip
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
       throw err
