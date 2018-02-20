@@ -5,9 +5,6 @@
     </app-modal>
 </template>
 <script>
-  // import {ipcRenderer} from 'electron'
-  // import communication from '../../libraries/communication'
-
   import AppModal from '@/partials/AppModal'
   import AppError from '@/partials/AppError'
   import {mapGetters} from 'vuex'
