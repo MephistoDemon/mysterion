@@ -7,6 +7,21 @@ import config from './config'
 import {Installer as MysteriumInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
 import TequilAPI from '../api/tequilapi'
 
+import os from 'os'
+import Raven from 'raven'
+
+Raven.config('https://1f0b7727aa3c4998b4073727ec3d21fe:df05a614e856411bbdb7d2d769febd50@sentry.io/290420', {
+  captureUnhandledRejections: true,
+  release: global.__version,
+  tags: {
+    environment: process.env.NODE_ENV,
+    process: process.type,
+    electron: process.versions.electron,
+    chrome: process.versions.chrome,
+    platform: os.platform(),
+    platform_release: os.release()
+  }}).install()
+
 config(global) // sets some global variables, path to mystClient binary etc
 let mainWindow
 let tray
@@ -73,6 +88,9 @@ function createWindow () {
 
   mainWindow.on('closed', () => {
     mainWindow = null
+  })
+  mainWindow.on('unresponsive', () => {
+    throw new Error('Renderer is unresponsive')
   })
 }
 
