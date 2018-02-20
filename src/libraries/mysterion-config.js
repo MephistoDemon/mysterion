@@ -52,7 +52,7 @@ const MysterionConfig = {
       resizable: process.env.NODE_ENV === 'development'
     },
     app: {
-      width: (process.env.NODE_ENV === 'development') ? 1200 : 600,
+      width: (process.env.NODE_ENV === 'development') ? 1200 : 500,
       height: (process.env.NODE_ENV === 'development') ? 1200 : 600,
       resizable: process.env.NODE_ENV === 'development'
     }
