@@ -1,5 +1,5 @@
 class Installer {
-  exists () {
+  isInstalled () {
     return true
   }
 

@@ -8,7 +8,7 @@
                     <i class="visual__circle visual__circle--light" :class="visualState"></i>
                 </div>
                 <div class="visual__media" :class="visualState">
-                    <keep-alive>
+                    <keep-alive> f
                         <component
                                 :is="visual+'Visual'"
                                 class="visual__image"
@@ -48,9 +48,14 @@
       ...mapGetters(['loading', 'visual', 'route']),
       visualState () {
         let classes = []
+
+        if (this.$router.currentRoute.name === 'status') {
+          return ['is-pulsing', 'not-connected']
+        }
+
         if (this.loading) {
           classes = ['is-loading', 'is-pulsing']
-        } else if (this.$router.currentRoute.name === 'main') {
+        } else if (this.$router.currentRoute.name === 'vpn') {
           if (this.status === -1) {
             classes = ['is-disabled', 'not-connected']
           }
@@ -62,6 +67,7 @@
       }
     },
     methods: {},
-    mounted () {}
+    mounted () {
+    }
   }
 </script>

@@ -1,5 +1,5 @@
 class Process {
-  constructor (config, tequilapi) {
+  constructor (tequilapi) {
     this.tequilapi = tequilapi
   }
 

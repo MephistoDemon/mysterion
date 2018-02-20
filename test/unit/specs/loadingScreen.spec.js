@@ -8,7 +8,7 @@ import Router from 'vue-router'
 import idStore from '@/store/modules/identity'
 import propStore from '@/store/modules/proposal'
 import mainStore from '@/store/modules/main'
-import loadingScreen from '@/pages/Loading'
+import loadingScreen from '@/pages/Loader'
 import tequilAPI from '@/../api/tequilapi'
 
 import MockAdapter from 'axios-mock-adapter'
@@ -65,7 +65,7 @@ describe('loading screen', () => {
     expect(vm.$store.state.proposal.list).to.eql([{id: '0xCEEDBEEF'}])
   })
   it('routes to main', () => {
-    expect(vm.$route.path).to.be.eql('/main')
+    expect(vm.$route.path).to.be.eql('/vpn')
   })
 })
 
@@ -95,6 +95,6 @@ describe('loading screen when no identities returned', () => {
     expect(vm.$store.state.main.newUser).to.be.true
   })
   it('routes to main', () => {
-    expect(vm.$route.path).to.be.eql('/main')
+    expect(vm.$route.path).to.be.eql('/vpn')
   })
 })

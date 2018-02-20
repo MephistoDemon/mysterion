@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from '@/store'
-import Loading from '@/pages/Loading'
-import Main from '@/pages/Main'
+import Loader from '@/pages/Loader'
+import Status from '@/pages/Status'
+import Vpn from '@/pages/Vpn'
+import Terms from '@/pages/Terms'
 import About from '@/pages/About'
 import Technology from '@/pages/Technology'
 import Share from '@/pages/Share'
@@ -18,19 +20,35 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'loading',
+      name: 'status',
+      component: Status,
       meta: {
         visual: 'head'
-      },
-      component: Loading
+      }
     },
     {
-      path: '/main',
-      name: 'main',
+      path: '/load',
+      name: 'load',
       meta: {
         visual: 'head'
       },
-      component: Main
+      component: Loader
+    },
+    {
+      path: '/vpn',
+      name: 'vpn',
+      meta: {
+        visual: 'head'
+      },
+      component: Vpn
+    },
+    {
+      path: '/terms',
+      name: 'terms',
+      component: Terms,
+      meta: {
+        navVisible: false
+      }
     },
     {
       path: '/about',
@@ -89,6 +107,12 @@ router.beforeEach((to, from, next) => {
       typeof to.meta.visual !== 'undefined' ? to.meta.visual : null
     )
   }
+
+  store.dispatch('setNavVisibility', typeof to.meta.navVisible !== 'undefined'
+    ? (to.meta.navVisible === true)
+    : true
+  )
+
   store.dispatch('switchNav', false)
   next()
 })
