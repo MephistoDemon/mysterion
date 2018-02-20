@@ -26,16 +26,10 @@ describe('mutations', () => {
   describe('CONNECTION_IP', () => {
     const connectionIp = connection.mutations[type.CONNECTION_IP]
 
-    it('updates ip when ip is available', () => {
+    it('updates ip', () => {
       const state = { ip: 'old' }
       connectionIp(state, 'new')
       expect(state).to.eql({ip: 'new'})
-    })
-
-    it('leaves last ip when ip is unavailable', () => {
-      const state = { ip: 'old' }
-      connectionIp(state, null)
-      expect(state).to.eql({ ip: 'old' })
     })
   })
 })
