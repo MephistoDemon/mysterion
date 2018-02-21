@@ -5,39 +5,26 @@ import App from './App'
 import router from './router'
 import store from './store'
 
-import Raven from 'raven-js'
 import RavenVue from 'raven-js/plugins/vue'
-import os from 'os'
+import bugReporter from '../libraries/bug-reporting'
 
-import {remote} from 'electron'
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
-  components: { App },
+  components: {App},
   router,
   store,
   template: '<App/>'
 }).$mount('#app')
 
-Raven.config(remote.getGlobal('__sentryURL'), {
-  captureUnhandledRejections: true,
-  release: remote.getGlobal('__version'),
-  tags: {
-    environment: process.env.VUE_ENV,
-    process: process.type,
-    electron: process.versions.electron,
-    chrome: process.versions.chrome,
-    platform: os.platform(),
-    platform_release: os.release()
-  }
-}).addPlugin(RavenVue, Vue)
-  .install()
+let raven = bugReporter.install('renderer')
+raven.addPlugin(RavenVue, Vue)
 
 window.addEventListener('unhandledrejection', (evt) => {
-  Raven.captureException(evt.reason, {
+  raven.captureException(evt.reason, {
     extra: evt.reason.response ? evt.reason.response.data : evt.reason
   })
 })

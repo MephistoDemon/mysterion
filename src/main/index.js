@@ -7,23 +7,9 @@ import config from './config'
 import {Installer as MysteriumInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
 import TequilAPI from '../api/tequilapi'
 
-import os from 'os'
-import Raven from 'raven'
+import bugReporter from '../libraries/bug-reporting'
 
-import dotenv from 'dotenv'
-dotenv.load()
-Raven.config(process.env.SENTRY.privateURL, {
-  captureUnhandledRejections: true,
-  release: global.__version,
-  tags: {
-    environment: process.env.NODE_ENV,
-    process: process.type,
-    electron: process.versions.electron,
-    chrome: process.versions.chrome,
-    platform: os.platform(),
-    platform_release: os.release()
-  }}).install()
-
+bugReporter.install('main')
 config(global) // sets some global variables, path to mystClient binary etc
 let mainWindow
 let tray
