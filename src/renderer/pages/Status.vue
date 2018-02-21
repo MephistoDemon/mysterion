@@ -10,9 +10,6 @@
   import {mapGetters} from 'vuex'
 
   export default {
-    async mounted () {
-
-    },
     data () {
       return {
         error: null,

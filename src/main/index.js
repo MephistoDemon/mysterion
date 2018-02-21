@@ -5,5 +5,5 @@ import MysterionConfig from '../libraries/mysterion-config'
 
 global.__static = MysterionConfig.staticDirectoryPath
 
-const mysterion = MysterionFactory(MysterionConfig, 'Cool mysterion terms', 1.0)
+const mysterion = MysterionFactory(MysterionConfig, 'Cool terms', 1.0)
 mysterion.run()

@@ -45,7 +45,7 @@ const MysterionConfig = {
    * window configuration
    */
   windows: {
-    url: process.env.NODE_ENV === 'development' ? `http://localhost:9080/` : 'file://src/main/index.html',
+    url: process.env.NODE_ENV === 'development' ? `http://localhost:9080/` : `file://${__dirname}/index.html`,
     terms: {
       width: (process.env.NODE_ENV === 'development') ? 1000 : 600,
       height: (process.env.NODE_ENV === 'development') ? 700 : 600,
