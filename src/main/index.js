@@ -10,7 +10,9 @@ import TequilAPI from '../api/tequilapi'
 import os from 'os'
 import Raven from 'raven'
 
-Raven.config('https://1f0b7727aa3c4998b4073727ec3d21fe:df05a614e856411bbdb7d2d769febd50@sentry.io/290420', {
+import dotenv from 'dotenv'
+dotenv.load()
+Raven.config(process.env.SENTRY.privateURL, {
   captureUnhandledRejections: true,
   release: global.__version,
   tags: {

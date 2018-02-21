@@ -1,5 +1,4 @@
 // Setting up paths for binaries and static files.
-/* global MYSTERION_VERSION */
 
 import {app} from 'electron'
 import path from 'path'
@@ -12,7 +11,8 @@ export default function (global) {
     appContentsPath = path.resolve(__dirname, '../../')
   }
   global.__static = path.join(appContentsPath, 'static').replace(/\\/g, '\\\\')
-  global.__version = MYSTERION_VERSION
+  global.__version = process.env.MYSTERION_VERSION
+  global.__sentryURL = process.env.SENTRY.publicURL
 
   global.__mysteriumClientConfig = new MysteriumConfig(
     path.join(appContentsPath, 'bin', 'mysterium_client'),

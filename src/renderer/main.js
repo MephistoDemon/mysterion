@@ -22,7 +22,7 @@ new Vue({
   template: '<App/>'
 }).$mount('#app')
 
-Raven.config('https://1f0b7727aa3c4998b4073727ec3d21fe@sentry.io/290420', {
+Raven.config(remote.getGlobal('__sentryURL'), {
   captureUnhandledRejections: true,
   release: remote.getGlobal('__version'),
   tags: {
