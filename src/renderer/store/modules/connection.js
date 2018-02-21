@@ -68,8 +68,11 @@ const actions = {
       throw (err)
     }
   },
-  async [type.CONNECTION_STATUS] ({commit}) {
+  async [type.CONNECTION_STATUS] ({commit, dispatch}) {
     const res = await tequilapi.connection.status()
+    if (res.status === type.CONNECTED) {
+      dispatch(type.CONNECTION_STATUS_ALL)
+    }
     commit(type.CONNECTION_STATUS, res.status)
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {

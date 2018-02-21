@@ -1,4 +1,7 @@
+import {types} from '../../api/tequilapi'
+
 export default {
+  tequilapi: types.connection,
   // Mutations
   REQUEST_FAIL: 'REQUEST_FAIL',
 
