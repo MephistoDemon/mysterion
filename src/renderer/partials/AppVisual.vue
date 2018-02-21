@@ -8,7 +8,7 @@
                     <i class="visual__circle visual__circle--light" :class="visualState"></i>
                 </div>
                 <div class="visual__media" :class="visualState">
-                    <keep-alive> f
+                    <keep-alive>
                         <component
                                 :is="visual+'Visual'"
                                 class="visual__image"

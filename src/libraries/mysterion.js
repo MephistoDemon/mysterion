@@ -9,22 +9,18 @@ import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess} from
 
 function MysterionFactory (config, termsContent, termsVersion) {
   const tequilApi = new TequilAPI()
-  return new Mysterion(
+  return new Mysterion({
     config,
-    new Terms(config.userDataDirectory, termsContent, termsVersion),
-    new MysteriumDaemonInstaller(config),
-    new ProcessMonitoring(tequilApi),
-    new MysteriumProcess(tequilApi)
-  )
+    terms: new Terms(config.userDataDirectory, termsContent, termsVersion),
+    installer: new MysteriumDaemonInstaller(config),
+    monitoring: new ProcessMonitoring(tequilApi),
+    process: new MysteriumProcess(tequilApi)
+  })
 }
 
 class Mysterion {
-  constructor (config, terms, installer, monitoring, process) {
-    this.config = config
-    this.terms = terms
-    this.installer = installer
-    this.monitoring = monitoring
-    this.process = process
+  constructor ({config, terms, installer, monitoring, process}) {
+    Object.assign(this, {config, terms, installer, monitoring, process})
   }
 
   run () {
