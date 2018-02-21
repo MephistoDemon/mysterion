@@ -11,6 +11,7 @@ export default function (global) {
     appContentsPath = path.resolve(__dirname, '../../')
   }
   global.__static = path.join(appContentsPath, 'static').replace(/\\/g, '\\\\')
+  global.__version = process.env.MYSTERION_VERSION
 
   global.__mysteriumClientConfig = new MysteriumConfig(
     path.join(appContentsPath, 'bin', 'mysterium_client'),
