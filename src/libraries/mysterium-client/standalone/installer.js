@@ -1,5 +1,5 @@
 class Installer {
-  isInstalled () {
+  loaded () {
     return true
   }
 
