@@ -1,7 +1,7 @@
 <template>
     <div id="app" class="app">
         <div id="content">
-            <app-nav class="app__nav" v-if="!loading && navVisible"/>
+            <app-nav class="app__nav" v-if="navVisible"/>
             <router-view class="app__page"/>
             <transition name="fade" v-if="visual">
                 <app-visual class="app__visual"/>
@@ -26,10 +26,10 @@
       AppNav
     },
     computed: {
-      ...mapGetters(['loading', 'visual', 'clientIsRunning', 'navVisible'])
+      ...mapGetters(['visual', 'navVisible'])
     },
     async mounted () {
-      let oldClientIsRunning = true
+      let previousClientRunningState = true
 
       // we need to notify the main process that we're up
       ipcRenderer.send(communication.RENDERER_LOADED, true)
@@ -51,23 +51,25 @@
         this.$router.push('/')
       })
 
-      ipcRenderer.on(communication.HEALTHCHECK, (event, clientIsRunning) => {
-        if (oldClientIsRunning === clientIsRunning) {
+      ipcRenderer.on(communication.HEALTHCHECK, (event, clientRunningState) => {
+        if (previousClientRunningState === clientRunningState) {
           return
         }
 
+        previousClientRunningState = clientRunningState
+
         // if the client was down, but now up, we need to unlock the identity once again
-        if (clientIsRunning === true) {
+        if (clientRunningState) {
           this.$router.push('/load')
-        } else if (clientIsRunning === false) {
-          this.$store.dispatch(type.ERROR_IN_MAIN, {
-            message: 'mysterium_client is down',
-            hint: 'Please give it a moment to boot. If this message persists try restarting the app or please contact support'
-          })
-          this.$router.push('/')
+          return
         }
 
-        this.$store.dispatch('setClientRunningState', oldClientIsRunning = clientIsRunning)
+        this.$store.dispatch(type.ERROR_IN_MAIN, {
+          message: 'mysterium_client is down',
+          hint: 'Please give it a moment to boot. If this message persists try restarting the app or please contact support'
+        })
+        this.$router.push('/')
+        this.$store.dispatch('setClientRunningState', clientRunningState)
       })
     }
   }

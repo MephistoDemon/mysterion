@@ -1,7 +1,7 @@
 <template>
     <div class="appError">
         <h4>{{ error.message }}</h4>
-        <div>{{ error.hint || '' }}</div>
+        <div>{{ error.hint }}</div>
     </div>
 </template>
 

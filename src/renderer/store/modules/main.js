@@ -13,7 +13,7 @@ const getters = {
   loading: state => (state.init === type.INIT_PENDING),
   visual: state => state.visual,
   navOpen: state => state.navOpen,
-  navVisible: state => state.navVisible,
+  navVisible: state => state.navVisible && !(state.init === type.INIT_PENDING),
   requestErr: state => state.error,
   showReqErr: state => state.showRequestErr
 }
