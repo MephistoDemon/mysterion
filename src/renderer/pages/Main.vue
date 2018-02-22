@@ -73,6 +73,7 @@
     },
     mounted () {
       this.$store.dispatch(type.CONNECTION_IP)
+      this.$store.dispatch(type.CONNECTION_STATUS_ALL)
     },
     beforeDestroy () {
     }
