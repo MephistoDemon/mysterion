@@ -18,7 +18,9 @@
     "pack": "npm run pack:main && npm run pack:renderer",
     "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
-    "unit": "karma start test/unit/karma.conf.js",
+    "unit": "karma start test/unit/karma.conf.js --single-run=true",
+    "unit:start-server": "karma start test/unit/karma.conf.js",
+    "unit:run": "karma run test/unit/karma.conf.js",
     "postinstall": "npm run copy:bins && npm run lint:fix"
   },
   "build": {
