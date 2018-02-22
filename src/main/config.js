@@ -6,11 +6,12 @@ import {Config as MysteriumConfig} from '../libraries/mysterium-client'
 
 export default function (global) {
   let appContentsPath = path.resolve(app.getAppPath(), '../../')
+  global.__static = path.resolve(app.getAppPath(), '../', 'static').replace(/\\/g, '\\\\')
   if (process.env.NODE_ENV === 'development') {
     // path from this file
     appContentsPath = path.resolve(__dirname, '../../')
+    global.__static = path.join(appContentsPath, 'static').replace(/\\/g, '\\\\')
   }
-  global.__static = path.join(appContentsPath, 'static').replace(/\\/g, '\\\\')
 
   global.__mysteriumClientConfig = new MysteriumConfig(
     path.join(appContentsPath, 'bin', 'mysterium_client'),
