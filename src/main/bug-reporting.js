@@ -2,6 +2,7 @@ import os from 'os'
 import Raven from 'raven'
 import RavenJs from 'raven-js'
 import {remote} from 'electron'
+import RavenVue from 'raven-js/plugins/vue'
 
 const config = {
   captureUnhandledRejections: true,
@@ -16,17 +17,16 @@ const config = {
   }
 }
 
-let install = (processType) => {
-  let [url, raven] = []
-  if (processType === 'main') {
-    url = process.env.SENTRY.privateURL
-    raven = Raven
-  } else {
-    url = remote.getGlobal('__sentryURL')
-    raven = RavenJs
-  }
-  raven.config(url, config).install()
-  return raven
+let installInMain = () => {
+  const url = process.env.SENTRY.privateURL
+  Raven.config(url, config).install()
+  return Raven
 }
 
-export default {install}
+let installInRenderer = (Vue) => {
+  const url = remote.getGlobal('__sentryURL')
+  RavenJs.config(url, config).install().addPlugin(RavenVue, Vue)
+  return RavenJs
+}
+
+export default {installInMain, installInRenderer}

@@ -7,9 +7,9 @@ import config from './config'
 import {Installer as MysteriumInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
 import TequilAPI from '../api/tequilapi'
 
-import bugReporter from '../libraries/bug-reporting'
+import bugReporter from './bug-reporting'
 
-bugReporter.install('main')
+const raven = bugReporter.installInMain()
 config(global) // sets some global variables, path to mystClient binary etc
 let mainWindow
 let tray
@@ -77,7 +77,7 @@ function createWindow () {
     mainWindow = null
   })
   mainWindow.on('unresponsive', () => {
-    throw new Error('Renderer is unresponsive')
+    raven.captureException(new Error('Renderer is unresponsive'))
   })
 }
 
