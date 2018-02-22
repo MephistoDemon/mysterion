@@ -8,6 +8,15 @@ const conPath = '/connection'
 const healthCheckPath = '/healthcheck'
 const stopPath = '/stop'
 
+export const types = {
+  connection: {
+    CONNECTED: 'Connected',
+    NOT_CONNECTED: 'NotConnected',
+    DISCONNECTING: 'Disconnecting',
+    CONNECTING: 'Connecting'
+  }
+}
+
 export default function (teqAddr = 'http://127.0.0.1:4050') {
   const {teqAxio, axioAdapter} = adapterFactory(teqAddr)
   const api = {
@@ -69,5 +78,8 @@ function adapterFactory (teqAddr) {
       return res.data
     }
   }
-  return {teqAxio, axioAdapter}
+  return {
+    teqAxio,
+    axioAdapter
+  }
 }
