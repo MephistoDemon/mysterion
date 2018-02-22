@@ -1,11 +1,11 @@
 import path from 'path'
 import Window from './window'
 import Terms from './terms/index'
-import TequilAPI from '../api/tequilapi'
-import communication from './communication'
+import TequilAPI from '../libraries/tequilapi'
+import communication from './communication/index'
 import {app, Menu, Tray} from 'electron'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
-import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
+import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client/index'
 
 function MysterionFactory (config, termsContent, termsVersion) {
   const tequilApi = new TequilAPI()

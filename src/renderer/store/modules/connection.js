@@ -1,5 +1,5 @@
 import type from '../types'
-import tequilAPI from '../../../api/tequilapi'
+import tequilAPI from '../../../libraries/tequilapi'
 import config from '../../config'
 // TODO tequilAPI should be passed via DI
 const tequilapi = tequilAPI()

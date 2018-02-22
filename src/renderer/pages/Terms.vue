@@ -13,7 +13,7 @@
 <script>
   import {ipcRenderer} from 'electron'
   import {mapGetters} from 'vuex'
-  import communication from '../../libraries/communication'
+  import communication from '../../app/communication'
 
   export default {
     name: 'terms',

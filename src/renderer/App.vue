@@ -17,7 +17,7 @@
   import AppNav from '@/partials/AppNav'
 
   import {ipcRenderer} from 'electron'
-  import communication from '../libraries/communication'
+  import communication from '../app/communication'
 
   export default {
     name: 'App',

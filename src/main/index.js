@@ -1,7 +1,7 @@
 'use strict'
 
-import MysterionFactory from '../libraries/mysterion'
-import MysterionConfig from '../libraries/mysterion-config'
+import MysterionFactory from '../app/mysterion'
+import MysterionConfig from '../app/mysterion-config'
 
 global.__static = MysterionConfig.staticDirectoryPath
 
