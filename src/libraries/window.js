@@ -77,18 +77,6 @@ class Window {
     this.window.show()
     this.window.toggleDevTools()
   }
-
-  close () {
-    if (!this.window) {
-      return
-    }
-
-    try {
-      this.window.close()
-    } catch (e) {
-      console.error(e)
-    }
-  }
 }
 
 export default Window
