@@ -37,21 +37,20 @@ function createTray () {
   let template = [
     {
       label: 'Quit',
+      accelerator: 'Command+Q',
       click: () => {
         app.quit()
       }
     }
   ]
-  if (process.env.NODE_ENV === 'development') {
-    template = [{
-      label: 'Toggle DevTools',
-      accelerator: 'Alt+Command+I',
-      click: function () {
-        mainWindow.show()
-        mainWindow.toggleDevTools()
-      }
-    }, ...template]
-  }
+  template.unshift({
+    label: 'Toggle DevTools',
+    accelerator: 'Alt+Command+I',
+    click: function () {
+      mainWindow.show()
+      mainWindow.toggleDevTools()
+    }
+  })
   const contextMenu = Menu.buildFromTemplate(template)
   tray.setContextMenu(contextMenu)
 }
