@@ -88,10 +88,14 @@ const actions = {
   },
   async [type.DISCONNECT] ({commit, dispatch}) {
     try {
-      const res = await tequilapi.connection.disconnect()
       clearTimeout(updaterTimeout)
-      await dispatch(type.CONNECTION_IP)
-      await dispatch(type.CONNECTION_STATUS)
+      let res = tequilapi.connection.disconnect()
+      commit(type.CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
+      res = await res
+      dispatch(type.CONNECTION_STATUS)
+      setTimeout(() => {
+        dispatch(type.CONNECTION_IP)
+      }, 5000)
       return res
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
