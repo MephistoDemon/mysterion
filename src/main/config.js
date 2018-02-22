@@ -17,6 +17,7 @@ export default function (global) {
   global.__mysteriumClientConfig = new MysteriumConfig(
     path.join(appContentsPath, 'bin', 'mysterium_client'),
     path.join(appContentsPath, 'bin', 'config'),
+    path.join(appContentsPath, 'bin', 'openvpn'),
     app.getPath('userData'),
     app.getPath('temp'),
     // TODO migrate to logs directory in later versions, see https://github.com/electron/electron/pull/10191
