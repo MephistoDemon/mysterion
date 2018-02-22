@@ -4,7 +4,7 @@
       <div class="control__version">Pre-alpha v{{version}}</div>
       <div class="control__top">
         <h1 :class="{'is-grey':status===-1}" v-text="statusTitle"></h1>
-        <div class="control__location" v-if="ip">current IP:{{ip}}</div>
+        <div class="control__location" v-if="ip">current IP: {{ip}}</div>
       </div>
       <div class="control__bottom">
         <country-select v-model="country" class="control__countries" :class="{'is-disabled': status!==-1}"/>
@@ -76,6 +76,7 @@
     },
     mounted () {
       this.$store.dispatch(type.CONNECTION_IP)
+      this.$store.dispatch(type.CONNECTION_STATUS_ALL)
     },
     beforeDestroy () {
     }

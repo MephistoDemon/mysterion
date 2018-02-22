@@ -1,6 +1,7 @@
 <template>
     <div id="app" class="app">
         <div id="content">
+            <div class="control__version">Pre-alpha v{{version}}</div>
             <app-modal v-if="!clientIsRunning" :close="false">
                 <app-error :error="error"></app-error>
             </app-modal>
@@ -20,7 +21,7 @@
   import AppModal from '@/partials/AppModal'
   import AppNav from '@/partials/AppNav'
   import AppError from '@/partials/AppError'
-  import {ipcRenderer} from 'electron'
+  import {ipcRenderer, remote} from 'electron'
 
   export default {
     name: 'App',
@@ -35,6 +36,7 @@
     },
     data () {
       return {
+        version: remote.getGlobal('__version'),
         error: {
           message: 'Mysterium client seems to be down.',
           hint: 'Please wait while it re-launches. If this message persists, please contact support.'

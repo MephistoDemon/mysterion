@@ -30,16 +30,16 @@
       buttonText: (comp) => {
         let text = 'Connect'
         switch (comp.$store.getters.status) {
-          case 'Connected':
+          case type.tequilapi.CONNECTED:
             text = 'Disconnect'
             break
-          case 'Connecting':
+          case type.tequilapi.CONNECTING:
             text = 'Connecting'
             break
-          case 'NotConnected':
+          case type.tequilapi.NOT_CONNECTED:
             text = 'Connect'
             break
-          case 'Disconnecting':
+          case type.tequilapi.DISCONNECTING:
             text = 'Disconnecting'
             break
         }

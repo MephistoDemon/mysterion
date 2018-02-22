@@ -23,16 +23,14 @@ const getters = {
 }
 
 const mutations = {
-  [type.CONNECTION_IP] (state, data) {
-    state.ip = data.ip
-  },
-  [type.CONNECTION_STATUS_ALL] (state, data) {
-    state.status = data.status
-    state.stats = data.stats
-    state.ip = data.ip
-  },
   [type.CONNECTION_STATUS] (state, status) {
     state.status = status
+  },
+  [type.CONNECTION_STATS] (state, stats) {
+    state.stats = stats
+  },
+  [type.CONNECTION_IP] (state, ip) {
+    state.ip = ip
   }
 }
 
@@ -45,9 +43,10 @@ const actions = {
   },
   async [type.CONNECTION_IP] ({commit}) {
     try {
-      const res = await tequilapi.connection.ip()
-      commit(type.CONNECTION_IP, res)
-      return res.ip
+      const ip = await tequilapi.connection.ip()
+      if (ip !== null) {
+        commit(type.CONNECTION_IP, ip)
+      }
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
       throw err
@@ -59,14 +58,21 @@ const actions = {
       const statsPromise = tequilapi.connection.statistics()
       const ipPromise = tequilapi.connection.ip()
       const [status, stats, ip] = await Promise.all([statusPromise, statsPromise, ipPromise])
-      commit(type.CONNECTION_STATUS_ALL, {status: status.status, stats, ip: ip.ip})
+      commit(type.CONNECTION_STATUS, status.status)
+      commit(type.CONNECTION_STATS, stats)
+      if (ip !== null) {
+        commit(type.CONNECTION_IP, ip)
+      }
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
       throw (err)
     }
   },
-  async [type.CONNECTION_STATUS] ({commit}) {
+  async [type.CONNECTION_STATUS] ({commit, dispatch}) {
     const res = await tequilapi.connection.status()
+    if (res.status === type.CONNECTED) {
+      dispatch(type.CONNECTION_STATUS_ALL)
+    }
     commit(type.CONNECTION_STATUS, res.status)
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
@@ -84,10 +90,14 @@ const actions = {
   },
   async [type.DISCONNECT] ({commit, dispatch}) {
     try {
-      const res = await tequilapi.connection.disconnect()
       clearTimeout(updaterTimeout)
-      await dispatch(type.CONNECTION_IP)
-      await dispatch(type.CONNECTION_STATUS)
+      let res = tequilapi.connection.disconnect()
+      commit(type.CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
+      res = await res
+      dispatch(type.CONNECTION_STATUS)
+      setTimeout(() => {
+        dispatch(type.CONNECTION_IP)
+      }, 5000)
       return res
     } catch (err) {
       commit(type.REQUEST_FAIL, err)

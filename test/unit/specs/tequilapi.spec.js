@@ -17,6 +17,20 @@ describe('tequilAPI', () => {
       expect(err.message).to.be.undefined
     }
   })
+
+  describe('ip', () => {
+    it('returns ip when endpoint succeeds', async () => {
+      mock.onGet('/connection/ip').replyOnce(200, {ip: 'mock ip'})
+      const ip = await tequilApi.connection.ip()
+      expect(ip).to.deep.eql('mock ip')
+    })
+
+    it('returns null when endpoint fails with 503', async () => {
+      mock.onGet('/connection/ip').replyOnce(503)
+      const ip = await tequilApi.connection.ip()
+      expect(ip).to.eql(null)
+    })
+  })
 })
 
 describe('tequilAPI error handling', () => {

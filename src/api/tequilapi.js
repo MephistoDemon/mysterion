@@ -8,6 +8,15 @@ const conPath = '/connection'
 const healthCheckPath = '/healthcheck'
 const stopPath = '/stop'
 
+export const types = {
+  connection: {
+    CONNECTED: 'Connected',
+    NOT_CONNECTED: 'NotConnected',
+    DISCONNECTING: 'Disconnecting',
+    CONNECTING: 'Connecting'
+  }
+}
+
 export default function (teqAddr = 'http://127.0.0.1:4050') {
   const {teqAxio, axioAdapter} = adapterFactory(teqAddr)
   const api = {
@@ -28,7 +37,18 @@ export default function (teqAddr = 'http://127.0.0.1:4050') {
       }),
       disconnect: async () => axioAdapter.delete(conPath),
       status: async () => axioAdapter.get(conPath),
-      ip: async () => axioAdapter.get(conPath + '/ip'),
+      ip: async () => {
+        try {
+          const res = await axioAdapter.get(conPath + '/ip', {timeout: 8000})
+          return res.ip
+        } catch (err) {
+          if (err.response && err.response.status === 503) {
+            return null
+          } else {
+            throw err
+          }
+        }
+      },
       statistics: async () => axioAdapter.get(conPath + '/statistics')
     },
     healthCheck: async (timeout) => axioAdapter.get(healthCheckPath, {timeout}),
@@ -58,5 +78,8 @@ function adapterFactory (teqAddr) {
       return res.data
     }
   }
-  return {teqAxio, axioAdapter}
+  return {
+    teqAxio,
+    axioAdapter
+  }
 }
