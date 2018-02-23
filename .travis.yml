@@ -25,6 +25,19 @@ install:
 - yarn
 script:
 - npm run unit
+before_deploy:
 - npm run download:bins
 - npm run build
-- ls -la build
+- mkdir binaries
+- cp build/Mysterion-0.0.1.dmg binaries
+deploy:
+  - provider: pages
+    local-dir: binaries
+    skip-cleanup: true
+    github-token: "$GITHUB_API_TOKEN"
+    keep-history: false
+    target-branch: mysterion_$TRAVIS_OS_NAME
+    repo: MysteriumNetwork/build-artifacts
+    on:
+      branch: improvement/enable-auto-dmg-builds
+
