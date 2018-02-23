@@ -39,5 +39,5 @@ deploy:
     target-branch: mysterion_$TRAVIS_OS_NAME
     repo: MysteriumNetwork/build-artifacts
     on:
-      branch: improvement/enable-auto-dmg-builds
+      branch: master
 
