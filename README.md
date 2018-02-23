@@ -13,7 +13,10 @@ VPN desktop UI (OSX, Windows, Linux) for Mysterium Network
 
 ```bash
 # install dependencies
-npm install
+You need to specify GITHUB_API_TOKEN for the first run, as it will download
+required binaries: mysterium_client and openvpn. This token can be generated at:
+https://github.com/settings/tokens, it requires "repo" scope
+GITHUB_API_TOKEN=<yourtoken> npm install
 
 # serve with hot reload at localhost:9080
 npm run dev

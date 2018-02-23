@@ -7,7 +7,7 @@
   "private": true,
   "main": "./dist/electron/main.js",
   "scripts": {
-    "copy:bins": "./copy_binaries.sh",
+    "download:bins": "util_scripts/download-binaries.sh",
     "build": "node .electron-vue/build.js && electron-builder",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
@@ -21,7 +21,7 @@
     "unit": "karma start test/unit/karma.conf.js --single-run=true",
     "unit:start-server": "karma start test/unit/karma.conf.js",
     "unit:run": "karma run test/unit/karma.conf.js",
-    "postinstall": "npm run copy:bins && npm run lint:fix"
+    "postinstall": "npm run download:bins && npm run lint:fix"
   },
   "build": {
     "productName": "Mysterion",
@@ -34,6 +34,7 @@
     ],
     "extraFiles": [
       "./bin/mysterium_client",
+      "./bin/openvpn_osx",
       "./bin/config"
     ],
     "extraResources": [
