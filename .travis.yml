@@ -24,4 +24,5 @@ install:
 - yarn
 script:
 - npm run unit
+- npm run download:bins
 - npm run build
