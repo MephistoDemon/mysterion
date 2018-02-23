@@ -1,8 +1,8 @@
 #!/bin/bash
 
-SCRIPT_DIR=`dirname $0`
+set -e
 
-[ "$GITHUB_API_TOKEN" ] || { echo "Error: Please define GITHUB_API_TOKEN variable." >&2; exit 1; }
+SCRIPT_DIR=`dirname $0`
 
 
 BIN_DIR=$1
