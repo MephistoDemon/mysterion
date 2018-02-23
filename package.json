@@ -34,6 +34,7 @@
       "dist/electron/**/*"
     ],
     "extraFiles": [
+      "./bin/openvpn",
       "./bin/mysterium_client",
       "./bin/openvpn",
       "./bin/config"
