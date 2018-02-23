@@ -8,6 +8,7 @@ export default function (global) {
   let appContentsPath = path.resolve(app.getAppPath(), '../../')
   global.__static = path.resolve(app.getAppPath(), '../', 'static').replace(/\\/g, '\\\\')
   global.__version = process.env.MYSTERION_VERSION
+  global.__sentryURL = process.env.SENTRY.publicURL
   if (process.env.NODE_ENV === 'development') {
     // path from this file
     appContentsPath = path.resolve(__dirname, '../../')

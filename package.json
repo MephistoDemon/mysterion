@@ -73,6 +73,8 @@
     "axios": "^0.16.1",
     "less": "^2.7.3",
     "less-loader": "^4.0.5",
+    "raven": "^2.4.1",
+    "raven-js": "^3.22.3",
     "sudo-prompt": "^8.1.0",
     "vue": "^2.5.13",
     "vue-electron": "^1.0.6",
