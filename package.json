@@ -35,7 +35,7 @@
     ],
     "extraFiles": [
       "./bin/mysterium_client",
-      "./bin/openvpn_osx",
+      "./bin/openvpn",
       "./bin/config"
     ],
     "extraResources": [

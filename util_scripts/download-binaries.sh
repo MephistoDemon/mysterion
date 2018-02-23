@@ -14,7 +14,7 @@ mkdir -p $BIN_DIR
 
 
 OPENVPN_VERSION=v2.4.4-1 #standalone build version
-OPENVPN_BINARY=$BIN_DIR/openvpn_osx
+OPENVPN_BINARY=$BIN_DIR/openvpn
 
 if [ ! -f $OPENVPN_BINARY ] || [ ! -z "$FORCE_DOWNLOAD" ]; then
     $SCRIPT_DIR/git-asset-dl.sh MysteriumNetwork standalone-openvpn $OPENVPN_VERSION openvpn_osx
