@@ -8,6 +8,7 @@
   "main": "./dist/electron/main.js",
   "scripts": {
     "download:bins": "util_scripts/download-binaries.sh",
+    "copy:bins": "util_scripts/copy-binaries.sh",
     "build": "node .electron-vue/build.js && electron-builder",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
