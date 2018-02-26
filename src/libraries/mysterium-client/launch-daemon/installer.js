@@ -65,8 +65,6 @@ class Installer {
           <string>${this.config.logDir}/stdout.log</string>
           <key>StandardErrorPath</key>
           <string>${this.config.logDir}/stderr.log</string>
-          <key>myKey</key>
-          <string>abc111</string>
          </dict>
       </plist>`
   }
