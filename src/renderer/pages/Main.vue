@@ -8,7 +8,6 @@
       </div>
       <div class="control__bottom">
         <country-select v-model="country" class="control__countries" :class="{'is-disabled': status!==-1}"/>
-        {{country}}
         <connection-button :provider-id="providerIdentity"></connection-button>
       </div>
       <div class="control__footer">
