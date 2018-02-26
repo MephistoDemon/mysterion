@@ -1,6 +1,7 @@
 import fs from 'fs'
 import sudo from 'sudo-prompt'
 import path from 'path'
+import md5 from 'md5'
 
 const DaemonDirectory = '/Library/LaunchDaemons'
 const InverseDomainPackageName = 'network.mysterium.mysteriumclient'
@@ -64,8 +65,20 @@ class Installer {
           <string>${this.config.logDir}/stdout.log</string>
           <key>StandardErrorPath</key>
           <string>${this.config.logDir}/stderr.log</string>
+          <key>myKey</key>
+          <string>abc111</string>
          </dict>
       </plist>`
+  }
+
+  pListChecksumMismatch () {
+    let templateChecksum = md5(this.template())
+    let plistChecksum = md5(fs.readFileSync(this.getDaemonFileName()))
+    return templateChecksum !== plistChecksum
+  }
+
+  needsInstallation () {
+    return !this.exists() || this.pListChecksumMismatch()
   }
 
   install () {

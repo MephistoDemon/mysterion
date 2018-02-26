@@ -83,7 +83,7 @@ function createWindow () {
 
 app.on('ready', async () => {
   let installer = new MysteriumInstaller(global.__mysteriumClientConfig)
-  if (!installer.exists()) {
+  if (installer.needsInstallation()) {
     try {
       await installer.install()
     } catch (err) {
