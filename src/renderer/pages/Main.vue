@@ -75,7 +75,10 @@
     },
     mounted () {
       this.$store.dispatch(type.CONNECTION_IP)
-      this.$store.dispatch(type.CONNECTION_STATUS_ALL)
+      this.$store.dispatch(type.CONNECTION_STATUS)
+      if (this.connection.status === type.tequilapi.CONNECTED) {
+        this.$store.dispatch(type.STATUS_UPDATER_RUN)
+      }
     },
     beforeDestroy () {
     }

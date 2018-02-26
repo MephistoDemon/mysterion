@@ -60,9 +60,6 @@ const actions = {
       const [status, stats] = await Promise.all([statusPromise, statsPromise])
       commit(type.CONNECTION_STATUS, status.status)
       commit(type.CONNECTION_STATS, stats)
-      if (status.status !== type.tequilapi.CONNECTED && !updaterTimeout) {
-        dispatch(type.STATUS_UPDATER_RUN)
-      }
       const ip = await ipPromise
       if (ip !== null) {
         commit(type.CONNECTION_IP, ip)
@@ -74,20 +71,18 @@ const actions = {
   },
   async [type.CONNECTION_STATUS] ({commit, dispatch}) {
     const res = await tequilapi.connection.status()
-    if (res.status === type.CONNECTED) {
-      dispatch(type.CONNECTION_STATUS_ALL)
-    } else {
-      clearTimeout(updaterTimeout)
-    }
     commit(type.CONNECTION_STATUS, res.status)
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
     try {
       tequilapi.connection.connect(consumerId, providerId)
       commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTING)
-      dispatch(type.STATUS_UPDATER_RUN)
+      updaterTimeout = setTimeout(() => {
+        dispatch(type.STATUS_UPDATER_RUN)
+      }, 1000)
     } catch (err) {
       let error = new Error('Connection to node failed. Try other one')
+      clearTimeout(updaterTimeout)
       error.original = err
       commit(type.REQUEST_FAIL, error)
       throw (error)

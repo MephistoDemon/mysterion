@@ -23,10 +23,10 @@ const mountWithStore = function () {
         ...conStore,
         actions: {
           [type.CONNECT] ({commit}, consumerId, providerId) {
-            commit(type.CONNECTION_STATUS, 'Connected')
+            commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTED)
           },
           [type.DISCONNECT] ({commit}) {
-            commit(type.CONNECTION_STATUS, 'NotConnected')
+            commit(type.CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
           }
         }
       }
@@ -53,7 +53,7 @@ describe('ConnectionButton', () => {
       expect(vm.$el.textContent).to.contain(rules[index][1])
     }
     // reset store
-    vm.$store.commit(type.CONNECTION_STATUS, '')
+    vm.$store.commit(type.CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
   })
 
   it('clicks change state', () => {
@@ -63,8 +63,9 @@ describe('ConnectionButton', () => {
     const button = vm.$el.querySelector('.control__action')
     button.dispatchEvent(clickEvent)
     vm._watcher.run()
-    expect(vm.$el.textContent).to.contain('Disconnect')
+    console.log(vm.$store.state.connection.getters)
     expect(vm.$store.state.connection.status).to.equal('Connected')
+    expect(vm.$el.textContent).to.contain('Disconnect')
 
     // handle disconnect
     button.dispatchEvent(clickEvent)

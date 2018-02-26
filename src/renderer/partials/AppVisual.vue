@@ -49,6 +49,7 @@
         } else if (this.$router.currentRoute.name === 'main') {
           switch (this.connection.status) {
             case type.tequilapi.CONNECTED:
+            case type.tequilapi.CONNECTING:
               classes = ['is-pulsing']
               break
             case type.tequilapi.NOT_CONNECTED:
