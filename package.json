@@ -9,7 +9,7 @@
   "scripts": {
     "download:bins": "util_scripts/download-binaries.sh",
     "copy:bins": "util_scripts/copy-binaries.sh",
-    "build": "node .electron-vue/build.js && electron-builder",
+    "build": "node .electron-vue/build.js && electron-builder --publish never",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
@@ -22,7 +22,7 @@
     "unit": "karma start test/unit/karma.conf.js --single-run=true",
     "unit:start-server": "karma start test/unit/karma.conf.js",
     "unit:run": "karma run test/unit/karma.conf.js",
-    "postinstall": "npm run copy:bins && npm run lint:fix"
+    "postinstall": "npm run && npm run lint:fix"
   },
   "build": {
     "productName": "Mysterion",
