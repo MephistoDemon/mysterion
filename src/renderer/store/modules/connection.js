@@ -36,10 +36,10 @@ const mutations = {
 
 const actions = {
   async [type.STATUS_UPDATER_RUN] ({dispatch}) {
-    await dispatch(type.CONNECTION_STATUS_ALL)
     updaterTimeout = setTimeout(() => {
       dispatch(type.STATUS_UPDATER_RUN)
     }, config.statusUpdateTimeout)
+    await dispatch(type.CONNECTION_STATUS_ALL)
   },
   async [type.CONNECTION_IP] ({commit}) {
     try {
@@ -52,7 +52,7 @@ const actions = {
       throw err
     }
   },
-  async [type.CONNECTION_STATUS_ALL] ({commit}) {
+  async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
     try {
       const statusPromise = tequilapi.connection.status()
       const statsPromise = tequilapi.connection.statistics()
@@ -60,6 +60,9 @@ const actions = {
       const [status, stats] = await Promise.all([statusPromise, statsPromise])
       commit(type.CONNECTION_STATUS, status.status)
       commit(type.CONNECTION_STATS, stats)
+      if (status.status !== type.tequilapi.CONNECTED && !updaterTimeout) {
+        dispatch(type.STATUS_UPDATER_RUN)
+      }
       const ip = await ipPromise
       if (ip !== null) {
         commit(type.CONNECTION_IP, ip)
@@ -73,6 +76,8 @@ const actions = {
     const res = await tequilapi.connection.status()
     if (res.status === type.CONNECTED) {
       dispatch(type.CONNECTION_STATUS_ALL)
+    } else {
+      clearTimeout(updaterTimeout)
     }
     commit(type.CONNECTION_STATUS, res.status)
   },
@@ -95,9 +100,7 @@ const actions = {
       commit(type.CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
       res = await res
       dispatch(type.CONNECTION_STATUS)
-      setTimeout(() => {
-        dispatch(type.CONNECTION_IP)
-      }, 5000)
+      dispatch(type.CONNECTION_IP)
       return res
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
