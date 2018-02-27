@@ -9,7 +9,7 @@ import idStore from '@/store/modules/identity'
 import propStore from '@/store/modules/proposal'
 import mainStore from '@/store/modules/main'
 import loadingScreen from '@/pages/Loader'
-import tequilAPI from '@/../api/tequilapi'
+import tequilAPI from '@/../libraries/tequilapi'
 
 import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
