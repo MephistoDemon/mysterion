@@ -36,10 +36,10 @@ const mutations = {
 
 const actions = {
   async [type.STATUS_UPDATER_RUN] ({dispatch}) {
+    await dispatch(type.CONNECTION_STATUS_ALL)
     updaterTimeout = setTimeout(() => {
       dispatch(type.STATUS_UPDATER_RUN)
     }, config.statusUpdateTimeout)
-    await dispatch(type.CONNECTION_STATUS_ALL)
   },
   async [type.CONNECTION_IP] ({commit}) {
     try {
@@ -52,12 +52,13 @@ const actions = {
       throw err
     }
   },
-  async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
+  async [type.CONNECTION_STATUS_ALL] ({commit}) {
     try {
       const statusPromise = tequilapi.connection.status()
       const statsPromise = tequilapi.connection.statistics()
       const ipPromise = tequilapi.connection.ip()
-      const [status, stats] = await Promise.all([statusPromise, statsPromise])
+      const status = await statusPromise
+      const stats = await statsPromise
       commit(type.CONNECTION_STATUS, status.status)
       commit(type.CONNECTION_STATS, stats)
       const ip = await ipPromise
@@ -66,23 +67,22 @@ const actions = {
       }
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
-      throw (err)
     }
   },
-  async [type.CONNECTION_STATUS] ({commit, dispatch}) {
+  async [type.CONNECTION_STATUS] ({commit}) {
     const res = await tequilapi.connection.status()
     commit(type.CONNECTION_STATUS, res.status)
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
     try {
-      tequilapi.connection.connect(consumerId, providerId)
       commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTING)
+      await tequilapi.connection.connect(consumerId, providerId)
+      // if we ask openvpn right away status stil in not connected state
       updaterTimeout = setTimeout(() => {
         dispatch(type.STATUS_UPDATER_RUN)
       }, 1000)
     } catch (err) {
       let error = new Error('Connection to node failed. Try other one')
-      clearTimeout(updaterTimeout)
       error.original = err
       commit(type.REQUEST_FAIL, error)
       throw (error)

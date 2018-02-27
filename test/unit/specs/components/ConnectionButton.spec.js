@@ -63,7 +63,6 @@ describe('ConnectionButton', () => {
     const button = vm.$el.querySelector('.control__action')
     button.dispatchEvent(clickEvent)
     vm._watcher.run()
-    console.log(vm.$store.state.connection.getters)
     expect(vm.$store.state.connection.status).to.equal('Connected')
     expect(vm.$el.textContent).to.contain('Disconnect')
 
