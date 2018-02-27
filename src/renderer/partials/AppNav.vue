@@ -37,6 +37,11 @@
                         <span class="nav__text">tutorial</span>
                     </router-link>
                 </li>
+                <li class="nav__item">
+                    <a class="nav__trigger" href="#" @click="openRemoteLink('https://mysterium.zendesk.com/hc/en-us/requests/new')">
+                        <span class="nav__text">report issue</span>
+                    </a>
+                </li>
             </ul>
             <div class="nav__logout">
                 <a class="nav__trigger" href="#" @click="quit()">
@@ -52,8 +57,8 @@
 </template>
 
 <script>
-  import { remote } from 'electron'
-  import { mapGetters, mapActions } from 'vuex'
+  import {remote, shell} from 'electron'
+  import {mapGetters, mapActions} from 'vuex'
   import IconEye from '@/assets/img/icon--eye.svg'
   import IconCube from '@/assets/img/icon--cube.svg'
   import IconShare from '@/assets/img/icon--share.svg'
@@ -78,6 +83,9 @@
       ...mapActions(['switchNav']),
       quit () {
         remote.app.quit()
+      },
+      openRemoteLink (url) {
+        shell.openExternal(url)
       }
     },
     mounted () {

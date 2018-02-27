@@ -1,4 +1,7 @@
+import {types} from '../../libraries/tequilapi'
+
 export default {
+  tequilapi: types.connection,
   // Mutations
   REQUEST_FAIL: 'REQUEST_FAIL',
 
@@ -27,6 +30,7 @@ export default {
   CONNECTION_STATS: 'CONNECTION_STATS',
 
   // Mutation + action
+  CONNECTION_STATUS_ALL: 'CONNECTION_STATUS_ALL',
   CONNECTION_STATUS: 'CONNECTION_STATUS',
   CONNECTION_IP: 'CONNECTION_IP',
 

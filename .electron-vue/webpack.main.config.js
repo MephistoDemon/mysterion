@@ -1,9 +1,9 @@
 'use strict'
-
 process.env.BABEL_ENV = 'main'
 
 const path = require('path')
-const { dependencies } = require('../package.json')
+const {dependencies, version} = require('../package.json')
+const {sentry} = require('../services_conf.json')
 const webpack = require('webpack')
 
 const BabiliWebpackPlugin = require('babili-webpack-plugin')
@@ -49,6 +49,10 @@ let mainConfig = {
     path: path.join(__dirname, '../dist/electron')
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.MYSTERION_VERSION': JSON.stringify(version),
+      'process.env.SENTRY': JSON.stringify(sentry)
+    }),
     new webpack.NoEmitOnErrorsPlugin()
   ],
   resolve: {

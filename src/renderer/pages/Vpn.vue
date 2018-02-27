@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="page__control control">
-      <div class="control__version">Pre-alpha v0.1</div>
+      <div class="control__version">Pre-alpha v{{version}}</div>
       <div class="control__top">
         <h1 :class="{'is-grey':status===-1}" v-text="statusTitle"></h1>
         <div class="control__location" v-if="ip">current IP: {{ip}}</div>
@@ -30,6 +30,7 @@
 </template>
 
 <script>
+  import {remote} from 'electron'
   import CountrySelect from '@/components/CountrySelect'
   import type from '../store/types'
   import {mapGetters, mapMutations} from 'vuex'
@@ -47,7 +48,8 @@
     },
     data () {
       return {
-        country: null
+        country: null,
+        version: remote.getGlobal('__version')
       }
     },
     computed: {
@@ -74,6 +76,7 @@
     },
     mounted () {
       this.$store.dispatch(type.CONNECTION_IP)
+      this.$store.dispatch(type.CONNECTION_STATUS_ALL)
     },
     beforeDestroy () {
     }

@@ -1,16 +1,11 @@
-osx_image: xcode8.3
+osx_image: xcode9.2
+os: osx
 sudo: required
-dist: trusty
-language: c
-matrix:
-  include:
-  - os: osx
-  - os: linux
-    env: CC=clang CXX=clang++ npm_config_clang=1
-    compiler: clang
+language: js
 cache:
   directories:
   - node_modules
+  - bin
   - "$HOME/.electron"
   - "$HOME/.cache"
 addons:
@@ -22,15 +17,27 @@ before_install:
 - mkdir -p /tmp/git-lfs && curl -L https://github.com/github/git-lfs/releases/download/v1.2.1/git-lfs-$([
   "$TRAVIS_OS_NAME" == "linux" ] && echo "linux" || echo "darwin")-amd64-1.2.1.tar.gz
   | tar -xz -C /tmp/git-lfs --strip-components 1 && /tmp/git-lfs/git-lfs pull
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install --no-install-recommends -y icnsutils graphicsmagick xz-utils; fi
 install:
-- nvm install 7
+- nvm install 9
 - curl -o- -L https://yarnpkg.com/install.sh | bash
 - source ~/.bashrc
 - npm install -g xvfb-maybe
 - yarn
 script:
-- yarn run build
-branches:
-  only:
-  - master
+- npm run unit
+before_deploy:
+- npm run download:bins
+- npm run build
+- mkdir binaries
+- cp build/Mysterion-0.0.1.dmg binaries
+deploy:
+  - provider: pages
+    local-dir: binaries
+    skip-cleanup: true
+    github-token: "$GITHUB_API_TOKEN"
+    keep-history: false
+    target-branch: mysterion_$TRAVIS_OS_NAME
+    repo: MysteriumNetwork/build-artifacts
+    on:
+      branch: master
+

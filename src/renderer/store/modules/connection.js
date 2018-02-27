@@ -68,8 +68,11 @@ const actions = {
       throw (err)
     }
   },
-  async [type.CONNECTION_STATUS] ({commit}) {
+  async [type.CONNECTION_STATUS] ({commit, dispatch}) {
     const res = await tequilapi.connection.status()
+    if (res.status === type.CONNECTED) {
+      dispatch(type.CONNECTION_STATUS_ALL)
+    }
     commit(type.CONNECTION_STATUS, res.status)
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
@@ -79,16 +82,22 @@ const actions = {
       dispatch(type.STATUS_UPDATER_RUN)
       return res
     } catch (err) {
-      commit(type.REQUEST_FAIL, err)
-      throw (err)
+      let error = new Error('Connection to node failed. Try other one')
+      error.original = err
+      commit(type.REQUEST_FAIL, error)
+      throw (error)
     }
   },
   async [type.DISCONNECT] ({commit, dispatch}) {
     try {
-      const res = await tequilapi.connection.disconnect()
       clearTimeout(updaterTimeout)
-      await dispatch(type.CONNECTION_IP)
-      await dispatch(type.CONNECTION_STATUS)
+      let res = tequilapi.connection.disconnect()
+      commit(type.CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
+      res = await res
+      dispatch(type.CONNECTION_STATUS)
+      setTimeout(() => {
+        dispatch(type.CONNECTION_IP)
+      }, 5000)
       return res
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
