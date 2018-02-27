@@ -27,9 +27,9 @@
         status: 'status',
         consumerId: 'currentIdentity'
       }),
-      buttonText: (comp) => {
+      buttonText: (vm) => {
         let text = 'Connect'
-        switch (comp.$store.getters.status) {
+        switch (vm.$store.getters.status) {
           case type.tequilapi.CONNECTED:
             text = 'Disconnect'
             break
@@ -51,19 +51,14 @@
     },
     methods: {
       connect: function () {
-        if (this.isConnecting || this.isDisconnecting) {
-          return
-        }
-
-        if (this.isConnected) {
+        if (this.$store.getters.status === type.tequilapi.NOT_CONNECTED) {
+          this.$store.dispatch(type.CONNECT, {
+            consumerId: this.consumerId,
+            providerId: this.providerId
+          })
+        } else {
           this.$store.dispatch(type.DISCONNECT)
-          return
         }
-
-        this.$store.dispatch(type.CONNECT, {
-          consumerId: this.consumerId,
-          providerId: this.providerId
-        })
       }
     }
   }
