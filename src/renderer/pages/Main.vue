@@ -1,14 +1,13 @@
 <template>
   <div class="page">
     <div class="page__control control">
-      <div class="control__version">Pre-alpha v0.1</div>
+      <div class="control__version">Pre-alpha v{{version}}</div>
       <div class="control__top">
         <h1 :class="{'is-grey':status===-1}" v-text="statusTitle"></h1>
         <div class="control__location" v-if="ip">current IP: {{ip}}</div>
       </div>
       <div class="control__bottom">
         <country-select v-model="country" class="control__countries" :class="{'is-disabled': status!==-1}"/>
-        {{country}}
         <connection-button :provider-id="providerIdentity"></connection-button>
       </div>
       <div class="control__footer">
@@ -30,6 +29,7 @@
 </template>
 
 <script>
+  import {remote} from 'electron'
   import CountrySelect from '@/components/CountrySelect'
   import type from '../store/types'
   import {mapGetters, mapMutations} from 'vuex'
@@ -47,11 +47,12 @@
     },
     data () {
       return {
-        country: null
+        country: null,
+        version: remote.getGlobal('__version')
       }
     },
     computed: {
-      ...mapGetters(['connection', 'ip', 'statusText', 'requestErr', 'showReqErr']),
+      ...mapGetters(['connection', 'ip', 'requestErr', 'showReqErr']),
       status () {
         switch (this.connection.status) {
           case 'NotConnected': return -1
@@ -74,6 +75,10 @@
     },
     mounted () {
       this.$store.dispatch(type.CONNECTION_IP)
+      this.$store.dispatch(type.CONNECTION_STATUS)
+      if (this.connection.status === type.tequilapi.CONNECTED) {
+        this.$store.dispatch(type.STATUS_UPDATER_RUN)
+      }
     },
     beforeDestroy () {
     }

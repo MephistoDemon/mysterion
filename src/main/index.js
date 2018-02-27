@@ -7,6 +7,9 @@ import config from './config'
 import {Installer as MysteriumInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
 import TequilAPI from '../api/tequilapi'
 
+import bugReporter from './bug-reporting'
+
+const raven = bugReporter.installInMain()
 config(global) // sets some global variables, path to mystClient binary etc
 let mainWindow
 let tray
@@ -37,21 +40,20 @@ function createTray () {
   let template = [
     {
       label: 'Quit',
+      accelerator: 'Command+Q',
       click: () => {
         app.quit()
       }
     }
   ]
-  if (process.env.NODE_ENV === 'development') {
-    template = [{
-      label: 'Toggle DevTools',
-      accelerator: 'Alt+Command+I',
-      click: function () {
-        mainWindow.show()
-        mainWindow.toggleDevTools()
-      }
-    }, ...template]
-  }
+  template.unshift({
+    label: 'Toggle DevTools',
+    accelerator: 'Alt+Command+I',
+    click: function () {
+      mainWindow.show()
+      mainWindow.toggleDevTools()
+    }
+  })
   const contextMenu = Menu.buildFromTemplate(template)
   tray.setContextMenu(contextMenu)
 }
@@ -74,11 +76,14 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+  mainWindow.on('unresponsive', () => {
+    raven.captureException(new Error('Renderer is unresponsive'))
+  })
 }
 
 app.on('ready', async () => {
   let installer = new MysteriumInstaller(global.__mysteriumClientConfig)
-  if (!installer.exists()) {
+  if (installer.needsInstallation()) {
     try {
       await installer.install()
     } catch (err) {
