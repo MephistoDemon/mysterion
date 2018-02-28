@@ -10,9 +10,9 @@ const state = {
   ip: null,
   status: 'NotConnected',
   stats: {
-    bytesReceived: '-;-',
-    bytesSent: '@__@',
-    duration: 'u.u'
+    bytesReceived: 0,
+    bytesSent: 0,
+    duration: 0
   }
 }
 
@@ -57,30 +57,30 @@ const actions = {
       const statusPromise = tequilapi.connection.status()
       const statsPromise = tequilapi.connection.statistics()
       const ipPromise = tequilapi.connection.ip()
-      const [status, stats, ip] = await Promise.all([statusPromise, statsPromise, ipPromise])
+      const status = await statusPromise
+      const stats = await statsPromise
       commit(type.CONNECTION_STATUS, status.status)
       commit(type.CONNECTION_STATS, stats)
+      const ip = await ipPromise
       if (ip !== null) {
         commit(type.CONNECTION_IP, ip)
       }
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
-      throw (err)
     }
   },
-  async [type.CONNECTION_STATUS] ({commit, dispatch}) {
+  async [type.CONNECTION_STATUS] ({commit}) {
     const res = await tequilapi.connection.status()
-    if (res.status === type.CONNECTED) {
-      dispatch(type.CONNECTION_STATUS_ALL)
-    }
     commit(type.CONNECTION_STATUS, res.status)
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
     try {
-      const res = await tequilapi.connection.connect(consumerId, providerId)
-      commit(type.CONNECTION_STATUS, res.status)
-      dispatch(type.STATUS_UPDATER_RUN)
-      return res
+      commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTING)
+      await tequilapi.connection.connect(consumerId, providerId)
+      // if we ask openvpn right away status stil in not connected state
+      updaterTimeout = setTimeout(() => {
+        dispatch(type.STATUS_UPDATER_RUN)
+      }, 1000)
     } catch (err) {
       let error = new Error('Connection to node failed. Try other one')
       error.original = err
@@ -95,9 +95,7 @@ const actions = {
       commit(type.CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
       res = await res
       dispatch(type.CONNECTION_STATUS)
-      setTimeout(() => {
-        dispatch(type.CONNECTION_IP)
-      }, 5000)
+      dispatch(type.CONNECTION_IP)
       return res
     } catch (err) {
       commit(type.REQUEST_FAIL, err)

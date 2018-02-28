@@ -8,15 +8,13 @@ cache:
   - bin
   - "$HOME/.electron"
   - "$HOME/.cache"
+before_cache:
+- rm -rf node_modules/.yarn-integrity
 addons:
   apt:
     packages:
     - libgnome-keyring-dev
     - icnsutils
-before_install:
-- mkdir -p /tmp/git-lfs && curl -L https://github.com/github/git-lfs/releases/download/v1.2.1/git-lfs-$([
-  "$TRAVIS_OS_NAME" == "linux" ] && echo "linux" || echo "darwin")-amd64-1.2.1.tar.gz
-  | tar -xz -C /tmp/git-lfs --strip-components 1 && /tmp/git-lfs/git-lfs pull
 install:
 - nvm install 9
 - curl -o- -L https://yarnpkg.com/install.sh | bash
@@ -26,7 +24,7 @@ install:
 script:
 - npm run unit
 before_deploy:
-- npm run download:bins
+- FORCE_DOWNLOAD=1 npm run download:bins
 - npm run build
 - mkdir binaries
 - cp build/Mysterion-0.0.1.dmg binaries

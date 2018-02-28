@@ -8,7 +8,6 @@
       </div>
       <div class="control__bottom">
         <country-select v-model="country" class="control__countries" :class="{'is-disabled': status!==-1}"/>
-        {{country}}
         <connection-button :provider-id="providerIdentity"></connection-button>
       </div>
       <div class="control__footer">
@@ -53,7 +52,7 @@
       }
     },
     computed: {
-      ...mapGetters(['connection', 'ip', 'statusText', 'requestErr', 'showReqErr']),
+      ...mapGetters(['connection', 'ip', 'requestErr', 'showReqErr']),
       status () {
         switch (this.connection.status) {
           case 'NotConnected': return -1
@@ -76,7 +75,10 @@
     },
     mounted () {
       this.$store.dispatch(type.CONNECTION_IP)
-      this.$store.dispatch(type.CONNECTION_STATUS_ALL)
+      this.$store.dispatch(type.CONNECTION_STATUS)
+      if (this.connection.status === type.tequilapi.CONNECTED) {
+        this.$store.dispatch(type.STATUS_UPDATER_RUN)
+      }
     },
     beforeDestroy () {
     }

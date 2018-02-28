@@ -1,12 +1,12 @@
 import axios from 'axios'
 
-const timeout = 5000
-
 const idPath = '/identities'
 const propPath = '/proposals'
 const conPath = '/connection'
 const healthCheckPath = '/healthcheck'
 const stopPath = '/stop'
+
+const timeout = 5000
 
 export const types = {
   connection: {
@@ -39,7 +39,7 @@ export default function (teqAddr = 'http://127.0.0.1:4050') {
       status: async () => axioAdapter.get(conPath),
       ip: async () => {
         try {
-          const res = await axioAdapter.get(conPath + '/ip', {timeout: 8000})
+          const res = await axioAdapter.get(conPath + '/ip')
           return res.ip
         } catch (err) {
           if (err.response && err.response.status === 503) {
@@ -59,7 +59,7 @@ export default function (teqAddr = 'http://127.0.0.1:4050') {
 }
 
 function adapterFactory (teqAddr) {
-  const teqAxio = axios.create({baseURL: teqAddr, timeout: timeout})
+  const teqAxio = axios.create({baseURL: teqAddr, timeout})
   const axioAdapter = {
     async get (path, options = {}) {
       const res = await teqAxio.get(path, options)
