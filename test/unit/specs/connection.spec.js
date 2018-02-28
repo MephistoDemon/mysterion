@@ -59,10 +59,8 @@ describe('mutations', () => {
 describe('actions', () => {
   beforeEach(function () {
     this.commited = {}
-
-    const world = this;
-    this.commit = function (key, value) {
-      world.commited = {key, value}
+    this.commit = (key, value) => {
+      this.commited = {key, value}
     }
   })
 
