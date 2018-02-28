@@ -8,6 +8,8 @@ cache:
   - bin
   - "$HOME/.electron"
   - "$HOME/.cache"
+before_cache:
+- rm -rf node_modules/.yarn-integrity
 addons:
   apt:
     packages:
@@ -22,7 +24,7 @@ install:
 script:
 - npm run unit
 before_deploy:
-- npm run download:bins
+- FORCE_DOWNLOAD=1 npm run download:bins
 - npm run build
 - mkdir binaries
 - cp build/Mysterion-0.0.1.dmg binaries
