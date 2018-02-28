@@ -1,6 +1,28 @@
 import {expect} from 'chai'
-import connection from '@/store/modules/connection'
+
 import type from '@/store/types'
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import connectionInjector from 'inject-loader!@/store/modules/connection'
+const connection = connectionInjector({
+  '../../../api/tequilapi': function () {
+    return FakeTequilapi()
+  }
+}).default
+
+function FakeTequilapi () {
+  return {
+    connection: {
+      ip: async function () {
+        return 'mock ip'
+      },
+      status: async function () {
+        return {
+          status: 'mock status'
+        }
+      }
+    }
+  }
+}
 
 describe('mutations', () => {
   describe('CONNECTION_STATUS', () => {
@@ -30,6 +52,35 @@ describe('mutations', () => {
       const state = { ip: 'old' }
       connectionIp(state, 'new')
       expect(state).to.eql({ip: 'new'})
+    })
+  })
+})
+
+describe('actions', () => {
+  beforeEach(function () {
+    this.commited = {}
+    this.commit = (key, value) => {
+      this.commited = {key, value}
+    }
+  })
+
+  describe('CONNECTION_IP', () => {
+    const connectionIp = connection.actions[type.CONNECTION_IP]
+
+    it('commits new ip', async function () {
+      await connectionIp({commit: this.commit})
+      expect(this.commited.key).to.eql(type.CONNECTION_IP)
+      expect(this.commited.value).to.eql('mock ip')
+    })
+  })
+
+  describe('CONNECTION_STATUS', () => {
+    const connectionStatus = connection.actions[type.CONNECTION_STATUS]
+
+    it('commits new status', async function () {
+      await connectionStatus({commit: this.commit})
+      expect(this.commited.key).to.eql(type.CONNECTION_STATUS)
+      expect(this.commited.value).to.eql('mock status')
     })
   })
 })
