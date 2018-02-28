@@ -32,9 +32,7 @@
         return `${h}:${m}:${s}`
       },
       bytesToMB (val) {
-        if (val) {
-          return (val / (1024 ** 2)).toLocaleString(undefined, {maximumFractionDigits: 2})
-        }
+        return (val / (1024 ** 2)).toLocaleString(undefined, {maximumFractionDigits: 2})
       }
     }
   }
