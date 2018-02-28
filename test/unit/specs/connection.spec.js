@@ -54,6 +54,18 @@ describe('mutations', () => {
       expect(state).to.eql({ip: 'new'})
     })
   })
+
+  describe('CONNECTION_STATS_FLUSH', () => {
+    it('resets stats', () => {
+      let store = {}
+      connection.mutations[type.CONNECTION_STATS_FLUSH](store)
+      expect(store.stats).to.eql({
+        duration: '--:--:--',
+        bytesSent: '-',
+        bytesReceived: '-'
+      })
+    })
+  })
 })
 
 describe('actions', () => {

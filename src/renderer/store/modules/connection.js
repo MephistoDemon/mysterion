@@ -6,14 +6,16 @@ const tequilapi = tequilAPI()
 
 let updaterTimeout
 
+const defaultStats = {
+  bytesReceived: '-',
+  bytesSent: '-',
+  duration: '--:--:--'
+}
+
 const state = {
   ip: null,
   status: 'NotConnected',
-  stats: {
-    bytesReceived: 0,
-    bytesSent: 0,
-    duration: 0
-  }
+  stats: defaultStats
 }
 
 const getters = {
@@ -31,6 +33,9 @@ const mutations = {
   },
   [type.CONNECTION_IP] (state, ip) {
     state.ip = ip
+  },
+  [type.CONNECTION_STATS_FLUSH] (state) {
+    state.stats = defaultStats
   }
 }
 
@@ -76,6 +81,7 @@ const actions = {
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
     try {
       commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTING)
+      commit(type.CONNECTION_STATS_FLUSH)
       await tequilapi.connection.connect(consumerId, providerId)
       // if we ask openvpn right away status stil in not connected state
       updaterTimeout = setTimeout(() => {
