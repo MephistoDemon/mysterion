@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import StatsDisplay from '../../../../src/renderer/components/StatsDisplay'
+import '@/filters'
 
 const mount = function (connection) {
   const Comp = new Vue({
@@ -24,9 +25,9 @@ describe('StatsDisplay', () => {
   it('renders and displays stats', () => {
     const vm = mount(initialConnectionState)
     const els = vm.$el.querySelectorAll('.stats__value')
-    expect(els[0].textContent).to.eql('00:00:00')
-    expect(els[1].textContent).to.eql('0.00')
-    expect(els[2].textContent).to.eql('0.00')
+    expect(els[0].textContent).to.eql('--:--:--')
+    expect(els[1].textContent).to.eql('-')
+    expect(els[2].textContent).to.eql('-')
   })
 
   it('displays stats formatting', () => {
@@ -39,10 +40,10 @@ describe('StatsDisplay', () => {
     })
     const els = vm.$el.querySelectorAll('.stats__value')
     expect(els[0].textContent).to.eql('03:42:05')
-    expect(els[1].textContent).to.eql('1.18')
-    expect(els[2].textContent).to.eql('120.43')
+    expect(els[1].textContent).to.eql('1.23')
+    expect(els[2].textContent).to.eql('123.32')
     const unitEls = vm.$el.querySelectorAll('.stats__unit')
-    expect(unitEls[1].textContent).to.eql('MiB')
-    expect(unitEls[2].textContent).to.eql('KiB')
+    expect(unitEls[1].textContent).to.eql('MB')
+    expect(unitEls[2].textContent).to.eql('kB')
   })
 })

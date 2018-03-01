@@ -7,9 +7,9 @@ const tequilapi = tequilAPI()
 let updaterTimeout
 
 const defaultStats = {
-  bytesReceived: '-',
-  bytesSent: '-',
-  duration: '--:--:--'
+  bytesReceived: null,
+  bytesSent: null,
+  duration: null
 }
 
 const state = {

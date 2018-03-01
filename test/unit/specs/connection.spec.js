@@ -60,9 +60,9 @@ describe('mutations', () => {
       let store = {}
       connection.mutations[type.CONNECTION_STATS_FLUSH](store)
       expect(store.stats).to.eql({
-        duration: '--:--:--',
-        bytesSent: '-',
-        bytesReceived: '-'
+        duration: null,
+        bytesSent: null,
+        bytesReceived: null
       })
     })
   })

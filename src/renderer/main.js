@@ -4,6 +4,7 @@ import axios from 'axios'
 import App from './App'
 import router from './router'
 import store from './store'
+import './filters'
 
 import bugReporter from '../main/bug-reporting'
 
