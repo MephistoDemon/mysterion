@@ -73,13 +73,15 @@ describe('actions', () => {
     this.commit = (key, value) => {
       this.commited.push({key, value})
     }
+
+    this.dispatch = (action) => {
+      return connection.actions[action]({commit: this.commit, dispatch: this.dispatch})
+    }
   })
 
   describe('CONNECTION_IP', () => {
-    const connectionIp = connection.actions[type.CONNECTION_IP]
-
     it('commits new ip', async function () {
-      await connectionIp({commit: this.commit})
+      await this.dispatch(type.CONNECTION_IP)
       expect(this.commited).to.eql([{
         key: type.CONNECTION_IP,
         value: 'mock ip'
@@ -88,10 +90,8 @@ describe('actions', () => {
   })
 
   describe('CONNECTION_STATUS', () => {
-    const connectionStatus = connection.actions[type.CONNECTION_STATUS]
-
     it('commits new status', async function () {
-      await connectionStatus({commit: this.commit})
+      await this.dispatch(type.CONNECTION_STATUS)
       expect(this.commited).to.eql([{
         key: type.CONNECTION_STATUS,
         value: 'mock status'
@@ -100,11 +100,9 @@ describe('actions', () => {
   })
 
   describe('CONNECTION_STATUS_ALL', () => {
-    const connectionStatusAll = connection.actions[type.CONNECTION_STATUS_ALL]
-
     it('updates status, statistics and ip', async function () {
-      await connectionStatusAll({commit: this.commit})
-      expect(this.commited).to.eql([
+      await this.dispatch(type.CONNECTION_STATUS_ALL)
+      expect(this.commited).to.have.deep.members([
         {
           key: type.CONNECTION_STATUS,
           value: 'mock status'

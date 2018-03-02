@@ -54,22 +54,18 @@ const actions = {
       throw err
     }
   },
-  async [type.CONNECTION_STATUS_ALL] ({commit}) {
+  async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
     try {
-      const statusPromise = tequilapi.connection.status()
+      const statusPromise = dispatch(type.CONNECTION_STATUS)
       const statsPromise = tequilapi.connection.statistics()
-      const ipPromise = tequilapi.connection.ip()
+      const ipPromise = dispatch(type.CONNECTION_IP)
 
-      const status = await statusPromise
-      commit(type.CONNECTION_STATUS, status.status)
+      await statusPromise
 
       const stats = await statsPromise
       commit(type.CONNECTION_STATS, stats)
 
-      const ip = await ipPromise
-      if (ip !== null) {
-        commit(type.CONNECTION_IP, ip)
-      }
+      await ipPromise
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
     }
