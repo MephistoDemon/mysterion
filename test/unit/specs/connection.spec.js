@@ -99,6 +99,16 @@ describe('actions', () => {
     })
   })
 
+  describe('CONNECTION_STATS', () => {
+    it('commits new statistics', async function () {
+      await this.dispatch(type.CONNECTION_STATS)
+      expect(this.commited).to.eql([{
+        key: type.CONNECTION_STATS,
+        value: 'mock statistics'
+      }])
+    })
+  })
+
   describe('CONNECTION_STATUS_ALL', () => {
     it('updates status, statistics and ip', async function () {
       await this.dispatch(type.CONNECTION_STATUS_ALL)
