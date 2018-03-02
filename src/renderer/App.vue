@@ -2,7 +2,7 @@
     <div id="app" class="app">
         <div id="content">
             <div class="control__version">Pre-alpha v{{version}}</div>
-            <app-modal v-if="!clientIsRunning || initFailed" :close="false">
+            <app-modal v-if="isCriticalError" :close="false">
                 <app-error :error="error"></app-error>
             </app-modal>
             <app-nav class="app__nav" v-if="!loading"/>
@@ -33,8 +33,8 @@
     },
     computed: {
       ...mapGetters(['loading', 'visual', 'clientIsRunning', 'initStatus']),
-      initFailed () {
-        return this.initStatus === type.INIT_FAIL
+      isCriticalError () {
+        return (!this.clientIsRunning || this.initStatus === type.INIT_FAIL)
       },
       error () {
         if (!this.clientIsRunning) return this.clientError
