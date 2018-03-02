@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import StatsDisplay from '../../../../src/renderer/components/StatsDisplay'
-import '@/filters'
 
 const mount = function (connection) {
   const Comp = new Vue({
@@ -15,11 +14,7 @@ const mount = function (connection) {
 
 describe('StatsDisplay', () => {
   const initialConnectionState = {
-    stats: {
-      bytesReceived: 0,
-      bytesSent: 0,
-      duration: 0
-    }
+    stats: {}
   }
 
   it('renders and displays stats', () => {

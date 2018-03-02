@@ -55,15 +55,11 @@ describe('mutations', () => {
     })
   })
 
-  describe('CONNECTION_STATS_FLUSH', () => {
+  describe('CONNECTION_STATS_RESET', () => {
     it('resets stats', () => {
       let store = {}
-      connection.mutations[type.CONNECTION_STATS_FLUSH](store)
-      expect(store.stats).to.eql({
-        duration: null,
-        bytesSent: null,
-        bytesReceived: null
-      })
+      connection.mutations[type.CONNECTION_STATS_RESET](store)
+      expect(store.stats).to.eql({})
     })
   })
 })
