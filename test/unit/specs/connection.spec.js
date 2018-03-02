@@ -3,28 +3,26 @@ import {expect} from 'chai'
 import type from '@/store/types'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import connectionInjector from 'inject-loader!@/store/modules/connection'
+import utils from '../utils'
+
+const fakeTequilapi = utils.fakeTequilapiManipulator()
+
 const connection = connectionInjector({
-  '../../../api/tequilapi': function () {
-    return FakeTequilapi()
-  }
+  '../../../api/tequilapi': fakeTequilapi.getFakeApi
 }).default
 
-function FakeTequilapi () {
-  return {
-    connection: {
-      ip: async function () {
-        return 'mock ip'
-      },
-      status: async function () {
-        return {
-          status: 'mock status'
-        }
-      },
-      statistics: async function () {
-        return 'mock statistics'
-      }
-    }
+async function executeAction (action) {
+  const mutations = []
+  const commit = (key, value) => {
+    mutations.push({key, value})
   }
+
+  const dispatch = (action) => {
+    return connection.actions[action]({commit: commit, dispatch: dispatch})
+  }
+
+  await dispatch(action)
+  return mutations
 }
 
 describe('mutations', () => {
@@ -39,12 +37,12 @@ describe('mutations', () => {
   })
 
   describe('CONNECTION_STATISTICS', () => {
-    const connectionStats = connection.mutations[type.CONNECTION_STATISTICS]
+    const connectionStatistics = connection.mutations[type.CONNECTION_STATISTICS]
 
-    it('updates stats', () => {
+    it('updates statistics', () => {
       const state = {}
-      connectionStats(state, {some_stat: 'some value'})
-      expect(state).to.eql({ stats: {some_stat: 'some value'} })
+      connectionStatistics(state, {some_stat: 'some value'})
+      expect(state).to.eql({ statistics: {some_stat: 'some value'} })
     })
   })
 
@@ -58,61 +56,81 @@ describe('mutations', () => {
     })
   })
 
-  describe('CONNECTION_STATS_RESET', () => {
-    it('resets stats', () => {
+  describe('CONNECTION_STATISTICS_RESET', () => {
+    it('resets statistics', () => {
       let store = {}
-      connection.mutations[type.CONNECTION_STATS_RESET](store)
-      expect(store.stats).to.eql({})
+      connection.mutations[type.CONNECTION_STATISTICS_RESET](store)
+      expect(store.statistics).to.eql({})
     })
   })
 })
 
 describe('actions', () => {
   beforeEach(function () {
-    this.commited = []
-    this.commit = (key, value) => {
-      this.commited.push({key, value})
-    }
-
-    this.dispatch = (action) => {
-      return connection.actions[action]({commit: this.commit, dispatch: this.dispatch})
-    }
+    fakeTequilapi.cleanup()
   })
 
   describe('CONNECTION_IP', () => {
     it('commits new ip', async function () {
-      await this.dispatch(type.CONNECTION_IP)
-      expect(this.commited).to.eql([{
+      const committed = await executeAction(type.CONNECTION_IP)
+      expect(committed).to.eql([{
         key: type.CONNECTION_IP,
         value: 'mock ip'
+      }])
+    })
+
+    it('commits error when api fails', async function () {
+      fakeTequilapi.setIpFail(true)
+      const committed = await executeAction(type.CONNECTION_IP)
+      expect(committed).to.eql([{
+        key: type.REQUEST_FAIL,
+        value: fakeTequilapi.getFakeError()
       }])
     })
   })
 
   describe('CONNECTION_STATUS', () => {
     it('commits new status', async function () {
-      await this.dispatch(type.CONNECTION_STATUS)
-      expect(this.commited).to.eql([{
+      const committed = await executeAction(type.CONNECTION_STATUS)
+      expect(committed).to.eql([{
         key: type.CONNECTION_STATUS,
         value: 'mock status'
+      }])
+    })
+
+    it('commits error when api fails', async function () {
+      fakeTequilapi.setStatusFail(true)
+      const committed = await executeAction(type.CONNECTION_STATUS)
+      expect(committed).to.eql([{
+        key: type.REQUEST_FAIL,
+        value: fakeTequilapi.getFakeError()
       }])
     })
   })
 
   describe('CONNECTION_STATISTICS', () => {
     it('commits new statistics', async function () {
-      await this.dispatch(type.CONNECTION_STATISTICS)
-      expect(this.commited).to.eql([{
+      const committed = await executeAction(type.CONNECTION_STATISTICS)
+      expect(committed).to.eql([{
         key: type.CONNECTION_STATISTICS,
         value: 'mock statistics'
+      }])
+    })
+
+    it('commits error when api fails', async function () {
+      fakeTequilapi.setStatisticsFail(true)
+      const committed = await executeAction(type.CONNECTION_STATISTICS)
+      expect(committed).to.eql([{
+        key: type.REQUEST_FAIL,
+        value: fakeTequilapi.getFakeError()
       }])
     })
   })
 
   describe('CONNECTION_STATUS_ALL', () => {
     it('updates status, statistics and ip', async function () {
-      await this.dispatch(type.CONNECTION_STATUS_ALL)
-      expect(this.commited).to.have.deep.members([
+      const committed = await executeAction(type.CONNECTION_STATUS_ALL)
+      expect(committed).to.have.deep.members([
         {
           key: type.CONNECTION_STATUS,
           value: 'mock status'
@@ -120,6 +138,44 @@ describe('actions', () => {
         {
           key: type.CONNECTION_STATISTICS,
           value: 'mock statistics'
+        },
+        {
+          key: type.CONNECTION_IP,
+          value: 'mock ip'
+        }
+      ])
+    })
+
+    it('returns successful data when status fails', async function () {
+      fakeTequilapi.setStatusFail(true)
+      const committed = await executeAction(type.CONNECTION_STATUS_ALL)
+      expect(committed).to.have.deep.members([
+        {
+          key: type.REQUEST_FAIL,
+          value: fakeTequilapi.getFakeError()
+        },
+        {
+          key: type.CONNECTION_STATISTICS,
+          value: 'mock statistics'
+        },
+        {
+          key: type.CONNECTION_IP,
+          value: 'mock ip'
+        }
+      ])
+    })
+
+    it('returns successful data when statistics fail', async function () {
+      fakeTequilapi.setStatisticsFail(true)
+      const committed = await executeAction(type.CONNECTION_STATUS_ALL)
+      expect(committed).to.have.deep.members([
+        {
+          key: type.CONNECTION_STATUS,
+          value: 'mock status'
+        },
+        {
+          key: type.REQUEST_FAIL,
+          value: fakeTequilapi.getFakeError()
         },
         {
           key: type.CONNECTION_IP,

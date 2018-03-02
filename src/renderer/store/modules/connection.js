@@ -6,13 +6,13 @@ const tequilapi = tequilAPI()
 
 let updaterTimeout
 
-const defaultStats = {
+const defaultStatistics = {
 }
 
 const state = {
   ip: null,
   status: 'NotConnected',
-  stats: defaultStats
+  statistics: defaultStatistics
 }
 
 const getters = {
@@ -25,14 +25,14 @@ const mutations = {
   [type.CONNECTION_STATUS] (state, status) {
     state.status = status
   },
-  [type.CONNECTION_STATISTICS] (state, stats) {
-    state.stats = stats
+  [type.CONNECTION_STATISTICS] (state, statistics) {
+    state.statistics = statistics
   },
   [type.CONNECTION_IP] (state, ip) {
     state.ip = ip
   },
-  [type.CONNECTION_STATS_RESET] (state) {
-    state.stats = defaultStats
+  [type.CONNECTION_STATISTICS_RESET] (state) {
+    state.statistics = defaultStatistics
   }
 }
 
@@ -51,35 +51,37 @@ const actions = {
       }
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
-      throw err
     }
   },
   async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
-    try {
-      const statusPromise = dispatch(type.CONNECTION_STATUS)
-      const statsPromise = dispatch(type.CONNECTION_STATISTICS)
-      const ipPromise = dispatch(type.CONNECTION_IP)
+    const statusPromise = dispatch(type.CONNECTION_STATUS)
+    const statisticsPromise = dispatch(type.CONNECTION_STATISTICS)
+    const ipPromise = dispatch(type.CONNECTION_IP)
 
-      await statusPromise
-      await statsPromise
-      await ipPromise
+    await statusPromise
+    await statisticsPromise
+    await ipPromise
+  },
+  async [type.CONNECTION_STATUS] ({commit}) {
+    try {
+      const res = await tequilapi.connection.status()
+      commit(type.CONNECTION_STATUS, res.status)
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
     }
   },
-  async [type.CONNECTION_STATUS] ({commit}) {
-    const res = await tequilapi.connection.status()
-    commit(type.CONNECTION_STATUS, res.status)
-  },
   async [type.CONNECTION_STATISTICS] ({commit}) {
-    const statsPromise = tequilapi.connection.statistics()
-    const stats = await statsPromise
-    commit(type.CONNECTION_STATISTICS, stats)
+    try {
+      const statistics = await tequilapi.connection.statistics()
+      commit(type.CONNECTION_STATISTICS, statistics)
+    } catch (err) {
+      commit(type.REQUEST_FAIL, err)
+    }
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
     try {
       commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTING)
-      commit(type.CONNECTION_STATS_RESET)
+      commit(type.CONNECTION_STATISTICS_RESET)
       await tequilapi.connection.connect(consumerId, providerId)
       commit(type.HIDE_REQ_ERR)
       // if we ask openvpn right away status stil in not connected state

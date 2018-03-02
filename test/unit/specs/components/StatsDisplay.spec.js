@@ -14,10 +14,10 @@ const mount = function (connection) {
 
 describe('StatsDisplay', () => {
   const initialConnectionState = {
-    stats: {}
+    statistics: {}
   }
 
-  it('renders and displays stats', () => {
+  it('renders and displays statistics', () => {
     const vm = mount(initialConnectionState)
     const els = vm.$el.querySelectorAll('.stats__value')
     expect(els[0].textContent).to.eql('--:--:--')
@@ -25,9 +25,9 @@ describe('StatsDisplay', () => {
     expect(els[2].textContent).to.eql('-')
   })
 
-  it('displays stats formatting', () => {
+  it('displays statistics formatting', () => {
     const vm = mount({
-      stats: {
+      statistics: {
         duration: 13325,
         bytesReceived: 1232133, // 1.17505 MB
         bytesSent: 123321 // 0.117608 MB
