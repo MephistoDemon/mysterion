@@ -25,7 +25,7 @@ const mutations = {
   [type.CONNECTION_STATUS] (state, status) {
     state.status = status
   },
-  [type.CONNECTION_STATS] (state, stats) {
+  [type.CONNECTION_STATISTICS] (state, stats) {
     state.stats = stats
   },
   [type.CONNECTION_IP] (state, ip) {
@@ -57,7 +57,7 @@ const actions = {
   async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
     try {
       const statusPromise = dispatch(type.CONNECTION_STATUS)
-      const statsPromise = dispatch(type.CONNECTION_STATS)
+      const statsPromise = dispatch(type.CONNECTION_STATISTICS)
       const ipPromise = dispatch(type.CONNECTION_IP)
 
       await statusPromise
@@ -71,10 +71,10 @@ const actions = {
     const res = await tequilapi.connection.status()
     commit(type.CONNECTION_STATUS, res.status)
   },
-  async [type.CONNECTION_STATS] ({commit}) {
+  async [type.CONNECTION_STATISTICS] ({commit}) {
     const statsPromise = tequilapi.connection.statistics()
     const stats = await statsPromise
-    commit(type.CONNECTION_STATS, stats)
+    commit(type.CONNECTION_STATISTICS, stats)
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
     try {

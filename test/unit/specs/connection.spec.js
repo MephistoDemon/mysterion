@@ -38,8 +38,8 @@ describe('mutations', () => {
     })
   })
 
-  describe('CONNECTION_STATS', () => {
-    const connectionStats = connection.mutations[type.CONNECTION_STATS]
+  describe('CONNECTION_STATISTICS', () => {
+    const connectionStats = connection.mutations[type.CONNECTION_STATISTICS]
 
     it('updates stats', () => {
       const state = {}
@@ -99,11 +99,11 @@ describe('actions', () => {
     })
   })
 
-  describe('CONNECTION_STATS', () => {
+  describe('CONNECTION_STATISTICS', () => {
     it('commits new statistics', async function () {
-      await this.dispatch(type.CONNECTION_STATS)
+      await this.dispatch(type.CONNECTION_STATISTICS)
       expect(this.commited).to.eql([{
-        key: type.CONNECTION_STATS,
+        key: type.CONNECTION_STATISTICS,
         value: 'mock statistics'
       }])
     })
@@ -118,7 +118,7 @@ describe('actions', () => {
           value: 'mock status'
         },
         {
-          key: type.CONNECTION_STATS,
+          key: type.CONNECTION_STATISTICS,
           value: 'mock statistics'
         },
         {
