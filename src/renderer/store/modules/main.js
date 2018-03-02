@@ -13,7 +13,8 @@ const getters = {
   visual: state => state.visual,
   navOpen: state => state.navOpen,
   requestErr: state => state.error,
-  showReqErr: state => state.showRequestErr
+  showReqErr: state => state.showRequestErr,
+  initStatus: state => state.init
 }
 
 const mutations = {

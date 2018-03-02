@@ -2,7 +2,7 @@
     <div id="app" class="app">
         <div id="content">
             <div class="control__version">Pre-alpha v{{version}}</div>
-            <app-modal v-if="!clientIsRunning" :close="false">
+            <app-modal v-if="!clientIsRunning || initFailed" :close="false">
                 <app-error :error="error"></app-error>
             </app-modal>
             <app-nav class="app__nav" v-if="!loading"/>
@@ -32,14 +32,25 @@
       AppError
     },
     computed: {
-      ...mapGetters(['loading', 'visual', 'clientIsRunning'])
+      ...mapGetters(['loading', 'visual', 'clientIsRunning', 'initStatus']),
+      initFailed () {
+        return this.initStatus === type.INIT_FAIL
+      },
+      error () {
+        if (!this.clientIsRunning) return this.clientError
+        return this.proposalsError
+      }
     },
     data () {
       return {
         version: remote.getGlobal('__version'),
-        error: {
+        clientError: {
           message: 'Mysterium client seems to be down.',
           hint: 'Please wait while it re-launches. If this message persists, please contact support.'
+        },
+        proposalsError: {
+          message: 'Can\'t connect to Mysterium Network',
+          hint: 'Please check your internet connection.'
         }
       }
     },

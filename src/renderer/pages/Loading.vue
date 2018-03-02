@@ -26,7 +26,12 @@
         const identity = await identityGet(this.$store)
         commit(type.IDENTITY_GET_SUCCESS, identity)
         await dispatch(type.IDENTITY_UNLOCK)
-        await proposalPromise
+        try {
+          await proposalPromise
+        } catch (err) {
+          commit(type.INIT_FAIL, new Error('failed to load proposals'))
+          return
+        }
 
         await delay(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)
