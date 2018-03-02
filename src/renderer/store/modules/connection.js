@@ -59,10 +59,13 @@ const actions = {
       const statusPromise = tequilapi.connection.status()
       const statsPromise = tequilapi.connection.statistics()
       const ipPromise = tequilapi.connection.ip()
+
       const status = await statusPromise
-      const stats = await statsPromise
       commit(type.CONNECTION_STATUS, status.status)
+
+      const stats = await statsPromise
       commit(type.CONNECTION_STATS, stats)
+
       const ip = await ipPromise
       if (ip !== null) {
         commit(type.CONNECTION_IP, ip)

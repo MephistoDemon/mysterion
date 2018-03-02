@@ -19,6 +19,9 @@ function FakeTequilapi () {
         return {
           status: 'mock status'
         }
+      },
+      statistics: async function () {
+        return 'mock statistics'
       }
     }
   }
@@ -66,9 +69,9 @@ describe('mutations', () => {
 
 describe('actions', () => {
   beforeEach(function () {
-    this.commited = {}
+    this.commited = []
     this.commit = (key, value) => {
-      this.commited = {key, value}
+      this.commited.push({key, value})
     }
   })
 
@@ -77,8 +80,10 @@ describe('actions', () => {
 
     it('commits new ip', async function () {
       await connectionIp({commit: this.commit})
-      expect(this.commited.key).to.eql(type.CONNECTION_IP)
-      expect(this.commited.value).to.eql('mock ip')
+      expect(this.commited).to.eql([{
+        key: type.CONNECTION_IP,
+        value: 'mock ip'
+      }])
     })
   })
 
@@ -87,8 +92,32 @@ describe('actions', () => {
 
     it('commits new status', async function () {
       await connectionStatus({commit: this.commit})
-      expect(this.commited.key).to.eql(type.CONNECTION_STATUS)
-      expect(this.commited.value).to.eql('mock status')
+      expect(this.commited).to.eql([{
+        key: type.CONNECTION_STATUS,
+        value: 'mock status'
+      }])
+    })
+  })
+
+  describe('CONNECTION_STATUS_ALL', () => {
+    const connectionStatusAll = connection.actions[type.CONNECTION_STATUS_ALL]
+
+    it('updates status, statistics and ip', async function () {
+      await connectionStatusAll({commit: this.commit})
+      expect(this.commited).to.eql([
+        {
+          key: type.CONNECTION_STATUS,
+          value: 'mock status'
+        },
+        {
+          key: type.CONNECTION_STATS,
+          value: 'mock statistics'
+        },
+        {
+          key: type.CONNECTION_IP,
+          value: 'mock ip'
+        }
+      ])
     })
   })
 })
