@@ -80,6 +80,7 @@ const actions = {
       commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTING)
       commit(type.CONNECTION_STATS_RESET)
       await tequilapi.connection.connect(consumerId, providerId)
+      commit(type.HIDE_REQ_ERR)
       // if we ask openvpn right away status stil in not connected state
       updaterTimeout = setTimeout(() => {
         dispatch(type.STATUS_UPDATER_RUN)
