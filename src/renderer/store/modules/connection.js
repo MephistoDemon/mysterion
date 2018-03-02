@@ -54,17 +54,13 @@ const actions = {
     }
   },
   async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
-    try {
-      const statusPromise = dispatch(type.CONNECTION_STATUS)
-      const statsPromise = dispatch(type.CONNECTION_STATISTICS)
-      const ipPromise = dispatch(type.CONNECTION_IP)
+    const statusPromise = dispatch(type.CONNECTION_STATUS)
+    const statsPromise = dispatch(type.CONNECTION_STATISTICS)
+    const ipPromise = dispatch(type.CONNECTION_IP)
 
-      await statusPromise
-      await statsPromise
-      await ipPromise
-    } catch (err) {
-      commit(type.REQUEST_FAIL, err)
-    }
+    await statusPromise
+    await statsPromise
+    await ipPromise
   },
   async [type.CONNECTION_STATUS] ({commit}) {
     try {
