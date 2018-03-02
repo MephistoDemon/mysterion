@@ -54,6 +54,14 @@ describe('mutations', () => {
       expect(state).to.eql({ip: 'new'})
     })
   })
+
+  describe('CONNECTION_STATS_RESET', () => {
+    it('resets stats', () => {
+      let store = {}
+      connection.mutations[type.CONNECTION_STATS_RESET](store)
+      expect(store.stats).to.eql({})
+    })
+  })
 })
 
 describe('actions', () => {
