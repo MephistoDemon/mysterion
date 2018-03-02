@@ -3,63 +3,12 @@ import {expect} from 'chai'
 import type from '@/store/types'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import connectionInjector from 'inject-loader!@/store/modules/connection'
+import utils from '../utils'
 
-function FakeTequilapiManipulator () {
-  let statusFail = false
-  let statisticsFail = false
-  let ipFail = false
-  const fakeError = new Error('Mock error')
-
-  return {
-    getFakeApi: function () {
-      return {
-        connection: {
-          ip: async function () {
-            if (ipFail) {
-              throw fakeError
-            }
-            return 'mock ip'
-          },
-          status: async function () {
-            if (statusFail) {
-              throw fakeError
-            }
-            return {
-              status: 'mock status'
-            }
-          },
-          statistics: async function () {
-            if (statisticsFail) {
-              throw fakeError
-            }
-            return 'mock statistics'
-          }
-        }
-      }
-    },
-    cleanup: function () {
-      this.setStatusFail(false)
-      this.setStatisticsFail(false)
-      this.setIpFail(false)
-    },
-    setStatusFail: function (value) {
-      statusFail = value
-    },
-    setStatisticsFail: function (value) {
-      statisticsFail = value
-    },
-    setIpFail: function (value) {
-      ipFail = value
-    },
-    getFakeError: function () {
-      return fakeError
-    }
-  }
-}
-const fakeTequilapiManipulator = FakeTequilapiManipulator()
+const fakeTequilapi = utils.fakeTequilapiManipulator()
 
 const connection = connectionInjector({
-  '../../../api/tequilapi': fakeTequilapiManipulator.getFakeApi
+  '../../../api/tequilapi': fakeTequilapi.getFakeApi
 }).default
 
 async function executeAction (action) {
@@ -118,7 +67,7 @@ describe('mutations', () => {
 
 describe('actions', () => {
   beforeEach(function () {
-    fakeTequilapiManipulator.cleanup()
+    fakeTequilapi.cleanup()
   })
 
   describe('CONNECTION_IP', () => {
@@ -131,11 +80,11 @@ describe('actions', () => {
     })
 
     it('commits error when api fails', async function () {
-      fakeTequilapiManipulator.setIpFail(true)
+      fakeTequilapi.setIpFail(true)
       const committed = await executeAction(type.CONNECTION_IP)
       expect(committed).to.eql([{
         key: type.REQUEST_FAIL,
-        value: fakeTequilapiManipulator.getFakeError()
+        value: fakeTequilapi.getFakeError()
       }])
     })
   })
@@ -150,11 +99,11 @@ describe('actions', () => {
     })
 
     it('commits error when api fails', async function () {
-      fakeTequilapiManipulator.setStatusFail(true)
+      fakeTequilapi.setStatusFail(true)
       const committed = await executeAction(type.CONNECTION_STATUS)
       expect(committed).to.eql([{
         key: type.REQUEST_FAIL,
-        value: fakeTequilapiManipulator.getFakeError()
+        value: fakeTequilapi.getFakeError()
       }])
     })
   })
@@ -169,11 +118,11 @@ describe('actions', () => {
     })
 
     it('commits error when api fails', async function () {
-      fakeTequilapiManipulator.setStatisticsFail(true)
+      fakeTequilapi.setStatisticsFail(true)
       const committed = await executeAction(type.CONNECTION_STATISTICS)
       expect(committed).to.eql([{
         key: type.REQUEST_FAIL,
-        value: fakeTequilapiManipulator.getFakeError()
+        value: fakeTequilapi.getFakeError()
       }])
     })
   })
@@ -198,12 +147,12 @@ describe('actions', () => {
     })
 
     it('returns successful data when status fails', async function () {
-      fakeTequilapiManipulator.setStatusFail(true)
+      fakeTequilapi.setStatusFail(true)
       const committed = await executeAction(type.CONNECTION_STATUS_ALL)
       expect(committed).to.have.deep.members([
         {
           key: type.REQUEST_FAIL,
-          value: fakeTequilapiManipulator.getFakeError()
+          value: fakeTequilapi.getFakeError()
         },
         {
           key: type.CONNECTION_STATISTICS,
@@ -217,7 +166,7 @@ describe('actions', () => {
     })
 
     it('returns successful data when statistics fail', async function () {
-      fakeTequilapiManipulator.setStatisticsFail(true)
+      fakeTequilapi.setStatisticsFail(true)
       const committed = await executeAction(type.CONNECTION_STATUS_ALL)
       expect(committed).to.have.deep.members([
         {
@@ -226,7 +175,7 @@ describe('actions', () => {
         },
         {
           key: type.REQUEST_FAIL,
-          value: fakeTequilapiManipulator.getFakeError()
+          value: fakeTequilapi.getFakeError()
         },
         {
           key: type.CONNECTION_IP,
