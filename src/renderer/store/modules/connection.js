@@ -6,13 +6,13 @@ const tequilapi = tequilAPI()
 
 let updaterTimeout
 
-const defaultStats = {
+const defaultStatistics = {
 }
 
 const state = {
   ip: null,
   status: 'NotConnected',
-  stats: defaultStats
+  statistics: defaultStatistics
 }
 
 const getters = {
@@ -25,14 +25,14 @@ const mutations = {
   [type.CONNECTION_STATUS] (state, status) {
     state.status = status
   },
-  [type.CONNECTION_STATISTICS] (state, stats) {
-    state.stats = stats
+  [type.CONNECTION_STATISTICS] (state, statistics) {
+    state.statistics = statistics
   },
   [type.CONNECTION_IP] (state, ip) {
     state.ip = ip
   },
-  [type.CONNECTION_STATS_RESET] (state) {
-    state.stats = defaultStats
+  [type.CONNECTION_STATISTICS_RESET] (state) {
+    state.statistics = defaultStatistics
   }
 }
 
@@ -55,11 +55,11 @@ const actions = {
   },
   async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
     const statusPromise = dispatch(type.CONNECTION_STATUS)
-    const statsPromise = dispatch(type.CONNECTION_STATISTICS)
+    const statisticsPromise = dispatch(type.CONNECTION_STATISTICS)
     const ipPromise = dispatch(type.CONNECTION_IP)
 
     await statusPromise
-    await statsPromise
+    await statisticsPromise
     await ipPromise
   },
   async [type.CONNECTION_STATUS] ({commit}) {
@@ -72,8 +72,8 @@ const actions = {
   },
   async [type.CONNECTION_STATISTICS] ({commit}) {
     try {
-      const stats = await tequilapi.connection.statistics()
-      commit(type.CONNECTION_STATISTICS, stats)
+      const statistics = await tequilapi.connection.statistics()
+      commit(type.CONNECTION_STATISTICS, statistics)
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
     }
@@ -81,7 +81,7 @@ const actions = {
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
     try {
       commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTING)
-      commit(type.CONNECTION_STATS_RESET)
+      commit(type.CONNECTION_STATISTICS_RESET)
       await tequilapi.connection.connect(consumerId, providerId)
       commit(type.HIDE_REQ_ERR)
       // if we ask openvpn right away status stil in not connected state

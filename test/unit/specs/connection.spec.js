@@ -37,12 +37,12 @@ describe('mutations', () => {
   })
 
   describe('CONNECTION_STATISTICS', () => {
-    const connectionStats = connection.mutations[type.CONNECTION_STATISTICS]
+    const connectionStatistics = connection.mutations[type.CONNECTION_STATISTICS]
 
-    it('updates stats', () => {
+    it('updates statistics', () => {
       const state = {}
-      connectionStats(state, {some_stat: 'some value'})
-      expect(state).to.eql({ stats: {some_stat: 'some value'} })
+      connectionStatistics(state, {some_stat: 'some value'})
+      expect(state).to.eql({ statistics: {some_stat: 'some value'} })
     })
   })
 
@@ -56,11 +56,11 @@ describe('mutations', () => {
     })
   })
 
-  describe('CONNECTION_STATS_RESET', () => {
-    it('resets stats', () => {
+  describe('CONNECTION_STATISTICS_RESET', () => {
+    it('resets statistics', () => {
       let store = {}
-      connection.mutations[type.CONNECTION_STATS_RESET](store)
-      expect(store.stats).to.eql({})
+      connection.mutations[type.CONNECTION_STATISTICS_RESET](store)
+      expect(store.statistics).to.eql({})
     })
   })
 })
