@@ -33,7 +33,11 @@ const mountWithStore = function () {
     }
   })
   const Constructor = Vue.extend(ConnectionButton)
-  const vm = new Constructor({store}).$mount()
+  const vm = new Constructor({store,
+    propsData: {
+      providerId: 'dummy'
+    }
+  }).$mount()
 
   return vm
 }
