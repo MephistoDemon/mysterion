@@ -3,29 +3,64 @@ import {expect} from 'chai'
 import type from '@/store/types'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import connectionInjector from 'inject-loader!@/store/modules/connection'
-const connection = connectionInjector({
-  '../../../api/tequilapi': function () {
-    return FakeTequilapi()
-  }
-}).default
 
-function FakeTequilapi () {
+function FakeTequilapiManipulator () {
+  let statusFail = false
+  let statisticsFail = false
+  let ipFail = false
+  const fakeError = new Error('Mock error')
+
   return {
-    connection: {
-      ip: async function () {
-        return 'mock ip'
-      },
-      status: async function () {
-        return {
-          status: 'mock status'
+    getFakeApi: function () {
+      return {
+        connection: {
+          ip: async function () {
+            if (ipFail) {
+              throw fakeError
+            }
+            return 'mock ip'
+          },
+          status: async function () {
+            if (statusFail) {
+              throw fakeError
+            }
+            return {
+              status: 'mock status'
+            }
+          },
+          statistics: async function () {
+            if (statisticsFail) {
+              throw fakeError
+            }
+            return 'mock statistics'
+          }
         }
-      },
-      statistics: async function () {
-        return 'mock statistics'
       }
+    },
+    cleanup: function () {
+      this.setStatusFail(false)
+      this.setStatisticsFail(false)
+      this.setIpFail(false)
+    },
+    setStatusFail: function (value) {
+      statusFail = value
+    },
+    setStatisticsFail: function (value) {
+      statisticsFail = value
+    },
+    setIpFail: function (value) {
+      ipFail = value
+    },
+    getFakeError: function () {
+      return fakeError
     }
   }
 }
+const fakeTequilapiManipulator = FakeTequilapiManipulator()
+
+const connection = connectionInjector({
+  '../../../api/tequilapi': fakeTequilapiManipulator.getFakeApi
+}).default
 
 describe('mutations', () => {
   describe('CONNECTION_STATUS', () => {
@@ -73,6 +108,7 @@ describe('actions', () => {
     this.commit = (key, value) => {
       this.commited.push({key, value})
     }
+    fakeTequilapiManipulator.cleanup()
 
     this.dispatch = (action) => {
       return connection.actions[action]({commit: this.commit, dispatch: this.dispatch})
@@ -87,6 +123,15 @@ describe('actions', () => {
         value: 'mock ip'
       }])
     })
+
+    it('commits error when api fails', async function () {
+      fakeTequilapiManipulator.setIpFail(true)
+      await this.dispatch(type.CONNECTION_IP)
+      expect(this.commited).to.eql([{
+        key: type.REQUEST_FAIL,
+        value: fakeTequilapiManipulator.getFakeError()
+      }])
+    })
   })
 
   describe('CONNECTION_STATUS', () => {
@@ -97,6 +142,15 @@ describe('actions', () => {
         value: 'mock status'
       }])
     })
+
+    it('commits error when api fails', async function () {
+      fakeTequilapiManipulator.setStatusFail(true)
+      await this.dispatch(type.CONNECTION_STATUS)
+      expect(this.commited).to.eql([{
+        key: type.REQUEST_FAIL,
+        value: fakeTequilapiManipulator.getFakeError()
+      }])
+    })
   })
 
   describe('CONNECTION_STATISTICS', () => {
@@ -105,6 +159,15 @@ describe('actions', () => {
       expect(this.commited).to.eql([{
         key: type.CONNECTION_STATISTICS,
         value: 'mock statistics'
+      }])
+    })
+
+    it('commits error when api fails', async function () {
+      fakeTequilapiManipulator.setStatisticsFail(true)
+      await this.dispatch(type.CONNECTION_STATISTICS)
+      expect(this.commited).to.eql([{
+        key: type.REQUEST_FAIL,
+        value: fakeTequilapiManipulator.getFakeError()
       }])
     })
   })
@@ -120,6 +183,44 @@ describe('actions', () => {
         {
           key: type.CONNECTION_STATISTICS,
           value: 'mock statistics'
+        },
+        {
+          key: type.CONNECTION_IP,
+          value: 'mock ip'
+        }
+      ])
+    })
+
+    it('returns successful data when status fails', async function () {
+      fakeTequilapiManipulator.setStatusFail(true)
+      await this.dispatch(type.CONNECTION_STATUS_ALL)
+      expect(this.commited).to.have.deep.members([
+        {
+          key: type.REQUEST_FAIL,
+          value: fakeTequilapiManipulator.getFakeError()
+        },
+        {
+          key: type.CONNECTION_STATISTICS,
+          value: 'mock statistics'
+        },
+        {
+          key: type.CONNECTION_IP,
+          value: 'mock ip'
+        }
+      ])
+    })
+
+    it('returns successful data when statistics fail', async function () {
+      fakeTequilapiManipulator.setStatisticsFail(true)
+      await this.dispatch(type.CONNECTION_STATUS_ALL)
+      expect(this.commited).to.have.deep.members([
+        {
+          key: type.CONNECTION_STATUS,
+          value: 'mock status'
+        },
+        {
+          key: type.REQUEST_FAIL,
+          value: fakeTequilapiManipulator.getFakeError()
         },
         {
           key: type.CONNECTION_IP,

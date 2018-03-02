@@ -51,7 +51,6 @@ const actions = {
       }
     } catch (err) {
       commit(type.REQUEST_FAIL, err)
-      throw err
     }
   },
   async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
@@ -68,13 +67,20 @@ const actions = {
     }
   },
   async [type.CONNECTION_STATUS] ({commit}) {
-    const res = await tequilapi.connection.status()
-    commit(type.CONNECTION_STATUS, res.status)
+    try {
+      const res = await tequilapi.connection.status()
+      commit(type.CONNECTION_STATUS, res.status)
+    } catch (err) {
+      commit(type.REQUEST_FAIL, err)
+    }
   },
   async [type.CONNECTION_STATISTICS] ({commit}) {
-    const statsPromise = tequilapi.connection.statistics()
-    const stats = await statsPromise
-    commit(type.CONNECTION_STATISTICS, stats)
+    try {
+      const stats = await tequilapi.connection.statistics()
+      commit(type.CONNECTION_STATISTICS, stats)
+    } catch (err) {
+      commit(type.REQUEST_FAIL, err)
+    }
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
     try {
