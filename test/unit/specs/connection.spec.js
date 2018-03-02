@@ -62,6 +62,20 @@ const connection = connectionInjector({
   '../../../api/tequilapi': fakeTequilapiManipulator.getFakeApi
 }).default
 
+async function executeAction (action) {
+  const mutations = []
+  const commit = (key, value) => {
+    mutations.push({key, value})
+  }
+
+  const dispatch = (action) => {
+    return connection.actions[action]({commit: commit, dispatch: dispatch})
+  }
+
+  await dispatch(action)
+  return mutations
+}
+
 describe('mutations', () => {
   describe('CONNECTION_STATUS', () => {
     const connectionStatus = connection.mutations[type.CONNECTION_STATUS]
@@ -104,21 +118,13 @@ describe('mutations', () => {
 
 describe('actions', () => {
   beforeEach(function () {
-    this.commited = []
-    this.commit = (key, value) => {
-      this.commited.push({key, value})
-    }
     fakeTequilapiManipulator.cleanup()
-
-    this.dispatch = (action) => {
-      return connection.actions[action]({commit: this.commit, dispatch: this.dispatch})
-    }
   })
 
   describe('CONNECTION_IP', () => {
     it('commits new ip', async function () {
-      await this.dispatch(type.CONNECTION_IP)
-      expect(this.commited).to.eql([{
+      const committed = await executeAction(type.CONNECTION_IP)
+      expect(committed).to.eql([{
         key: type.CONNECTION_IP,
         value: 'mock ip'
       }])
@@ -126,8 +132,8 @@ describe('actions', () => {
 
     it('commits error when api fails', async function () {
       fakeTequilapiManipulator.setIpFail(true)
-      await this.dispatch(type.CONNECTION_IP)
-      expect(this.commited).to.eql([{
+      const committed = await executeAction(type.CONNECTION_IP)
+      expect(committed).to.eql([{
         key: type.REQUEST_FAIL,
         value: fakeTequilapiManipulator.getFakeError()
       }])
@@ -136,8 +142,8 @@ describe('actions', () => {
 
   describe('CONNECTION_STATUS', () => {
     it('commits new status', async function () {
-      await this.dispatch(type.CONNECTION_STATUS)
-      expect(this.commited).to.eql([{
+      const committed = await executeAction(type.CONNECTION_STATUS)
+      expect(committed).to.eql([{
         key: type.CONNECTION_STATUS,
         value: 'mock status'
       }])
@@ -145,8 +151,8 @@ describe('actions', () => {
 
     it('commits error when api fails', async function () {
       fakeTequilapiManipulator.setStatusFail(true)
-      await this.dispatch(type.CONNECTION_STATUS)
-      expect(this.commited).to.eql([{
+      const committed = await executeAction(type.CONNECTION_STATUS)
+      expect(committed).to.eql([{
         key: type.REQUEST_FAIL,
         value: fakeTequilapiManipulator.getFakeError()
       }])
@@ -155,8 +161,8 @@ describe('actions', () => {
 
   describe('CONNECTION_STATISTICS', () => {
     it('commits new statistics', async function () {
-      await this.dispatch(type.CONNECTION_STATISTICS)
-      expect(this.commited).to.eql([{
+      const committed = await executeAction(type.CONNECTION_STATISTICS)
+      expect(committed).to.eql([{
         key: type.CONNECTION_STATISTICS,
         value: 'mock statistics'
       }])
@@ -164,8 +170,8 @@ describe('actions', () => {
 
     it('commits error when api fails', async function () {
       fakeTequilapiManipulator.setStatisticsFail(true)
-      await this.dispatch(type.CONNECTION_STATISTICS)
-      expect(this.commited).to.eql([{
+      const committed = await executeAction(type.CONNECTION_STATISTICS)
+      expect(committed).to.eql([{
         key: type.REQUEST_FAIL,
         value: fakeTequilapiManipulator.getFakeError()
       }])
@@ -174,8 +180,8 @@ describe('actions', () => {
 
   describe('CONNECTION_STATUS_ALL', () => {
     it('updates status, statistics and ip', async function () {
-      await this.dispatch(type.CONNECTION_STATUS_ALL)
-      expect(this.commited).to.have.deep.members([
+      const committed = await executeAction(type.CONNECTION_STATUS_ALL)
+      expect(committed).to.have.deep.members([
         {
           key: type.CONNECTION_STATUS,
           value: 'mock status'
@@ -193,8 +199,8 @@ describe('actions', () => {
 
     it('returns successful data when status fails', async function () {
       fakeTequilapiManipulator.setStatusFail(true)
-      await this.dispatch(type.CONNECTION_STATUS_ALL)
-      expect(this.commited).to.have.deep.members([
+      const committed = await executeAction(type.CONNECTION_STATUS_ALL)
+      expect(committed).to.have.deep.members([
         {
           key: type.REQUEST_FAIL,
           value: fakeTequilapiManipulator.getFakeError()
@@ -212,8 +218,8 @@ describe('actions', () => {
 
     it('returns successful data when statistics fail', async function () {
       fakeTequilapiManipulator.setStatisticsFail(true)
-      await this.dispatch(type.CONNECTION_STATUS_ALL)
-      expect(this.commited).to.have.deep.members([
+      const committed = await executeAction(type.CONNECTION_STATUS_ALL)
+      expect(committed).to.have.deep.members([
         {
           key: type.CONNECTION_STATUS,
           value: 'mock status'
