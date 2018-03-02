@@ -19,6 +19,9 @@ function FakeTequilapi () {
         return {
           status: 'mock status'
         }
+      },
+      statistics: async function () {
+        return 'mock statistics'
       }
     }
   }
@@ -35,8 +38,8 @@ describe('mutations', () => {
     })
   })
 
-  describe('CONNECTION_STATS', () => {
-    const connectionStats = connection.mutations[type.CONNECTION_STATS]
+  describe('CONNECTION_STATISTICS', () => {
+    const connectionStats = connection.mutations[type.CONNECTION_STATISTICS]
 
     it('updates stats', () => {
       const state = {}
@@ -66,29 +69,63 @@ describe('mutations', () => {
 
 describe('actions', () => {
   beforeEach(function () {
-    this.commited = {}
+    this.commited = []
     this.commit = (key, value) => {
-      this.commited = {key, value}
+      this.commited.push({key, value})
+    }
+
+    this.dispatch = (action) => {
+      return connection.actions[action]({commit: this.commit, dispatch: this.dispatch})
     }
   })
 
   describe('CONNECTION_IP', () => {
-    const connectionIp = connection.actions[type.CONNECTION_IP]
-
     it('commits new ip', async function () {
-      await connectionIp({commit: this.commit})
-      expect(this.commited.key).to.eql(type.CONNECTION_IP)
-      expect(this.commited.value).to.eql('mock ip')
+      await this.dispatch(type.CONNECTION_IP)
+      expect(this.commited).to.eql([{
+        key: type.CONNECTION_IP,
+        value: 'mock ip'
+      }])
     })
   })
 
   describe('CONNECTION_STATUS', () => {
-    const connectionStatus = connection.actions[type.CONNECTION_STATUS]
-
     it('commits new status', async function () {
-      await connectionStatus({commit: this.commit})
-      expect(this.commited.key).to.eql(type.CONNECTION_STATUS)
-      expect(this.commited.value).to.eql('mock status')
+      await this.dispatch(type.CONNECTION_STATUS)
+      expect(this.commited).to.eql([{
+        key: type.CONNECTION_STATUS,
+        value: 'mock status'
+      }])
+    })
+  })
+
+  describe('CONNECTION_STATISTICS', () => {
+    it('commits new statistics', async function () {
+      await this.dispatch(type.CONNECTION_STATISTICS)
+      expect(this.commited).to.eql([{
+        key: type.CONNECTION_STATISTICS,
+        value: 'mock statistics'
+      }])
+    })
+  })
+
+  describe('CONNECTION_STATUS_ALL', () => {
+    it('updates status, statistics and ip', async function () {
+      await this.dispatch(type.CONNECTION_STATUS_ALL)
+      expect(this.commited).to.have.deep.members([
+        {
+          key: type.CONNECTION_STATUS,
+          value: 'mock status'
+        },
+        {
+          key: type.CONNECTION_STATISTICS,
+          value: 'mock statistics'
+        },
+        {
+          key: type.CONNECTION_IP,
+          value: 'mock ip'
+        }
+      ])
     })
   })
 })
