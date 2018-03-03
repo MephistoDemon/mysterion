@@ -1,7 +1,7 @@
 <template>
     <div id="app" class="app">
         <div id="content">
-            <div class="control__version">Pre-alpha v{{version}}</div>
+            <div class="control__version">v{{version}}</div>
             <app-modal v-if="!clientIsRunning" :close="false">
                 <app-error :error="error"></app-error>
             </app-modal>
@@ -32,11 +32,13 @@
       AppError
     },
     computed: {
-      ...mapGetters(['loading', 'visual', 'clientIsRunning'])
+      ...mapGetters(['loading', 'visual', 'clientIsRunning', 'buildInfo']),
+      version () {
+        return remote.getGlobal('__version') + '-' + (this.buildInfo.commit || this.buildInfo.branch || '')
+      }
     },
     data () {
       return {
-        version: remote.getGlobal('__version'),
         error: {
           message: 'Mysterium client seems to be down.',
           hint: 'Please wait while it re-launches. If this message persists, please contact support.'

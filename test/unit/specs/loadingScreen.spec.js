@@ -49,12 +49,13 @@ describe('loading screen', () => {
     const mock = new MockAdapter(tequilapi.__axio)
     mock.onGet('/proposals').reply(200, {proposals: [{id: '0xCEEDBEEF'}]})
     mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
+    mock.onGet('/healthcheck').replyOnce(200, {version: {commit: 'caed3112'}})
     mock.onPut('/identities/0xC001FACE/unlock').reply(200)
     vm = await mountComponent(tequilapi)
   })
 
   it('loads without errors', async () => {
-    await delay(config.loadingScreenDelay)
+    await delay(config.loadingScreenDelay + 900)
     expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
     expect(vm.$store.state.main.error).to.eql(null)
   })
@@ -77,13 +78,14 @@ describe('loading screen when no identities returned', () => {
     const mock = new MockAdapter(tequilapi.__axio)
     mock.onGet('/identities').replyOnce(200, {identities: []})
     mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
+    mock.onGet('/healthcheck').replyOnce(200, {version: {commit: 'caed3112'}})
     mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
     mock.onPut('/identities/0xC001FACY/unlock').replyOnce(200)
     vm = await mountComponent(tequilapi)
   })
 
   it('loads without errors', async () => {
-    await delay(config.loadingScreenDelay)
+    await delay(config.loadingScreenDelay + 900)
     expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
     expect(vm.$store.state.main.error).to.eql(null)
   })
