@@ -8,7 +8,7 @@ import tequilAPI from '../../../api/tequilapi'
 const tequilapi = tequilAPI()
 
 export default {
-  main,
+  main: main(tequilapi),
   connection,
   identity: identity(tequilapi),
   proposal: proposal(tequilapi),

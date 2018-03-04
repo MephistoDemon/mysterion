@@ -28,7 +28,7 @@ async function mountComponent (tequilapi) {
     modules: {
       identity: {...idStore(tequilapi)},
       proposal: {...propStore(tequilapi)},
-      main: mainStore
+      main: {...mainStore(tequilapi)}
     },
     strict: false
   })

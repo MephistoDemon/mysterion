@@ -34,7 +34,6 @@
         this.$router.push('/main')
       } catch (err) {
         commit(type.INIT_FAIL, err)
-        console.log(err)
         throw (err)
       }
     },

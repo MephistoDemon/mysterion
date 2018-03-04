@@ -1,6 +1,4 @@
 import type from '../types'
-import tequilAPI from '../../../api/tequilapi'
-const tequilapi = tequilAPI()
 
 const state = {
   init: '',
@@ -34,21 +32,23 @@ const mutations = {
   [type.HIDE_REQ_ERR] (state) { state.showRequestErr = false }
 }
 
-const actions = {
-  switchNav ({commit}, open) {
-    commit(type.SET_NAV, open)
-  },
-  setVisual ({commit}, visual) {
-    commit(type.SET_VISUAL, visual)
-  },
-  async [type.BUILD_INFO] ({commit}) {
-    const res = await tequilapi.healthCheck()
-    commit(type.BUILD_INFO, res.version)
+export default function (tequilapi) {
+  const actions = {
+    switchNav ({commit}, open) {
+      commit(type.SET_NAV, open)
+    },
+    setVisual ({commit}, visual) {
+      commit(type.SET_VISUAL, visual)
+    },
+    async [type.BUILD_INFO] ({commit}) {
+      const res = await tequilapi.healthCheck()
+      commit(type.BUILD_INFO, res.version)
+    }
   }
-}
-export default {
-  state,
-  mutations,
-  getters,
-  actions
+  return {
+    state,
+    mutations,
+    getters,
+    actions
+  }
 }
