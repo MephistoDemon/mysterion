@@ -7,13 +7,17 @@ import Router from 'vue-router'
 
 import idStore from '@/store/modules/identity'
 import propStore from '@/store/modules/proposal'
-import mainStore from '@/store/modules/main'
 import loadingScreen from '@/pages/Loading'
-import tequilAPI from '@/../api/tequilapi'
+import {tequilapi} from '@/../api/tequilapi'
 
 import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
 
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import mainStoreInjector from 'inject-loader!@/store/modules/main'
+const mainStore = mainStoreInjector({
+  '../../../api/tequilapi': {tequilapi}
+}).default
 Vue.use(Vuex)
 Vue.use(Router)
 
@@ -28,7 +32,7 @@ async function mountComponent (tequilapi) {
     modules: {
       identity: {...idStore(tequilapi)},
       proposal: {...propStore(tequilapi)},
-      main: {...mainStore(tequilapi)}
+      main: mainStore
     },
     strict: false
   })
@@ -45,7 +49,6 @@ async function mountComponent (tequilapi) {
 describe('loading screen', () => {
   let vm
   before(async () => {
-    const tequilapi = tequilAPI()
     const mock = new MockAdapter(tequilapi.__axio)
     mock.onGet('/proposals').reply(200, {proposals: [{id: '0xCEEDBEEF'}]})
     mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
@@ -55,7 +58,7 @@ describe('loading screen', () => {
   })
 
   it('loads without errors', async () => {
-    await delay(config.loadingScreenDelay + 900)
+    await delay(config.loadingScreenDelay)
     expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
     expect(vm.$store.state.main.error).to.eql(null)
   })
@@ -74,7 +77,6 @@ describe('loading screen when no identities returned', () => {
   let vm
 
   before(async () => {
-    const tequilapi = tequilAPI()
     const mock = new MockAdapter(tequilapi.__axio)
     mock.onGet('/identities').replyOnce(200, {identities: []})
     mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
@@ -85,7 +87,7 @@ describe('loading screen when no identities returned', () => {
   })
 
   it('loads without errors', async () => {
-    await delay(config.loadingScreenDelay + 900)
+    await delay(config.loadingScreenDelay)
     expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
     expect(vm.$store.state.main.error).to.eql(null)
   })

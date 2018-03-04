@@ -17,7 +17,9 @@ export const types = {
   }
 }
 
-export default function (teqAddr = 'http://127.0.0.1:4050') {
+export let tequilapi = Constructor()
+
+export default function Constructor (teqAddr = 'http://127.0.0.1:4050') {
   const {teqAxio, axioAdapter} = adapterFactory(teqAddr)
   const api = {
     identity: {
