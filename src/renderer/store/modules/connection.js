@@ -48,9 +48,7 @@ const actions = {
   async [type.CONNECTION_IP] ({commit}) {
     try {
       const ip = await tequilapi.connection.ip()
-      if (ip !== null) {
-        commit(type.CONNECTION_IP, ip)
-      }
+      commit(type.CONNECTION_IP, ip)
     } catch (err) {
       if (!isTimeoutError(err)) {
         commit(type.REQUEST_FAIL, err)
