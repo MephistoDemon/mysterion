@@ -1,4 +1,4 @@
-import connection from '@/store/modules/connection'
+import {CONNECTION_ABORTED_ERROR_CODE} from '../../src/api/errors'
 
 function fakeTequilapiManipulator () {
   let statusFail = false
@@ -7,7 +7,7 @@ function fakeTequilapiManipulator () {
   let ipTimeout = false
   const fakeError = new Error('Mock error')
   const fakeTimeoutError = new Error('Mock timeout error')
-  fakeTimeoutError.code = connection.CONNECTION_ABORTED_ERROR_CODE
+  fakeTimeoutError.code = CONNECTION_ABORTED_ERROR_CODE
 
   return {
     getFakeApi: function () {

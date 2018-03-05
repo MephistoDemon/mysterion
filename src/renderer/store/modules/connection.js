@@ -1,5 +1,6 @@
 import type from '../types'
 import tequilAPI from '../../../api/tequilapi'
+import {isTimeoutError} from '../../../api/errors'
 import config from '../../config'
 // TODO tequilAPI should be passed via DI
 const tequilapi = tequilAPI()
@@ -10,8 +11,6 @@ const defaultStatistics = {
 }
 
 const IP_TIMEOUTS_ALLOWED = 2
-
-const CONNECTION_ABORTED_ERROR_CODE = 'ECONNABORTED'
 
 const state = {
   ip: null,
@@ -128,14 +127,9 @@ const actions = {
   }
 }
 
-function isTimeoutError (error) {
-  return error.code === CONNECTION_ABORTED_ERROR_CODE
-}
-
 export default {
   state,
   mutations,
   actions,
-  getters,
-  CONNECTION_ABORTED_ERROR_CODE
+  getters
 }
