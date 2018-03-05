@@ -44,7 +44,9 @@ const MysterionConfig = {
   /**
    * static file directory
    */
-  staticDirectoryPath: path.join(appContentsPath, 'static').replace(/\\/g, '\\\\'),
+  staticDirectoryPath: process.env.NODE_ENV === 'development'
+    ? path.join(appContentsPath, 'static').replace(/\\/g, '\\\\')
+    : path.join(app.getAppPath(), '../', 'static').replace(/\\/g, '\\\\'),
 
   /**
    * window configuration
