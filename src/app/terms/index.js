@@ -13,7 +13,6 @@ class Terms {
   stored () {
     let path = this._getTermsPath()
     if (!fs.existsSync(path)) {
-      console.error('terms don\'t exist')
       return false
     }
 

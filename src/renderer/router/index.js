@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import store from '@/store'
 import Loader from '@/pages/Loader'
-import Status from '@/pages/Status'
+import Home from '@/pages/Home'
 import Vpn from '@/pages/Vpn'
 import Terms from '@/pages/Terms'
 import About from '@/pages/About'
@@ -20,8 +20,8 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'status',
-      component: Status,
+      name: 'home',
+      component: Home,
       meta: {
         visual: 'head'
       }
