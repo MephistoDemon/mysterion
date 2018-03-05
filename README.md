@@ -45,7 +45,7 @@ If you want to run selected tests multiple times, you can start `karma` server i
 
 ```bash
 npm run unit:start-server
-npm run unit:run -- --grep="loading screen"
+npm run unit:run -- -- --grep="loading screen"
 ```
 
 ---
