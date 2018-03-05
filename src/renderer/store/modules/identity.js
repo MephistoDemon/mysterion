@@ -1,15 +1,11 @@
 import type from '../types'
 
 const state = {
-  error: null,
   current: null,
   unlocked: false
 }
 
 const mutations = {
-  [type.REQUEST_FAIL] (state, err) {
-    state.error = err
-  },
   [type.IDENTITY_GET_SUCCESS] (state, identity) {
     state.current = identity // { id: '0xC001FACE00000123' }
   },
