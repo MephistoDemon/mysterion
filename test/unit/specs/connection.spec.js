@@ -89,12 +89,12 @@ describe('mutations', () => {
 })
 
 describe('actions', () => {
-  beforeEach(function () {
+  beforeEach(() => {
     fakeTequilapi.cleanup()
   })
 
   describe('CONNECTION_IP', () => {
-    it('commits new ip and resets timeout counter', async function () {
+    it('commits new ip and resets timeout counter', async () => {
       const state = { ipTimeoutsCount: 2 }
       const committed = await executeAction(type.CONNECTION_IP, state)
       expect(committed).to.eql([
@@ -109,7 +109,7 @@ describe('actions', () => {
       ])
     })
 
-    it('ignores error and increases timeout counter when api timeouts for the first time', async function () {
+    it('ignores error and increases timeout counter when api timeouts for the first time', async () => {
       fakeTequilapi.setIpTimeout(true)
       const committed = await executeAction(type.CONNECTION_IP)
       expect(committed).to.eql([{
@@ -118,7 +118,7 @@ describe('actions', () => {
       }])
     })
 
-    it('commits error and increases timeout counter when api timeouts for the third time', async function () {
+    it('commits error and increases timeout counter when api timeouts for the third time', async () => {
       fakeTequilapi.setIpTimeout(true)
       const state = { ipTimeoutsCount: 2 }
       const committed = await executeAction(type.CONNECTION_IP, state)
@@ -134,7 +134,7 @@ describe('actions', () => {
       ])
     })
 
-    it('commits error when api returns unknown error', async function () {
+    it('commits error when api returns unknown error', async () => {
       fakeTequilapi.setIpFail(true)
       const committed = await executeAction(type.CONNECTION_IP)
       expect(committed).to.eql([{
@@ -145,7 +145,7 @@ describe('actions', () => {
   })
 
   describe('CONNECTION_STATUS', () => {
-    it('commits new status', async function () {
+    it('commits new status', async () => {
       const committed = await executeAction(type.CONNECTION_STATUS)
       expect(committed).to.eql([{
         key: type.CONNECTION_STATUS,
@@ -153,7 +153,7 @@ describe('actions', () => {
       }])
     })
 
-    it('commits error when api fails', async function () {
+    it('commits error when api fails', async () => {
       fakeTequilapi.setStatusFail(true)
       const committed = await executeAction(type.CONNECTION_STATUS)
       expect(committed).to.eql([{
@@ -164,7 +164,7 @@ describe('actions', () => {
   })
 
   describe('CONNECTION_STATISTICS', () => {
-    it('commits new statistics', async function () {
+    it('commits new statistics', async () => {
       const committed = await executeAction(type.CONNECTION_STATISTICS)
       expect(committed).to.eql([{
         key: type.CONNECTION_STATISTICS,
@@ -172,7 +172,7 @@ describe('actions', () => {
       }])
     })
 
-    it('commits error when api fails', async function () {
+    it('commits error when api fails', async () => {
       fakeTequilapi.setStatisticsFail(true)
       const committed = await executeAction(type.CONNECTION_STATISTICS)
       expect(committed).to.eql([{
@@ -183,7 +183,7 @@ describe('actions', () => {
   })
 
   describe('CONNECTION_STATUS_ALL', () => {
-    it('updates status, statistics and ip', async function () {
+    it('updates status, statistics and ip', async () => {
       const committed = await executeAction(type.CONNECTION_STATUS_ALL)
       expect(committed).to.have.deep.members([
         {
@@ -205,7 +205,7 @@ describe('actions', () => {
       ])
     })
 
-    it('returns successful data when status fails', async function () {
+    it('returns successful data when status fails', async () => {
       fakeTequilapi.setStatusFail(true)
       const committed = await executeAction(type.CONNECTION_STATUS_ALL)
       expect(committed).to.have.deep.members([
@@ -228,7 +228,7 @@ describe('actions', () => {
       ])
     })
 
-    it('returns successful data when statistics fail', async function () {
+    it('returns successful data when statistics fail', async () => {
       fakeTequilapi.setStatisticsFail(true)
       const committed = await executeAction(type.CONNECTION_STATUS_ALL)
       expect(committed).to.have.deep.members([
