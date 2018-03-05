@@ -24,12 +24,6 @@ describe('tequilAPI', () => {
       const ip = await tequilApi.connection.ip()
       expect(ip).to.deep.eql('mock ip')
     })
-
-    it('returns null when endpoint fails with 503', async () => {
-      mock.onGet('/connection/ip').replyOnce(503)
-      const ip = await tequilApi.connection.ip()
-      expect(ip).to.eql(null)
-    })
   })
 })
 

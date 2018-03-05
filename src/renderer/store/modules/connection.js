@@ -1,5 +1,6 @@
 import type from '../types'
 import tequilAPI from '../../../api/tequilapi'
+import {isTimeoutError} from '../../../api/errors'
 import config from '../../config'
 // TODO tequilAPI should be passed via DI
 const tequilapi = tequilAPI()
@@ -9,8 +10,11 @@ let updaterTimeout
 const defaultStatistics = {
 }
 
+const IP_TIMEOUTS_ALLOWED = 2
+
 const state = {
   ip: null,
+  ipTimeoutsCount: 0,
   status: 'NotConnected',
   statistics: defaultStatistics
 }
@@ -33,6 +37,12 @@ const mutations = {
   },
   [type.CONNECTION_STATISTICS_RESET] (state) {
     state.statistics = defaultStatistics
+  },
+  [type.INCREASE_IP_TIMEOUT_COUNTER] (state) {
+    state.ipTimeoutsCount++
+  },
+  [type.RESET_TIMEOUT_COUNTER] (state) {
+    state.ipTimeoutsCount = 0
   }
 }
 
@@ -43,14 +53,20 @@ const actions = {
       dispatch(type.STATUS_UPDATER_RUN)
     }, config.statusUpdateTimeout)
   },
-  async [type.CONNECTION_IP] ({commit}) {
+  async [type.CONNECTION_IP] ({commit, state}) {
     try {
       const ip = await tequilapi.connection.ip()
-      if (ip !== null) {
-        commit(type.CONNECTION_IP, ip)
-      }
+      commit(type.CONNECTION_IP, ip)
+      commit('RESET_TIMEOUT_COUNTER')
     } catch (err) {
-      commit(type.REQUEST_FAIL, err)
+      if (isTimeoutError(err)) {
+        if (state.ipTimeoutsCount >= IP_TIMEOUTS_ALLOWED) {
+          commit(type.REQUEST_FAIL, err)
+        }
+        commit('INCREASE_IP_TIMEOUT_COUNTER')
+      } else {
+        commit(type.REQUEST_FAIL, err)
+      }
     }
   },
   async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {

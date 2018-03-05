@@ -11,14 +11,15 @@ const connection = connectionInjector({
   '../../../api/tequilapi': fakeTequilapi.getFakeApi
 }).default
 
-async function executeAction (action) {
+async function executeAction (action, state = {}) {
   const mutations = []
   const commit = (key, value) => {
     mutations.push({key, value})
   }
 
   const dispatch = (action) => {
-    return connection.actions[action]({commit: commit, dispatch: dispatch})
+    const context = {commit, dispatch, state}
+    return connection.actions[action](context)
   }
 
   await dispatch(action)
@@ -63,23 +64,77 @@ describe('mutations', () => {
       expect(store.statistics).to.eql({})
     })
   })
+
+  describe('INCREASE_IP_TIMEOUT_COUNTER', () => {
+    it('increases ip timeout counter', () => {
+      let store = {
+        ipTimeoutsCount: 0
+      }
+      connection.mutations[type.INCREASE_IP_TIMEOUT_COUNTER](store)
+      expect(store.ipTimeoutsCount).to.eql(1)
+      connection.mutations[type.INCREASE_IP_TIMEOUT_COUNTER](store)
+      expect(store.ipTimeoutsCount).to.eql(2)
+    })
+  })
+
+  describe('RESET_TIMEOUT_COUNTER', () => {
+    it('resets ip timeout counter', () => {
+      let store = {
+        ipTimeoutsCount: 2
+      }
+      connection.mutations[type.RESET_TIMEOUT_COUNTER](store)
+      expect(store.ipTimeoutsCount).to.eql(0)
+    })
+  })
 })
 
 describe('actions', () => {
-  beforeEach(function () {
+  beforeEach(() => {
     fakeTequilapi.cleanup()
   })
 
   describe('CONNECTION_IP', () => {
-    it('commits new ip', async function () {
+    it('commits new ip and resets timeout counter', async () => {
+      const state = { ipTimeoutsCount: 2 }
+      const committed = await executeAction(type.CONNECTION_IP, state)
+      expect(committed).to.eql([
+        {
+          key: type.CONNECTION_IP,
+          value: 'mock ip'
+        },
+        {
+          key: type.RESET_TIMEOUT_COUNTER,
+          value: undefined
+        }
+      ])
+    })
+
+    it('ignores error and increases timeout counter when api timeouts for the first time', async () => {
+      fakeTequilapi.setIpTimeout(true)
       const committed = await executeAction(type.CONNECTION_IP)
       expect(committed).to.eql([{
-        key: type.CONNECTION_IP,
-        value: 'mock ip'
+        key: type.INCREASE_IP_TIMEOUT_COUNTER,
+        value: undefined
       }])
     })
 
-    it('commits error when api fails', async function () {
+    it('commits error and increases timeout counter when api timeouts for the third time', async () => {
+      fakeTequilapi.setIpTimeout(true)
+      const state = { ipTimeoutsCount: 2 }
+      const committed = await executeAction(type.CONNECTION_IP, state)
+      expect(committed).to.eql([
+        {
+          key: type.REQUEST_FAIL,
+          value: fakeTequilapi.getFakeTimeoutError()
+        },
+        {
+          key: type.INCREASE_IP_TIMEOUT_COUNTER,
+          value: undefined
+        }
+      ])
+    })
+
+    it('commits error when api returns unknown error', async () => {
       fakeTequilapi.setIpFail(true)
       const committed = await executeAction(type.CONNECTION_IP)
       expect(committed).to.eql([{
@@ -90,7 +145,7 @@ describe('actions', () => {
   })
 
   describe('CONNECTION_STATUS', () => {
-    it('commits new status', async function () {
+    it('commits new status', async () => {
       const committed = await executeAction(type.CONNECTION_STATUS)
       expect(committed).to.eql([{
         key: type.CONNECTION_STATUS,
@@ -98,7 +153,7 @@ describe('actions', () => {
       }])
     })
 
-    it('commits error when api fails', async function () {
+    it('commits error when api fails', async () => {
       fakeTequilapi.setStatusFail(true)
       const committed = await executeAction(type.CONNECTION_STATUS)
       expect(committed).to.eql([{
@@ -109,7 +164,7 @@ describe('actions', () => {
   })
 
   describe('CONNECTION_STATISTICS', () => {
-    it('commits new statistics', async function () {
+    it('commits new statistics', async () => {
       const committed = await executeAction(type.CONNECTION_STATISTICS)
       expect(committed).to.eql([{
         key: type.CONNECTION_STATISTICS,
@@ -117,7 +172,7 @@ describe('actions', () => {
       }])
     })
 
-    it('commits error when api fails', async function () {
+    it('commits error when api fails', async () => {
       fakeTequilapi.setStatisticsFail(true)
       const committed = await executeAction(type.CONNECTION_STATISTICS)
       expect(committed).to.eql([{
@@ -128,7 +183,7 @@ describe('actions', () => {
   })
 
   describe('CONNECTION_STATUS_ALL', () => {
-    it('updates status, statistics and ip', async function () {
+    it('updates status, statistics and ip', async () => {
       const committed = await executeAction(type.CONNECTION_STATUS_ALL)
       expect(committed).to.have.deep.members([
         {
@@ -142,11 +197,15 @@ describe('actions', () => {
         {
           key: type.CONNECTION_IP,
           value: 'mock ip'
+        },
+        {
+          key: type.RESET_TIMEOUT_COUNTER,
+          value: undefined
         }
       ])
     })
 
-    it('returns successful data when status fails', async function () {
+    it('returns successful data when status fails', async () => {
       fakeTequilapi.setStatusFail(true)
       const committed = await executeAction(type.CONNECTION_STATUS_ALL)
       expect(committed).to.have.deep.members([
@@ -161,11 +220,15 @@ describe('actions', () => {
         {
           key: type.CONNECTION_IP,
           value: 'mock ip'
+        },
+        {
+          key: type.RESET_TIMEOUT_COUNTER,
+          value: undefined
         }
       ])
     })
 
-    it('returns successful data when statistics fail', async function () {
+    it('returns successful data when statistics fail', async () => {
       fakeTequilapi.setStatisticsFail(true)
       const committed = await executeAction(type.CONNECTION_STATUS_ALL)
       expect(committed).to.have.deep.members([
@@ -180,6 +243,10 @@ describe('actions', () => {
         {
           key: type.CONNECTION_IP,
           value: 'mock ip'
+        },
+        {
+          key: type.RESET_TIMEOUT_COUNTER,
+          value: undefined
         }
       ])
     })
