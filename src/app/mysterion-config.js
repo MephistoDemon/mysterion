@@ -11,9 +11,14 @@ const MysterionConfig = {
   inDevMode: process.env.NODE_ENV === 'development',
 
   /**
-   * mysterium_client binary directory
+   * mysterium_client binary path
    */
   clientBinaryPath: path.join(appContentsPath, 'bin', 'mysterium_client'),
+
+  /**
+   * openvpn binary path
+   */
+  openVPNBinary: path.join(appContentsPath, 'bin', 'openvpn'),
 
   /**
    * mysterium_client configuration files directory

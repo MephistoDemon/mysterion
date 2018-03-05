@@ -1,22 +1,22 @@
 import type from '../types'
 
 const state = {
-  main: null
+  overlay: null
 }
 
 const mutations = {
-  [type.ERROR_IN_MAIN] (state, error) {
-    state.main = error
+  [type.OVERLAY_ERROR] (state, error) {
+    state.overlay = error
   }
 }
 
 const getters = {
-  errorInMain: (store) => store.main
+  overlayError: (store) => store.overlay
 }
 
 const actions = {
-  [type.ERROR_IN_MAIN] ({commit}, error) {
-    commit(type.ERROR_IN_MAIN, error)
+  [type.OVERLAY_ERROR] ({commit}, error) {
+    commit(type.OVERLAY_ERROR, error)
   }
 }
 

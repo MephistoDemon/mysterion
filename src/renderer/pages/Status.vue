@@ -1,7 +1,6 @@
 <template>
     <app-modal :close="false">
-        <h1 v-if="!errorInMain">{{ status.message }}</h1>
-        <app-error v-if="errorInMain" :error="errorInMain"></app-error>
+        <h1>{{ status.message }}</h1>
     </app-modal>
 </template>
 <script>

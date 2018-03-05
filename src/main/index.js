@@ -8,7 +8,7 @@ global.__version = process.env.MYSTERION_VERSION
 global.__sentryURL = process.env.SENTRY.publicURL
 global.__static = MysterionConfig.staticDirectoryPath
 
-const mysterion = MysterionFactory(MysterionConfig, 'Cool terms', 1.0)
+const mysterion = MysterionFactory(MysterionConfig, 'Cool terms', '1.0')
 mysterion.run()
 
 bugReporter.installInMain()

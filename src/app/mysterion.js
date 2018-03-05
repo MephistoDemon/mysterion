@@ -139,7 +139,9 @@ class Mysterion {
       console.log('touched the daemon, now he woke up')
     } finally {
       this.monitoring.start()
-      updateRendererWithHealth()
+      setTimeout(() => {
+        updateRendererWithHealth()
+      }, 3000)
     }
   }
 

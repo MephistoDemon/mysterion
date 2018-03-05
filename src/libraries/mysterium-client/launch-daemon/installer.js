@@ -40,9 +40,9 @@ class Installer {
             <string>--data-dir</string>
             <string>${this.config.userDataDirectory}</string>
             <string>--runtime-dir</string>
-            <string>${this.config.runtimeDir}</string>
+            <string>${this.config.runtimeDirectory}</string>
             <string>--openvpn.binary</string>
-            <string>${this.config.openVPNBin}</string>
+            <string>${this.config.openVPNBinary}</string>
           </array>
           <key>Sockets</key>
             <dict>
