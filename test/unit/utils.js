@@ -59,6 +59,9 @@ function fakeTequilapiManipulator () {
     },
     getFakeError: function () {
       return fakeError
+    },
+    getFakeTimeoutError: function () {
+      return fakeTimeoutError
     }
   }
 }
