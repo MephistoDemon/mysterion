@@ -149,8 +149,8 @@ class Mysterion {
    * notifies the renderer that we're good to go and sets up the system tray
    */
   startApp () {
-    this.buildTray()
     this.window.send(communication.APP_START)
+    this.buildTray()
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
@@ -164,6 +164,7 @@ class Mysterion {
 
     template.push({
       label: 'Quit',
+      accelerator: 'Command+Q',
       click: () => {
         app.quit()
       }
