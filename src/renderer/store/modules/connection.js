@@ -9,6 +9,8 @@ let updaterTimeout
 const defaultStatistics = {
 }
 
+const CONNECTION_ABORTED_ERROR_CODE = 'ECONNABORTED'
+
 const state = {
   ip: null,
   status: 'NotConnected',
@@ -50,7 +52,9 @@ const actions = {
         commit(type.CONNECTION_IP, ip)
       }
     } catch (err) {
-      commit(type.REQUEST_FAIL, err)
+      if (!isTimeoutError(err)) {
+        commit(type.REQUEST_FAIL, err)
+      }
     }
   },
   async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
@@ -111,9 +115,14 @@ const actions = {
   }
 }
 
+function isTimeoutError (error) {
+  return error.code === CONNECTION_ABORTED_ERROR_CODE
+}
+
 export default {
   state,
   mutations,
   actions,
-  getters
+  getters,
+  CONNECTION_ABORTED_ERROR_CODE
 }

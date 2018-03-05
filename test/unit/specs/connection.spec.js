@@ -79,7 +79,13 @@ describe('actions', () => {
       }])
     })
 
-    it('commits error when api fails', async function () {
+    it('ignores error when api timeouts', async function () {
+      fakeTequilapi.setIpTimeout(true)
+      const committed = await executeAction(type.CONNECTION_IP)
+      expect(committed).to.eql([])
+    })
+
+    it('commits error when api returns unknown error', async function () {
       fakeTequilapi.setIpFail(true)
       const committed = await executeAction(type.CONNECTION_IP)
       expect(committed).to.eql([{
