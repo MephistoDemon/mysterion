@@ -61,11 +61,11 @@ const actions = {
     } catch (err) {
       if (isTimeoutError(err)) {
         if (state.ipTimeoutsCount >= IP_TIMEOUTS_ALLOWED) {
-          commit(type.REQUEST_FAIL, err)
+          commit(type.SHOW_ERROR, err)
         }
         commit('INCREASE_IP_TIMEOUT_COUNTER')
       } else {
-        commit(type.REQUEST_FAIL, err)
+        commit(type.SHOW_ERROR, err)
       }
     }
   },
@@ -83,7 +83,7 @@ const actions = {
       const res = await tequilapi.connection.status()
       commit(type.CONNECTION_STATUS, res.status)
     } catch (err) {
-      commit(type.REQUEST_FAIL, err)
+      commit(type.SHOW_ERROR, err)
     }
   },
   async [type.CONNECTION_STATISTICS] ({commit}) {
@@ -91,7 +91,7 @@ const actions = {
       const statistics = await tequilapi.connection.statistics()
       commit(type.CONNECTION_STATISTICS, statistics)
     } catch (err) {
-      commit(type.REQUEST_FAIL, err)
+      commit(type.SHOW_ERROR, err)
     }
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
@@ -107,7 +107,7 @@ const actions = {
     } catch (err) {
       let error = new Error('Connection to node failed. Try other one')
       error.original = err
-      commit(type.REQUEST_FAIL, error)
+      commit(type.SHOW_ERROR, error)
       throw (error)
     }
   },
@@ -121,7 +121,7 @@ const actions = {
       dispatch(type.CONNECTION_IP)
       return res
     } catch (err) {
-      commit(type.REQUEST_FAIL, err)
+      commit(type.SHOW_ERROR, err)
       throw (err)
     }
   }

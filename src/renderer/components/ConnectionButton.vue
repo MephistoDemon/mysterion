@@ -51,7 +51,7 @@
     },
     methods: {
       connect: function () {
-        if (!this.providerId) return this.$store.commit(type.REQUEST_FAIL, new Error('Please select location'))
+        if (!this.providerId) return this.$store.commit(type.SHOW_ERROR, new Error('Please select location'))
         if (this.$store.getters.status === type.tequilapi.NOT_CONNECTED) {
           this.$store.dispatch(type.CONNECT, {
             consumerId: this.consumerId,

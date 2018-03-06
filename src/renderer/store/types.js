@@ -3,7 +3,7 @@ import {types} from '../../libraries/api/tequilapi'
 export default {
   tequilapi: types.connection,
   // Mutations
-  REQUEST_FAIL: 'REQUEST_FAIL',
+  SHOW_ERROR: 'SHOW_ERROR',
 
   INIT_SUCCESS: 'INIT_SUCCESS',
   INIT_PENDING: 'INIT_PENDING',

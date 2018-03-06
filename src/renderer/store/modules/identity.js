@@ -38,7 +38,7 @@ function factory (tequilapi) {
         const newIdentity = await tequilapi.identity.create(await getPassword())
         return newIdentity
       } catch (err) {
-        commit(type.REQUEST_FAIL, err)
+        commit(type.SHOW_ERROR, err)
         throw (err)
       }
     },
@@ -50,7 +50,7 @@ function factory (tequilapi) {
         })
         commit(type.IDENTITY_UNLOCK_SUCCESS, res)
       } catch (err) {
-        commit(type.REQUEST_FAIL, err)
+        commit(type.SHOW_ERROR, err)
       }
     },
     async [type.IDENTITY_LIST] ({commit}) {
@@ -59,7 +59,7 @@ function factory (tequilapi) {
         commit(type.IDENTITY_LIST_SUCCESS, res.identities)
         return res.identities
       } catch (err) {
-        commit(type.REQUEST_FAIL, err)
+        commit(type.SHOW_ERROR, err)
         throw (err)
       }
     }

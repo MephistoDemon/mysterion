@@ -124,7 +124,7 @@ describe('actions', () => {
       const committed = await executeAction(type.CONNECTION_IP, state)
       expect(committed).to.eql([
         {
-          key: type.REQUEST_FAIL,
+          key: type.SHOW_ERROR,
           value: fakeTequilapi.getFakeTimeoutError()
         },
         {
@@ -138,7 +138,7 @@ describe('actions', () => {
       fakeTequilapi.setIpFail(true)
       const committed = await executeAction(type.CONNECTION_IP)
       expect(committed).to.eql([{
-        key: type.REQUEST_FAIL,
+        key: type.SHOW_ERROR,
         value: fakeTequilapi.getFakeError()
       }])
     })
@@ -157,7 +157,7 @@ describe('actions', () => {
       fakeTequilapi.setStatusFail(true)
       const committed = await executeAction(type.CONNECTION_STATUS)
       expect(committed).to.eql([{
-        key: type.REQUEST_FAIL,
+        key: type.SHOW_ERROR,
         value: fakeTequilapi.getFakeError()
       }])
     })
@@ -176,7 +176,7 @@ describe('actions', () => {
       fakeTequilapi.setStatisticsFail(true)
       const committed = await executeAction(type.CONNECTION_STATISTICS)
       expect(committed).to.eql([{
-        key: type.REQUEST_FAIL,
+        key: type.SHOW_ERROR,
         value: fakeTequilapi.getFakeError()
       }])
     })
@@ -210,7 +210,7 @@ describe('actions', () => {
       const committed = await executeAction(type.CONNECTION_STATUS_ALL)
       expect(committed).to.have.deep.members([
         {
-          key: type.REQUEST_FAIL,
+          key: type.SHOW_ERROR,
           value: fakeTequilapi.getFakeError()
         },
         {
@@ -237,7 +237,7 @@ describe('actions', () => {
           value: 'mock status'
         },
         {
-          key: type.REQUEST_FAIL,
+          key: type.SHOW_ERROR,
           value: fakeTequilapi.getFakeError()
         },
         {

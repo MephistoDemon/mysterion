@@ -9,7 +9,7 @@ const mutations = {
   [type.PROPOSAL_LIST_SUCCESS] (state, proposals) {
     state.list = proposals
   },
-  [type.REQUEST_FAIL] (state, err) {
+  [type.SHOW_ERROR] (state, err) {
     state.error = err
   }
 }
@@ -22,7 +22,7 @@ function factory (tequilapi) {
         commit(type.PROPOSAL_LIST_SUCCESS, proposalRes.proposals)
         return proposalRes.proposals
       } catch (err) {
-        commit(type.REQUEST_FAIL, err)
+        commit(type.SHOW_ERROR, err)
         throw (err)
       }
     }

@@ -41,7 +41,7 @@ const mutations = {
   [type.INIT_NEW_USER] (state) {
     state.newUser = true
   },
-  [type.REQUEST_FAIL] (state, err) {
+  [type.SHOW_ERROR] (state, err) {
     state.error = err
     state.showRequestErr = true
   },
