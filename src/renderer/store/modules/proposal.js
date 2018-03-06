@@ -1,16 +1,12 @@
 import type from '../types'
 
 const state = {
-  error: null,
   list: []
 }
 
 const mutations = {
   [type.PROPOSAL_LIST_SUCCESS] (state, proposals) {
     state.list = proposals
-  },
-  [type.SHOW_ERROR] (state, err) {
-    state.error = err
   }
 }
 
