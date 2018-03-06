@@ -54,14 +54,14 @@ const MysterionConfig = {
   windows: {
     url: process.env.NODE_ENV === 'development' ? `http://localhost:9080/` : `file://${__dirname}/index.html`,
     terms: {
-      width: (process.env.NODE_ENV === 'development') ? 1000 : 600,
-      height: (process.env.NODE_ENV === 'development') ? 700 : 600,
-      resizable: process.env.NODE_ENV === 'development'
+      width: 700,
+      height: 600,
+      resizable: false
     },
     app: {
-      width: (process.env.NODE_ENV === 'development') ? 1200 : 500,
-      height: (process.env.NODE_ENV === 'development') ? 1200 : 600,
-      resizable: process.env.NODE_ENV === 'development'
+      width: 500,
+      height: 600,
+      resizable: false
     }
   }
 }
