@@ -34,7 +34,7 @@
     computed: {
       ...mapGetters(['loading', 'visual', 'clientIsRunning', 'buildInfo']),
       version () {
-        return remote.getGlobal('__version') + '-' + (this.buildInfo.commit || this.buildInfo.branch || '')
+        return remote.getGlobal('__version') + ' Build id: ' + this.buildInfo.commit
       }
     },
     data () {
