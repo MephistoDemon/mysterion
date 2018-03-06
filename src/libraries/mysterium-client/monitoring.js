@@ -1,5 +1,3 @@
-import {ipcMain} from 'electron'
-
 const healthCheckInterval = 1500
 
 class ProcessMonitoring {
@@ -12,24 +10,28 @@ class ProcessMonitoring {
 
   start () {
     this._healthCheck()
-
-    ipcMain.on('renderer.booted', async (event) => {
-      const notifyRenderer = () => {
-        try {
-          event.sender.send('healthcheck', this.clientIsRunning)
-        } catch (e) {
-        }
-
-        this.ipcTimeout = setTimeout(() => notifyRenderer(), healthCheckInterval)
-      }
-
-      notifyRenderer()
-    })
   }
 
   stop () {
-    clearTimeout(this.apiTimeout)
-    clearTimeout(this.ipcTimeout)
+    if (this.apiTimeout) {
+      clearTimeout(this.apiTimeout)
+    }
+    if (this.ipcTimeout) {
+      clearTimeout(this.ipcTimeout)
+    }
+  }
+
+  isRunning () {
+    return this.clientIsRunning
+  }
+
+  onProcessReady (callback) {
+    const interval = setInterval(() => {
+      if (this.clientIsRunning) {
+        clearInterval(interval)
+        callback()
+      }
+    }, 100)
   }
 
   async _healthCheck () {

@@ -6,6 +6,7 @@ node_modules/
 test/unit/coverage/
 npm-debug.log
 npm-debug.log.*
+yarn-error.log
 !.gitkeep
 .idea
 .env

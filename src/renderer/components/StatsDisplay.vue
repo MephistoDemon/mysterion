@@ -32,21 +32,21 @@
     computed: {
       duration () {
         try {
-          return timeDisplay(this.connection.stats.duration)
+          return timeDisplay(this.connection.statistics.duration)
         } catch (err) {
           return '--:--:--'
         }
       },
       received (vm) {
         try {
-          return bytesReadable(vm.connection.stats.bytesReceived)
+          return bytesReadable(vm.connection.statistics.bytesReceived)
         } catch (err) {
           return { value: '-', units: 'KB' }
         }
       },
       sent (vm) {
         try {
-          return bytesReadable(vm.connection.stats.bytesSent)
+          return bytesReadable(vm.connection.statistics.bytesSent)
         } catch (err) {
           return { value: '-', units: 'KB' }
         }

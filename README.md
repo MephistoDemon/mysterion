@@ -16,17 +16,17 @@ VPN desktop UI (OSX, Windows, Linux) for Mysterium Network
 You need to specify GITHUB_API_TOKEN for the first run, as it will download
 required binaries: mysterium_client and openvpn. This token can be generated at:
 https://github.com/settings/tokens, it requires "repo" scope
-GITHUB_API_TOKEN=<yourtoken> npm install
+GITHUB_API_TOKEN=<yourtoken> yarn install
 
 # serve with hot reload at localhost:9080
-npm run dev
+yarn dev
 
 # build electron application for production
-npm run build
+yarn build
 
 
 # lint all JS/Vue component files in `src/`
-npm run lint
+yarn lint
 
 #build from osx to linux
 docker run --rm -ti   --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_')   --env ELECTRON_CACHE="/root/.cache/electron"   --env ELECTRON_BUILDER_CACHE="/root/.cache/electron-builder"   -v ${PWD}:/project   -v ${PWD##*/}-node-modules:/project/node_modules   -v ~/.cache/electron:/root/.cache/electron   -v ~/.cache/electron-builder:/root/.cache/electron-builder   electronuserland/builder:wine
@@ -38,14 +38,14 @@ yarn && yarn build
 
 To run all tests:
 ```bash
-npm run unit
+yarn unit
 ```
 
 If you want to run selected tests multiple times, you can start `karma` server in background:
 
 ```bash
-npm run unit:start-server
-npm run unit:run -- -- --grep="loading screen"
+yarn unit:start-server
+yarn unit:run --grep="loading screen"
 ```
 
 ---

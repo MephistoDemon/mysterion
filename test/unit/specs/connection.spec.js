@@ -3,28 +3,27 @@ import {expect} from 'chai'
 import type from '@/store/types'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import connectionInjector from 'inject-loader!@/store/modules/connection'
+import utils from '../utils'
+
+const fakeTequilapi = utils.fakeTequilapiManipulator()
+
 const connection = connectionInjector({
-  '../../../api/tequilapi': function () {
-    return FakeTequilapi()
-  }
+  '../../../libraries/api/tequilapi': fakeTequilapi.getFakeApi
 }).default
 
-function FakeTequilapi () {
-  return {
-    connection: {
-      ip: async function () {
-        return 'mock ip'
-      },
-      status: async function () {
-        return {
-          status: 'mock status'
-        }
-      },
-      statistics: async function () {
-        return 'mock statistics'
-      }
-    }
+async function executeAction (action, state = {}) {
+  const mutations = []
+  const commit = (key, value) => {
+    mutations.push({key, value})
   }
+
+  const dispatch = (action) => {
+    const context = {commit, dispatch, state}
+    return connection.actions[action](context)
+  }
+
+  await dispatch(action)
+  return mutations
 }
 
 describe('mutations', () => {
@@ -39,12 +38,12 @@ describe('mutations', () => {
   })
 
   describe('CONNECTION_STATISTICS', () => {
-    const connectionStats = connection.mutations[type.CONNECTION_STATISTICS]
+    const connectionStatistics = connection.mutations[type.CONNECTION_STATISTICS]
 
-    it('updates stats', () => {
+    it('updates statistics', () => {
       const state = {}
-      connectionStats(state, {some_stat: 'some value'})
-      expect(state).to.eql({ stats: {some_stat: 'some value'} })
+      connectionStatistics(state, {some_stat: 'some value'})
+      expect(state).to.eql({ statistics: {some_stat: 'some value'} })
     })
   })
 
@@ -58,61 +57,135 @@ describe('mutations', () => {
     })
   })
 
-  describe('CONNECTION_STATS_RESET', () => {
-    it('resets stats', () => {
+  describe('CONNECTION_STATISTICS_RESET', () => {
+    it('resets statistics', () => {
       let store = {}
-      connection.mutations[type.CONNECTION_STATS_RESET](store)
-      expect(store.stats).to.eql({})
+      connection.mutations[type.CONNECTION_STATISTICS_RESET](store)
+      expect(store.statistics).to.eql({})
+    })
+  })
+
+  describe('INCREASE_IP_TIMEOUT_COUNTER', () => {
+    it('increases ip timeout counter', () => {
+      let store = {
+        ipTimeoutsCount: 0
+      }
+      connection.mutations[type.INCREASE_IP_TIMEOUT_COUNTER](store)
+      expect(store.ipTimeoutsCount).to.eql(1)
+      connection.mutations[type.INCREASE_IP_TIMEOUT_COUNTER](store)
+      expect(store.ipTimeoutsCount).to.eql(2)
+    })
+  })
+
+  describe('RESET_TIMEOUT_COUNTER', () => {
+    it('resets ip timeout counter', () => {
+      let store = {
+        ipTimeoutsCount: 2
+      }
+      connection.mutations[type.RESET_TIMEOUT_COUNTER](store)
+      expect(store.ipTimeoutsCount).to.eql(0)
     })
   })
 })
 
 describe('actions', () => {
-  beforeEach(function () {
-    this.commited = []
-    this.commit = (key, value) => {
-      this.commited.push({key, value})
-    }
-
-    this.dispatch = (action) => {
-      return connection.actions[action]({commit: this.commit, dispatch: this.dispatch})
-    }
+  beforeEach(() => {
+    fakeTequilapi.cleanup()
   })
 
   describe('CONNECTION_IP', () => {
-    it('commits new ip', async function () {
-      await this.dispatch(type.CONNECTION_IP)
-      expect(this.commited).to.eql([{
-        key: type.CONNECTION_IP,
-        value: 'mock ip'
+    it('commits new ip and resets timeout counter', async () => {
+      const state = { ipTimeoutsCount: 2 }
+      const committed = await executeAction(type.CONNECTION_IP, state)
+      expect(committed).to.eql([
+        {
+          key: type.CONNECTION_IP,
+          value: 'mock ip'
+        },
+        {
+          key: type.RESET_TIMEOUT_COUNTER,
+          value: undefined
+        }
+      ])
+    })
+
+    it('ignores error and increases timeout counter when api timeouts for the first time', async () => {
+      fakeTequilapi.setIpTimeout(true)
+      const committed = await executeAction(type.CONNECTION_IP)
+      expect(committed).to.eql([{
+        key: type.INCREASE_IP_TIMEOUT_COUNTER,
+        value: undefined
+      }])
+    })
+
+    it('commits error and increases timeout counter when api timeouts for the third time', async () => {
+      fakeTequilapi.setIpTimeout(true)
+      const state = { ipTimeoutsCount: 2 }
+      const committed = await executeAction(type.CONNECTION_IP, state)
+      expect(committed).to.eql([
+        {
+          key: type.REQUEST_FAIL,
+          value: fakeTequilapi.getFakeTimeoutError()
+        },
+        {
+          key: type.INCREASE_IP_TIMEOUT_COUNTER,
+          value: undefined
+        }
+      ])
+    })
+
+    it('commits error when api returns unknown error', async () => {
+      fakeTequilapi.setIpFail(true)
+      const committed = await executeAction(type.CONNECTION_IP)
+      expect(committed).to.eql([{
+        key: type.REQUEST_FAIL,
+        value: fakeTequilapi.getFakeError()
       }])
     })
   })
 
   describe('CONNECTION_STATUS', () => {
-    it('commits new status', async function () {
-      await this.dispatch(type.CONNECTION_STATUS)
-      expect(this.commited).to.eql([{
+    it('commits new status', async () => {
+      const committed = await executeAction(type.CONNECTION_STATUS)
+      expect(committed).to.eql([{
         key: type.CONNECTION_STATUS,
         value: 'mock status'
+      }])
+    })
+
+    it('commits error when api fails', async () => {
+      fakeTequilapi.setStatusFail(true)
+      const committed = await executeAction(type.CONNECTION_STATUS)
+      expect(committed).to.eql([{
+        key: type.REQUEST_FAIL,
+        value: fakeTequilapi.getFakeError()
       }])
     })
   })
 
   describe('CONNECTION_STATISTICS', () => {
-    it('commits new statistics', async function () {
-      await this.dispatch(type.CONNECTION_STATISTICS)
-      expect(this.commited).to.eql([{
+    it('commits new statistics', async () => {
+      const committed = await executeAction(type.CONNECTION_STATISTICS)
+      expect(committed).to.eql([{
         key: type.CONNECTION_STATISTICS,
         value: 'mock statistics'
+      }])
+    })
+
+    it('commits error when api fails', async () => {
+      fakeTequilapi.setStatisticsFail(true)
+      const committed = await executeAction(type.CONNECTION_STATISTICS)
+      expect(committed).to.eql([{
+        key: type.REQUEST_FAIL,
+        value: fakeTequilapi.getFakeError()
       }])
     })
   })
 
   describe('CONNECTION_STATUS_ALL', () => {
-    it('updates status, statistics and ip', async function () {
-      await this.dispatch(type.CONNECTION_STATUS_ALL)
-      expect(this.commited).to.have.deep.members([
+    it('updates status, statistics and ip', async () => {
+      const committed = await executeAction(type.CONNECTION_STATUS_ALL)
+      expect(committed).to.have.deep.members([
         {
           key: type.CONNECTION_STATUS,
           value: 'mock status'
@@ -124,6 +197,56 @@ describe('actions', () => {
         {
           key: type.CONNECTION_IP,
           value: 'mock ip'
+        },
+        {
+          key: type.RESET_TIMEOUT_COUNTER,
+          value: undefined
+        }
+      ])
+    })
+
+    it('returns successful data when status fails', async () => {
+      fakeTequilapi.setStatusFail(true)
+      const committed = await executeAction(type.CONNECTION_STATUS_ALL)
+      expect(committed).to.have.deep.members([
+        {
+          key: type.REQUEST_FAIL,
+          value: fakeTequilapi.getFakeError()
+        },
+        {
+          key: type.CONNECTION_STATISTICS,
+          value: 'mock statistics'
+        },
+        {
+          key: type.CONNECTION_IP,
+          value: 'mock ip'
+        },
+        {
+          key: type.RESET_TIMEOUT_COUNTER,
+          value: undefined
+        }
+      ])
+    })
+
+    it('returns successful data when statistics fail', async () => {
+      fakeTequilapi.setStatisticsFail(true)
+      const committed = await executeAction(type.CONNECTION_STATUS_ALL)
+      expect(committed).to.have.deep.members([
+        {
+          key: type.CONNECTION_STATUS,
+          value: 'mock status'
+        },
+        {
+          key: type.REQUEST_FAIL,
+          value: fakeTequilapi.getFakeError()
+        },
+        {
+          key: type.CONNECTION_IP,
+          value: 'mock ip'
+        },
+        {
+          key: type.RESET_TIMEOUT_COUNTER,
+          value: undefined
         }
       ])
     })

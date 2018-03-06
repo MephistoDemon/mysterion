@@ -14,7 +14,7 @@
         </div>
       </div>
       <div class="control__footer">
-        <tutorial-steps class="footer__staps" next="/"></tutorial-steps>
+        <tutorial-steps class="footer__staps" next="/load"></tutorial-steps>
       </div>
     </div>
   </div>

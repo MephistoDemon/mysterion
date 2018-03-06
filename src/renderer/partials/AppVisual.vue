@@ -44,9 +44,14 @@
       ...mapGetters(['loading', 'visual', 'route', 'connection']),
       visualState () {
         let classes = []
+
+        if (this.$router.currentRoute.name === 'home') {
+          return ['is-pulsing', 'not-connected']
+        }
+
         if (this.loading) {
           classes = ['is-loading', 'is-pulsing']
-        } else if (this.$router.currentRoute.name === 'main') {
+        } else if (this.$router.currentRoute.name === 'vpn') {
           switch (this.connection.status) {
             case type.tequilapi.CONNECTED:
             case type.tequilapi.CONNECTING:

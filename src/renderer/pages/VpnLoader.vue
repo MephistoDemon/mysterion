@@ -29,15 +29,17 @@
         try {
           await proposalPromise
         } catch (err) {
-          commit(type.INIT_FAIL, new Error('failed to load proposals'))
+          commit(type.OVERLAY_ERROR, {
+            message: 'Can\'t connect to Mysterium Network',
+            hint: 'Please check your internet connection.'
+          })
           return
         }
 
         await delay(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)
-        this.$router.push('/main')
+        this.$router.push('/vpn')
       } catch (err) {
-        commit(type.INIT_FAIL, err)
         throw (err)
       }
     },

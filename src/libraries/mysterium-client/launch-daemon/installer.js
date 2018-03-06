@@ -12,7 +12,7 @@ class Installer {
     this.config = config
   }
 
-  exists () {
+  processInstalled () {
     if (fs.existsSync(this.getDaemonFileName())) {
       return true
     }
@@ -31,18 +31,18 @@ class Installer {
         <key>Label</key>
           <string>${InverseDomainPackageName}</string>
           <key>Program</key>
-          <string>${this.config.clientBin}</string>
+          <string>${this.config.clientBinaryPath}</string>
           <key>ProgramArguments</key>
           <array>
-            <string>${this.config.clientBin}</string>
+            <string>${this.config.clientBinaryPath}</string>
             <string>--config-dir</string>
-            <string>${this.config.configDir}</string>
+            <string>${this.config.clientConfigPath}</string>
             <string>--data-dir</string>
-            <string>${this.config.dataDir}</string>
+            <string>${this.config.userDataDirectory}</string>
             <string>--runtime-dir</string>
-            <string>${this.config.runtimeDir}</string>
+            <string>${this.config.runtimeDirectory}</string>
             <string>--openvpn.binary</string>
-            <string>${this.config.openVPNBin}</string>
+            <string>${this.config.openVPNBinary}</string>
           </array>
           <key>Sockets</key>
             <dict>
@@ -60,11 +60,11 @@ class Installer {
             <false/>
           </dict>
           <key>WorkingDirectory</key>
-          <string>${this.config.runtimeDir}</string>
+          <string>${this.config.runtimeDirectory}</string>
           <key>StandardOutPath</key>
-          <string>${this.config.logDir}/stdout.log</string>
+          <string>${this.config.userDataDirectory}/stdout.log</string>
           <key>StandardErrorPath</key>
-          <string>${this.config.logDir}/stderr.log</string>
+          <string>${this.config.userDataDirectory}/stderr.log</string>
          </dict>
       </plist>`
   }
@@ -80,13 +80,17 @@ class Installer {
   }
 
   install () {
-    let tempPlistFile = path.join(this.config.runtimeDir, PropertyListFile)
+    let tempPlistFile = path.join(this.config.runtimeDirectory, PropertyListFile)
     let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
-    let command = `sh -c '
-      cp ${tempPlistFile} ${this.getDaemonFileName()} \
-      && launchctl load ${this.getDaemonFileName()} \
-      && launchctl setenv PATH "${envPath}" \
-    '`
+    let script = `\
+      cp ${tempPlistFile} ${this.getDaemonFileName()}\
+      && launchctl load ${this.getDaemonFileName()}\
+      && launchctl setenv PATH "${envPath}"\
+    `
+    if (this.processInstalled()) {
+      script = `launchctl unload ${this.getDaemonFileName()} && ` + script
+    }
+    let command = `sh -c '${script}'`
 
     return new Promise(async (resolve, reject) => {
       await fs.writeFile(tempPlistFile, this.template(), (err) => {
