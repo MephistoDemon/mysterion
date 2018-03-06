@@ -14,6 +14,13 @@ const getters = {
   visual: state => state.visual,
   navOpen: state => state.navOpen,
   navVisible: state => state.navVisible && !(state.init === type.INIT_PENDING),
+  errorMessage: state => {
+    const error = state.error
+    if (error.response) {
+      return error.response.data.message
+    }
+    return error.message
+  },
   showError: state => state.showError
 }
 

@@ -15,8 +15,7 @@
           <transition name="slide-up">
             <div class="stats__error error" v-if="showError">
               <div class="error__text">
-                <div v-if="!error.response">{{error.message}}</div>
-                <div v-if="error.response">{{error.response.data.message}}</div>
+                <div>{{errorMessage}}</div>
               </div>
               <i class="error__close close close--s close--white" @click="hideErr()"></i>
             </div>
