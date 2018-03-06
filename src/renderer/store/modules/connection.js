@@ -57,13 +57,13 @@ const actions = {
     try {
       const ip = await tequilapi.connection.ip()
       commit(type.CONNECTION_IP, ip)
-      commit('RESET_TIMEOUT_COUNTER')
+      commit(type.RESET_TIMEOUT_COUNTER)
     } catch (err) {
       if (isTimeoutError(err)) {
         if (state.ipTimeoutsCount >= IP_TIMEOUTS_ALLOWED) {
           commit(type.SHOW_ERROR, err)
         }
-        commit('INCREASE_IP_TIMEOUT_COUNTER')
+        commit(type.INCREASE_IP_TIMEOUT_COUNTER)
       } else {
         commit(type.SHOW_ERROR, err)
       }
@@ -105,10 +105,10 @@ const actions = {
         dispatch(type.STATUS_UPDATER_RUN)
       }, 1000)
     } catch (err) {
-      let error = new Error('Connection to node failed. Try other one')
+      commit(type.SHOW_ERROR_MESSAGE, 'Connection to node failed. Try other one')
+      let error = new Error('Connection to node failed.')
       error.original = err
-      commit(type.SHOW_ERROR, error)
-      throw (error)
+      throw error
     }
   },
   async [type.DISCONNECT] ({commit, dispatch}) {

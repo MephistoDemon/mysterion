@@ -1,3 +1,4 @@
+// TODO: rename to `vpn.js` to be consistent with `Vpn.vue`
 import type from '../types'
 
 const state = {

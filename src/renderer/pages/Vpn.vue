@@ -51,7 +51,7 @@
       }
     },
     computed: {
-      ...mapGetters(['connection', 'ip', 'error', 'showError']),
+      ...mapGetters(['connection', 'ip', 'errorMessage', 'showError']),
       status () {
         switch (this.connection.status) {
           case 'NotConnected': return -1
