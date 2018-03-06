@@ -19,9 +19,6 @@
         type: String
       }
     },
-    data () {
-      return {}
-    },
     computed: {
       ...mapGetters({
         status: 'status',

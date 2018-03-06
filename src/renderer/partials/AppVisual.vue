@@ -44,8 +44,6 @@
       ...mapGetters(['loading', 'visual', 'route', 'connection']),
       visualClass () {
         let classes = []
-        console.log(this.$store.state.connection.status)
-
         if (this.$route.name === 'home') {
           return ['is-pulsing', 'not-connected']
         }
