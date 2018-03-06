@@ -60,7 +60,7 @@ describe('loading screen', () => {
   it('loads without errors', async () => {
     await delay(config.loadingScreenDelay)
     expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
-    expect(vm.$store.state.main.error).to.eql(null)
+    expect(vm.$store.state.main.showError).to.eql(false)
   })
   it('assigns first fetched ID to state.tequilapi.currentId', () => {
     expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACE'})
@@ -89,7 +89,7 @@ describe('loading screen when no identities returned', () => {
   it('loads without errors', async () => {
     await delay(config.loadingScreenDelay)
     expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
-    expect(vm.$store.state.main.error).to.eql(null)
+    expect(vm.$store.state.main.showError).to.eql(false)
   })
   it('creates and unlocks identity', () => {
     expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACY'})

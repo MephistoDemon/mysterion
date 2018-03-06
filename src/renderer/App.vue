@@ -1,7 +1,7 @@
 <template>
     <div id="app" class="app">
         <div id="content">
-            <div class="control__version">v{{version}}</div>
+            <div class="control__version">{{version}}</div>
             <app-modal v-if="overlayError" :close="false">
                 <app-error :error="overlayError"></app-error>
             </app-modal>
@@ -39,7 +39,7 @@
     computed: {
       ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'buildInfo']),
       version () {
-        return `${remote.getGlobal('__version')}  Build id:
+        return `v${remote.getGlobal('__version')}  Build id:
         ${this.buildInfo.tag ? this.buildInfo.tag + '.' : ''}${this.buildInfo.buildNumber}`
       }
     },

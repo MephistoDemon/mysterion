@@ -1,15 +1,11 @@
 import type from '../types'
 
 const state = {
-  error: null,
   current: null,
   unlocked: false
 }
 
 const mutations = {
-  [type.REQUEST_FAIL] (state, err) {
-    state.error = err
-  },
   [type.IDENTITY_GET_SUCCESS] (state, identity) {
     state.current = identity // { id: '0xC001FACE00000123' }
   },
@@ -42,7 +38,7 @@ function factory (tequilapi) {
         const newIdentity = await tequilapi.identity.create(await getPassword())
         return newIdentity
       } catch (err) {
-        commit(type.REQUEST_FAIL, err)
+        commit(type.SHOW_ERROR, err)
         throw (err)
       }
     },
@@ -54,7 +50,7 @@ function factory (tequilapi) {
         })
         commit(type.IDENTITY_UNLOCK_SUCCESS, res)
       } catch (err) {
-        commit(type.REQUEST_FAIL, err)
+        commit(type.SHOW_ERROR, err)
       }
     },
     async [type.IDENTITY_LIST] ({commit}) {
@@ -63,7 +59,7 @@ function factory (tequilapi) {
         commit(type.IDENTITY_LIST_SUCCESS, res.identities)
         return res.identities
       } catch (err) {
-        commit(type.REQUEST_FAIL, err)
+        commit(type.SHOW_ERROR, err)
         throw (err)
       }
     }

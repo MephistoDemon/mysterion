@@ -57,15 +57,15 @@ const actions = {
     try {
       const ip = await tequilapi.connection.ip()
       commit(type.CONNECTION_IP, ip)
-      commit('RESET_TIMEOUT_COUNTER')
+      commit(type.RESET_TIMEOUT_COUNTER)
     } catch (err) {
       if (isTimeoutError(err)) {
         if (state.ipTimeoutsCount >= IP_TIMEOUTS_ALLOWED) {
-          commit(type.REQUEST_FAIL, err)
+          commit(type.SHOW_ERROR, err)
         }
-        commit('INCREASE_IP_TIMEOUT_COUNTER')
+        commit(type.INCREASE_IP_TIMEOUT_COUNTER)
       } else {
-        commit(type.REQUEST_FAIL, err)
+        commit(type.SHOW_ERROR, err)
       }
     }
   },
@@ -83,7 +83,7 @@ const actions = {
       const res = await tequilapi.connection.status()
       commit(type.CONNECTION_STATUS, res.status)
     } catch (err) {
-      commit(type.REQUEST_FAIL, err)
+      commit(type.SHOW_ERROR, err)
     }
   },
   async [type.CONNECTION_STATISTICS] ({commit}) {
@@ -91,7 +91,7 @@ const actions = {
       const statistics = await tequilapi.connection.statistics()
       commit(type.CONNECTION_STATISTICS, statistics)
     } catch (err) {
-      commit(type.REQUEST_FAIL, err)
+      commit(type.SHOW_ERROR, err)
     }
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
@@ -99,16 +99,16 @@ const actions = {
       commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTING)
       commit(type.CONNECTION_STATISTICS_RESET)
       await tequilapi.connection.connect(consumerId, providerId)
-      commit(type.HIDE_REQ_ERR)
+      commit(type.HIDE_ERROR)
       // if we ask openvpn right away status stil in not connected state
       updaterTimeout = setTimeout(() => {
         dispatch(type.STATUS_UPDATER_RUN)
       }, 1000)
     } catch (err) {
-      let error = new Error('Connection to node failed. Try other one')
+      commit(type.SHOW_ERROR_MESSAGE, 'Connection to node failed. Try other one')
+      let error = new Error('Connection to node failed.')
       error.original = err
-      commit(type.REQUEST_FAIL, error)
-      throw (error)
+      throw error
     }
   },
   async [type.DISCONNECT] ({commit, dispatch}) {
@@ -121,7 +121,7 @@ const actions = {
       dispatch(type.CONNECTION_IP)
       return res
     } catch (err) {
-      commit(type.REQUEST_FAIL, err)
+      commit(type.SHOW_ERROR, err)
       throw (err)
     }
   }
