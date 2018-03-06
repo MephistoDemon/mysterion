@@ -8,6 +8,7 @@ import Router from 'vue-router'
 import idStore from '@/store/modules/identity'
 import propStore from '@/store/modules/proposal'
 import mainStore from '@/store/modules/main'
+import errorStore from '@/store/modules/errors'
 import loadingScreen from '@/pages/VpnLoader'
 import tequilAPI from '@/../libraries/api/tequilapi'
 
@@ -28,7 +29,8 @@ async function mountComponent (tequilapi) {
     modules: {
       identity: {...idStore(tequilapi)},
       proposal: {...propStore(tequilapi)},
-      main: mainStore
+      main: mainStore,
+      errors: errorStore
     },
     strict: false
   })
@@ -96,5 +98,26 @@ describe('loading screen when no identities returned', () => {
   })
   it('routes to main', () => {
     expect(vm.$route.path).to.be.eql('/vpn')
+  })
+})
+
+describe('LoadingScreen proposals failure', () => {
+  let mock, vm
+  before(async () => {
+    const tequilapi = tequilAPI()
+    mock = new MockAdapter(tequilapi.__axio)
+    mock.onGet('/proposals').timeout()
+    mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
+    mock.onPut('/identities/0xC001FACE/unlock').reply(200)
+    vm = await mountComponent(tequilapi)
+  })
+  after(() => {
+    mock.reset()
+  })
+  it('should notify user with an overlay', () => {
+    expect(vm.$store.getters.overlayError).to.eql({
+      message: 'Can\'t connect to Mysterium Network',
+      hint: 'Please check your internet connection.'
+    })
   })
 })
