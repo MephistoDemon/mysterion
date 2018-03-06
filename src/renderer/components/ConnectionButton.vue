@@ -62,9 +62,3 @@
     }
   }
 </script>
-
-<style scoped>
-    .inverted {
-
-    }
-</style>
