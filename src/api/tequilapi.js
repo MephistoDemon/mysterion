@@ -40,16 +40,8 @@ export default function Constructor (teqAddr = 'http://127.0.0.1:4050') {
       disconnect: async () => axioAdapter.delete(conPath),
       status: async () => axioAdapter.get(conPath),
       ip: async () => {
-        try {
-          const res = await axioAdapter.get(conPath + '/ip')
-          return res.ip
-        } catch (err) {
-          if (err.response && err.response.status === 503) {
-            return null
-          } else {
-            throw err
-          }
-        }
+        const res = await axioAdapter.get(conPath + '/ip')
+        return res.ip
       },
       statistics: async () => axioAdapter.get(conPath + '/statistics')
     },
