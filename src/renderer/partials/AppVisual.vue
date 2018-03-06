@@ -45,7 +45,7 @@
       visualState () {
         let classes = []
 
-        if (this.$router.currentRoute.name === 'status') {
+        if (this.$router.currentRoute.name === 'home') {
           return ['is-pulsing', 'not-connected']
         }
 

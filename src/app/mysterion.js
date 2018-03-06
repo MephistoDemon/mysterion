@@ -45,18 +45,20 @@ class Mysterion {
     try {
       await this.window.open().on(communication.RENDERER_LOADED)
     } catch (e) {
-      // add an error wrapper method which will do this
-      let err = new Error('Failed to load app.')
-      err.original = e
-
-      throw err
+      // TODO: add an error wrapper method which will do this
+      throw new Error('Failed to load app.')
     }
 
     // make sure terms are up to date and accepted
     // declining terms will quit the app
     if (!this.terms.accepted()) {
       try {
-        await this.acceptTermsOrQuit()
+        const accepted = await this.acceptTerms()
+        if (!accepted) {
+          console.log('Terms were refused. Quitting.')
+          app.quit()
+          return
+        }
       } catch (e) {
         return this.sendErrorToRenderer(e.message)
       }
@@ -69,15 +71,13 @@ class Mysterion {
         await this.installer.install()
       } catch (e) {
         console.error(e)
-        // throw new Error('Failed to install mysterium_client daemon. Please restart the app and grant permissions.')
-        return this.sendErrorToRenderer(e.message)
+        return this.sendErrorToRenderer('Failed to install mysterium_client daemon. Please restart the app and grant permissions.')
       }
     }
     // if all is good, let's boot up the client
     // and start monitoring it
+    console.log('starting process')
     await this.startProcess()
-
-    this.startApp()
   }
 
   onWindowsClosed () {
@@ -97,7 +97,7 @@ class Mysterion {
     await this.process.stop()
   }
 
-  async acceptTermsOrQuit () {
+  async acceptTerms () {
     this.window.send(communication.TERMS_REQUESTED, {
       content: this.terms.getContent(),
       version: this.terms.getVersion()
@@ -105,9 +105,7 @@ class Mysterion {
 
     const termsAnswer = await this.window.on(communication.TERMS_ANSWERED)
     if (!termsAnswer.value) {
-      console.log('Terms were refused. Quitting.')
-      app.quit()
-      return
+      return false
     }
 
     this.window.send(communication.TERMS_ACCEPTED)
@@ -120,6 +118,8 @@ class Mysterion {
     }
 
     this.window.resize(this.config.windows.app)
+
+    return true
   }
 
   async startProcess () {
@@ -138,6 +138,7 @@ class Mysterion {
     this.monitoring.start()
     this.monitoring.onProcessReady(() => {
       updateRendererWithHealth()
+      this.startApp()
     })
   }
 

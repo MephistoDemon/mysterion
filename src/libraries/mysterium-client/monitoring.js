@@ -31,7 +31,7 @@ class ProcessMonitoring {
         clearInterval(interval)
         callback()
       }
-    }, healthCheckInterval)
+    }, 100)
   }
 
   async _healthCheck () {

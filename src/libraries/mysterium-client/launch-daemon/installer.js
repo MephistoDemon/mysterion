@@ -87,7 +87,7 @@ class Installer {
       && launchctl load ${this.getDaemonFileName()}\
       && launchctl setenv PATH "${envPath}"\
     `
-    if (this.exists()) {
+    if (this.processInstalled()) {
       script = `launchctl unload ${this.getDaemonFileName()} && ` + script
     }
     let command = `sh -c '${script}'`
