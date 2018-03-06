@@ -1,12 +1,13 @@
+// TODO: rename to `vpn.js` to be consistent with `Vpn.vue`
 import type from '../types'
 
 const state = {
   init: '',
   visual: 'head',
-  error: null,
   navOpen: false,
   navVisible: true,
-  showRequestErr: false
+  errorMessage: null,
+  showError: false
 }
 
 const getters = {
@@ -14,8 +15,8 @@ const getters = {
   visual: state => state.visual,
   navOpen: state => state.navOpen,
   navVisible: state => state.navVisible && !(state.init === type.INIT_PENDING),
-  requestErr: state => state.error,
-  showReqErr: state => state.showRequestErr
+  errorMessage: state => state.errorMessage,
+  showError: state => state.showError
 }
 
 const mutations = {
@@ -41,12 +42,16 @@ const mutations = {
   [type.INIT_NEW_USER] (state) {
     state.newUser = true
   },
-  [type.REQUEST_FAIL] (state, err) {
-    state.error = err
-    state.showRequestErr = true
+  [type.SHOW_ERROR] (state, err) {
+    state.errorMessage = err.response ? err.response.data.message : err.message
+    state.showError = true
   },
-  [type.HIDE_REQ_ERR] (state) {
-    state.showRequestErr = false
+  [type.SHOW_ERROR_MESSAGE] (state, errorMessage) {
+    state.errorMessage = errorMessage
+    state.showError = true
+  },
+  [type.HIDE_ERROR] (state) {
+    state.showError = false
   }
 }
 
