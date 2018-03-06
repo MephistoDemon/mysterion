@@ -24,7 +24,9 @@ const getters = {
 }
 
 const mutations = {
-  [type.BUILD_INFO] (state, buildInfo) { state.buildInfo = buildInfo },
+  [type.CLIENT_BUILD_INFO] (state, buildInfo) {
+    state.buildInfo = buildInfo
+  },
   [type.SET_NAV_OPEN] (state, open) {
     state.navOpen = open
   },
@@ -63,9 +65,9 @@ const actions = {
   setVisual ({commit}, visual) {
     commit(type.SET_VISUAL, visual)
   },
-  async [type.BUILD_INFO] ({commit}) {
+  async [type.CLIENT_BUILD_INFO] ({commit}) {
     const res = await tequilapi.healthCheck()
-    commit(type.BUILD_INFO, res.version)
+    commit(type.CLIENT_BUILD_INFO, res.version)
   },
   setNavVisibility ({commit}, visible) {
     commit(type.SET_NAV_VISIBLE, visible)
