@@ -13,10 +13,10 @@
       <div class="control__footer">
         <div class="footer__stats stats">
           <transition name="slide-up">
-            <div class="stats__error error" v-if="showReqErr">
+            <div class="stats__error error" v-if="showError">
               <div class="error__text">
-                <div v-if="!requestErr.response">{{requestErr.message}}</div>
-                <div v-if="requestErr.response">{{requestErr.response.data.message}}</div>
+                <div v-if="!error.response">{{error.message}}</div>
+                <div v-if="error.response">{{error.response.data.message}}</div>
               </div>
               <i class="error__close close close--s close--white" @click="hideErr()"></i>
             </div>
@@ -52,7 +52,7 @@
       }
     },
     computed: {
-      ...mapGetters(['connection', 'ip', 'requestErr', 'showReqErr']),
+      ...mapGetters(['connection', 'ip', 'error', 'showError']),
       status () {
         switch (this.connection.status) {
           case 'NotConnected': return -1

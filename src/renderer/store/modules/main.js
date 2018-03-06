@@ -6,7 +6,7 @@ const state = {
   error: null,
   navOpen: false,
   navVisible: true,
-  showRequestErr: false
+  showError: false
 }
 
 const getters = {
@@ -14,8 +14,7 @@ const getters = {
   visual: state => state.visual,
   navOpen: state => state.navOpen,
   navVisible: state => state.navVisible && !(state.init === type.INIT_PENDING),
-  requestErr: state => state.error,
-  showReqErr: state => state.showRequestErr
+  showError: state => state.showError
 }
 
 const mutations = {
