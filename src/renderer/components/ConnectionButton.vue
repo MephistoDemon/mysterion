@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="control__action btn"
-             :class="{'btn--transparent':isConnecting||isDisconnecting}"
+             :class="{'btn--transparent':isConnecting||isDisconnecting||isConnected}"
              @click="connect"
              v-text="buttonText">
         </div>
@@ -25,7 +25,8 @@
     computed: {
       ...mapGetters({
         status: 'status',
-        consumerId: 'currentIdentity'
+        consumerId: 'currentIdentity',
+        connection: 'connection'
       }),
       buttonText: (vm) => {
         let text = 'Connect'
@@ -66,5 +67,7 @@
 </script>
 
 <style scoped>
+    .inverted {
 
+    }
 </style>

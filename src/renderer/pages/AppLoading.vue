@@ -1,7 +1,5 @@
 <template>
-    <app-modal :close="false" v-if="!overlayError">
-        <h1>{{ status.message }}</h1>
-    </app-modal>
+    <div></div>
 </template>
 <script>
   import AppModal from '@/partials/AppModal'
