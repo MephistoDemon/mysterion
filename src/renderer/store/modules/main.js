@@ -3,9 +3,9 @@ import type from '../types'
 const state = {
   init: '',
   visual: 'head',
-  error: null,
   navOpen: false,
   navVisible: true,
+  errorMessage: null,
   showError: false
 }
 
@@ -14,13 +14,7 @@ const getters = {
   visual: state => state.visual,
   navOpen: state => state.navOpen,
   navVisible: state => state.navVisible && !(state.init === type.INIT_PENDING),
-  errorMessage: state => {
-    const error = state.error
-    if (error.response) {
-      return error.response.data.message
-    }
-    return error.message
-  },
+  errorMessage: state => state.errorMessage,
   showError: state => state.showError
 }
 
@@ -48,7 +42,7 @@ const mutations = {
     state.newUser = true
   },
   [type.SHOW_ERROR] (state, err) {
-    state.error = err
+    state.errorMessage = err.response ? err.response.data.message : err.message
     state.showRequestErr = true
   },
   [type.HIDE_REQ_ERR] (state) {

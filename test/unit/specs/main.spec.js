@@ -9,7 +9,7 @@ describe('mutations', () => {
       const state = {}
       const err = new Error('My error')
       main.mutations[type.SHOW_ERROR](state, err)
-      expect(main.getters.errorMessage(state)).to.eql('My error')
+      expect(state.errorMessage).to.eql('My error')
     })
 
     it('makes correct error message with response error', () => {
@@ -21,7 +21,7 @@ describe('mutations', () => {
         }
       }
       main.mutations[type.SHOW_ERROR](state, err)
-      expect(main.getters.errorMessage(state)).to.eql('Response message')
+      expect(state.errorMessage).to.eql('Response message')
     })
   })
 })
