@@ -82,11 +82,15 @@ class Installer {
   install () {
     let tempPlistFile = path.join(this.config.runtimeDirectory, PropertyListFile)
     let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
-    let command = `sh -c '
-      cp ${tempPlistFile} ${this.getDaemonFileName()} \
-      && launchctl load ${this.getDaemonFileName()} \
-      && launchctl setenv PATH "${envPath}" \
-    '`
+    let script = `\
+      cp ${tempPlistFile} ${this.getDaemonFileName()}\
+      && launchctl load ${this.getDaemonFileName()}\
+      && launchctl setenv PATH "${envPath}"\
+    `
+    if (this.exists()) {
+      script = `launchctl unload ${this.getDaemonFileName()} && ` + script
+    }
+    let command = `sh -c '${script}'`
 
     return new Promise(async (resolve, reject) => {
       await fs.writeFile(tempPlistFile, this.template(), (err) => {
