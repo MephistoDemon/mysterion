@@ -45,7 +45,7 @@ class Mysterion {
     try {
       await this.window.open().on(communication.RENDERER_LOADED)
     } catch (e) {
-      // TODO: add an error wrapper method which will do this
+      // TODO: add an error wrapper method and send to sentry
       throw new Error('Failed to load app.')
     }
 
@@ -162,7 +162,6 @@ class Mysterion {
 
     template.push({
       label: 'Quit',
-      accelerator: 'Command+Q',
       click: () => {
         app.quit()
       }

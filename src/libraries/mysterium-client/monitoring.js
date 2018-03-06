@@ -26,7 +26,7 @@ class ProcessMonitoring {
   }
 
   onProcessReady (callback) {
-    let interval = setInterval(() => {
+    const interval = setInterval(() => {
       if (this.clientIsRunning) {
         clearInterval(interval)
         callback()

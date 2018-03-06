@@ -55,13 +55,11 @@ const MysterionConfig = {
     url: process.env.NODE_ENV === 'development' ? `http://localhost:9080/` : `file://${__dirname}/index.html`,
     terms: {
       width: 700,
-      height: 600,
-      resizable: false
+      height: 600
     },
     app: {
       width: 500,
-      height: 600,
-      resizable: false
+      height: 600
     }
   }
 }

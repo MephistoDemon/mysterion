@@ -3,12 +3,10 @@ class Process {
     this.tequilapi = tequilapi
   }
 
-  async start () {
-    try {
-      await this.tequilapi.healthCheck(100)
-    } catch (e) {
+  start () {
+    this.tequilapi.healthCheck(100).catch(() => {
       console.log('touched the daemon, now it should be up')
-    }
+    })
   }
 
   async stop () {

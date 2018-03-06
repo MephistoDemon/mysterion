@@ -8,11 +8,11 @@ function Message (sender, value) {
 }
 
 class Window {
-  constructor ({width, height, resizable}, url) {
+  constructor ({width, height}, url) {
     let options = {
       height: height,
       width: width,
-      resizable: resizable,
+      resizable: false,
       show: false
     }
     this.url = url
