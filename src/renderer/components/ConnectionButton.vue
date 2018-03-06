@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="control__action btn"
-             :class="{'btn--transparent':isConnecting||isDisconnecting||isConnected}"
+             :class="{'btn--transparent':buttonTransparent}"
              @click="connect"
              v-text="buttonText">
         </div>
@@ -42,9 +42,11 @@
         }
         return text
       },
-      isConnecting: comp => comp.$store.getters.status === 'Connecting',
-      isDisconnecting: comp => comp.$store.getters.status === 'Disconnecting',
-      isConnected: comp => comp.$store.getters.status === 'Connected'
+      buttonTransparent: (comp) => {
+        const status = comp.$store.getters.status
+
+        return status === 'Connecting' || status === 'Disconnecting' || status === 'Connected'
+      }
     },
     methods: {
       connect: function () {
