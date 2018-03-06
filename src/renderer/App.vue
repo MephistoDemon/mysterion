@@ -2,11 +2,14 @@
     <div id="app" class="app">
         <div id="content">
             <div class="control__version">Pre-alpha v{{version}}</div>
-            <app-modal v-if="!clientIsRunning" :close="false">
-                <app-error :error="error"></app-error>
+            <app-modal v-if="overlayError" :close="false">
+                <app-error :error="overlayError"></app-error>
             </app-modal>
-            <app-nav class="app__nav" v-if="!loading"/>
+
+            <app-nav class="app__nav" v-if="navVisible"/>
+
             <router-view class="app__page"/>
+
             <transition name="fade" v-if="visual">
                 <app-visual class="app__visual"/>
             </transition>
@@ -18,21 +21,23 @@
   import {mapGetters} from 'vuex'
   import type from '@/store/types'
   import AppVisual from '@/partials/AppVisual'
-  import AppModal from '@/partials/AppModal'
   import AppNav from '@/partials/AppNav'
-  import AppError from '@/partials/AppError'
+
   import {ipcRenderer, remote} from 'electron'
+  import communication from '../app/communication'
+  import AppError from '@/partials/AppError'
+  import AppModal from '@/partials/AppModal'
 
   export default {
     name: 'App',
     components: {
       AppVisual,
-      AppModal,
       AppNav,
-      AppError
+      AppError,
+      AppModal
     },
     computed: {
-      ...mapGetters(['loading', 'visual', 'clientIsRunning'])
+      ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError'])
     },
     data () {
       return {
@@ -44,15 +49,50 @@
       }
     },
     async mounted () {
-      let oldClientIsRunning = true
+      // we need to notify the main process that we're up
+      ipcRenderer.send(communication.RENDERER_LOADED, true)
+      ipcRenderer.on(communication.TERMS_REQUESTED, (event, terms) => {
+        this.$store.dispatch(type.TERMS, terms)
+        this.$router.push('/terms')
+      })
 
-      ipcRenderer.send('renderer.booted', true)
-      ipcRenderer.on('healthcheck', (event, clientIsRunning) => {
-        // if the client was down, but now up, we need to unlock the identity once again
-        if (clientIsRunning === true && oldClientIsRunning === false) {
-          this.$store.dispatch(type.IDENTITY_UNLOCK)
+      ipcRenderer.on(communication.APP_START, () => {
+        this.$router.push('/load')
+      })
+
+      ipcRenderer.on(communication.TERMS_ACCEPTED, () => {
+        this.$router.push('/')
+      })
+
+      ipcRenderer.on(communication.APP_ERROR, (event, error) => {
+        this.$store.dispatch(type.OVERLAY_ERROR, error)
+      })
+
+      let previousClientRunningState = true
+
+      ipcRenderer.on(communication.HEALTHCHECK, (event, clientRunningState) => {
+        // do nothing while on terms page
+        if (this.$route.name === 'terms') {
+          return
         }
-        this.$store.dispatch('setClientRunningState', oldClientIsRunning = clientIsRunning)
+
+        if (previousClientRunningState === clientRunningState) {
+          return
+        }
+        previousClientRunningState = clientRunningState
+
+        // if the client was down, but now up, we need to unlock the identity once again
+        if (clientRunningState) {
+          this.$store.dispatch(type.OVERLAY_ERROR, null)
+          this.$router.push('/load')
+          return
+        }
+
+        this.$store.dispatch(type.OVERLAY_ERROR, {
+          message: 'mysterium_client is down',
+          hint: 'Please give it a moment to boot. If this message persists try restarting the app or please contact support'
+        })
+        this.$store.dispatch('setClientRunningState', clientRunningState)
       })
     }
   }

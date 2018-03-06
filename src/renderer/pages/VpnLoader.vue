@@ -30,7 +30,7 @@
 
         await delay(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)
-        this.$router.push('/main')
+        this.$router.push('/vpn')
       } catch (err) {
         commit(type.INIT_FAIL, err)
         throw (err)
