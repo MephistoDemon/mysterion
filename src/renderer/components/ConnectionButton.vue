@@ -22,8 +22,7 @@
     computed: {
       ...mapGetters({
         status: 'status',
-        consumerId: 'currentIdentity',
-        connection: 'connection'
+        consumerId: 'currentIdentity'
       }),
       buttonText: (vm) => {
         let text = 'Connect'
