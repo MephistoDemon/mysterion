@@ -43,10 +43,14 @@ const mutations = {
   },
   [type.SHOW_ERROR] (state, err) {
     state.errorMessage = err.response ? err.response.data.message : err.message
-    state.showRequestErr = true
+    state.showError = true
   },
-  [type.HIDE_REQ_ERR] (state) {
-    state.showRequestErr = false
+  [type.SHOW_ERROR_MESSAGE] (state, errorMessage) {
+    state.errorMessage = errorMessage
+    state.showError = true
+  },
+  [type.HIDE_ERROR] (state) {
+    state.showError = false
   }
 }
 

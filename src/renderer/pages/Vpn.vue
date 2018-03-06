@@ -70,7 +70,7 @@
       }
     },
     methods: {
-      ...mapMutations({ hideErr: type.HIDE_REQ_ERR })
+      ...mapMutations({ hideErr: type.HIDE_ERROR })
     },
     mounted () {
       this.$store.dispatch(type.CONNECTION_IP)
