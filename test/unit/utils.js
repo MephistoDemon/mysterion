@@ -1,4 +1,4 @@
-import {CONNECTION_ABORTED_ERROR_CODE} from '../../src/api/errors'
+import {CONNECTION_ABORTED_ERROR_CODE} from '../../src/libraries/api/errors'
 
 function fakeTequilapiManipulator () {
   let statusFail = false

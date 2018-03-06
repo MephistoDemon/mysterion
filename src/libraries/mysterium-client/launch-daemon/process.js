@@ -1,10 +1,12 @@
 class Process {
-  constructor (config, tequilapi) {
+  constructor (tequilapi) {
     this.tequilapi = tequilapi
   }
 
   start () {
-    return this.tequilapi.healthCheck(100)
+    this.tequilapi.healthCheck(100).catch(() => {
+      console.log('touched the daemon, now it should be up')
+    })
   }
 
   async stop () {

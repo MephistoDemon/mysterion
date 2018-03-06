@@ -8,7 +8,7 @@ import utils from '../utils'
 const fakeTequilapi = utils.fakeTequilapiManipulator()
 
 const connection = connectionInjector({
-  '../../../api/tequilapi': fakeTequilapi.getFakeApi
+  '../../../libraries/api/tequilapi': fakeTequilapi.getFakeApi
 }).default
 
 async function executeAction (action, state = {}) {

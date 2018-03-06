@@ -7,8 +7,8 @@ import Router from 'vue-router'
 
 import idStore from '@/store/modules/identity'
 import propStore from '@/store/modules/proposal'
-import loadingScreen from '@/pages/Loading'
-import {tequilapi} from '@/../api/tequilapi'
+import {tequilapi} from '@/../libraries/api/tequilapi'
+import loadingScreen from '@/pages/VpnLoader'
 
 import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
@@ -16,7 +16,7 @@ import config from '@/config'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import mainStoreInjector from 'inject-loader!@/store/modules/main'
 const mainStore = mainStoreInjector({
-  '../../../api/tequilapi': {tequilapi}
+  '../../../libraries/api/tequilapi': {tequilapi}
 }).default
 Vue.use(Vuex)
 Vue.use(Router)
@@ -69,7 +69,7 @@ describe('loading screen', () => {
     expect(vm.$store.state.proposal.list).to.eql([{id: '0xCEEDBEEF'}])
   })
   it('routes to main', () => {
-    expect(vm.$route.path).to.be.eql('/main')
+    expect(vm.$route.path).to.be.eql('/vpn')
   })
 })
 
@@ -99,6 +99,6 @@ describe('loading screen when no identities returned', () => {
     expect(vm.$store.state.main.newUser).to.be.true
   })
   it('routes to main', () => {
-    expect(vm.$route.path).to.be.eql('/main')
+    expect(vm.$route.path).to.be.eql('/vpn')
   })
 })

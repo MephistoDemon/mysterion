@@ -28,7 +28,7 @@
                     </router-link>
                 </li>
                 <li class="nav__item">
-                    <router-link class="nav__trigger" to="/">
+                    <router-link class="nav__trigger" to="/load">
                         <span class="nav__text">connect</span>
                     </router-link>
                 </li>

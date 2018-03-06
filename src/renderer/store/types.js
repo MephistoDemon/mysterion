@@ -1,4 +1,4 @@
-import {types} from '../../api/tequilapi'
+import {types} from '../../libraries/api/tequilapi'
 
 export default {
   tequilapi: types.connection,
@@ -34,6 +34,7 @@ export default {
 
   // Mutation + action
   BUILD_INFO: 'BUILD_INFO',
+  CONNECTION_STATUS_ALL: 'CONNECTION_STATUS_ALL',
   CONNECTION_STATUS: 'CONNECTION_STATUS',
   CONNECTION_STATISTICS: 'CONNECTION_STATISTICS',
   CONNECTION_IP: 'CONNECTION_IP',
@@ -49,8 +50,12 @@ export default {
   DISCONNECT: 'DISCONNECT',
   STATUS_UPDATER_RUN: 'STATUS_UPDATER_RUN',
 
-  SET_NAV: 'SET_NAV',
+  SET_NAV_OPEN: 'SET_NAV',
+  SET_NAV_VISIBLE: 'SET_NAV_VISIBLE',
   SET_VISUAL: 'SET_VISUAL',
 
-  CONNECTION_STATUS_ALL: 'CONNECTION_STATUS_ALL'
+  OVERLAY_ERROR: 'OVERLAY_ERROR',
+  ERROR_IN_RENDERER: 'ERROR_IN_RENDERER',
+
+  TERMS: 'TERMS'
 }
