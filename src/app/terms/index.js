@@ -10,7 +10,7 @@ class Terms {
     this.version = version
   }
 
-  stored () {
+  accepted () {
     let path = this._getTermsPath()
     if (!fs.existsSync(path)) {
       return false
@@ -20,7 +20,8 @@ class Terms {
       let contents = JSON.parse(fs.readFileSync(path))
       return contents.version === this.version
     } catch (e) {
-      console.error('version doesn\'t match', e.message)
+      // TODO: send to sentry
+      console.error('unable to parse terms JSON', e.message)
       return false
     }
   }

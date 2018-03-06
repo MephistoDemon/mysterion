@@ -45,8 +45,6 @@ class Window {
    * @param data
    */
   send (event, data) {
-    if (!this.window) return
-
     this.window.webContents.send(event, data)
   }
 

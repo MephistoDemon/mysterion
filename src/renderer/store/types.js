@@ -1,4 +1,4 @@
-import {types} from '../../libraries/tequilapi'
+import {types} from '../../libraries/api/tequilapi'
 
 export default {
   tequilapi: types.connection,

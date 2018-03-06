@@ -12,7 +12,7 @@ class Installer {
     this.config = config
   }
 
-  loaded () {
+  processInstalled () {
     if (fs.existsSync(this.getDaemonFileName())) {
       return true
     }

@@ -13,12 +13,25 @@ class ProcessMonitoring {
   }
 
   stop () {
-    clearTimeout(this.apiTimeout)
-    clearTimeout(this.ipcTimeout)
+    if (this.apiTimeout) {
+      clearTimeout(this.apiTimeout)
+    }
+    if (this.ipcTimeout) {
+      clearTimeout(this.ipcTimeout)
+    }
   }
 
   isRunning () {
     return this.clientIsRunning
+  }
+
+  onProcessReady (callback) {
+    let interval = setInterval(() => {
+      if (this.clientIsRunning) {
+        clearInterval(interval)
+        callback()
+      }
+    }, healthCheckInterval)
   }
 
   async _healthCheck () {

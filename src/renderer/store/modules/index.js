@@ -5,7 +5,7 @@ import terms from './terms'
 import errors from './errors'
 import identity from './identity'
 import proposal from './proposal'
-import tequilAPI from '../../../libraries/tequilapi'
+import tequilAPI from '../../../libraries/api/tequilapi'
 
 const tequilapi = tequilAPI()
 

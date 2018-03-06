@@ -1,7 +1,7 @@
 import path from 'path'
 import Window from './window'
 import Terms from './terms/index'
-import TequilAPI from '../libraries/tequilapi'
+import TequilAPI from '../libraries/api/tequilapi'
 import communication from './communication/index'
 import {app, Menu, Tray} from 'electron'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
@@ -36,7 +36,7 @@ class Mysterion {
 
   async onReady () {
     this.window = new Window(
-      this.terms.stored()
+      this.terms.accepted()
         ? this.config.windows.app
         : this.config.windows.terms,
       this.config.windows.url
@@ -45,15 +45,18 @@ class Mysterion {
     try {
       await this.window.open().on(communication.RENDERER_LOADED)
     } catch (e) {
-      console.error('Failed to load app.')
-      return
+      // add an error wrapper method which will do this
+      let err = new Error('Failed to load app.')
+      err.original = e
+
+      throw err
     }
 
     // make sure terms are up to date and accepted
     // declining terms will quit the app
-    if (!this.terms.stored()) {
+    if (!this.terms.accepted()) {
       try {
-        await this.acceptTerms()
+        await this.acceptTermsOrQuit()
       } catch (e) {
         return this.sendErrorToRenderer(e.message)
       }
@@ -61,10 +64,12 @@ class Mysterion {
 
     // checks if daemon is installed
     // if the installation fails, it sends a message to the renderer window
-    if (!this.installer.loaded()) {
+    if (!this.installer.processInstalled()) {
       try {
-        await this.installDaemon()
+        await this.installer.install()
       } catch (e) {
+        console.error(e)
+        // throw new Error('Failed to install mysterium_client daemon. Please restart the app and grant permissions.')
         return this.sendErrorToRenderer(e.message)
       }
     }
@@ -92,20 +97,20 @@ class Mysterion {
     await this.process.stop()
   }
 
-  async acceptTerms () {
+  async acceptTermsOrQuit () {
     this.window.send(communication.TERMS_REQUESTED, {
       content: this.terms.getContent(),
       version: this.terms.getVersion()
     })
 
-    let termsAnswer = await this.window.on(communication.TERMS_ANSWERED)
+    const termsAnswer = await this.window.on(communication.TERMS_ANSWERED)
     if (!termsAnswer.value) {
-      console.error('Terms were refused. Quitting.')
+      console.log('Terms were refused. Quitting.')
       app.quit()
       return
     }
 
-    this.window.send(communication.APP_STATUS)
+    this.window.send(communication.TERMS_ACCEPTED)
 
     try {
       this.terms.store()
@@ -117,32 +122,23 @@ class Mysterion {
     this.window.resize(this.config.windows.app)
   }
 
-  async installDaemon () {
-    try {
-      await this.installer.install()
-    } catch (e) {
-      console.error(e)
-      throw new Error('Failed to install mysterium_client daemon. Please restart the app and grant permissions.')
-    }
-  }
-
   async startProcess () {
     const updateRendererWithHealth = () => {
-      if (!this.window) return
-      this.window.send(communication.HEALTHCHECK, this.monitoring.isRunning())
+      try {
+        this.window.send(communication.HEALTHCHECK, this.monitoring.isRunning())
+      } catch (e) {
+        // expecting last send calls to fail when window is closed
+        return
+      }
+
       setTimeout(() => updateRendererWithHealth(), 1500)
     }
 
-    try {
-      await this.process.start()
-    } catch (err) {
-      console.log('touched the daemon, now he woke up')
-    } finally {
-      this.monitoring.start()
-      setTimeout(() => {
-        updateRendererWithHealth()
-      }, 3000)
-    }
+    this.process.start()
+    this.monitoring.start()
+    this.monitoring.onProcessReady(() => {
+      updateRendererWithHealth()
+    })
   }
 
   /**
@@ -154,6 +150,7 @@ class Mysterion {
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
+    // TODO: send to sentry
     this.window.send(communication.APP_ERROR, {message: error, hint: hint, fatal: fatal})
   }
 

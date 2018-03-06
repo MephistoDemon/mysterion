@@ -1,7 +1,7 @@
 <template>
     <div class="terms">
         <div class="terms-content">
-            <h1>Terms and conditions <small>v{{ termsAndConditions.version | version }}</small></h1>
+            <h1>Terms and conditions <small>v{{ termsAndConditions.version }}</small></h1>
             <div><p>{{ termsAndConditions.content }}</p></div>
         </div>
         <div class="terms-actions">
@@ -23,11 +23,6 @@
       },
       decline () {
         ipcRenderer.send(communication.TERMS_ANSWERED, false)
-      }
-    },
-    filters: {
-      version (number) {
-        return parseFloat(Math.round(number * 100) / 100).toFixed(1)
       }
     },
     computed: {

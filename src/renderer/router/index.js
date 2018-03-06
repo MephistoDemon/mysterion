@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from '@/store'
-import Loader from '@/pages/Loader'
-import Home from '@/pages/Home'
+import VpnLoader from '@/pages/VpnLoader'
+import AppLoading from '@/pages/AppLoading'
 import Vpn from '@/pages/Vpn'
 import Terms from '@/pages/Terms'
 import About from '@/pages/About'
@@ -21,7 +21,7 @@ const router = new Router({
     {
       path: '/',
       name: 'home',
-      component: Home,
+      component: AppLoading,
       meta: {
         visual: 'head'
       }
@@ -32,7 +32,7 @@ const router = new Router({
       meta: {
         visual: 'head'
       },
-      component: Loader
+      component: VpnLoader
     },
     {
       path: '/vpn',

@@ -1,5 +1,5 @@
 class Installer {
-  loaded () {
+  processInstalled () {
     return true
   }
 

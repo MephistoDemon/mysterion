@@ -60,7 +60,7 @@
         this.$router.push('/load')
       })
 
-      ipcRenderer.on(communication.APP_STATUS, () => {
+      ipcRenderer.on(communication.TERMS_ACCEPTED, () => {
         this.$router.push('/')
       })
 

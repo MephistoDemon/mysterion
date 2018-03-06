@@ -1,6 +1,6 @@
 import type from '../types'
-import tequilAPI from '../../../libraries/tequilapi'
-import {isTimeoutError} from '../../../libraries/errors'
+import tequilAPI from '../../../libraries/api/tequilapi'
+import {isTimeoutError} from '../../../libraries/api/errors'
 import config from '../../config'
 // TODO tequilAPI should be passed via DI
 const tequilapi = tequilAPI()

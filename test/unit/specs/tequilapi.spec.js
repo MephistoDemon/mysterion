@@ -1,7 +1,7 @@
 /* eslint no-unused-expressions: 0 */
 import {expect} from 'chai'
 import MockAdapter from 'axios-mock-adapter'
-import tequilAPI from '../../../src/libraries/tequilapi'
+import tequilAPI from '../../../src/libraries/api/tequilapi'
 
 const tequilApi = tequilAPI()
 
