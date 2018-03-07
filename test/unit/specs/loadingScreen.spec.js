@@ -45,7 +45,7 @@ async function mountComponent (tequilapi) {
 }
 
 describe('loading screen', () => {
-  describe('succeeds when we have some identities', () => {
+  describe('has some identities', () => {
     let vm
     before(async () => {
       const tequilapi = tequilAPI()
@@ -72,7 +72,7 @@ describe('loading screen', () => {
     })
   })
 
-  describe('succeeds when no identities returned', () => {
+  describe('no identities returned', () => {
     let vm
     before(async () => {
       const tequilapi = tequilAPI()
@@ -101,8 +101,8 @@ describe('loading screen', () => {
     })
   })
 
-  describe('Handles Errors', () => {
-    describe('Generic', () => {
+  describe('error handling', () => {
+    describe('generic', () => {
       let mock, vm
       before(async () => {
         const tequilapi = tequilAPI()
@@ -118,7 +118,7 @@ describe('loading screen', () => {
         })
       })
     })
-    describe('connect: network unreachable', () => {
+    describe('in proposals response body we get message: connect: network unreachable', () => {
       let mock, vm
       before(async () => {
         const tequilapi = tequilAPI()
