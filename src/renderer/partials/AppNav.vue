@@ -64,16 +64,6 @@
       openRemoteLink (url) {
         shell.openExternal(url)
       }
-    },
-    mounted () {
     }
   }
 </script>
-<style>
-    .nav__icon--issue {
-        width: 2rem;
-        height: 2rem;
-        margin-left: 0.2rem;
-        margin-right: 0.1rem;
-    }
-</style>
