@@ -54,17 +54,17 @@ describe('loading screen', () => {
       mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
       mock.onPut('/identities/0xC001FACE/unlock').reply(200)
       vm = await mountComponent(tequilapi)
+      await delay(config.loadingScreenDelay)
     })
 
     it('loads without errors', async () => {
-      await delay(config.loadingScreenDelay)
       expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
       expect(vm.$store.state.main.showError).to.eql(false)
     })
     it('assigns first fetched ID to state.tequilapi.currentId', () => {
       expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACE'})
     })
-    it('fetches & assigns proposals[] to state.tequilapi.proposals', () => {
+    it('stores proposal list in store', () => {
       expect(vm.$store.state.proposal.list).to.eql([{id: '0xCEEDBEEF'}])
     })
     it('routes to main', () => {
@@ -72,7 +72,7 @@ describe('loading screen', () => {
     })
   })
 
-  describe('no identities returned', () => {
+  describe('has not found preset identities', () => {
     let vm
     before(async () => {
       const tequilapi = tequilAPI()
@@ -82,10 +82,10 @@ describe('loading screen', () => {
       mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
       mock.onPut('/identities/0xC001FACY/unlock').replyOnce(200)
       vm = await mountComponent(tequilapi)
+      await delay(config.loadingScreenDelay)
     })
 
     it('loads without errors', async () => {
-      await delay(config.loadingScreenDelay)
       expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
       expect(vm.$store.state.main.showError).to.eql(false)
     })
@@ -112,12 +112,14 @@ describe('loading screen', () => {
         mock.onPut('/identities/0xC001FACE/unlock').reply(200)
         vm = await mountComponent(tequilapi)
       })
+
       it('should notify user with an overlay', () => {
         expect(vm.$store.getters.overlayError).to.eql({
           message: 'Failed to initialize Mysterion'
         })
       })
     })
+
     describe('in proposals response body we get message: connect: network unreachable', () => {
       let mock, vm
       before(async () => {
@@ -128,6 +130,7 @@ describe('loading screen', () => {
         mock.onPut('/identities/0xC001FACE/unlock').reply(200)
         vm = await mountComponent(tequilapi)
       })
+
       it('should notify user with an overlay', () => {
         expect(vm.$store.getters.overlayError).to.eql({
           message: 'Can\'t connect to Mysterium Network',

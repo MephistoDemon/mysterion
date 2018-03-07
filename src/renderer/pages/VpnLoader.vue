@@ -29,14 +29,18 @@
         try {
           await proposalPromise
         } catch (err) {
-          let hint = ''
-          if (err.response && err.response.data && err.response.data.message &&
-            err.response.data.message.includes('connect: network is unreachable')) {
-            hint = 'Please check your internet connection.'
+          const isNetworkUnreachable = err.response && err.response.data && err.response.data.message &&
+            err.response.data.message.includes('connect: network is unreachable')
+          if (!isNetworkUnreachable) {
+            commit(type.OVERLAY_ERROR, {
+              message: 'Can\'t connect to Mysterium Network'
+            })
+            // TODO: report issue
+            return
           }
           commit(type.OVERLAY_ERROR, {
             message: 'Can\'t connect to Mysterium Network',
-            hint
+            hint: 'Please check your internet connection.'
           })
           return
         }
