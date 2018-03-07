@@ -11,7 +11,7 @@
 <script>
   import {mapGetters} from 'vuex'
   import type from '../store/types'
-  import {messages} from '../../libraries/errors'
+  import messages from '../../app/messages'
 
   export default {
     name: 'connection-button',
