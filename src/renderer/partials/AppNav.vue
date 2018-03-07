@@ -21,6 +21,12 @@
                         <span class="nav__text">report issue</span>
                     </a>
                 </li>
+                <li class="nav__item">
+                    <router-link class="nav__trigger" to="/load">
+                        <icon-world class="nav__icon nav__icon--world"/>
+                        <span class="nav__text">connect</span>
+                    </router-link>
+                </li>
             </ul>
             <div class="nav__logout">
                 <a class="nav__trigger" href="#" @click="quit()">
@@ -41,13 +47,15 @@
   import IconIssue from '@/assets/img/icon--issue.svg'
   import IconEye from '@/assets/img/icon--eye.svg'
   import IconQuit from '@/assets/img/icon--quit.svg'
+  import IconWorld from '@/assets/img/icon--world.svg'
 
   export default {
     name: 'AppNav',
     components: {
       IconEye,
       IconIssue,
-      IconQuit
+      IconQuit,
+      IconWorld
     },
     data () {
       return {}
