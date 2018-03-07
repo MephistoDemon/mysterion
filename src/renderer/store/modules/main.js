@@ -6,9 +6,7 @@ const state = {
   init: '',
   visual: 'head',
   navOpen: false,
-  buildInfo: {
-    commit: ''
-  },
+  buildInfo: {},
   navVisible: true,
   errorMessage: null,
   showError: false

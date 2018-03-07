@@ -40,7 +40,7 @@
       ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'buildInfo']),
       version () {
         return `v${remote.getGlobal('__version')}  Build id:
-        ${this.buildInfo.tag ? this.buildInfo.tag + '.' : ''}${this.buildInfo.buildNumber}`
+        ${this.buildInfo.branch}(${this.buildInfo.buildNumber})`
       }
     },
     data () {
