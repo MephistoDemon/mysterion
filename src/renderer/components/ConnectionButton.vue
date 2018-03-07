@@ -11,6 +11,7 @@
 <script>
   import {mapGetters} from 'vuex'
   import type from '../store/types'
+  import messages from '../../app/messages'
 
   export default {
     name: 'connection-button',
@@ -51,7 +52,7 @@
     methods: {
       connect: function () {
         if (!this.providerId) {
-          this.$store.commit(type.SHOW_ERROR_MESSAGE, 'Please select location')
+          this.$store.commit(type.SHOW_ERROR_MESSAGE, messages.LOCATION_NOT_SELECTED)
           return
         }
         if (this.$store.getters.status === type.tequilapi.NOT_CONNECTED) {
