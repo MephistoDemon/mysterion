@@ -3,6 +3,7 @@
   import {mapState} from 'vuex'
   import type from '@/store/types'
   import config from '@/config'
+  import messages from '../../app/messages'
 
   async function identityGet ({dispatch, commit}) {
     const identities = await dispatch(type.IDENTITY_LIST)
@@ -33,15 +34,12 @@
             err.response.data.message.includes('connect: network is unreachable')
           if (!isNetworkUnreachable) {
             commit(type.OVERLAY_ERROR, {
-              message: 'Can\'t connect to Mysterium Network'
+              message: messages.connectionError.message
             })
             // TODO: report issue
             return
           }
-          commit(type.OVERLAY_ERROR, {
-            message: 'Can\'t connect to Mysterium Network',
-            hint: 'Please check your internet connection.'
-          })
+          commit(type.OVERLAY_ERROR, messages.connectionError)
           return
         }
 
@@ -49,9 +47,7 @@
         commit(type.INIT_SUCCESS)
         this.$router.push('/vpn')
       } catch (err) {
-        commit(type.OVERLAY_ERROR, {
-          message: 'Failed to initialize Mysterion'
-        })
+        commit(type.OVERLAY_ERROR, messages.initializationError)
         // TODO: report err
       }
     },
