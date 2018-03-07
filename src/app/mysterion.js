@@ -87,7 +87,7 @@ class Mysterion {
   }
 
   onActivation () {
-    if (this.window === null) {
+    if (!this.window.exists()) {
       this.onReady()
     }
   }

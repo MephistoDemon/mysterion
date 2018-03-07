@@ -19,6 +19,10 @@ class Window {
     this.window = new BrowserWindow(options)
   }
 
+  exists () {
+    return !!this.window
+  }
+
   /**
    * @returns {Window}
    */
