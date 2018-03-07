@@ -26,19 +26,11 @@
   import type from '@/store/types'
 
   import headVisual from '@/assets/img/visual--head.svg'
-  import networkingVisual from '@/assets/img/visual--networking.svg'
-  import cubeVisual from '@/assets/img/icon--cube.svg'
-  import eyeVisual from '@/assets/img/icon--eye.svg'
-  import quitVisual from '@/assets/img/icon--quit.svg'
 
   export default {
     name: 'AppVisual',
     components: {
-      headVisual,
-      networkingVisual,
-      cubeVisual,
-      eyeVisual,
-      quitVisual
+      headVisual
     },
     computed: {
       ...mapGetters(['loading', 'visual', 'route', 'connection']),
