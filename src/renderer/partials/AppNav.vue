@@ -16,31 +16,16 @@
                     </router-link>
                 </li>
                 <li class="nav__item">
-                    <router-link class="nav__trigger" to="/technology">
-                        <icon-cube class="nav__icon nav__icon--cube"/>
-                        <span class="nav__text">technology</span>
-                    </router-link>
-                </li>
-                <li class="nav__item">
-                    <router-link class="nav__trigger" to="/share">
-                        <icon-share class="nav__icon nav__icon--share"/>
-                        <span class="nav__text">share</span>
-                    </router-link>
+                    <a class="nav__trigger" href="#" @click="openRemoteLink('https://mysterium.zendesk.com/hc/en-us/requests/new')">
+                        <icon-issue class="nav__icon nav__icon--issue"/>
+                        <span class="nav__text">report issue</span>
+                    </a>
                 </li>
                 <li class="nav__item">
                     <router-link class="nav__trigger" to="/load">
+                        <icon-world class="nav__icon nav__icon--world"/>
                         <span class="nav__text">connect</span>
                     </router-link>
-                </li>
-                <li class="nav__item">
-                    <router-link class="nav__trigger" to="/tutorial/decentralized">
-                        <span class="nav__text">tutorial</span>
-                    </router-link>
-                </li>
-                <li class="nav__item">
-                    <a class="nav__trigger" href="#" @click="openRemoteLink('https://mysterium.zendesk.com/hc/en-us/requests/new')">
-                        <span class="nav__text">report issue</span>
-                    </a>
                 </li>
             </ul>
             <div class="nav__logout">
@@ -59,18 +44,18 @@
 <script>
   import {remote, shell} from 'electron'
   import {mapGetters, mapActions} from 'vuex'
+  import IconIssue from '@/assets/img/icon--issue.svg'
   import IconEye from '@/assets/img/icon--eye.svg'
-  import IconCube from '@/assets/img/icon--cube.svg'
-  import IconShare from '@/assets/img/icon--share.svg'
   import IconQuit from '@/assets/img/icon--quit.svg'
+  import IconWorld from '@/assets/img/icon--world.svg'
 
   export default {
     name: 'AppNav',
     components: {
       IconEye,
-      IconCube,
-      IconShare,
-      IconQuit
+      IconIssue,
+      IconQuit,
+      IconWorld
     },
     data () {
       return {}
@@ -87,8 +72,6 @@
       openRemoteLink (url) {
         shell.openExternal(url)
       }
-    },
-    mounted () {
     }
   }
 </script>
