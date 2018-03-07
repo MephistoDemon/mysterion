@@ -23,7 +23,8 @@ const router = new Router({
       name: 'home',
       component: AppLoading,
       meta: {
-        visual: 'head'
+        visual: 'head',
+        navVisible: false
       }
     },
     {
