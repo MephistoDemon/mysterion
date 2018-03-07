@@ -34,12 +34,12 @@
             err.response.data.message.includes('connect: network is unreachable')
           if (!isNetworkUnreachable) {
             commit(type.OVERLAY_ERROR, {
-              message: messages.connectionError.message
+              message: messages.initializationError.message
             })
             // TODO: report issue
             return
           }
-          commit(type.OVERLAY_ERROR, messages.connectionError)
+          commit(type.OVERLAY_ERROR, messages.proposalsConnectionError)
           return
         }
 

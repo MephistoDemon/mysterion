@@ -52,7 +52,7 @@
     methods: {
       connect: function () {
         if (!this.providerId) {
-          this.$store.commit(type.SHOW_ERROR_MESSAGE, messages.LOCATION_NOT_SELECTED)
+          this.$store.commit(type.SHOW_ERROR_MESSAGE, messages.locationNotSelected)
           return
         }
         if (this.$store.getters.status === type.tequilapi.NOT_CONNECTED) {
