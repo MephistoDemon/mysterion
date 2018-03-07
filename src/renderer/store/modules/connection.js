@@ -1,6 +1,7 @@
 import type from '../types'
 import tequilAPI from '../../../libraries/api/tequilapi'
 import {isTimeoutError} from '../../../libraries/api/errors'
+import {messages} from '../../../libraries/errors'
 import config from '../../config'
 // TODO tequilAPI should be passed via DI
 const tequilapi = tequilAPI()
@@ -105,7 +106,7 @@ const actions = {
         dispatch(type.STATUS_UPDATER_RUN)
       }, 1000)
     } catch (err) {
-      commit(type.SHOW_ERROR_MESSAGE, 'Connection to node failed. Try other one')
+      commit(type.SHOW_ERROR_MESSAGE, messages.CONNECT_FAILED)
       let error = new Error('Connection to node failed.')
       error.original = err
       throw error
