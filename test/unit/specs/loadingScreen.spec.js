@@ -45,79 +45,95 @@ async function mountComponent (tequilapi) {
 }
 
 describe('loading screen', () => {
-  let vm
-  before(async () => {
-    const tequilapi = tequilAPI()
-    const mock = new MockAdapter(tequilapi.__axio)
-    mock.onGet('/proposals').reply(200, {proposals: [{id: '0xCEEDBEEF'}]})
-    mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
-    mock.onPut('/identities/0xC001FACE/unlock').reply(200)
-    vm = await mountComponent(tequilapi)
+  describe('succeeds when we have some identities', () => {
+    let vm
+    before(async () => {
+      const tequilapi = tequilAPI()
+      const mock = new MockAdapter(tequilapi.__axio)
+      mock.onGet('/proposals').reply(200, {proposals: [{id: '0xCEEDBEEF'}]})
+      mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
+      mock.onPut('/identities/0xC001FACE/unlock').reply(200)
+      vm = await mountComponent(tequilapi)
+    })
+
+    it('loads without errors', async () => {
+      await delay(config.loadingScreenDelay)
+      expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
+      expect(vm.$store.state.main.showError).to.eql(false)
+    })
+    it('assigns first fetched ID to state.tequilapi.currentId', () => {
+      expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACE'})
+    })
+    it('fetches & assigns proposals[] to state.tequilapi.proposals', () => {
+      expect(vm.$store.state.proposal.list).to.eql([{id: '0xCEEDBEEF'}])
+    })
+    it('routes to main', () => {
+      expect(vm.$route.path).to.be.eql('/vpn')
+    })
   })
 
-  it('loads without errors', async () => {
-    await delay(config.loadingScreenDelay)
-    expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
-    expect(vm.$store.state.main.showError).to.eql(false)
-  })
-  it('assigns first fetched ID to state.tequilapi.currentId', () => {
-    expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACE'})
-  })
-  it('fetches & assigns proposals[] to state.tequilapi.proposals', () => {
-    expect(vm.$store.state.proposal.list).to.eql([{id: '0xCEEDBEEF'}])
-  })
-  it('routes to main', () => {
-    expect(vm.$route.path).to.be.eql('/vpn')
-  })
-})
+  describe('succeeds when no identities returned', () => {
+    let vm
+    before(async () => {
+      const tequilapi = tequilAPI()
+      const mock = new MockAdapter(tequilapi.__axio)
+      mock.onGet('/identities').replyOnce(200, {identities: []})
+      mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
+      mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
+      mock.onPut('/identities/0xC001FACY/unlock').replyOnce(200)
+      vm = await mountComponent(tequilapi)
+    })
 
-describe('loading screen when no identities returned', () => {
-  let vm
-
-  before(async () => {
-    const tequilapi = tequilAPI()
-    const mock = new MockAdapter(tequilapi.__axio)
-    mock.onGet('/identities').replyOnce(200, {identities: []})
-    mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
-    mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
-    mock.onPut('/identities/0xC001FACY/unlock').replyOnce(200)
-    vm = await mountComponent(tequilapi)
+    it('loads without errors', async () => {
+      await delay(config.loadingScreenDelay)
+      expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
+      expect(vm.$store.state.main.showError).to.eql(false)
+    })
+    it('creates and unlocks identity', () => {
+      expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACY'})
+      expect(vm.$store.state.identity.unlocked).to.be.true
+    })
+    it('sets store.main.newUser true', () => {
+      expect(vm.$store.state.main.newUser).to.be.true
+    })
+    it('routes to main', () => {
+      expect(vm.$route.path).to.be.eql('/vpn')
+    })
   })
 
-  it('loads without errors', async () => {
-    await delay(config.loadingScreenDelay)
-    expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
-    expect(vm.$store.state.main.showError).to.eql(false)
-  })
-  it('creates and unlocks identity', () => {
-    expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACY'})
-    expect(vm.$store.state.identity.unlocked).to.be.true
-  })
-  it('sets store.main.newUser true', () => {
-    expect(vm.$store.state.main.newUser).to.be.true
-  })
-  it('routes to main', () => {
-    expect(vm.$route.path).to.be.eql('/vpn')
-  })
-})
-
-describe('LoadingScreen proposals failure', () => {
-  let mock, vm
-  before(async () => {
-    const tequilapi = tequilAPI()
-    mock = new MockAdapter(tequilapi.__axio)
-    mock.onGet('/proposals').timeout()
-    mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
-    mock.onPut('/identities/0xC001FACE/unlock').reply(200)
-    vm = await mountComponent(tequilapi)
-  })
-  after(() => {
-    mock.reset()
-  })
-  it('should notify user with an overlay', () => {
-    expect(vm.$store.getters.overlayError).to.eql({
-      message: 'Can\'t connect to Mysterium Network',
-      hint: 'Please check your internet connection.'
+  describe('Handles Errors', () => {
+    describe('Generic', () => {
+      let mock, vm
+      before(async () => {
+        const tequilapi = tequilAPI()
+        mock = new MockAdapter(tequilapi.__axio)
+        mock.onGet('/proposals').reply(200)
+        mock.onGet('/identities').reply(500)
+        mock.onPut('/identities/0xC001FACE/unlock').reply(200)
+        vm = await mountComponent(tequilapi)
+      })
+      it('should notify user with an overlay', () => {
+        expect(vm.$store.getters.overlayError).to.eql({
+          message: 'Failed to initialize Mysterion'
+        })
+      })
+    })
+    describe('connect: network unreachable', () => {
+      let mock, vm
+      before(async () => {
+        const tequilapi = tequilAPI()
+        mock = new MockAdapter(tequilapi.__axio)
+        mock.onGet('/proposals').replyOnce(500, {message: 'something connect: network is unreachable'})
+        mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
+        mock.onPut('/identities/0xC001FACE/unlock').reply(200)
+        vm = await mountComponent(tequilapi)
+      })
+      it('should notify user with an overlay', () => {
+        expect(vm.$store.getters.overlayError).to.eql({
+          message: 'Can\'t connect to Mysterium Network',
+          hint: 'Please check your internet connection.'
+        })
+      })
     })
   })
 })

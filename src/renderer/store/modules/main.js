@@ -15,7 +15,6 @@ const getters = {
   visual: state => state.visual,
   navOpen: state => state.navOpen,
   navVisible: state => state.navVisible && !(state.init === type.INIT_PENDING),
-  initStatus: state => state.init,
   errorMessage: state => state.errorMessage,
   showError: state => state.showError
 }

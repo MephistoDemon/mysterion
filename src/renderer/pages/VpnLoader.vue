@@ -29,9 +29,14 @@
         try {
           await proposalPromise
         } catch (err) {
+          let hint = ''
+          if (err.response && err.response.data && err.response.data.message &&
+            err.response.data.message.includes('connect: network is unreachable')) {
+            hint = 'Please check your internet connection.'
+          }
           commit(type.OVERLAY_ERROR, {
             message: 'Can\'t connect to Mysterium Network',
-            hint: 'Please check your internet connection.'
+            hint
           })
           return
         }
@@ -40,7 +45,10 @@
         commit(type.INIT_SUCCESS)
         this.$router.push('/vpn')
       } catch (err) {
-        throw (err)
+        commit(type.OVERLAY_ERROR, {
+          message: 'Failed to initialize Mysterion'
+        })
+        // TODO: report err
       }
     },
     computed: {
