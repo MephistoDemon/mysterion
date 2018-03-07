@@ -16,29 +16,8 @@
                     </router-link>
                 </li>
                 <li class="nav__item">
-                    <router-link class="nav__trigger" to="/technology">
-                        <icon-cube class="nav__icon nav__icon--cube"/>
-                        <span class="nav__text">technology</span>
-                    </router-link>
-                </li>
-                <li class="nav__item">
-                    <router-link class="nav__trigger" to="/share">
-                        <icon-share class="nav__icon nav__icon--share"/>
-                        <span class="nav__text">share</span>
-                    </router-link>
-                </li>
-                <li class="nav__item">
-                    <router-link class="nav__trigger" to="/load">
-                        <span class="nav__text">connect</span>
-                    </router-link>
-                </li>
-                <li class="nav__item">
-                    <router-link class="nav__trigger" to="/tutorial/decentralized">
-                        <span class="nav__text">tutorial</span>
-                    </router-link>
-                </li>
-                <li class="nav__item">
                     <a class="nav__trigger" href="#" @click="openRemoteLink('https://mysterium.zendesk.com/hc/en-us/requests/new')">
+                        <icon-issue class="nav__icon nav__icon--issue"/>
                         <span class="nav__text">report issue</span>
                     </a>
                 </li>
@@ -59,17 +38,15 @@
 <script>
   import {remote, shell} from 'electron'
   import {mapGetters, mapActions} from 'vuex'
+  import IconIssue from '@/assets/img/icon--issue.svg'
   import IconEye from '@/assets/img/icon--eye.svg'
-  import IconCube from '@/assets/img/icon--cube.svg'
-  import IconShare from '@/assets/img/icon--share.svg'
   import IconQuit from '@/assets/img/icon--quit.svg'
 
   export default {
     name: 'AppNav',
     components: {
       IconEye,
-      IconCube,
-      IconShare,
+      IconIssue,
       IconQuit
     },
     data () {
@@ -92,3 +69,11 @@
     }
   }
 </script>
+<style>
+    .nav__icon--issue {
+        width: 2rem;
+        height: 2rem;
+        margin-left: 0.2rem;
+        margin-right: 0.1rem;
+    }
+</style>
