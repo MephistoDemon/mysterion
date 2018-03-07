@@ -39,8 +39,7 @@
     computed: {
       ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'buildInfo']),
       version () {
-        return `v${remote.getGlobal('__version')}  Build id:
-        ${this.buildInfo.branch}(${this.buildInfo.buildNumber})`
+        return `v${remote.getGlobal('__version')}  Build id:${this.buildInfo.buildNumber}`
       }
     },
     data () {
