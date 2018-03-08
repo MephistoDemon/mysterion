@@ -46,6 +46,7 @@ const mutations = {
     state.error = err
   },
   [type.INIT_NEW_USER] (state) {
+    // TODO: remove if this is not used anywhere
     state.newUser = true
   },
   [type.SHOW_ERROR] (state, err) {

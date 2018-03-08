@@ -42,14 +42,6 @@
         return `v${remote.getGlobal('__version')}  Build id:${this.buildInfo.buildNumber}`
       }
     },
-    data () {
-      return {
-        error: {
-          message: 'Mysterium client seems to be down.',
-          hint: 'Please wait while it re-launches. If this message persists, please contact support.'
-        }
-      }
-    },
     async mounted () {
       // we need to notify the main process that we're up
       ipcRenderer.send(communication.RENDERER_LOADED, true)
