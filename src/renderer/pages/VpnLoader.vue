@@ -33,9 +33,7 @@
           const isNetworkUnreachable = err.response && err.response.data && err.response.data.message &&
             err.response.data.message.includes('connect: network is unreachable')
           if (!isNetworkUnreachable) {
-            commit(type.OVERLAY_ERROR, {
-              message: messages.initializationError.message
-            })
+            commit(type.OVERLAY_ERROR, {message: messages.initializationError.message})
             // TODO: report issue
             return
           }

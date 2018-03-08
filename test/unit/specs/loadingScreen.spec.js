@@ -45,13 +45,14 @@ async function mountComponent (tequilapi) {
 }
 
 describe('loading screen', () => {
+  const mock = new MockAdapter(tequilapi.__axio)
+  mock.onGet('/healthcheck').reply(200, {version: {commit: 'caed3112'}})
+  after(mock.reset)
   describe('has some identities', () => {
     let vm
     before(async () => {
-      const mock = new MockAdapter(tequilapi.__axio)
-      mock.onGet('/proposals').reply(200, {proposals: [{id: '0xCEEDBEEF'}]})
-      mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
-      mock.onGet('/healthcheck').replyOnce(200, {version: {commit: 'caed3112'}})
+      mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
+      mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
       mock.onPut('/identities/0xC001FACE/unlock').reply(200)
       vm = await mountComponent(tequilapi)
       await delay(config.loadingScreenDelay)
@@ -75,11 +76,9 @@ describe('loading screen', () => {
   describe('has not found preset identities', () => {
     let vm
     before(async () => {
-      const mock = new MockAdapter(tequilapi.__axio)
       mock.onGet('/identities').replyOnce(200, {identities: []})
       mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
       mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
-      mock.onGet('/healthcheck').replyOnce(200, {version: {commit: 'caed3112'}})
       mock.onPut('/identities/0xC001FACY/unlock').replyOnce(200)
       vm = await mountComponent(tequilapi)
       await delay(config.loadingScreenDelay)
@@ -103,12 +102,10 @@ describe('loading screen', () => {
 
   describe('error handling', () => {
     describe('generic', () => {
-      let mock, vm
+      let vm
       before(async () => {
-        mock = new MockAdapter(tequilapi.__axio)
-        mock.onGet('/proposals').reply(200)
-        mock.onGet('/identities').reply(500)
-        mock.onPut('/identities/0xC001FACE/unlock').reply(200)
+        mock.onGet('/proposals').replyOnce(500)
+        mock.onGet('/identities').replyOnce(500)
         vm = await mountComponent(tequilapi)
       })
 
@@ -120,12 +117,11 @@ describe('loading screen', () => {
     })
 
     describe('in proposals response body we get message: connect: network unreachable', () => {
-      let mock, vm
+      let vm
       before(async () => {
-        mock = new MockAdapter(tequilapi.__axio)
         mock.onGet('/proposals').replyOnce(500, {message: 'something connect: network is unreachable'})
-        mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
-        mock.onPut('/identities/0xC001FACE/unlock').reply(200)
+        mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
+        mock.onPut('/identities/0xC001FACE/unlock').replyOnce(200)
         vm = await mountComponent(tequilapi)
       })
 
