@@ -42,6 +42,8 @@
           commit(type.OVERLAY_ERROR, messages.proposalsConnectionError)
           return
         }
+        await proposalPromise
+        await dispatch(type.CLIENT_BUILD_INFO)
 
         await delay(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)

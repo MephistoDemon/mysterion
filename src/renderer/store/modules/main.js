@@ -1,10 +1,12 @@
 // TODO: rename to `vpn.js` to be consistent with `Vpn.vue`
 import type from '../types'
+import {tequilapi} from '../../../libraries/api/tequilapi'
 
 const state = {
   init: '',
   visual: 'head',
   navOpen: false,
+  buildInfo: {},
   navVisible: true,
   errorMessage: null,
   showError: false
@@ -15,11 +17,15 @@ const getters = {
   visual: state => state.visual,
   navOpen: state => state.navOpen,
   navVisible: state => state.navVisible && !(state.init === type.INIT_PENDING),
+  buildInfo: state => state.buildInfo,
   errorMessage: state => state.errorMessage,
   showError: state => state.showError
 }
 
 const mutations = {
+  [type.CLIENT_BUILD_INFO] (state, buildInfo) {
+    state.buildInfo = buildInfo
+  },
   [type.SET_NAV_OPEN] (state, open) {
     state.navOpen = open
   },
@@ -61,6 +67,10 @@ const actions = {
   },
   setVisual ({commit}, visual) {
     commit(type.SET_VISUAL, visual)
+  },
+  async [type.CLIENT_BUILD_INFO] ({commit}) {
+    const res = await tequilapi.healthCheck()
+    commit(type.CLIENT_BUILD_INFO, res.version)
   },
   setNavVisibility ({commit}, visible) {
     commit(type.SET_NAV_VISIBLE, visible)
