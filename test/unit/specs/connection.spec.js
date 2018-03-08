@@ -64,28 +64,6 @@ describe('mutations', () => {
       expect(store.statistics).to.eql({})
     })
   })
-
-  describe('INCREASE_IP_TIMEOUT_COUNTER', () => {
-    it('increases ip timeout counter', () => {
-      let store = {
-        ipTimeoutsCount: 0
-      }
-      connection.mutations[type.INCREASE_IP_TIMEOUT_COUNTER](store)
-      expect(store.ipTimeoutsCount).to.eql(1)
-      connection.mutations[type.INCREASE_IP_TIMEOUT_COUNTER](store)
-      expect(store.ipTimeoutsCount).to.eql(2)
-    })
-  })
-
-  describe('RESET_TIMEOUT_COUNTER', () => {
-    it('resets ip timeout counter', () => {
-      let store = {
-        ipTimeoutsCount: 2
-      }
-      connection.mutations[type.RESET_TIMEOUT_COUNTER](store)
-      expect(store.ipTimeoutsCount).to.eql(0)
-    })
-  })
 })
 
 describe('actions', () => {
@@ -94,44 +72,20 @@ describe('actions', () => {
   })
 
   describe('CONNECTION_IP', () => {
-    it('commits new ip and resets timeout counter', async () => {
-      const state = { ipTimeoutsCount: 2 }
-      const committed = await executeAction(type.CONNECTION_IP, state)
+    it('commits new ip counter', async () => {
+      const committed = await executeAction(type.CONNECTION_IP)
       expect(committed).to.eql([
         {
           key: type.CONNECTION_IP,
           value: 'mock ip'
-        },
-        {
-          key: type.RESET_TIMEOUT_COUNTER,
-          value: undefined
         }
       ])
     })
 
-    it('ignores error and increases timeout counter when api timeouts for the first time', async () => {
+    it('ignores error when api timeouts', async () => {
       fakeTequilapi.setIpTimeout(true)
       const committed = await executeAction(type.CONNECTION_IP)
-      expect(committed).to.eql([{
-        key: type.INCREASE_IP_TIMEOUT_COUNTER,
-        value: undefined
-      }])
-    })
-
-    it('commits error and increases timeout counter when api timeouts for the third time', async () => {
-      fakeTequilapi.setIpTimeout(true)
-      const state = { ipTimeoutsCount: 2 }
-      const committed = await executeAction(type.CONNECTION_IP, state)
-      expect(committed).to.eql([
-        {
-          key: type.SHOW_ERROR,
-          value: fakeTequilapi.getFakeTimeoutError()
-        },
-        {
-          key: type.INCREASE_IP_TIMEOUT_COUNTER,
-          value: undefined
-        }
-      ])
+      expect(committed).to.eql([])
     })
 
     it('commits error when api returns unknown error', async () => {
@@ -197,10 +151,6 @@ describe('actions', () => {
         {
           key: type.CONNECTION_IP,
           value: 'mock ip'
-        },
-        {
-          key: type.RESET_TIMEOUT_COUNTER,
-          value: undefined
         }
       ])
     })
@@ -220,10 +170,6 @@ describe('actions', () => {
         {
           key: type.CONNECTION_IP,
           value: 'mock ip'
-        },
-        {
-          key: type.RESET_TIMEOUT_COUNTER,
-          value: undefined
         }
       ])
     })
@@ -243,10 +189,6 @@ describe('actions', () => {
         {
           key: type.CONNECTION_IP,
           value: 'mock ip'
-        },
-        {
-          key: type.RESET_TIMEOUT_COUNTER,
-          value: undefined
         }
       ])
     })
