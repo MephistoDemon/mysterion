@@ -27,6 +27,7 @@
         commit(type.IDENTITY_GET_SUCCESS, identity)
         await dispatch(type.IDENTITY_UNLOCK)
         await proposalPromise
+        await dispatch(type.CLIENT_BUILD_INFO)
 
         await delay(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)

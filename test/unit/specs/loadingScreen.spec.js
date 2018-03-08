@@ -7,12 +7,13 @@ import Router from 'vue-router'
 
 import idStore from '@/store/modules/identity'
 import propStore from '@/store/modules/proposal'
-import mainStore from '@/store/modules/main'
+import {tequilapi} from '@/../libraries/api/tequilapi'
 import loadingScreen from '@/pages/VpnLoader'
-import tequilAPI from '@/../libraries/api/tequilapi'
 
 import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
+
+import mainStore from '@/store/modules/main'
 
 Vue.use(Vuex)
 Vue.use(Router)
@@ -45,10 +46,10 @@ async function mountComponent (tequilapi) {
 describe('loading screen', () => {
   let vm
   before(async () => {
-    const tequilapi = tequilAPI()
     const mock = new MockAdapter(tequilapi.__axio)
     mock.onGet('/proposals').reply(200, {proposals: [{id: '0xCEEDBEEF'}]})
     mock.onGet('/identities').reply(200, {identities: [{id: '0xC001FACE'}]})
+    mock.onGet('/healthcheck').replyOnce(200, {version: {commit: 'caed3112'}})
     mock.onPut('/identities/0xC001FACE/unlock').reply(200)
     vm = await mountComponent(tequilapi)
   })
@@ -73,10 +74,10 @@ describe('loading screen when no identities returned', () => {
   let vm
 
   before(async () => {
-    const tequilapi = tequilAPI()
     const mock = new MockAdapter(tequilapi.__axio)
     mock.onGet('/identities').replyOnce(200, {identities: []})
     mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
+    mock.onGet('/healthcheck').replyOnce(200, {version: {commit: 'caed3112'}})
     mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
     mock.onPut('/identities/0xC001FACY/unlock').replyOnce(200)
     vm = await mountComponent(tequilapi)
