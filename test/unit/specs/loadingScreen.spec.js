@@ -4,6 +4,7 @@ import {expect} from 'chai'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Router from 'vue-router'
+import sinon from 'sinon'
 
 import idStore from '@/store/modules/identity'
 import propStore from '@/store/modules/proposal'
@@ -19,7 +20,6 @@ Vue.use(Vuex)
 Vue.use(Router)
 
 const router = new Router({routes: []})
-const delay = time => new Promise(resolve => setTimeout(() => resolve(), time))
 const mountVM = async (vm) => {
   await vm.$mount()
 }
@@ -45,17 +45,37 @@ async function mountComponent (tequilapi) {
 }
 
 describe('loading screen', () => {
-  const mock = new MockAdapter(tequilapi.__axio)
-  mock.onGet('/healthcheck').reply(200, {version: {commit: 'caed3112'}})
-  after(mock.reset)
+  let mock
+  let realDelay, clock
+
+  async function mountAndPrepareLoadingScreen (tequilapi) {
+    const vm = await mountComponent(tequilapi)
+    await realDelay(10) // wait for delay inside loader
+    clock.tick(config.loadingScreenDelay) // skip loader delay
+    return vm
+  }
+
+  before(async () => {
+    mock = new MockAdapter(tequilapi.__axio)
+    mock.onGet('/healthcheck').reply(200, {version: {commit: 'caed3112'}})
+
+    const realSetTimeout = setTimeout
+    realDelay = time => new Promise(resolve => realSetTimeout(() => resolve(), time))
+    clock = sinon.useFakeTimers()
+  })
+
+  after(() => {
+    clock.restore()
+    mock.reset()
+  })
+
   describe('has some identities', () => {
     let vm
     before(async () => {
       mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
       mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
       mock.onPut('/identities/0xC001FACE/unlock').reply(200)
-      vm = await mountComponent(tequilapi)
-      await delay(config.loadingScreenDelay)
+      vm = await mountAndPrepareLoadingScreen(tequilapi)
     })
 
     it('loads without errors', async () => {
@@ -80,8 +100,7 @@ describe('loading screen', () => {
       mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
       mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
       mock.onPut('/identities/0xC001FACY/unlock').replyOnce(200)
-      vm = await mountComponent(tequilapi)
-      await delay(config.loadingScreenDelay)
+      vm = await mountAndPrepareLoadingScreen(tequilapi)
     })
 
     it('loads without errors', async () => {
