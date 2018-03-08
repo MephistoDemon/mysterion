@@ -13,11 +13,8 @@ import loadingScreen from '@/pages/VpnLoader'
 import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
 
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import mainStoreInjector from 'inject-loader!@/store/modules/main'
-const mainStore = mainStoreInjector({
-  '../../../libraries/api/tequilapi': {tequilapi}
-}).default
+import mainStore from '@/store/modules/main'
+
 Vue.use(Vuex)
 Vue.use(Router)
 
