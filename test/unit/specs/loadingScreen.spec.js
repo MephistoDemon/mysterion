@@ -4,7 +4,7 @@ import {expect} from 'chai'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Router from 'vue-router'
-import sinon from 'sinon'
+import lolex from 'lolex'
 
 import idStore from '@/store/modules/identity'
 import propStore from '@/store/modules/proposal'
@@ -61,11 +61,11 @@ describe('loading screen', () => {
 
     const realSetTimeout = setTimeout
     realDelay = time => new Promise(resolve => realSetTimeout(() => resolve(), time))
-    clock = sinon.useFakeTimers()
+    clock = lolex.install()
   })
 
   after(() => {
-    clock.restore()
+    clock.uninstall()
     mock.reset()
   })
 
