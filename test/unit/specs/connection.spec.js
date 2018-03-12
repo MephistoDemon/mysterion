@@ -4,6 +4,7 @@ import type from '@/store/types'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import connectionInjector from 'inject-loader!@/store/modules/connection'
 import utils from '../utils'
+import { ActionLooper } from '@/../app/utils'
 
 const fakeTequilapi = utils.fakeTequilapiManipulator()
 
@@ -17,9 +18,9 @@ async function executeAction (action, state = {}) {
     mutations.push({key, value})
   }
 
-  const dispatch = (action) => {
+  const dispatch = (action, payload = {}) => {
     const context = {commit, dispatch, state}
-    return connection.actions[action](context)
+    return connection.actions[action](context, payload)
   }
 
   await dispatch(action)
@@ -59,9 +60,18 @@ describe('mutations', () => {
 
   describe('CONNECTION_STATISTICS_RESET', () => {
     it('resets statistics', () => {
-      let store = {}
-      connection.mutations[type.CONNECTION_STATISTICS_RESET](store)
-      expect(store.statistics).to.eql({})
+      let state = {}
+      connection.mutations[type.CONNECTION_STATISTICS_RESET](state)
+      expect(state.statistics).to.eql({})
+    })
+  })
+
+  describe('SET_UPDATE_LOOPER', () => {
+    it('sets update looper', () => {
+      const state = {}
+      const looper = new ActionLooper()
+      connection.mutations[type.SET_UPDATE_LOOPER](state, looper)
+      expect(state.updateLooper).to.eql(looper)
     })
   })
 })
@@ -69,6 +79,44 @@ describe('mutations', () => {
 describe('actions', () => {
   beforeEach(() => {
     fakeTequilapi.cleanup()
+  })
+
+  describe('START_UPDATER', () => {
+    it('updates all statuses and sets updater looper', async () => {
+      const committed = await executeAction(type.START_UPDATER)
+      expect(committed.length).to.eql(3)
+      expect(committed[0]).to.eql({
+        key: type.CONNECTION_STATUS,
+        value: 'mock status'
+      })
+      expect(committed[1]).to.eql({
+        key: type.CONNECTION_STATISTICS,
+        value: 'mock statistics'
+      })
+      expect(committed[2].key).to.eql(type.SET_UPDATE_LOOPER)
+      expect(committed[2].value).to.an.instanceof(ActionLooper)
+    })
+  })
+
+  describe('STOP_UPDATER', () => {
+    it('stops and cleans update looper', async () => {
+      const updater = () => {}
+      const updateLooper = new ActionLooper(updater, 1000)
+      updateLooper.start()
+      const state = { updateLooper }
+
+      expect(updateLooper.isRunning()).to.eql(true)
+      const committed = await executeAction(type.STOP_UPDATER, state)
+      expect(committed).to.eql([{
+        key: type.SET_UPDATE_LOOPER,
+        value: null
+      }])
+      expect(updateLooper.isRunning()).to.eql(false)
+    })
+
+    it('does not throw error with no update looper', async () => {
+      await executeAction(type.STOP_UPDATER)
+    })
   })
 
   describe('CONNECTION_IP', () => {
@@ -147,10 +195,6 @@ describe('actions', () => {
         {
           key: type.CONNECTION_STATISTICS,
           value: 'mock statistics'
-        },
-        {
-          key: type.CONNECTION_IP,
-          value: 'mock ip'
         }
       ])
     })
@@ -166,10 +210,6 @@ describe('actions', () => {
         {
           key: type.CONNECTION_STATISTICS,
           value: 'mock statistics'
-        },
-        {
-          key: type.CONNECTION_IP,
-          value: 'mock ip'
         }
       ])
     })
@@ -185,10 +225,6 @@ describe('actions', () => {
         {
           key: type.SHOW_ERROR,
           value: fakeTequilapi.getFakeError()
-        },
-        {
-          key: type.CONNECTION_IP,
-          value: 'mock ip'
         }
       ])
     })
