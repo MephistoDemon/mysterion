@@ -69,9 +69,9 @@
     methods: {
       ...mapMutations({ hideErr: type.HIDE_ERROR })
     },
-    mounted () {
+    async mounted () {
       this.$store.dispatch(type.CONNECTION_IP)
-      this.$store.dispatch(type.CONNECTION_STATUS)
+      await this.$store.dispatch(type.CONNECTION_STATUS)
       if (this.connection.status === type.tequilapi.CONNECTED) {
         this.$store.dispatch(type.STATUS_UPDATER_RUN)
       }
