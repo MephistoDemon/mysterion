@@ -16,6 +16,11 @@ describe('utils', () => {
     clock.uninstall()
   })
 
+  async function tickWithDelay (duration) {
+    clock.tick(duration)
+    await realDelay(10)
+  }
+
   describe('ActionLooper', () => {
     describe('.start', () => {
       it('executes action multiple times with threshold', async () => {
@@ -28,16 +33,13 @@ describe('utils', () => {
         looper.start()
         expect(counter).to.eql(1)
 
-        clock.tick(1000)
-        await realDelay(10)
+        await tickWithDelay(1000)
         expect(counter).to.eql(2)
 
-        clock.tick(2500)
-        await realDelay(10)
+        await tickWithDelay(2500)
         expect(counter).to.eql(3)
 
-        clock.tick(1000)
-        await realDelay(10)
+        await tickWithDelay(1000)
         expect(counter).to.eql(4)
       })
     })
@@ -53,14 +55,12 @@ describe('utils', () => {
         looper.start()
         expect(counter).to.eql(1)
 
-        clock.tick(1000)
-        await realDelay(10)
+        await tickWithDelay(1000)
         expect(counter).to.eql(2)
 
         looper.stop()
 
-        clock.tick(10000)
-        await realDelay(10)
+        await tickWithDelay(10000)
         expect(counter).to.eql(2)
       })
     })
@@ -95,11 +95,6 @@ describe('utils', () => {
           resolve()
         }, duration)
       })
-    }
-
-    async function tickWithDelay (duration) {
-      clock.tick(duration)
-      await realDelay(10)
     }
 
     beforeEach(() => {
