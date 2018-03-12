@@ -8,11 +8,39 @@ describe('BytesReadable', () => {
     expect(result.value).to.eql('123.00')
   })
 
-  it('can do units: KB, MB, TB, GB', () => {
-    expect(bytesReadable(1e12).units).to.be.eql('TB')
-    expect(bytesReadable(1e9).units).to.be.eql('GB')
-    expect(bytesReadable(1e6).units).to.be.eql('MB')
-    expect(bytesReadable(1e3).units).to.be.eql('kB')
+  it('calculates one Byte correctly', () => {
+    const val = 1
+    const result = bytesReadable(val)
+    expect(result.units).to.eql('Byte')
+    expect(result.value).to.eql('1.00')
+  })
+
+  it('calculates one KB correctly', () => {
+    const val = 1024
+    const result = bytesReadable(val)
+    expect(result.units).to.eql('KB')
+    expect(result.value).to.eql('1.00')
+  })
+
+  it('calculates one MB correctly', () => {
+    const val = 1024 * 1024
+    const result = bytesReadable(val)
+    expect(result.units).to.eql('MB')
+    expect(result.value).to.eql('1.00')
+  })
+
+  it('calculates one GB correctly', () => {
+    const val = 1024 * 1024 * 1024
+    const result = bytesReadable(val)
+    expect(result.units).to.eql('GB')
+    expect(result.value).to.eql('1.00')
+  })
+
+  it('calculates one TB correctly', () => {
+    const val = 1024 * 1024 * 1024 * 1024
+    const result = bytesReadable(val)
+    expect(result.units).to.eql('TB')
+    expect(result.value).to.eql('1.00')
   })
 
   it('returns 0', () => {

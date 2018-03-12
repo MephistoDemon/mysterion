@@ -11,8 +11,11 @@ function bytesReadable (val) {
   if (typeof val !== 'number') {
     throw new Error('provide valid input for conversion')
   }
-  const calculated = size(val).calculate('si')
-  return {value: calculated.fixed, units: calculated.suffix}
+  const calculated = size(val).calculate('jedec')
+  return {
+    value: calculated.fixed,
+    units: calculated.suffix.replace('i', '')
+  }
 }
 
 /**
