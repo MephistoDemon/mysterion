@@ -34,6 +34,8 @@
   import ConnectionButton from '@/components/ConnectionButton'
   import AppError from '@/partials/AppError'
 
+  const CONNECTION_IP_THRESHOLD = 10000
+
   export default {
     name: 'Main',
     components: {
@@ -70,10 +72,13 @@
       ...mapMutations({ hideErr: type.HIDE_ERROR })
     },
     mounted () {
-      this.$store.dispatch(type.CONNECTION_IP)
+      this.$store.dispatch(type.START_ACTION_LOOPING, {
+        action: type.CONNECTION_IP,
+        threshold: CONNECTION_IP_THRESHOLD
+      })
       this.$store.dispatch(type.CONNECTION_STATUS)
       if (this.connection.status === type.tequilapi.CONNECTED) {
-        this.$store.dispatch(type.STATUS_UPDATER_RUN)
+        this.$store.dispatch(type.START_UPDATER)
       }
     },
     beforeDestroy () {

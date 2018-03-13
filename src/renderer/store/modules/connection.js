@@ -2,11 +2,10 @@ import type from '../types'
 import tequilAPI from '../../../libraries/api/tequilapi'
 import {isTimeoutError} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
+import {FunctionLooper} from '../../../libraries/functionLooper'
 import config from '../../config'
 // TODO tequilAPI should be passed via DI
 const tequilapi = tequilAPI()
-
-let updaterTimeout
 
 const defaultStatistics = {
 }
@@ -14,7 +13,8 @@ const defaultStatistics = {
 const state = {
   ip: null,
   status: 'NotConnected',
-  statistics: defaultStatistics
+  statistics: defaultStatistics,
+  updateLooper: null
 }
 
 const getters = {
@@ -35,15 +35,26 @@ const mutations = {
   },
   [type.CONNECTION_STATISTICS_RESET] (state) {
     state.statistics = defaultStatistics
+  },
+  [type.SET_UPDATE_LOOPER] (state, updateLooper) {
+    state.updateLooper = updateLooper
   }
 }
 
 const actions = {
-  async [type.STATUS_UPDATER_RUN] ({dispatch}) {
-    await dispatch(type.CONNECTION_STATUS_ALL)
-    updaterTimeout = setTimeout(() => {
-      dispatch(type.STATUS_UPDATER_RUN)
-    }, config.statusUpdateTimeout)
+  async [type.START_UPDATER] ({dispatch, commit}) {
+    const looper = await dispatch(type.START_ACTION_LOOPING, {
+      action: type.CONNECTION_STATUS_ALL,
+      threshold: config.statusUpdateThreshold
+    })
+    commit(type.SET_UPDATE_LOOPER, looper)
+  },
+  [type.STOP_UPDATER] ({commit, state}) {
+    const looper = state.updateLooper
+    if (looper) {
+      looper.stop()
+    }
+    commit(type.SET_UPDATE_LOOPER, null)
   },
   async [type.CONNECTION_IP] ({commit}) {
     try {
@@ -57,14 +68,18 @@ const actions = {
       // TODO: send to sentry
     }
   },
+  async [type.START_ACTION_LOOPING] ({dispatch}, {action, threshold}) {
+    const func = () => dispatch(action)
+    const looper = new FunctionLooper(func, threshold)
+    looper.start()
+    return looper
+  },
   async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
     const statusPromise = dispatch(type.CONNECTION_STATUS)
     const statisticsPromise = dispatch(type.CONNECTION_STATISTICS)
-    const ipPromise = dispatch(type.CONNECTION_IP)
 
     await statusPromise
     await statisticsPromise
-    await ipPromise
   },
   async [type.CONNECTION_STATUS] ({commit}) {
     try {
@@ -88,9 +103,9 @@ const actions = {
       commit(type.CONNECTION_STATISTICS_RESET)
       await tequilapi.connection.connect(consumerId, providerId)
       commit(type.HIDE_ERROR)
-      // if we ask openvpn right away status stil in not connected state
-      updaterTimeout = setTimeout(() => {
-        dispatch(type.STATUS_UPDATER_RUN)
+      // if we ask openvpn right away status still in not connected state
+      setTimeout(() => {
+        dispatch(type.START_UPDATER)
       }, 1000)
     } catch (err) {
       commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
@@ -101,7 +116,7 @@ const actions = {
   },
   async [type.DISCONNECT] ({commit, dispatch}) {
     try {
-      clearTimeout(updaterTimeout)
+      await dispatch(type.STOP_UPDATER)
       let res = tequilapi.connection.disconnect()
       commit(type.CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
       res = await res
