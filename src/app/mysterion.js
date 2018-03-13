@@ -26,16 +26,23 @@ class Mysterion {
 
   run () {
     // fired when app has been launched
-    app.on('ready', () => this.onReady())
+    app.on('ready', () => {
+      this.bootstrap()
+      this.buildTray()
+    })
     // fired when all windows are closed
     app.on('window-all-closed', () => this.onWindowsClosed())
     // fired just before quitting, this should quit
     app.on('will-quit', () => this.onWillQuit())
     // fired when app activated
-    app.on('activate', () => (this.onActivation()))
+    app.on('activate', () => {
+      if (!this.window.exists()) {
+        this.bootstrap()
+      }
+    })
   }
 
-  async onReady () {
+  async bootstrap () {
     this.window = new Window(
       this.terms.accepted()
         ? this.config.windows.app
@@ -77,19 +84,12 @@ class Mysterion {
     }
     // if all is good, let's boot up the client
     // and start monitoring it
-    console.log('starting process')
     await this.startProcess()
   }
 
   onWindowsClosed () {
     if (process.platform !== 'darwin') {
       app.quit()
-    }
-  }
-
-  onActivation () {
-    if (!this.window.exists()) {
-      this.onReady()
     }
   }
 
@@ -157,7 +157,6 @@ class Mysterion {
    */
   startApp () {
     this.window.send(communication.APP_START)
-    this.buildTray()
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
@@ -167,10 +166,11 @@ class Mysterion {
 
   buildTray () {
     let trayIconPath = path.join(__static, 'icons', 'tray.png')
-    let tray = new Tray(trayIconPath)
-    let template = []
+    this.tray = new Tray(trayIconPath)
 
-    template.push({
+    let menu = []
+
+    menu.push({
       label: 'Quit',
       click: () => {
         app.quit()
@@ -178,17 +178,17 @@ class Mysterion {
     })
 
     if (this.config.inDevMode) {
-      template = [{
+      menu = [{
         label: 'Toggle DevTools',
         accelerator: 'Alt+Command+I',
         click: () => {
           this.window.toggleDevTools()
         }
-      }, ...template]
+      }, ...menu]
     }
 
-    tray.setToolTip('Mysterium')
-    tray.setContextMenu(Menu.buildFromTemplate(template))
+    this.tray.setToolTip('Mysterium')
+    this.tray.setContextMenu(Menu.buildFromTemplate(menu))
   }
 }
 

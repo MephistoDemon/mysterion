@@ -74,6 +74,7 @@
     "file-size": "^1.0.0",
     "less": "^2.7.3",
     "less-loader": "^4.0.5",
+    "lolex": "^2.3.2",
     "md5": "^2.2.1",
     "raven": "^2.4.1",
     "raven-js": "^3.22.3",
@@ -86,7 +87,7 @@
     "vuex": "^2.3.1"
   },
   "devDependencies": {
-    "axios-mock-adapter": "^1.14.0",
+    "axios-mock-adapter": "^1.14.1",
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.1",

@@ -3,6 +3,7 @@
   import {mapState} from 'vuex'
   import type from '@/store/types'
   import config from '@/config'
+  import messages from '../../app/messages'
 
   async function identityGet ({dispatch, commit}) {
     const identities = await dispatch(type.IDENTITY_LIST)
@@ -26,14 +27,28 @@
         const identity = await identityGet(this.$store)
         commit(type.IDENTITY_GET_SUCCESS, identity)
         await dispatch(type.IDENTITY_UNLOCK)
+        try {
+          await proposalPromise
+        } catch (err) {
+          const isNetworkUnreachable = err.response && err.response.data && err.response.data.message &&
+            err.response.data.message.includes('connect: network is unreachable')
+          if (!isNetworkUnreachable) {
+            commit(type.OVERLAY_ERROR, {message: messages.initializationError.message})
+            // TODO: report issue
+            return
+          }
+          commit(type.OVERLAY_ERROR, messages.proposalsConnectionError)
+          return
+        }
         await proposalPromise
+        await dispatch(type.CLIENT_BUILD_INFO)
 
         await delay(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)
         this.$router.push('/vpn')
       } catch (err) {
-        commit(type.INIT_FAIL, err)
-        throw (err)
+        commit(type.OVERLAY_ERROR, messages.initializationError)
+        // TODO: report err
       }
     },
     computed: {

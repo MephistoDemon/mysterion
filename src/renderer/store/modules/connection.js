@@ -11,11 +11,8 @@ let updaterTimeout
 const defaultStatistics = {
 }
 
-const IP_TIMEOUTS_ALLOWED = 2
-
 const state = {
   ip: null,
-  ipTimeoutsCount: 0,
   status: 'NotConnected',
   statistics: defaultStatistics
 }
@@ -38,12 +35,6 @@ const mutations = {
   },
   [type.CONNECTION_STATISTICS_RESET] (state) {
     state.statistics = defaultStatistics
-  },
-  [type.INCREASE_IP_TIMEOUT_COUNTER] (state) {
-    state.ipTimeoutsCount++
-  },
-  [type.RESET_TIMEOUT_COUNTER] (state) {
-    state.ipTimeoutsCount = 0
   }
 }
 
@@ -54,20 +45,16 @@ const actions = {
       dispatch(type.STATUS_UPDATER_RUN)
     }, config.statusUpdateTimeout)
   },
-  async [type.CONNECTION_IP] ({commit, state}) {
+  async [type.CONNECTION_IP] ({commit}) {
     try {
       const ip = await tequilapi.connection.ip()
       commit(type.CONNECTION_IP, ip)
-      commit(type.RESET_TIMEOUT_COUNTER)
     } catch (err) {
       if (isTimeoutError(err)) {
-        if (state.ipTimeoutsCount >= IP_TIMEOUTS_ALLOWED) {
-          commit(type.SHOW_ERROR, err)
-        }
-        commit(type.INCREASE_IP_TIMEOUT_COUNTER)
-      } else {
-        commit(type.SHOW_ERROR, err)
+        return
       }
+      commit(type.SHOW_ERROR, err)
+      // TODO: send to sentry
     }
   },
   async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
@@ -106,7 +93,7 @@ const actions = {
         dispatch(type.STATUS_UPDATER_RUN)
       }, 1000)
     } catch (err) {
-      commit(type.SHOW_ERROR_MESSAGE, messages.CONNECT_FAILED)
+      commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
       let error = new Error('Connection to node failed.')
       error.original = err
       throw error

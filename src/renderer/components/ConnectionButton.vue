@@ -51,17 +51,23 @@
     },
     methods: {
       connect: function () {
-        if (!this.providerId) {
-          this.$store.commit(type.SHOW_ERROR_MESSAGE, messages.LOCATION_NOT_SELECTED)
+        const status = this.$store.getters.status
+        if (status === type.tequilapi.CONNECTED ||
+          status === type.tequilapi.CONNECTING) {
+          this.$store.dispatch(type.DISCONNECT)
           return
         }
+
+        if (!this.providerId) {
+          this.$store.commit(type.SHOW_ERROR_MESSAGE, messages.locationNotSelected)
+          return
+        }
+
         if (this.$store.getters.status === type.tequilapi.NOT_CONNECTED) {
           this.$store.dispatch(type.CONNECT, {
             consumerId: this.consumerId,
             providerId: this.providerId
           })
-        } else {
-          this.$store.dispatch(type.DISCONNECT)
         }
       }
     }

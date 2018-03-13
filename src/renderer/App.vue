@@ -1,7 +1,7 @@
 <template>
     <div id="app" class="app">
         <div id="content">
-            <div class="control__version">Pre-alpha v{{version}}</div>
+            <div class="control__version">{{version}}</div>
             <app-modal v-if="overlayError" :close="false">
                 <app-error :error="overlayError"></app-error>
             </app-modal>
@@ -37,15 +37,9 @@
       AppModal
     },
     computed: {
-      ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError'])
-    },
-    data () {
-      return {
-        version: remote.getGlobal('__version'),
-        error: {
-          message: 'Mysterium client seems to be down.',
-          hint: 'Please wait while it re-launches. If this message persists, please contact support.'
-        }
+      ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'buildInfo']),
+      version () {
+        return `v${remote.getGlobal('__version')}  Build id:${this.buildInfo.buildNumber}`
       }
     },
     async mounted () {
