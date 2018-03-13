@@ -4,7 +4,7 @@ import type from '@/store/types'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import connectionInjector from 'inject-loader!@/store/modules/connection'
 import utils from '../utils'
-import { FunctionLooper } from '@/../app/utils'
+import { FunctionLooper } from '@/../libraries/functionLooper'
 
 const fakeTequilapi = utils.fakeTequilapiManipulator()
 

@@ -1,7 +1,7 @@
 /* eslint no-unused-expressions: 0 */
 
 import lolex from 'lolex'
-import { executeWithThreshold, FunctionLooper } from '@/../app/utils'
+import { executeWithThreshold, FunctionLooper } from '@/../libraries/functionLooper'
 
 describe('utils', () => {
   let realDelay, clock
