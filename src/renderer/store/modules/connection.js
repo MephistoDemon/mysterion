@@ -45,7 +45,7 @@ const actions = {
   async [type.START_UPDATER] ({dispatch, commit}) {
     const looper = await dispatch(type.START_ACTION_LOOPING, {
       actionType: type.CONNECTION_STATUS_ALL,
-      threshold: config.statusUpdateTimeout
+      threshold: config.statusUpdateThreshold
     })
     commit(type.SET_UPDATE_LOOPER, looper)
   },
@@ -121,6 +121,7 @@ const actions = {
       commit(type.CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
       res = await res
       dispatch(type.CONNECTION_STATUS)
+      dispatch(type.CONNECTION_IP)
       return res
     } catch (err) {
       commit(type.SHOW_ERROR, err)

@@ -1,4 +1,4 @@
 export default {
-  statusUpdateTimeout: 500,
+  statusUpdateThreshold: 300,
   loadingScreenDelay: 1900
 }

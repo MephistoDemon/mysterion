@@ -135,7 +135,7 @@ describe('utils', () => {
 
     it('executes action with slow async action', async () => {
       const slowAsyncAction = asyncAction(5000)
-      const executePromise = executeWithThreshold(slowAsyncAction, 10000).then(() => { thresholdDone = true })
+      const executePromise = executeWithThreshold(slowAsyncAction, 1000).then(() => { thresholdDone = true })
 
       // not complete after 4s
       await tickWithDelay(4000)
