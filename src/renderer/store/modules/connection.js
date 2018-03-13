@@ -2,7 +2,7 @@ import type from '../types'
 import tequilAPI from '../../../libraries/api/tequilapi'
 import {isTimeoutError} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
-import bugReporter from '../../main/bug-reporting'
+import bugReporter from '../../../main/bug-reporting'
 import config from '../../config'
 const tequilapi = tequilAPI()
 
