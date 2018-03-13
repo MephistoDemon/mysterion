@@ -39,7 +39,7 @@
     computed: {
       ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'buildInfo']),
       version () {
-        return `v${remote.getGlobal('__version')}  Build id:${this.buildInfo.buildNumber}`
+        return `v${remote.getGlobal('__version')}  Build id:${this.buildInfo.buildNumber ? this.buildInfo.buildNumber : ''}`
       }
     },
     async mounted () {
