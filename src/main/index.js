@@ -11,4 +11,4 @@ global.__static = MysterionConfig.staticDirectoryPath
 const mysterion = MysterionFactory(MysterionConfig, 'Cool terms', '1.0')
 mysterion.run()
 
-bugReporter.installInMain()
+bugReporter.main.install()

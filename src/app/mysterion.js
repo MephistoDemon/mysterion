@@ -3,9 +3,10 @@ import Window from './window'
 import Terms from './terms/index'
 import TequilAPI from '../libraries/api/tequilapi'
 import communication from './communication/index'
-import {app, Menu, Tray} from 'electron'
+import {app, ipcMain, Menu, Tray} from 'electron'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client/index'
+import bugReporter from '../main/bug-reporting'
 
 function MysterionFactory (config, termsContent, termsVersion) {
   const tequilApi = new TequilAPI()
@@ -14,7 +15,7 @@ function MysterionFactory (config, termsContent, termsVersion) {
     terms: new Terms(config.userDataDirectory, termsContent, termsVersion),
     installer: new MysteriumDaemonInstaller(config),
     monitoring: new ProcessMonitoring(tequilApi),
-    process: new MysteriumProcess(tequilApi)
+    process: new MysteriumProcess(tequilApi, config.userDataDirectory)
   })
 }
 
@@ -133,12 +134,21 @@ class Mysterion {
 
       setTimeout(() => updateRendererWithHealth(), 1500)
     }
+    const sendLogs = (data) => {
+      this.window.send(communication.MYSTERIUM_CLIENT_LOG, data)
+      bugReporter.pushToLogCache(data)
+    }
 
     this.process.start()
     this.monitoring.start()
+    this.process.onStdOut(sendLogs)
+    this.process.onStdErr(sendLogs)
     this.monitoring.onProcessReady(() => {
       updateRendererWithHealth()
       this.startApp()
+    })
+    ipcMain.on(communication.USER_SELECTED, (evt, identity) => {
+      bugReporter.setUser(identity)
     })
   }
 
