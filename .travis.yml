@@ -30,6 +30,8 @@ before_deploy:
 - cp build/Mysterion-0.0.1.dmg binaries
 deploy:
   - provider: pages
+    edge:
+      branch: v1.8.47
     local-dir: binaries
     skip-cleanup: true
     github-token: "$GITHUB_API_TOKEN"
