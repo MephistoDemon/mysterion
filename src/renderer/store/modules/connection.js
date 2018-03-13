@@ -65,7 +65,7 @@ const actions = {
         return
       }
       commit(type.SHOW_ERROR, err)
-      bugReporter.renderer.RavenJs.captureException(err)
+      bugReporter.renderer.captureException(err)
     }
   },
   async [type.START_ACTION_LOOPING] ({dispatch}, {action, threshold}) {

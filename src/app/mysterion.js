@@ -134,20 +134,20 @@ class Mysterion {
 
       setTimeout(() => updateRendererWithHealth(), 1500)
     }
-    const sendLogs = (data) => {
+    const cacheLogs = (data) => {
       this.window.send(communication.MYSTERIUM_CLIENT_LOG, data)
       bugReporter.pushToLogCache(data)
     }
 
     this.process.start()
     this.monitoring.start()
-    this.process.onStdOut(sendLogs)
-    this.process.onStdErr(sendLogs)
+    this.process.onStdOut(cacheLogs)
+    this.process.onStdErr(cacheLogs)
     this.monitoring.onProcessReady(() => {
       updateRendererWithHealth()
       this.startApp()
     })
-    ipcMain.on(communication.USER_SELECTED, (evt, identity) => {
+    ipcMain.on(communication.IDENTITY_SET, (evt, identity) => {
       bugReporter.setUser(identity)
     })
   }
@@ -160,7 +160,7 @@ class Mysterion {
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
-    bugReporter.main.Raven.captureException(error)
+    bugReporter.main.captureException(error)
     this.window.send(communication.APP_ERROR, {message: error, hint: hint, fatal: fatal})
   }
 

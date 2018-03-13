@@ -21,7 +21,7 @@ class Terms {
       let contents = JSON.parse(fs.readFileSync(path))
       return contents.version === this.version
     } catch (e) {
-      bugReporter.main.Raven.captureException(e)
+      bugReporter.main.captureException(e)
       console.error('unable to parse terms JSON', e.message)
       return false
     }

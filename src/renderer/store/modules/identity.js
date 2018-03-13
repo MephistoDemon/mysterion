@@ -12,7 +12,7 @@ const mutations = {
   [type.IDENTITY_GET_SUCCESS] (state, identity) {
     state.current = identity // { id: '0xC001FACE00000123' }
     reporter.setUser(identity)
-    ipcRenderer.send(message.USER_SELECTED, identity)
+    ipcRenderer.send(message.IDENTITY_SET, identity)
   },
   [type.IDENTITY_LIST_SUCCESS] (state, data) {
     state.identites = data

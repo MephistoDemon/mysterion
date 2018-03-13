@@ -4,8 +4,8 @@ import RavenJs from 'raven-js'
 import {remote} from 'electron'
 import RavenVue from 'raven-js/plugins/vue'
 
-let logsBuffer = []
-let maxLength = 300
+const logsBuffer = []
+const maxLength = 300
 
 const config = {
   captureUnhandledRejections: true,
@@ -24,28 +24,28 @@ const config = {
   }
 }
 
-let installInMain = () => {
+const installInMain = () => {
   config.release = global.__version
   const url = process.env.SENTRY.privateURL
   Raven.config(url, config).install()
   return Raven
 }
 
-let installInRenderer = (Vue) => {
+const installInRenderer = (Vue) => {
   config.release = remote.getGlobal('__version')
   const url = remote.getGlobal('__sentryURL')
   RavenJs.config(url, config).install().addPlugin(RavenVue, Vue)
   return RavenJs
 }
 
-let setUser = (userData) => {
+const setUser = (userData) => {
   RavenJs.setUserContext(userData)
   Raven.setContext({
     user: userData
   })
 }
 
-let pushToLogCache = (data) => {
+const pushToLogCache = (data) => {
   if (logsBuffer.length >= maxLength) {
     logsBuffer.splice(0, logsBuffer.length - maxLength)
   }
@@ -55,10 +55,12 @@ let pushToLogCache = (data) => {
 export default {
   renderer: {
     install: installInRenderer,
+    captureException: RavenJs.captureException.bind(RavenJs),
     RavenJs
   },
   main: {
     install: installInMain,
+    captureException: Raven.captureException.bind(Raven),
     Raven
   },
   setUser,

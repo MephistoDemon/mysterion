@@ -35,7 +35,7 @@
             err.response.data.message.includes('connect: network is unreachable')
           if (!isNetworkUnreachable) {
             commit(type.OVERLAY_ERROR, {message: messages.initializationError.message})
-            bugReporter.renderer.RavenJs.captureException(err)
+            bugReporter.renderer.captureException(err)
             return
           }
           commit(type.OVERLAY_ERROR, messages.proposalsConnectionError)
@@ -49,7 +49,7 @@
         this.$router.push('/vpn')
       } catch (err) {
         commit(type.OVERLAY_ERROR, messages.initializationError)
-        bugReporter.renderer.RavenJs.captureException(err)
+        bugReporter.renderer.captureException(err)
       }
     },
     computed: {
