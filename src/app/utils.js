@@ -5,15 +5,15 @@ function delay (time) {
 }
 
 /**
- * Executes given action method infinitely.
- * Ensures that time between executed actions is below given threshold.
+ * Executes given function infinitely.
+ * Ensures that time between function executions is above given threshold.
  * @constructor
- * @param {!function} action - Action to be executed
- * @param {!number} threshold - Minimum delay between action executions (in milliseconds).
+ * @param {!function} func - Function to be executed
+ * @param {!number} threshold - Minimum delay between function executions (in milliseconds).
  */
-class ActionLooper {
-  constructor (action, threshold) {
-    this.action = action
+class FunctionLooper {
+  constructor (func, threshold) {
+    this.func = func
     this.threshold = threshold
     this._running = false
   }
@@ -22,7 +22,7 @@ class ActionLooper {
     const loop = async () => {
       // eslint-disable-next-line no-unmodified-loop-condition
       while (this._running) {
-        await executeWithThreshold(this.action, this.threshold)
+        await executeWithThreshold(this.func, this.threshold)
       }
     }
 
@@ -39,9 +39,9 @@ class ActionLooper {
   }
 }
 
-async function executeWithThreshold (action, threshold) {
+async function executeWithThreshold (func, threshold) {
   const start = Date.now()
-  await action()
+  await func()
   const end = Date.now()
 
   const elapsed = end - start
@@ -50,4 +50,4 @@ async function executeWithThreshold (action, threshold) {
   }
 }
 
-export { ActionLooper, executeWithThreshold }
+export { FunctionLooper, executeWithThreshold }

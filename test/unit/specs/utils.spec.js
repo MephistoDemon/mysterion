@@ -1,7 +1,7 @@
 /* eslint no-unused-expressions: 0 */
 
 import lolex from 'lolex'
-import { executeWithThreshold, ActionLooper } from '@/../app/utils'
+import { executeWithThreshold, FunctionLooper } from '@/../app/utils'
 
 describe('utils', () => {
   let realDelay, clock
@@ -21,15 +21,15 @@ describe('utils', () => {
     await realDelay(10)
   }
 
-  describe('ActionLooper', () => {
+  describe('FunctionLooper', () => {
     describe('.start', () => {
-      it('executes action multiple times with threshold', async () => {
+      it('executes function multiple times with threshold', async () => {
         let counter = 0
         async function increaseCounter () {
           counter++
         }
 
-        const looper = new ActionLooper(increaseCounter, 1000)
+        const looper = new FunctionLooper(increaseCounter, 1000)
         looper.start()
         expect(counter).to.eql(1)
 
@@ -45,13 +45,13 @@ describe('utils', () => {
     })
 
     describe('.stop', () => {
-      it('stops action execution', async () => {
+      it('stops function execution', async () => {
         let counter = 0
         async function increaseCounter () {
           counter++
         }
 
-        const looper = new ActionLooper(increaseCounter, 1000)
+        const looper = new FunctionLooper(increaseCounter, 1000)
         looper.start()
         expect(counter).to.eql(1)
 
@@ -67,8 +67,8 @@ describe('utils', () => {
 
     describe('.isRunning', () => {
       it('returns current looper state', async () => {
-        const action = () => {}
-        const looper = new ActionLooper(action, 1000)
+        const func = () => {}
+        const looper = new FunctionLooper(func, 1000)
 
         expect(looper.isRunning()).to.eql(false)
 
@@ -82,32 +82,32 @@ describe('utils', () => {
   })
 
   describe('executeWithThreshold', () => {
-    let actionDone, thresholdDone
+    let funcDone, thresholdDone
 
-    const syncAction = async () => {
-      actionDone = true
+    const syncFunc = async () => {
+      funcDone = true
     }
 
-    const asyncAction = (duration) => async () => {
+    const asyncFunc = (duration) => async () => {
       return new Promise((resolve) => {
         setTimeout(() => {
-          actionDone = true
+          funcDone = true
           resolve()
         }, duration)
       })
     }
 
     beforeEach(() => {
-      actionDone = false
+      funcDone = false
       thresholdDone = false
     })
 
-    it('executes action with sync action', async () => {
-      const executePromise = executeWithThreshold(syncAction, 10000).then(() => { thresholdDone = true })
+    it('executes function with sync function', async () => {
+      const executePromise = executeWithThreshold(syncFunc, 10000).then(() => { thresholdDone = true })
 
       // not complete after 9s
       await tickWithDelay(9000)
-      expect(actionDone).to.eql(true)
+      expect(funcDone).to.eql(true)
       expect(thresholdDone).to.eql(false)
 
       // complete after 10s
@@ -117,13 +117,13 @@ describe('utils', () => {
       await executePromise
     })
 
-    it('executes action with async action', async () => {
-      const fastAsyncAction = asyncAction(5000)
-      const executePromise = executeWithThreshold(fastAsyncAction, 10000).then(() => { thresholdDone = true })
+    it('executes function with async function', async () => {
+      const fastAsyncFunc = asyncFunc(5000)
+      const executePromise = executeWithThreshold(fastAsyncFunc, 10000).then(() => { thresholdDone = true })
 
       // not complete after 9s
       await tickWithDelay(9000)
-      expect(actionDone).to.eql(true)
+      expect(funcDone).to.eql(true)
       expect(thresholdDone).to.eql(false)
 
       // complete after 10s
@@ -133,18 +133,18 @@ describe('utils', () => {
       await executePromise
     })
 
-    it('executes action with slow async action', async () => {
-      const slowAsyncAction = asyncAction(5000)
-      const executePromise = executeWithThreshold(slowAsyncAction, 1000).then(() => { thresholdDone = true })
+    it('executes function with slow async function', async () => {
+      const slowAsyncFunc = asyncFunc(5000)
+      const executePromise = executeWithThreshold(slowAsyncFunc, 1000).then(() => { thresholdDone = true })
 
       // not complete after 4s
       await tickWithDelay(4000)
-      expect(actionDone).to.eql(false)
+      expect(funcDone).to.eql(false)
       expect(thresholdDone).to.eql(false)
 
       // complete after 10s
       await tickWithDelay(6000)
-      expect(actionDone).to.eql(true)
+      expect(funcDone).to.eql(true)
       expect(thresholdDone).to.eql(true)
 
       await executePromise

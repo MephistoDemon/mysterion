@@ -4,7 +4,7 @@ import type from '@/store/types'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import connectionInjector from 'inject-loader!@/store/modules/connection'
 import utils from '../utils'
-import { ActionLooper } from '@/../app/utils'
+import { FunctionLooper } from '@/../app/utils'
 
 const fakeTequilapi = utils.fakeTequilapiManipulator()
 
@@ -69,7 +69,7 @@ describe('mutations', () => {
   describe('SET_UPDATE_LOOPER', () => {
     it('sets update looper', () => {
       const state = {}
-      const looper = new ActionLooper()
+      const looper = new FunctionLooper()
       connection.mutations[type.SET_UPDATE_LOOPER](state, looper)
       expect(state.updateLooper).to.eql(looper)
     })
@@ -94,14 +94,14 @@ describe('actions', () => {
         value: 'mock statistics'
       })
       expect(committed[2].key).to.eql(type.SET_UPDATE_LOOPER)
-      expect(committed[2].value).to.an.instanceof(ActionLooper)
+      expect(committed[2].value).to.an.instanceof(FunctionLooper)
     })
   })
 
   describe('STOP_UPDATER', () => {
     it('stops and cleans update looper', async () => {
       const updater = () => {}
-      const updateLooper = new ActionLooper(updater, 1000)
+      const updateLooper = new FunctionLooper(updater, 1000)
       updateLooper.start()
       const state = { updateLooper }
 

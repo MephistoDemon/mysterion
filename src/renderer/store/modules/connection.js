@@ -2,7 +2,7 @@ import type from '../types'
 import tequilAPI from '../../../libraries/api/tequilapi'
 import {isTimeoutError} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
-import {ActionLooper} from '../../../app/utils'
+import {FunctionLooper} from '../../../app/utils'
 import config from '../../config'
 // TODO tequilAPI should be passed via DI
 const tequilapi = tequilAPI()
@@ -44,7 +44,7 @@ const mutations = {
 const actions = {
   async [type.START_UPDATER] ({dispatch, commit}) {
     const looper = await dispatch(type.START_ACTION_LOOPING, {
-      actionType: type.CONNECTION_STATUS_ALL,
+      action: type.CONNECTION_STATUS_ALL,
       threshold: config.statusUpdateThreshold
     })
     commit(type.SET_UPDATE_LOOPER, looper)
@@ -68,9 +68,9 @@ const actions = {
       // TODO: send to sentry
     }
   },
-  async [type.START_ACTION_LOOPING] ({dispatch}, {actionType, threshold}) {
-    const action = () => dispatch(actionType)
-    const looper = new ActionLooper(action, threshold)
+  async [type.START_ACTION_LOOPING] ({dispatch}, {action, threshold}) {
+    const func = () => dispatch(action)
+    const looper = new FunctionLooper(func, threshold)
     looper.start()
     return looper
   },

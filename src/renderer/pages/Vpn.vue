@@ -73,7 +73,7 @@
     },
     mounted () {
       this.$store.dispatch(type.START_ACTION_LOOPING, {
-        actionType: type.CONNECTION_IP,
+        action: type.CONNECTION_IP,
         threshold: CONNECTION_IP_THRESHOLD
       })
       this.$store.dispatch(type.CONNECTION_STATUS)
