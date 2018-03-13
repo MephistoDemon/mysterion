@@ -160,7 +160,7 @@ class Mysterion {
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
-    // TODO: send to sentry
+    bugReporter.main.Raven.captureException(error)
     this.window.send(communication.APP_ERROR, {message: error, hint: hint, fatal: fatal})
   }
 

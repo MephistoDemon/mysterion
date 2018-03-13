@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import bugReporter from '../../main/bug-reporting'
 
 const TermsFileName = 'terms.json'
 
@@ -20,7 +21,7 @@ class Terms {
       let contents = JSON.parse(fs.readFileSync(path))
       return contents.version === this.version
     } catch (e) {
-      // TODO: send to sentry
+      bugReporter.main.Raven.captureException(e)
       console.error('unable to parse terms JSON', e.message)
       return false
     }
