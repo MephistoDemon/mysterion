@@ -84,17 +84,13 @@ describe('actions', () => {
   describe('START_UPDATER', () => {
     it('updates all statuses and sets updater looper', async () => {
       const committed = await executeAction(type.START_UPDATER)
-      expect(committed.length).to.eql(3)
+      expect(committed.length).to.eql(2)
       expect(committed[0]).to.eql({
-        key: type.CONNECTION_STATUS,
-        value: 'mock status'
-      })
-      expect(committed[1]).to.eql({
         key: type.CONNECTION_STATISTICS,
         value: 'mock statistics'
       })
-      expect(committed[2].key).to.eql(type.SET_UPDATE_LOOPER)
-      expect(committed[2].value).to.an.instanceof(FunctionLooper)
+      expect(committed[1].key).to.eql(type.SET_UPDATE_LOOPER)
+      expect(committed[1].value).to.an.instanceof(FunctionLooper)
     })
   })
 
@@ -181,52 +177,6 @@ describe('actions', () => {
         key: type.SHOW_ERROR,
         value: fakeTequilapi.getFakeError()
       }])
-    })
-  })
-
-  describe('CONNECTION_STATUS_ALL', () => {
-    it('updates status, statistics and ip', async () => {
-      const committed = await executeAction(type.CONNECTION_STATUS_ALL)
-      expect(committed).to.have.deep.members([
-        {
-          key: type.CONNECTION_STATUS,
-          value: 'mock status'
-        },
-        {
-          key: type.CONNECTION_STATISTICS,
-          value: 'mock statistics'
-        }
-      ])
-    })
-
-    it('returns successful data when status fails', async () => {
-      fakeTequilapi.setStatusFail(true)
-      const committed = await executeAction(type.CONNECTION_STATUS_ALL)
-      expect(committed).to.have.deep.members([
-        {
-          key: type.SHOW_ERROR,
-          value: fakeTequilapi.getFakeError()
-        },
-        {
-          key: type.CONNECTION_STATISTICS,
-          value: 'mock statistics'
-        }
-      ])
-    })
-
-    it('returns successful data when statistics fail', async () => {
-      fakeTequilapi.setStatisticsFail(true)
-      const committed = await executeAction(type.CONNECTION_STATUS_ALL)
-      expect(committed).to.have.deep.members([
-        {
-          key: type.CONNECTION_STATUS,
-          value: 'mock status'
-        },
-        {
-          key: type.SHOW_ERROR,
-          value: fakeTequilapi.getFakeError()
-        }
-      ])
     })
   })
 })

@@ -44,7 +44,7 @@ const mutations = {
 const actions = {
   async [type.START_UPDATER] ({dispatch, commit}) {
     const looper = await dispatch(type.START_ACTION_LOOPING, {
-      action: type.CONNECTION_STATUS_ALL,
+      action: type.CONNECTION_STATISTICS,
       threshold: config.statusUpdateThreshold
     })
     commit(type.SET_UPDATE_LOOPER, looper)
@@ -73,13 +73,6 @@ const actions = {
     const looper = new FunctionLooper(func, threshold)
     looper.start()
     return looper
-  },
-  async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
-    const statusPromise = dispatch(type.CONNECTION_STATUS)
-    const statisticsPromise = dispatch(type.CONNECTION_STATISTICS)
-
-    await statusPromise
-    await statisticsPromise
   },
   async [type.CONNECTION_STATUS] ({commit}) {
     try {
