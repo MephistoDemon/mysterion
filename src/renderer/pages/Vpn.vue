@@ -83,7 +83,7 @@
       })
       await this.$store.dispatch(type.CONNECTION_STATUS)
       if (this.connection.status === type.tequilapi.CONNECTED) {
-        this.$store.dispatch(type.START_UPDATER)
+        this.$store.dispatch(type.START_STATISTICS_LOOP)
       }
     },
     beforeDestroy () {

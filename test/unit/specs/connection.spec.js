@@ -81,9 +81,9 @@ describe('actions', () => {
     fakeTequilapi.cleanup()
   })
 
-  describe('START_UPDATER', () => {
+  describe('START_STATISTICS_LOOP', () => {
     it('updates all statuses and sets updater looper', async () => {
-      const committed = await executeAction(type.START_UPDATER)
+      const committed = await executeAction(type.START_STATISTICS_LOOP)
       expect(committed.length).to.eql(2)
       expect(committed[0]).to.eql({
         key: type.CONNECTION_STATISTICS,
@@ -94,7 +94,7 @@ describe('actions', () => {
     })
   })
 
-  describe('STOP_UPDATER', () => {
+  describe('STOP_STATISTICS_LOOP', () => {
     it('stops and cleans update looper', async () => {
       const updater = () => {}
       const updateLooper = new FunctionLooper(updater, 1000)
@@ -102,7 +102,7 @@ describe('actions', () => {
       const state = { updateLooper }
 
       expect(updateLooper.isRunning()).to.eql(true)
-      const committed = await executeAction(type.STOP_UPDATER, state)
+      const committed = await executeAction(type.STOP_STATISTICS_LOOP, state)
       expect(committed).to.eql([{
         key: type.SET_UPDATE_LOOPER,
         value: null
@@ -111,7 +111,7 @@ describe('actions', () => {
     })
 
     it('does not throw error with no update looper', async () => {
-      await executeAction(type.STOP_UPDATER)
+      await executeAction(type.STOP_STATISTICS_LOOP)
     })
   })
 

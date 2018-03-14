@@ -42,14 +42,14 @@ const mutations = {
 }
 
 const actions = {
-  async [type.START_UPDATER] ({dispatch, commit}) {
+  async [type.START_STATISTICS_LOOP] ({dispatch, commit}) {
     const looper = await dispatch(type.START_ACTION_LOOPING, {
       action: type.CONNECTION_STATISTICS,
       threshold: config.statusUpdateThreshold
     })
     commit(type.SET_UPDATE_LOOPER, looper)
   },
-  [type.STOP_UPDATER] ({commit, state}) {
+  [type.STOP_STATISTICS_LOOP] ({commit, state}) {
     const looper = state.updateLooper
     if (looper) {
       looper.stop()
@@ -98,7 +98,7 @@ const actions = {
       commit(type.HIDE_ERROR)
       // if we ask openvpn right away status still in not connected state
       setTimeout(() => {
-        dispatch(type.START_UPDATER)
+        dispatch(type.START_STATISTICS_LOOP)
       }, 1000)
     } catch (err) {
       commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
@@ -109,7 +109,7 @@ const actions = {
   },
   async [type.DISCONNECT] ({commit, dispatch}) {
     try {
-      await dispatch(type.STOP_UPDATER)
+      await dispatch(type.STOP_STATISTICS_LOOP)
       let res = tequilapi.connection.disconnect()
       commit(type.CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
       res = await res
