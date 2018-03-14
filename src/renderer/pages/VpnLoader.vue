@@ -23,25 +23,9 @@
       const {commit, dispatch} = this.$store
       try {
         commit(type.INIT_PENDING)
-        const proposalPromise = dispatch(type.PROPOSAL_LIST)
         const identity = await identityGet(this.$store)
         commit(type.IDENTITY_GET_SUCCESS, identity)
         await dispatch(type.IDENTITY_UNLOCK)
-        try {
-          await proposalPromise
-        } catch (err) {
-          const isNetworkUnreachable = err.response && err.response.data && err.response.data.message &&
-            err.response.data.message.includes('connect: network is unreachable')
-          if (!isNetworkUnreachable) {
-            commit(type.OVERLAY_ERROR, {message: messages.initializationError.message})
-            console.log('Proposal fetching in initialization failed', err)
-            bugReporter.renderer.captureException(err)
-            return
-          }
-          commit(type.OVERLAY_ERROR, messages.proposalsConnectionError)
-          return
-        }
-        await proposalPromise
         await dispatch(type.CLIENT_BUILD_INFO)
 
         await sleep(config.loadingScreenDelay)
