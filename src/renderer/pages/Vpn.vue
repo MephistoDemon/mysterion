@@ -33,9 +33,10 @@
   import StatsDisplay from '../components/StatsDisplay'
   import ConnectionButton from '@/components/ConnectionButton'
   import AppError from '@/partials/AppError'
+  import config from '../config'
 
+  // TODO: move to config
   const CONNECTION_IP_THRESHOLD = 10000
-  const CONNECTION_STATUS_THRESHOLD = 1000
 
   export default {
     name: 'Main',
@@ -79,11 +80,15 @@
       })
       this.$store.dispatch(type.START_ACTION_LOOPING, {
         action: type.CONNECTION_STATUS,
-        threshold: CONNECTION_STATUS_THRESHOLD
+        threshold: config.statusUpdateThreshold
       })
       await this.$store.dispatch(type.CONNECTION_STATUS)
       if (this.connection.status === type.tequilapi.CONNECTED) {
-        this.$store.dispatch(type.START_STATISTICS_LOOP)
+        // TODO: trigger this in a common state change action
+        this.$store.dispatch(type.START_ACTION_LOOPING, {
+          action: type.CONNECTION_STATISTICS,
+          threshold: config.statisticsUpdateThreshold
+        })
       }
     },
     beforeDestroy () {

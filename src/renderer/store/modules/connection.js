@@ -14,7 +14,7 @@ const state = {
   ip: null,
   status: 'NotConnected',
   statistics: defaultStatistics,
-  updateLooper: null
+  actionLoopers: {}
 }
 
 const getters = {
@@ -36,26 +36,15 @@ const mutations = {
   [type.CONNECTION_STATISTICS_RESET] (state) {
     state.statistics = defaultStatistics
   },
-  [type.SET_UPDATE_LOOPER] (state, updateLooper) {
-    state.updateLooper = updateLooper
+  [type.SET_ACTION_LOOPER] (state, {action, looper}) {
+    state.actionLoopers[action] = looper
+  },
+  [type.REMOVE_ACTION_LOOPER] (state, action) {
+    delete state.actionLoopers[action]
   }
 }
 
 const actions = {
-  async [type.START_STATISTICS_LOOP] ({dispatch, commit}) {
-    const looper = await dispatch(type.START_ACTION_LOOPING, {
-      action: type.CONNECTION_STATISTICS,
-      threshold: config.statusUpdateThreshold
-    })
-    commit(type.SET_UPDATE_LOOPER, looper)
-  },
-  [type.STOP_STATISTICS_LOOP] ({commit, state}) {
-    const looper = state.updateLooper
-    if (looper) {
-      looper.stop()
-    }
-    commit(type.SET_UPDATE_LOOPER, null)
-  },
   async [type.CONNECTION_IP] ({commit}) {
     try {
       const ip = await tequilapi.connection.ip()
@@ -68,11 +57,19 @@ const actions = {
       // TODO: send to sentry
     }
   },
-  async [type.START_ACTION_LOOPING] ({dispatch}, {action, threshold}) {
+  async [type.START_ACTION_LOOPING] ({dispatch, commit}, {action, threshold}) {
     const func = () => dispatch(action)
     const looper = new FunctionLooper(func, threshold)
     looper.start()
+    commit(type.SET_ACTION_LOOPER, {action, looper})
     return looper
+  },
+  [type.STOP_ACTION_LOOPING] ({commit, state}, action) {
+    const looper = state.actionLoopers[action]
+    if (looper) {
+      looper.stop()
+    }
+    commit(type.REMOVE_ACTION_LOOPER, action)
   },
   async [type.CONNECTION_STATUS] ({commit}) {
     try {
@@ -98,7 +95,10 @@ const actions = {
       commit(type.HIDE_ERROR)
       // if we ask openvpn right away status still in not connected state
       setTimeout(() => {
-        dispatch(type.START_STATISTICS_LOOP)
+        dispatch(type.START_ACTION_LOOPING, {
+          action: type.CONNECTION_STATISTICS,
+          threshold: config.statisticsUpdateThreshold
+        })
       }, 1000)
     } catch (err) {
       commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
@@ -109,7 +109,8 @@ const actions = {
   },
   async [type.DISCONNECT] ({commit, dispatch}) {
     try {
-      await dispatch(type.STOP_STATISTICS_LOOP)
+      // TODO: stop statistics looping if session was stopped through CLI
+      await dispatch(type.STOP_ACTION_LOOPING, type.CONNECTION_STATISTICS)
       let res = tequilapi.connection.disconnect()
       commit(type.CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
       res = await res

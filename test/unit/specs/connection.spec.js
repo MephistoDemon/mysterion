@@ -12,7 +12,7 @@ const connection = connectionInjector({
   '../../../libraries/api/tequilapi': fakeTequilapi.getFakeApi
 }).default
 
-async function executeAction (action, state = {}) {
+async function executeAction (action, state = {}, payload = {}) {
   const mutations = []
   const commit = (key, value) => {
     mutations.push({key, value})
@@ -23,7 +23,7 @@ async function executeAction (action, state = {}) {
     return connection.actions[action](context, payload)
   }
 
-  await dispatch(action)
+  await dispatch(action, payload)
   return mutations
 }
 
@@ -66,12 +66,47 @@ describe('mutations', () => {
     })
   })
 
-  describe('SET_UPDATE_LOOPER', () => {
-    it('sets update looper', () => {
-      const state = {}
-      const looper = new FunctionLooper()
-      connection.mutations[type.SET_UPDATE_LOOPER](state, looper)
-      expect(state.updateLooper).to.eql(looper)
+  describe('SET_ACTION_LOOPER', () => {
+    it('sets action loopers', () => {
+      const state = {
+        actionLoopers: {}
+      }
+      const actionLooper1 = {
+        action: type.CONNECTION_IP,
+        looper: new FunctionLooper()
+      }
+      connection.mutations[type.SET_ACTION_LOOPER](state, actionLooper1)
+      expect(state.actionLoopers).to.eql({
+        [actionLooper1.action]: actionLooper1.looper,
+      })
+
+      const actionLooper2 = {
+        action: type.CONNECTION_STATUS,
+        looper: new FunctionLooper()
+      }
+      connection.mutations[type.SET_ACTION_LOOPER](state, actionLooper2)
+      expect(state.actionLoopers).to.eql({
+        [actionLooper1.action]: actionLooper1.looper,
+        [actionLooper2.action]: actionLooper2.looper
+      })
+    })
+  })
+
+  describe('REMOVE_ACTION_LOOPER', () => {
+    it('removes single action looper', () => {
+      const noop = () => {}
+      const ipLooper = new FunctionLooper(noop, 1000)
+      const statusLooper = new FunctionLooper(noop, 1000)
+      const state = {
+        actionLoopers: {
+          [type.CONNECTION_IP]: ipLooper,
+          [type.CONNECTION_STATUS]: statusLooper
+        }
+      }
+      connection.mutations[type.REMOVE_ACTION_LOOPER](state, type.CONNECTION_IP)
+      expect(state.actionLoopers).to.eql({
+        [type.CONNECTION_STATUS]: statusLooper
+      })
     })
   })
 })
@@ -81,37 +116,53 @@ describe('actions', () => {
     fakeTequilapi.cleanup()
   })
 
-  describe('START_STATISTICS_LOOP', () => {
+  describe('START_ACTION_LOOPING', () => {
     it('updates all statuses and sets updater looper', async () => {
-      const committed = await executeAction(type.START_STATISTICS_LOOP)
+      const state = {}
+      const committed = await executeAction(type.START_ACTION_LOOPING, state, {
+        action: type.CONNECTION_STATISTICS,
+        threshold: 1000
+      })
+
       expect(committed.length).to.eql(2)
-      expect(committed[0]).to.eql({
+
+      expect(committed[0].key).to.eql(type.SET_ACTION_LOOPER)
+      const {action, looper} = committed[0].value
+      expect(action).to.eql(type.CONNECTION_STATISTICS)
+      expect(looper).to.be.an.instanceof(FunctionLooper)
+      expect(looper.isRunning()).to.eql(true)
+
+      expect(committed[1]).to.eql({
         key: type.CONNECTION_STATISTICS,
         value: 'mock statistics'
       })
-      expect(committed[1].key).to.eql(type.SET_UPDATE_LOOPER)
-      expect(committed[1].value).to.an.instanceof(FunctionLooper)
     })
   })
 
-  describe('STOP_STATISTICS_LOOP', () => {
+  describe('STOP_ACTION_LOOPING', () => {
     it('stops and cleans update looper', async () => {
-      const updater = () => {}
-      const updateLooper = new FunctionLooper(updater, 1000)
-      updateLooper.start()
-      const state = { updateLooper }
+      const actionLooper = new FunctionLooper(() => {}, 1000)
+      actionLooper.start()
+      const state = {
+        actionLoopers: {
+          [type.CONNECTION_IP]: actionLooper
+        }
+      }
 
-      expect(updateLooper.isRunning()).to.eql(true)
-      const committed = await executeAction(type.STOP_STATISTICS_LOOP, state)
+      expect(actionLooper.isRunning()).to.eql(true)
+      const committed = await executeAction(type.STOP_ACTION_LOOPING, state, type.CONNECTION_IP)
       expect(committed).to.eql([{
-        key: type.SET_UPDATE_LOOPER,
-        value: null
+        key: type.REMOVE_ACTION_LOOPER,
+        value: type.CONNECTION_IP
       }])
-      expect(updateLooper.isRunning()).to.eql(false)
+      expect(actionLooper.isRunning()).to.eql(false)
     })
 
     it('does not throw error with no update looper', async () => {
-      await executeAction(type.STOP_STATISTICS_LOOP)
+      const state = {
+        actionLoopers: {}
+      }
+      await executeAction(type.STOP_ACTION_LOOPING, state, type.CONNECTION_IP)
     })
   })
 

@@ -18,6 +18,7 @@ class FunctionLooper {
     this._running = false
   }
 
+  // TODO: do not start second loop if called twice
   start () {
     const loop = async () => {
       // eslint-disable-next-line no-unmodified-loop-condition
