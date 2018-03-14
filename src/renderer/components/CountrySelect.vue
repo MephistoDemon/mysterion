@@ -5,7 +5,8 @@
                      v-model="country"
                      :custom-label="countryLabel"
                      placeholder="Choose country"
-                     :options="countries"
+                     :options="countriesList"
+                     :loading="countriesIsLoading"
                      :searchable="false"
                      :show-labels="false"
                      @input="onChange">
@@ -25,11 +26,13 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex'
   import path from 'path'
   import countryList from '@/plugins/countries'
   import Multiselect from 'vue-multiselect'
+  import tequilAPI from '../../libraries/api/tequilapi'
   import IconWorld from '@/assets/img/icon--world.svg'
+
+  const tequilapi = tequilAPI()
 
   function proposalToCountry (proposal) {
     let code
@@ -56,20 +59,10 @@
     },
     data () {
       return {
-        country: null
+        country: null,
+        countriesList: [],
+        countriesIsLoading: false
       }
-    },
-    computed: {
-      ...mapState({
-        countries: (state) => {
-          let countries = []
-          if (typeof state.proposal.list !== 'undefined') {
-            countries = state.proposal.list.map(proposalToCountry)
-          }
-
-          return countries
-        }
-      })
     },
     methods: {
       onChange (country) {
@@ -87,7 +80,20 @@
         }
 
         return path.join('static', 'flags', code + '.svg')
+      },
+      async fetchCountries () {
+        this.countriesIsLoading = true
+
+        let response = await tequilapi.proposal.list()
+        this.countriesList = response.proposals.map(proposalToCountry)
+
+        this.countriesIsLoading = false
       }
+    },
+    mounted () {
+      setInterval(() => {
+        this.fetchCountries()
+      }, 10000)
     }
   }
 </script>
