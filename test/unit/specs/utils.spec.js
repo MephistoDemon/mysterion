@@ -1,4 +1,5 @@
 /* eslint no-unused-expressions: 0 */
+// TODO: rename file to functionLooper.spec.js
 
 import lolex from 'lolex'
 import { executeWithThreshold, FunctionLooper } from '@/../libraries/functionLooper'
@@ -41,6 +42,18 @@ describe('utils', () => {
 
         await tickWithDelay(1000)
         expect(counter).to.eql(4)
+      })
+
+      it('does not starts second loop when invoked twice', () => {
+        let counter = 0
+        async function increaseCounter () {
+          counter++
+        }
+
+        const looper = new FunctionLooper(increaseCounter, 1000)
+        looper.start()
+        looper.start()
+        expect(counter).to.eql(1)
       })
     })
 

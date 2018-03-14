@@ -77,7 +77,7 @@ describe('mutations', () => {
       }
       connection.mutations[type.SET_ACTION_LOOPER](state, actionLooper1)
       expect(state.actionLoopers).to.eql({
-        [actionLooper1.action]: actionLooper1.looper,
+        [actionLooper1.action]: actionLooper1.looper
       })
 
       const actionLooper2 = {
