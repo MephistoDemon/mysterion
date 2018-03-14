@@ -15,6 +15,18 @@ class Process {
   stop () {
     this.child.kill('SIGTERM')
   }
+
+  onStdOut (cb) {
+    this.child.stdout.on('data', (data) => {
+      cb(data.toString())
+    })
+  }
+
+  onStdErr (cb) {
+    this.child.stderr.on('data', (data) => {
+      cb(data.toString())
+    })
+  }
 }
 
 export default Process

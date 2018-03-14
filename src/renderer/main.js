@@ -8,7 +8,7 @@ import store from './store'
 import {ipcRenderer} from 'electron'
 import communication from '../app/communication'
 import bugReporter from '../main/bug-reporting'
-let raven = bugReporter.renderer.install(Vue)
+const raven = bugReporter.renderer.install(Vue)
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
@@ -27,6 +27,6 @@ window.addEventListener('unhandledrejection', (evt) => {
   })
 })
 
-ipcRenderer.on(communication.MYSTERIUM_CLIENT_LOG, (evt, log) => {
-  bugReporter.pushToLogCache(log)
+ipcRenderer.on(communication.MYSTERIUM_CLIENT_LOG, (evt, {level, data}) => {
+  bugReporter.pushToLogCache(level, data)
 })

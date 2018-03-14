@@ -3,7 +3,7 @@ import {Tail} from 'tail'
 const STD_OUT_FILE = 'stdout.log'
 const STD_ERR_FILE = 'stderr.log'
 /**
- * Spawns mysterium_client daemon on OSX
+ * Spawns mysterium_client daemon on OSX by calling tequilapi.healthcheck
  * @constructor
  * @param {!Object} tequilapi - api to be used
  * @param {!string} dataDir - directory where it's looking for logs
