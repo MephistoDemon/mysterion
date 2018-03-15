@@ -4,7 +4,8 @@
   import type from '@/store/types'
   import config from '@/config'
   import messages from '../../app/messages'
-  import bugReporter from '../../main/bug-reporting'
+  import delay from '../../libraries/delay-as-promised'
+  import bugReporter from '../../app/bug-reporting'
 
   async function identityGet ({dispatch, commit}) {
     const identities = await dispatch(type.IDENTITY_LIST)
@@ -16,8 +17,6 @@
     commit(type.INIT_NEW_USER)
     return newIdentity
   }
-
-  const delay = time => new Promise(resolve => setTimeout(() => resolve(), time))
 
   export default {
     async mounted () {

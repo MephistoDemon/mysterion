@@ -6,7 +6,7 @@ import communication from './communication/index'
 import {app, ipcMain, Menu, Tray} from 'electron'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess, logLevel as processLogLevel} from '../libraries/mysterium-client/index'
-import bugReporter from '../main/bug-reporting'
+import bugReporter from './bug-reporting'
 
 function MysterionFactory (config, termsContent, termsVersion) {
   const tequilApi = new TequilAPI()
@@ -141,8 +141,8 @@ class Mysterion {
 
     this.process.start()
     this.monitoring.start()
-    this.process.onStdOut((data) => cacheLogs(processLogLevel.LOG, data))
-    this.process.onStdErr((data) => cacheLogs(processLogLevel.ERROR, data))
+    this.process.on(processLogLevel.LOG, (data) => cacheLogs(processLogLevel.LOG, data))
+    this.process.on(processLogLevel.ERROR, (data) => cacheLogs(processLogLevel.ERROR, data))
     this.monitoring.onProcessReady(() => {
       updateRendererWithHealth()
       this.startApp()

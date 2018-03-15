@@ -1,9 +1,4 @@
-function delay (time) {
-  return new Promise(resolve => {
-    setTimeout(() => resolve(), time)
-  })
-}
-
+import delay from './delay-as-promised'
 /**
  * Executes given function infinitely.
  * Ensures that time between function executions is above given threshold.

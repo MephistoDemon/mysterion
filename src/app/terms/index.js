@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import bugReporter from '../../main/bug-reporting'
+import bugReporter from '../bug-reporting'
 
 const TermsFileName = 'terms.json'
 

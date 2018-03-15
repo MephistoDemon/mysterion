@@ -1,12 +1,20 @@
 import {Tail} from 'tail'
 
-const STD_OUT_FILE = 'stdout.log'
-const STD_ERR_FILE = 'stderr.log'
+export const logLevel = {
+  LOG: 'stdout',
+  ERROR: 'stderr'
+}
+
+const stdFiles = {
+  [logLevel.LOG]: 'stdout.log',
+  [logLevel.ERROR]: 'stderr.log'
+}
+
 /**
  * Spawns mysterium_client daemon on OSX by calling tequilapi.healthcheck
  * @constructor
- * @param {!Object} tequilapi - api to be used
- * @param {!string} dataDir - directory where it's looking for logs
+ * @param {Object} tequilapi - api to be used
+ * @param {string} dataDir - directory where it's looking for logs
  */
 class Process {
   constructor (tequilapi, dataDir) {
@@ -20,21 +28,14 @@ class Process {
     })
   }
 
-  onStdOut (cb) {
-    tailFile(this.dataDir + '/' + STD_OUT_FILE, cb)
-  }
-
-  onStdErr (cb) {
-    tailFile(this.dataDir + '/' + STD_ERR_FILE, cb)
+  on (level, cb) {
+    if (!Object.values(logLevel).includes(level)) throw new Error(`Unknown logging level: ${level}`)
+    tailFile(this.dataDir + '/' + stdFiles[level], cb)
   }
 
   async stop () {
-    try {
-      await this.tequilapi.stop()
-      console.log('Client Quit was successful')
-    } catch (err) {
-      console.log('Error response while stopping client process:', err.message)
-    }
+    await this.tequilapi.stop()
+    console.log('Client Quit was successful')
   }
 }
 
