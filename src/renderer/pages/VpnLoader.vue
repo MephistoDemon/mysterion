@@ -4,6 +4,7 @@
   import type from '@/store/types'
   import config from '@/config'
   import messages from '../../app/messages'
+  import bugReporter from '../../main/bug-reporting'
 
   async function identityGet ({dispatch, commit}) {
     const identities = await dispatch(type.IDENTITY_LIST)
@@ -34,7 +35,7 @@
             err.response.data.message.includes('connect: network is unreachable')
           if (!isNetworkUnreachable) {
             commit(type.OVERLAY_ERROR, {message: messages.initializationError.message})
-            // TODO: report issue
+            bugReporter.renderer.captureException(err)
             return
           }
           commit(type.OVERLAY_ERROR, messages.proposalsConnectionError)
@@ -48,7 +49,7 @@
         this.$router.push('/vpn')
       } catch (err) {
         commit(type.OVERLAY_ERROR, messages.initializationError)
-        // TODO: report err
+        bugReporter.renderer.captureException(err)
       }
     },
     computed: {

@@ -1,7 +1,6 @@
 {
   "sentry": {
-    "publicURL": "https://1f0b7727aa3c4998b4073727ec3d21fe@sentry.io/290420",
-    "privateURL": "https://1f0b7727aa3c4998b4073727ec3d21fe:df05a614e856411bbdb7d2d769febd50@sentry.io/290420"
+    "publicURL": "https://f1e63dd563c34c35a56e98aa02518d40@sentry.io/300978",
+    "privateURL": "https://f1e63dd563c34c35a56e98aa02518d40:0104611dab3d492eae3c28936c34505f@sentry.io/300978"
   }
 }
-

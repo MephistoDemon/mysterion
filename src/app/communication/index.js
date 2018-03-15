@@ -1,4 +1,6 @@
 export default {
+  MYSTERIUM_CLIENT_LOG: 'mysterium.client.log',
+  IDENTITY_SET: 'identity.set',
   RENDERER_LOADED: 'renderer.loaded',
   TERMS_REQUESTED: 'terms.requested',
   TERMS_ANSWERED: 'terms.answered',
