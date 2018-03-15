@@ -24,7 +24,7 @@ const getters = {
 }
 
 const mutations = {
-  [type.CONNECTION_STATUS] (state, status) {
+  [type.SET_CONNECTION_STATUS] (state, status) {
     state.status = status
   },
   [type.CONNECTION_STATISTICS] (state, statistics) {
@@ -71,13 +71,16 @@ const actions = {
     }
     commit(type.REMOVE_ACTION_LOOPER, action)
   },
-  async [type.CONNECTION_STATUS] ({commit}) {
+  async [type.FETCH_CONNECTION_STATUS] ({commit}) {
     try {
       const res = await tequilapi.connection.status()
-      commit(type.CONNECTION_STATUS, res.status)
+      commit(type.SET_CONNECTION_STATUS, res.status)
     } catch (err) {
       commit(type.SHOW_ERROR, err)
     }
+  },
+  async [type.SET_CONNECTION_STATUS] ({commit}, status) {
+    commit(type.SET_CONNECTION_STATUS, status)
   },
   async [type.CONNECTION_STATISTICS] ({commit}) {
     try {
@@ -89,7 +92,7 @@ const actions = {
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
     try {
-      commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTING)
+      commit(type.SET_CONNECTION_STATUS, type.tequilapi.CONNECTING)
       commit(type.CONNECTION_STATISTICS_RESET)
       await tequilapi.connection.connect(consumerId, providerId)
       commit(type.HIDE_ERROR)
@@ -112,9 +115,9 @@ const actions = {
       // TODO: stop statistics looping if session was stopped through CLI
       await dispatch(type.STOP_ACTION_LOOPING, type.CONNECTION_STATISTICS)
       let res = tequilapi.connection.disconnect()
-      commit(type.CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
+      commit(type.SET_CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
       res = await res
-      dispatch(type.CONNECTION_STATUS)
+      dispatch(type.FETCH_CONNECTION_STATUS)
       dispatch(type.CONNECTION_IP)
       return res
     } catch (err) {

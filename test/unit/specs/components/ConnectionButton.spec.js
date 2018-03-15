@@ -23,10 +23,10 @@ const mountWithStore = function () {
         ...conStore,
         actions: {
           [type.CONNECT] ({commit}, consumerId, providerId) {
-            commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTED)
+            commit(type.SET_CONNECTION_STATUS, type.tequilapi.CONNECTED)
           },
           [type.DISCONNECT] ({commit}) {
-            commit(type.CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
+            commit(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
           }
         }
       }
@@ -52,12 +52,12 @@ describe('ConnectionButton', () => {
     ]
     const vm = mountWithStore()
     for (let index in rules) {
-      vm.$store.commit(type.CONNECTION_STATUS, rules[index][0])
+      vm.$store.commit(type.SET_CONNECTION_STATUS, rules[index][0])
       vm._watcher.run()
       expect(vm.$el.textContent).to.contain(rules[index][1])
     }
     // reset store
-    vm.$store.commit(type.CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
+    vm.$store.commit(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
   })
 
   it('clicks change state', () => {

@@ -79,10 +79,10 @@
         threshold: CONNECTION_IP_THRESHOLD
       })
       this.$store.dispatch(type.START_ACTION_LOOPING, {
-        action: type.CONNECTION_STATUS,
+        action: type.FETCH_CONNECTION_STATUS,
         threshold: config.statusUpdateThreshold
       })
-      await this.$store.dispatch(type.CONNECTION_STATUS)
+      await this.$store.dispatch(type.FETCH_CONNECTION_STATUS)
       if (this.connection.status === type.tequilapi.CONNECTED) {
         // TODO: trigger this in a common state change action
         this.$store.dispatch(type.START_ACTION_LOOPING, {

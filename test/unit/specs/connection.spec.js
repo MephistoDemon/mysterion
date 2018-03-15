@@ -5,6 +5,7 @@ import type from '@/store/types'
 import connectionInjector from 'inject-loader!@/store/modules/connection'
 import utils from '../utils'
 import { FunctionLooper } from '@/../libraries/functionLooper'
+import { types } from '@/../libraries/api/tequilapi'
 
 const fakeTequilapi = utils.fakeTequilapiManipulator()
 
@@ -28,8 +29,8 @@ async function executeAction (action, state = {}, payload = {}) {
 }
 
 describe('mutations', () => {
-  describe('CONNECTION_STATUS', () => {
-    const connectionStatus = connection.mutations[type.CONNECTION_STATUS]
+  describe('SET_CONNECTION_STATUS', () => {
+    const connectionStatus = connection.mutations[type.SET_CONNECTION_STATUS]
 
     it('updates status', () => {
       const state = {}
@@ -81,7 +82,7 @@ describe('mutations', () => {
       })
 
       const actionLooper2 = {
-        action: type.CONNECTION_STATUS,
+        action: type.FETCH_CONNECTION_STATUS,
         looper: new FunctionLooper()
       }
       connection.mutations[type.SET_ACTION_LOOPER](state, actionLooper2)
@@ -100,12 +101,12 @@ describe('mutations', () => {
       const state = {
         actionLoopers: {
           [type.CONNECTION_IP]: ipLooper,
-          [type.CONNECTION_STATUS]: statusLooper
+          [type.FETCH_CONNECTION_STATUS]: statusLooper
         }
       }
       connection.mutations[type.REMOVE_ACTION_LOOPER](state, type.CONNECTION_IP)
       expect(state.actionLoopers).to.eql({
-        [type.CONNECTION_STATUS]: statusLooper
+        [type.FETCH_CONNECTION_STATUS]: statusLooper
       })
     })
   })
@@ -193,21 +194,31 @@ describe('actions', () => {
     })
   })
 
-  describe('CONNECTION_STATUS', () => {
+  describe('FETCH_CONNECTION_STATUS', () => {
     it('commits new status', async () => {
-      const committed = await executeAction(type.CONNECTION_STATUS)
+      const committed = await executeAction(type.FETCH_CONNECTION_STATUS)
       expect(committed).to.eql([{
-        key: type.CONNECTION_STATUS,
+        key: type.SET_CONNECTION_STATUS,
         value: 'mock status'
       }])
     })
 
     it('commits error when api fails', async () => {
       fakeTequilapi.setStatusFail(true)
-      const committed = await executeAction(type.CONNECTION_STATUS)
+      const committed = await executeAction(type.FETCH_CONNECTION_STATUS)
       expect(committed).to.eql([{
         key: type.SHOW_ERROR,
         value: fakeTequilapi.getFakeError()
+      }])
+    })
+  })
+
+  describe('SET_CONNECTION_STATUS', () => {
+    it('commits new status', async () => {
+      const committed = await executeAction(type.SET_CONNECTION_STATUS, {}, types.connection.CONNECTED)
+      expect(committed).to.eql([{
+        key: type.SET_CONNECTION_STATUS,
+        value: types.connection.CONNECTED
       }])
     })
   })
