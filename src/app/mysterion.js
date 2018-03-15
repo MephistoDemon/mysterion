@@ -36,8 +36,12 @@ class Mysterion {
     // fired when app activated
     app.on('activate', () => {
       if (!this.window.exists()) {
-        this.bootstrap()
+        return this.bootstrap()
       }
+      this.window.show()
+    })
+    app.on('before-quit', () => {
+      this.window.willQuitApp = true
     })
   }
 
