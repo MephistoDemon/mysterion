@@ -32,7 +32,7 @@
             text = 'Disconnect'
             break
           case type.tequilapi.CONNECTING:
-            text = 'Connecting'
+            text = 'Cancel'
             break
           case type.tequilapi.NOT_CONNECTED:
             text = 'Connect'
@@ -45,15 +45,25 @@
       },
       buttonTransparent: (comp) => {
         const status = comp.$store.getters.status
+        const isTransparent = (
+          status === type.tequilapi.CONNECTING ||
+          status === type.tequilapi.DISCONNECTING ||
+          status === type.tequilapi.CONNECTED
+        )
 
-        return status === 'Connecting' || status === 'Disconnecting' || status === 'Connected'
+        return isTransparent
       }
     },
     methods: {
       connect: function () {
         const status = this.$store.getters.status
-        if (status === type.tequilapi.CONNECTED ||
-          status === type.tequilapi.CONNECTING) {
+        const canConnect = status === type.tequilapi.NOT_CONNECTED
+        const canDisconnect = (
+          status === type.tequilapi.CONNECTED ||
+          status === type.tequilapi.CONNECTING
+        )
+
+        if (canDisconnect) {
           this.$store.dispatch(type.DISCONNECT)
           return
         }
@@ -63,7 +73,7 @@
           return
         }
 
-        if (this.$store.getters.status === type.tequilapi.NOT_CONNECTED) {
+        if (canConnect) {
           this.$store.dispatch(type.CONNECT, {
             consumerId: this.consumerId,
             providerId: this.providerId
