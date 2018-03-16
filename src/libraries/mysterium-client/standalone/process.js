@@ -2,12 +2,9 @@ import {spawn} from 'child_process'
 
 export const logLevel = {LOG: 'stdout', ERROR: 'stderr'}
 
-/**
- * Creates mysterium_client process handler
- * @class
- */
 class Process {
   /**
+   * Creates mysterium_client process handler
    * @constructor
    * @param {{clientBinaryPath,clientConfigPath,runtimeDirectory: string}} config
    */

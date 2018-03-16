@@ -1,5 +1,4 @@
 import os from 'os'
-// import Config from './config'
 import LaunchDaemonInstaller from './launch-daemon/installer'
 import LaunchDaemonProcess from './launch-daemon/process'
 import StandaloneInstaller from './standalone/installer'

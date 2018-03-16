@@ -4,7 +4,7 @@
   import type from '@/store/types'
   import config from '@/config'
   import messages from '../../app/messages'
-  import delay from '../../libraries/delay-as-promised'
+  import delay from '../../libraries/sleep'
   import bugReporter from '../../app/bug-reporting'
 
   async function identityGet ({dispatch, commit}) {

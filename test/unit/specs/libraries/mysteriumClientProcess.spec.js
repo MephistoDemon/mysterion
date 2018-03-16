@@ -3,7 +3,7 @@ import Process from '../../../../src/libraries/mysterium-client/standalone/proce
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import configInjector from 'inject-loader!../../../../src/app/mysterion-config'
 import {ChildProcess} from 'child_process'
-import delay from '../../../../src/libraries/delay-as-promised'
+import delay from '../../../../src/libraries/sleep'
 import tequilAPI from '../../../../src/libraries/api/tequilapi'
 
 const config = configInjector({

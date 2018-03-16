@@ -1,4 +1,4 @@
-import delay from './delay-as-promised'
+import delay from './sleep'
 /**
  * Executes given function infinitely.
  * Ensures that time between function executions is above given threshold.

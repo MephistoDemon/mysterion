@@ -1,39 +1,39 @@
 import LinkedList from 'dbly-linked-list'
 
-export default class LLLRotation {
-  /**
-   *
-   * @param {number} limit - max size of list
-   */
-  constructor (limit) {
-    this.limit = limit
-    this.linkedList = new LinkedList()
-  }
+/**
+ * @class
+ * @param {number} limit - max size of list
+ */
+export default function LimitedLinkedList (limit) {
+  // limit and linkedList are private members
+  let linkedList = new LinkedList(limit)
 
   /**
    * Appends item to the end of list.
    * If list size exceeds limit, the removes the oldest entry,
    * keeping the size in limits
-   * @param {object|string|number} data
+   * @param {*} data
    */
-  insert (data) {
-    if (this.linkedList.getSize() >= this.limit) {
-      this.linkedList.removeFirst()
+  this.insert = (data) => {
+    if (linkedList.getSize() >= limit) {
+      linkedList.removeFirst()
     }
-    this.linkedList.insert(data)
+    linkedList.insert(data)
   }
 
-  toArray () {
-    return this.linkedList.toArray()
+  this.toArray = () => {
+    return linkedList.toArray()
   }
 
-  get length () {
-    return this.linkedList.getSize()
+  this.getLength = () => {
+    return linkedList.getSize()
   }
-  get oldest () {
-    return this.linkedList.getHeadNode().data
+
+  this.getOldest = () => {
+    return linkedList.getHeadNode().data
   }
-  get newest () {
-    return this.linkedList.getTailNode().data
+
+  this.getNewest = () => {
+    return linkedList.getTailNode().data
   }
 }
