@@ -50,7 +50,7 @@ describe('ConnectionButton', () => {
     let rules = [
       ['NotConnected', 'Connect'],
       ['Connected', 'Disconnect'],
-      ['Connecting', 'Connecting'],
+      ['Connecting', 'Cancel'],
       ['Disconnecting', 'Disconnecting']
     ]
     const vm = mountWithStore()

@@ -3,9 +3,10 @@ import Window from './window'
 import Terms from './terms/index'
 import TequilAPI from '../libraries/api/tequilapi'
 import communication from './communication/index'
-import {app, Menu, Tray} from 'electron'
+import {app, ipcMain, Menu, Tray} from 'electron'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
-import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client/index'
+import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess, logLevel as processLogLevel} from '../libraries/mysterium-client/index'
+import bugReporter from '../main/bug-reporting'
 
 function MysterionFactory (config, termsContent, termsVersion) {
   const tequilApi = new TequilAPI()
@@ -14,7 +15,7 @@ function MysterionFactory (config, termsContent, termsVersion) {
     terms: new Terms(config.userDataDirectory, termsContent, termsVersion),
     installer: new MysteriumDaemonInstaller(config),
     monitoring: new ProcessMonitoring(tequilApi),
-    process: new MysteriumProcess(tequilApi)
+    process: new MysteriumProcess(tequilApi, config.userDataDirectory)
   })
 }
 
@@ -137,12 +138,21 @@ class Mysterion {
 
       setTimeout(() => updateRendererWithHealth(), 1500)
     }
+    const cacheLogs = (level, data) => {
+      this.window.send(communication.MYSTERIUM_CLIENT_LOG, {data, level})
+      bugReporter.pushToLogCache(level, data)
+    }
 
     this.process.start()
     this.monitoring.start()
+    this.process.onStdOut((data) => cacheLogs(processLogLevel.LOG, data))
+    this.process.onStdErr((data) => cacheLogs(processLogLevel.ERROR, data))
     this.monitoring.onProcessReady(() => {
       updateRendererWithHealth()
       this.startApp()
+    })
+    ipcMain.on(communication.IDENTITY_SET, (evt, identity) => {
+      bugReporter.setUser(identity)
     })
   }
 
@@ -154,7 +164,7 @@ class Mysterion {
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
-    // TODO: send to sentry
+    bugReporter.main.captureException(error)
     this.window.send(communication.APP_ERROR, {message: error, hint: hint, fatal: fatal})
   }
 

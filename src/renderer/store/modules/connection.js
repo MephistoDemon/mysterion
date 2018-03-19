@@ -2,9 +2,9 @@ import type from '../types'
 import tequilAPI from '../../../libraries/api/tequilapi'
 import {isTimeoutError} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
+import bugReporter from '../../../main/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../connectionStatus'
-// TODO tequilAPI should be passed via DI
 const tequilapi = tequilAPI()
 
 const defaultStatistics = {
@@ -65,7 +65,7 @@ const actions = {
         return
       }
       commit(type.SHOW_ERROR, err)
-      // TODO: send to sentry
+      bugReporter.renderer.captureException(err)
     }
   },
   async [type.START_ACTION_LOOPING] ({dispatch, commit, state}, {action, threshold}) {
