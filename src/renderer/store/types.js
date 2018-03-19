@@ -1,4 +1,4 @@
-import connectionStatus from './connectionStatus'
+import connectionStatus from '../../libraries/api/connectionStatus'
 
 export default {
   tequilapi: connectionStatus,

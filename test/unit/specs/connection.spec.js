@@ -5,7 +5,7 @@ import type from '@/store/types'
 import connectionInjector from 'inject-loader!@/store/modules/connection'
 import utils from '../utils'
 import { FunctionLooper } from '@/../libraries/functionLooper'
-import connectionStatus from '@/store/connectionStatus'
+import connectionStatus from '@/../libraries/api/connectionStatus'
 
 const fakeTequilapi = utils.fakeTequilapiManipulator()
 

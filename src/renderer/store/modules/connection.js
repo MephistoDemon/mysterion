@@ -4,7 +4,7 @@ import {isTimeoutError} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
 import bugReporter from '../../../main/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
-import connectionStatus from '../connectionStatus'
+import connectionStatus from '../../../libraries/api/connectionStatus'
 const tequilapi = tequilAPI()
 
 const defaultStatistics = {
