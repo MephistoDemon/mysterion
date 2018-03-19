@@ -22,11 +22,14 @@ const mountWithStore = function () {
       connection: {
         ...conStore,
         actions: {
-          [type.CONNECT] ({commit}, consumerId, providerId) {
-            commit(type.SET_CONNECTION_STATUS, type.tequilapi.CONNECTED)
+          async [type.CONNECT] ({dispatch}, consumerId, providerId) {
+            await dispatch(type.SET_CONNECTION_STATUS, type.tequilapi.CONNECTED)
           },
-          [type.DISCONNECT] ({commit}) {
-            commit(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
+          async [type.DISCONNECT] ({dispatch}) {
+            await dispatch(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
+          },
+          async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus) {
+            commit(type.SET_CONNECTION_STATUS, newStatus)
           }
         }
       }
@@ -43,7 +46,7 @@ const mountWithStore = function () {
 }
 
 describe('ConnectionButton', () => {
-  it('renders button text based on state', () => {
+  it('renders button text based on state', async () => {
     let rules = [
       ['NotConnected', 'Connect'],
       ['Connected', 'Disconnect'],
@@ -52,12 +55,12 @@ describe('ConnectionButton', () => {
     ]
     const vm = mountWithStore()
     for (let index in rules) {
-      vm.$store.commit(type.SET_CONNECTION_STATUS, rules[index][0])
+      await vm.$store.dispatch(type.SET_CONNECTION_STATUS, rules[index][0])
       vm._watcher.run()
       expect(vm.$el.textContent).to.contain(rules[index][1])
     }
     // reset store
-    vm.$store.commit(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
+    await vm.$store.dispatch(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
   })
 
   it('clicks change state', () => {

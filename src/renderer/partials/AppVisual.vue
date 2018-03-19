@@ -33,7 +33,7 @@
       headVisual
     },
     computed: {
-      ...mapGetters(['loading', 'visual', 'route', 'connection']),
+      ...mapGetters(['loading', 'visual', 'route', 'connection', 'visibleStatus']),
       visualClass () {
         let classes = []
         if (this.$route.name === 'home') {
@@ -43,7 +43,7 @@
         if (this.loading) {
           classes = ['is-loading', 'is-pulsing']
         } else if (this.$route.name === 'vpn') {
-          switch (this.$store.state.connection.status) {
+          switch (this.visibleStatus) {
             case type.tequilapi.CONNECTED:
               classes = []
               break

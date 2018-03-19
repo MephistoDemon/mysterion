@@ -3,7 +3,7 @@ import tequilAPI from '../../../libraries/api/tequilapi'
 import {isTimeoutError} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
 import {FunctionLooper} from '../../../libraries/functionLooper'
-import config from '../../config'
+import connectionStatus from '../connectionStatus'
 // TODO tequilAPI should be passed via DI
 const tequilapi = tequilAPI()
 
@@ -12,15 +12,23 @@ const defaultStatistics = {
 
 const state = {
   ip: null,
-  status: 'NotConnected',
+  // TODO: rename to make clear that this status is internal
+  status: connectionStatus.NOT_CONNECTED,
+  visibleStatus: null,
   statistics: defaultStatistics,
   actionLoopers: {}
 }
 
 const getters = {
-  status: state => state.status,
   connection: state => state,
-  ip: state => state.ip
+  ip: state => state.ip,
+  // TODO: test this?
+  visibleStatus: state => {
+    if (state.visibleStatus) {
+      return state.visibleStatus
+    }
+    return state.status
+  }
 }
 
 const mutations = {
@@ -41,6 +49,9 @@ const mutations = {
   },
   [type.REMOVE_ACTION_LOOPER] (state, action) {
     delete state.actionLoopers[action]
+  },
+  [type.SET_VISIBLE_STATUS] (state, value) {
+    state.visibleStatus = value
   }
 }
 
@@ -57,7 +68,13 @@ const actions = {
       // TODO: send to sentry
     }
   },
-  async [type.START_ACTION_LOOPING] ({dispatch, commit}, {action, threshold}) {
+  async [type.START_ACTION_LOOPING] ({dispatch, commit, state}, {action, threshold}) {
+    const currentLooper = state.actionLoopers[action]
+    if (currentLooper) {
+      console.log('Warning: requested to start looping action which is already looping: ' + action)
+      return currentLooper
+    }
+
     const func = () => dispatch(action)
     const looper = new FunctionLooper(func, threshold)
     looper.start()
@@ -71,16 +88,33 @@ const actions = {
     }
     commit(type.REMOVE_ACTION_LOOPER, action)
   },
-  async [type.FETCH_CONNECTION_STATUS] ({commit}) {
+  async [type.FETCH_CONNECTION_STATUS] ({commit, dispatch}) {
     try {
       const res = await tequilapi.connection.status()
-      commit(type.SET_CONNECTION_STATUS, res.status)
+      await dispatch(type.SET_CONNECTION_STATUS, res.status)
     } catch (err) {
       commit(type.SHOW_ERROR, err)
     }
   },
-  async [type.SET_CONNECTION_STATUS] ({commit}, status) {
-    commit(type.SET_CONNECTION_STATUS, status)
+  async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus) {
+    const oldStatus = state.status
+    if (oldStatus === newStatus) {
+      return
+    }
+    commit(type.SET_CONNECTION_STATUS, newStatus)
+
+    if (newStatus === connectionStatus.CONNECTED) {
+      await dispatch(type.START_ACTION_LOOPING, {
+        action: type.CONNECTION_STATISTICS,
+        threshold: 100
+      })
+    }
+    if (oldStatus === connectionStatus.CONNECTED) {
+      await dispatch(type.STOP_ACTION_LOOPING, type.CONNECTION_STATISTICS)
+    }
+    if (state.visibleStatus) {
+      commit(type.SET_VISIBLE_STATUS, null)
+    }
   },
   async [type.CONNECTION_STATISTICS] ({commit}) {
     try {
@@ -92,17 +126,10 @@ const actions = {
   },
   async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
     try {
-      commit(type.SET_CONNECTION_STATUS, type.tequilapi.CONNECTING)
+      commit(type.SET_VISIBLE_STATUS, connectionStatus.CONNECTING)
       commit(type.CONNECTION_STATISTICS_RESET)
       await tequilapi.connection.connect(consumerId, providerId)
       commit(type.HIDE_ERROR)
-      // if we ask openvpn right away status still in not connected state
-      setTimeout(() => {
-        dispatch(type.START_ACTION_LOOPING, {
-          action: type.CONNECTION_STATISTICS,
-          threshold: config.statisticsUpdateThreshold
-        })
-      }, 1000)
     } catch (err) {
       commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
       let error = new Error('Connection to node failed.')
@@ -112,10 +139,8 @@ const actions = {
   },
   async [type.DISCONNECT] ({commit, dispatch}) {
     try {
-      // TODO: stop statistics looping if session was stopped through CLI
-      await dispatch(type.STOP_ACTION_LOOPING, type.CONNECTION_STATISTICS)
       let res = tequilapi.connection.disconnect()
-      commit(type.SET_CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
+      commit(type.SET_VISIBLE_STATUS, type.tequilapi.DISCONNECTING)
       res = await res
       dispatch(type.FETCH_CONNECTION_STATUS)
       dispatch(type.CONNECTION_IP)

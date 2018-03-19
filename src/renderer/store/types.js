@@ -1,7 +1,7 @@
-import {types} from '../../libraries/api/tequilapi'
+import connectionStatus from './connectionStatus'
 
 export default {
-  tequilapi: types.connection,
+  tequilapi: connectionStatus,
   // Mutations
   SHOW_ERROR: 'SHOW_ERROR',
   SHOW_ERROR_MESSAGE: 'SHOW_ERROR_MESSAGE',
@@ -49,6 +49,7 @@ export default {
 
   CONNECT: 'CONNECT',
   DISCONNECT: 'DISCONNECT',
+  SET_VISIBLE_STATUS: 'SET_VISIBLE_STATUS',
 
   START_ACTION_LOOPING: 'START_ACTION_LOOPING',
   STOP_ACTION_LOOPING: 'STOP_ACTION_LOOPING',

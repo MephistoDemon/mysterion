@@ -5,7 +5,7 @@ import type from '@/store/types'
 import connectionInjector from 'inject-loader!@/store/modules/connection'
 import utils from '../utils'
 import { FunctionLooper } from '@/../libraries/functionLooper'
-import { types } from '@/../libraries/api/tequilapi'
+import connectionStatus from '@/store/connectionStatus'
 
 const fakeTequilapi = utils.fakeTequilapiManipulator()
 
@@ -110,6 +110,16 @@ describe('mutations', () => {
       })
     })
   })
+
+  describe('SET_VISIBLE_STATUS', () => {
+    it('sets flag in state', () => {
+      const state = {
+        visibleStatus: null
+      }
+      connection.mutations[type.SET_VISIBLE_STATUS](state, connectionStatus.CONNECTING)
+      expect(state.visibleStatus).to.eql(connectionStatus.CONNECTING)
+    })
+  })
 })
 
 describe('actions', () => {
@@ -118,8 +128,10 @@ describe('actions', () => {
   })
 
   describe('START_ACTION_LOOPING', () => {
-    it('updates all statuses and sets updater looper', async () => {
-      const state = {}
+    it('sets update looper and performs first looper cycle', async () => {
+      const state = {
+        actionLoopers: {}
+      }
       const committed = await executeAction(type.START_ACTION_LOOPING, state, {
         action: type.CONNECTION_STATISTICS,
         threshold: 1000
@@ -137,6 +149,23 @@ describe('actions', () => {
         key: type.CONNECTION_STATISTICS,
         value: 'mock statistics'
       })
+    })
+
+    it('does not start second looper if it already exists', async () => {
+      // TODO: DRY noop?
+      const noop = () => {}
+      const looper = new FunctionLooper(noop, 1000)
+      const state = {
+        actionLoopers: {
+          [type.CONNECTION_STATISTICS]: looper
+        }
+      }
+      const committed = await executeAction(type.START_ACTION_LOOPING, state, {
+        action: type.CONNECTION_STATISTICS,
+        threshold: 1000
+      })
+
+      expect(committed).to.eql([])
     })
   })
 
@@ -215,11 +244,89 @@ describe('actions', () => {
 
   describe('SET_CONNECTION_STATUS', () => {
     it('commits new status', async () => {
-      const committed = await executeAction(type.SET_CONNECTION_STATUS, {}, types.connection.CONNECTED)
+      const committed = await executeAction(type.SET_CONNECTION_STATUS, {}, connectionStatus.CONNECTING)
       expect(committed).to.eql([{
         key: type.SET_CONNECTION_STATUS,
-        value: types.connection.CONNECTED
+        value: connectionStatus.CONNECTING
       }])
+    })
+
+    it('starts looping statistics when changing state to connected', async () => {
+      const state = {
+        actionLoopers: {}
+      }
+      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.CONNECTED)
+      expect(committed.length).to.eql(3)
+      expect(committed[0]).to.eql({
+        key: type.SET_CONNECTION_STATUS,
+        value: connectionStatus.CONNECTED
+      })
+      expect(committed[1].key).to.eql(type.SET_ACTION_LOOPER)
+      expect(committed[1].value.action).to.eql(type.CONNECTION_STATISTICS)
+      const looper = committed[1].value.looper
+      expect(looper).to.be.an.instanceof(FunctionLooper)
+      expect(looper.isRunning()).to.eql(true)
+      expect(committed[2]).to.eql({
+        key: type.CONNECTION_STATISTICS,
+        value: 'mock statistics'
+      })
+    })
+
+    it('stops looping statistics when changing state from connected', async () => {
+      const noop = () => {}
+      const looper = new FunctionLooper(noop, 1000)
+      looper.start()
+      const state = {
+        status: connectionStatus.CONNECTED,
+        actionLoopers: {
+          [type.CONNECTION_STATISTICS]: looper
+        }
+      }
+      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.DISCONNECTING)
+
+      expect(committed).to.eql([
+        {
+          key: type.SET_CONNECTION_STATUS,
+          value: connectionStatus.DISCONNECTING
+        },
+        {
+          key: type.REMOVE_ACTION_LOOPER,
+          value: type.CONNECTION_STATISTICS
+        }
+      ])
+      expect(looper.isRunning()).to.eql(false)
+    })
+
+    it('does nothing when changing state from connected to connected', async () => {
+      const noop = () => {}
+      const looper = new FunctionLooper(noop, 1000)
+      const state = {
+        status: connectionStatus.CONNECTED,
+        actionLoopers: {
+          [type.CONNECTION_STATISTICS]: looper
+        }
+      }
+
+      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.CONNECTED)
+      expect(committed).to.eql([])
+    })
+
+    it('resets visible status when remote status changes', async () => {
+      const state = {
+        visibleStatus: connectionStatus.CONNECTING,
+        status: connectionStatus.NOT_CONNECTED
+      }
+      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.DISCONNECTING)
+      expect(committed).to.eql([
+        {
+          key: type.SET_CONNECTION_STATUS,
+          value: connectionStatus.DISCONNECTING
+        },
+        {
+          key: type.SET_VISIBLE_STATUS,
+          value: null
+        }
+      ])
     })
   })
 
@@ -239,6 +346,36 @@ describe('actions', () => {
         key: type.SHOW_ERROR,
         value: fakeTequilapi.getFakeError()
       }])
+    })
+  })
+
+  describe('CONNECT', () => {
+    it('marks connecting status, resets statistics, hides error', async () => {
+      const committed = await executeAction(type.CONNECT)
+      expect(committed).to.eql([
+        {
+          key: type.SET_VISIBLE_STATUS,
+          value: connectionStatus.CONNECTING
+        },
+        {
+          key: type.CONNECTION_STATISTICS_RESET,
+          value: undefined
+        },
+        {
+          key: type.HIDE_ERROR,
+          value: undefined
+        }
+      ])
+    })
+  })
+
+  describe('DISCONNECT', () => {
+    it('marks disconnecting status', async () => {
+      const committed = await executeAction(type.DISCONNECT)
+      expect(committed[0]).to.eql({
+        key: type.SET_VISIBLE_STATUS,
+        value: connectionStatus.DISCONNECTING
+      })
     })
   })
 })

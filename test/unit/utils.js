@@ -35,7 +35,9 @@ function fakeTequilapiManipulator () {
               throw fakeError
             }
             return 'mock statistics'
-          }
+          },
+          connect: async ({consumerId, providerId}) => null,
+          disconnect: async () => null
         }
       }
     },

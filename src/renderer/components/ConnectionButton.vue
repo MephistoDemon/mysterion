@@ -22,12 +22,12 @@
     },
     computed: {
       ...mapGetters({
-        status: 'status',
+        visibleStatus: 'visibleStatus',
         consumerId: 'currentIdentity'
       }),
       buttonText: (vm) => {
         let text = 'Connect'
-        switch (vm.$store.getters.status) {
+        switch (vm.visibleStatus) {
           case type.tequilapi.CONNECTED:
             text = 'Disconnect'
             break
@@ -44,14 +44,15 @@
         return text
       },
       buttonTransparent: (comp) => {
-        const status = comp.$store.getters.status
+        const status = comp.visibleStatus
 
         return status === 'Connecting' || status === 'Disconnecting' || status === 'Connected'
       }
     },
     methods: {
+      // TODO: rename - name is misleading when this button executes 'disconnect'
       connect: function () {
-        const status = this.$store.getters.status
+        const status = this.visibleStatus
         if (status === type.tequilapi.CONNECTED ||
           status === type.tequilapi.CONNECTING) {
           this.$store.dispatch(type.DISCONNECT)
@@ -63,7 +64,7 @@
           return
         }
 
-        if (this.$store.getters.status === type.tequilapi.NOT_CONNECTED) {
+        if (status === type.tequilapi.NOT_CONNECTED) {
           this.$store.dispatch(type.CONNECT, {
             consumerId: this.consumerId,
             providerId: this.providerId

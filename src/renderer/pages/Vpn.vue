@@ -52,18 +52,18 @@
       }
     },
     computed: {
-      ...mapGetters(['connection', 'ip', 'errorMessage', 'showError']),
+      ...mapGetters(['connection', 'ip', 'errorMessage', 'showError', 'visibleStatus']),
       status () {
-        switch (this.connection.status) {
+        switch (this.visibleStatus) {
           case 'NotConnected': return -1
           case 'Connecting': return 0
           case 'Connected': return 1
         }
       },
       statusTitle () {
-        switch (this.connection.status) {
+        switch (this.visibleStatus) {
           case 'NotConnected': return 'Disconnected'
-          default: return this.connection.status
+          default: return this.visibleStatus
         }
       },
       providerIdentity () {
@@ -82,14 +82,6 @@
         action: type.FETCH_CONNECTION_STATUS,
         threshold: config.statusUpdateThreshold
       })
-      await this.$store.dispatch(type.FETCH_CONNECTION_STATUS)
-      if (this.connection.status === type.tequilapi.CONNECTED) {
-        // TODO: trigger this in a common state change action
-        this.$store.dispatch(type.START_ACTION_LOOPING, {
-          action: type.CONNECTION_STATISTICS,
-          threshold: config.statisticsUpdateThreshold
-        })
-      }
     },
     beforeDestroy () {
     }
