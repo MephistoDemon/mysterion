@@ -12,8 +12,7 @@ const defaultStatistics = {
 
 const state = {
   ip: null,
-  // TODO: rename to make clear that this status is internal
-  status: connectionStatus.NOT_CONNECTED,
+  remoteStatus: connectionStatus.NOT_CONNECTED,
   visibleStatus: null,
   statistics: defaultStatistics,
   actionLoopers: {}
@@ -22,18 +21,17 @@ const state = {
 const getters = {
   connection: state => state,
   ip: state => state.ip,
-  // TODO: test this?
   visibleStatus: state => {
     if (state.visibleStatus) {
       return state.visibleStatus
     }
-    return state.status
+    return state.remoteStatus
   }
 }
 
 const mutations = {
-  [type.SET_CONNECTION_STATUS] (state, status) {
-    state.status = status
+  [type.SET_CONNECTION_STATUS] (state, remoteStatus) {
+    state.remoteStatus = remoteStatus
   },
   [type.CONNECTION_STATISTICS] (state, statistics) {
     state.statistics = statistics
@@ -97,7 +95,7 @@ const actions = {
     }
   },
   async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus) {
-    const oldStatus = state.status
+    const oldStatus = state.remoteStatus
     if (oldStatus === newStatus) {
       return
     }

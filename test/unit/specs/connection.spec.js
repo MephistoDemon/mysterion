@@ -32,10 +32,10 @@ describe('mutations', () => {
   describe('SET_CONNECTION_STATUS', () => {
     const connectionStatus = connection.mutations[type.SET_CONNECTION_STATUS]
 
-    it('updates status', () => {
+    it('updates remote status', () => {
       const state = {}
       connectionStatus(state, 'TESTING')
-      expect(state).to.eql({ status: 'TESTING' })
+      expect(state).to.eql({ remoteStatus: 'TESTING' })
     })
   })
 
@@ -152,7 +152,6 @@ describe('actions', () => {
     })
 
     it('does not start second looper if it already exists', async () => {
-      // TODO: DRY noop?
       const noop = () => {}
       const looper = new FunctionLooper(noop, 1000)
       const state = {
@@ -277,7 +276,7 @@ describe('actions', () => {
       const looper = new FunctionLooper(noop, 1000)
       looper.start()
       const state = {
-        status: connectionStatus.CONNECTED,
+        remoteStatus: connectionStatus.CONNECTED,
         actionLoopers: {
           [type.CONNECTION_STATISTICS]: looper
         }
@@ -301,7 +300,7 @@ describe('actions', () => {
       const noop = () => {}
       const looper = new FunctionLooper(noop, 1000)
       const state = {
-        status: connectionStatus.CONNECTED,
+        remoteStatus: connectionStatus.CONNECTED,
         actionLoopers: {
           [type.CONNECTION_STATISTICS]: looper
         }
@@ -314,7 +313,7 @@ describe('actions', () => {
     it('resets visible status when remote status changes', async () => {
       const state = {
         visibleStatus: connectionStatus.CONNECTING,
-        status: connectionStatus.NOT_CONNECTED
+        remoteStatus: connectionStatus.NOT_CONNECTED
       }
       const committed = await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.DISCONNECTING)
       expect(committed).to.eql([
