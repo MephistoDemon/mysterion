@@ -25,10 +25,10 @@ describe('Standalone Process', () => {
   before(async () => {
     tequilapi = tequilAPI(`http://127.0.0.1:${port}`)
     process = new Process(config)
-    await delay(50)
+    await delay(100)
   })
 
-  it('spawns in less than 50ms without errors', () => {
+  it('spawns in less than 100ms without errors', () => {
     process.start(port)
     expect(process.child).to.be.instanceOf(ChildProcess)
   })
