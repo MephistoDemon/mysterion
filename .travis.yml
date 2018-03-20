@@ -21,10 +21,10 @@ install:
 - source ~/.bashrc
 - npm install -g xvfb-maybe
 - yarn
+- FORCE_DOWNLOAD=1 npm run download:bins
 script:
 - npm run unit
 before_deploy:
-- FORCE_DOWNLOAD=1 npm run download:bins
 - npm run build
 - mkdir binaries
 - cp build/Mysterion-0.0.1.dmg binaries
