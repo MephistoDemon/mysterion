@@ -15,6 +15,7 @@ import loadingScreen from '@/pages/VpnLoader'
 
 import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
+import messages from "../../../src/app/messages";
 
 Vue.use(Vuex)
 Vue.use(Router)
@@ -130,7 +131,7 @@ describe('loading screen', () => {
 
       it('should notify user with an overlay', () => {
         expect(vm.$store.getters.overlayError).to.eql({
-          message: 'Failed to initialize Mysterion'
+          message: messages.initializationError.message
         })
       })
     })
