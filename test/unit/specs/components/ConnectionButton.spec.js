@@ -22,14 +22,11 @@ const mountWithStore = function () {
       connection: {
         ...conStore,
         actions: {
-          async [type.CONNECT] ({dispatch}, consumerId, providerId) {
-            await dispatch(type.SET_CONNECTION_STATUS, type.tequilapi.CONNECTED)
+          async [type.CONNECT] ({dispatch, commit}, consumerId, providerId) {
+            commit(type.SET_CONNECTION_STATUS, type.tequilapi.CONNECTED)
           },
-          async [type.DISCONNECT] ({dispatch}) {
-            await dispatch(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
-          },
-          async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus) {
-            commit(type.SET_CONNECTION_STATUS, newStatus)
+          async [type.DISCONNECT] ({dispatch, commit}) {
+            commit(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
           }
         }
       }
@@ -55,12 +52,12 @@ describe('ConnectionButton', () => {
     ]
     const vm = mountWithStore()
     for (let index in rules) {
-      await vm.$store.dispatch(type.SET_CONNECTION_STATUS, rules[index][0])
+      vm.$store.commit(type.SET_CONNECTION_STATUS, rules[index][0])
       vm._watcher.run()
-      expect(vm.$el.textContent).to.contain(rules[index][1])
+      expect(vm.$el.textContent).to.eql(rules[index][1])
     }
     // reset store
-    await vm.$store.dispatch(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
+    vm.$store.commit(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
   })
 
   it('clicks change state', () => {
@@ -71,11 +68,11 @@ describe('ConnectionButton', () => {
     button.dispatchEvent(clickEvent)
     vm._watcher.run()
     expect(vm.$store.state.connection.remoteStatus).to.equal('Connected')
-    expect(vm.$el.textContent).to.contain('Disconnect')
+    expect(vm.$el.textContent).to.eql('Disconnect')
 
     // handle disconnect
     button.dispatchEvent(clickEvent)
     vm._watcher.run()
-    expect(vm.$el.textContent).to.contain('Connect')
+    expect(vm.$el.textContent).to.eql('Connect')
   })
 })
