@@ -3,7 +3,7 @@
  * @param {number} time - time to take for promise resolution
  * @returns {Promise<any>}
  */
-export default function delay (time) {
+export default function (time) {
   return new Promise(resolve => {
     setTimeout(() => resolve(), time)
   })

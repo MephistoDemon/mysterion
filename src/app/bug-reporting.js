@@ -3,14 +3,15 @@ import Raven from 'raven'
 import RavenJs from 'raven-js'
 import {remote} from 'electron'
 import RavenVue from 'raven-js/plugins/vue'
-import LimitedList from '../libraries/limited-linked-list'
+import LimitedLinkedList from '../libraries/limited-linked-list'
 import {logLevel} from '../libraries/mysterium-client/index'
 
 const logsBuffer = {
-  [logLevel.LOG]: new LimitedList(300),
-  [logLevel.ERROR]: new LimitedList(300)
+  [logLevel.LOG]: new LimitedLinkedList(300),
+  [logLevel.ERROR]: new LimitedLinkedList(300)
 }
 
+const getLogCache = (level) => logsBuffer[level].toArray().reverse().join('\n')
 const config = {
   captureUnhandledRejections: true,
   tags: {
@@ -22,8 +23,8 @@ const config = {
     platform_release: os.release()
   },
   dataCallback: (data) => {
-    const stderr = logsBuffer[logLevel.ERROR].toArray().reverse().join('\n')
-    const stdout = logsBuffer[logLevel.LOG].toArray().reverse().join('\n')
+    const stderr = getLogCache(logLevel.ERROR)
+    const stdout = getLogCache(logLevel.LOG)
     data.extra.logs = {
       [logLevel.LOG]: stdout,
       [logLevel.ERROR]: stderr

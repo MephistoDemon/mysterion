@@ -29,7 +29,7 @@ class Process {
   }
 
   on (level, cb) {
-    if (!Object.values(logLevel).includes(level)) throw new Error(`Unknown logging level: ${level}`)
+    if (!stdFiles[level]) throw new Error(`Unknown daemon logging level: ${level}`)
     tailFile(this.dataDir + '/' + stdFiles[level], cb)
   }
 

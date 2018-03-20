@@ -99,7 +99,12 @@ class Mysterion {
 
   async onWillQuit () {
     this.monitoring.stop()
-    await this.process.stop()
+    try {
+      await this.process.stop()
+    } catch (e) {
+      console.error('Failed to stop mysterium_client process')
+      bugReporter.main.captureException(e)
+    }
   }
 
   async acceptTerms () {

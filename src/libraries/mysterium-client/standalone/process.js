@@ -25,6 +25,7 @@ class Process {
   }
 
   /**
+   * Registers a callback for a specific process log/error message
    * @param {string} level
    * @param {LogCallback} cb
    */
@@ -42,5 +43,5 @@ export default Process
 
 /**
  * @callback LogCallback
- * @param {string} data - log line
+ * @param {string} data - chunk of log output
  */
