@@ -28,14 +28,14 @@ describe('Standalone Process', () => {
     process = new Process(config)
     process.start(port)
     process.on(logLevel.LOG, data => logs.push(data))
-    await delay(500)
+    await delay(50)
   })
 
   after(() => {
     process.stop()
   })
 
-  it('spawns in less than 500ms without errors', () => {
+  it('spawns in less than 50ms without errors', () => {
     expect(process.child).to.be.instanceOf(ChildProcess)
   })
 

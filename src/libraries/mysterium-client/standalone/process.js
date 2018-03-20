@@ -6,7 +6,7 @@ class Process {
   /**
    * Creates mysterium_client process handler
    * @constructor
-   * @param {{clientBinaryPath,clientConfigPath,runtimeDirectory: string}} config
+   * @param {{clientBinaryPath,openVPNBinary,clientConfigPath,runtimeDirectory: string}} config
    */
   constructor (config) {
     this.config = config
@@ -16,6 +16,7 @@ class Process {
     this.child = spawn(this.config.clientBinaryPath, [
       '--config-dir', this.config.clientConfigPath,
       '--runtime-dir', this.config.runtimeDirectory,
+      '--openvpn.binary', this.config.openVPNBinary,
       '--tequilapi.port', port
     ])
   }
