@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 const CONNECTION_ABORTED_ERROR_CODE = 'ECONNABORTED'
 
 function isTimeoutError (error) {
@@ -7,7 +5,10 @@ function isTimeoutError (error) {
 }
 
 function haveHttpStatus (err, expectedStatus) {
-  const status = _.get(err, 'response.status')
+  var status = null
+  if (err.response) {
+    status = err.response.status
+  }
   return status === expectedStatus
 }
 
