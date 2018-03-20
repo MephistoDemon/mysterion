@@ -78,7 +78,7 @@ class Mysterion {
 
     // checks if daemon is installed
     // if the installation fails, it sends a message to the renderer window
-    if (!this.installer.processInstalled()) {
+    if (this.installer.needsInstallation()) {
       try {
         await this.installer.install()
       } catch (e) {

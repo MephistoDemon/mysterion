@@ -76,7 +76,7 @@ class Installer {
   }
 
   needsInstallation () {
-    return !this.exists() || this.pListChecksumMismatch()
+    return !this.processInstalled() || this.pListChecksumMismatch()
   }
 
   install () {
