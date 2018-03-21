@@ -42,7 +42,8 @@
       "./bin/config"
     ],
     "extraResources": [
-      "./static/icons/trayTemplate.png",
+      "./static/icons/tray-activeTemplate.png",
+      "./static/icons/tray-passiveTemplate.png",
       "./static/terms/terms.html"
     ],
     "dmg": {

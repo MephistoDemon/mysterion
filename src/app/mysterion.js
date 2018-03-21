@@ -191,7 +191,7 @@ class Mysterion {
   }
 
   buildTray () {
-    let trayIconPath = path.join(__static, 'icons', 'trayTemplate.png')
+    let trayIconPath = path.join(__static, 'icons', 'tray-passiveTemplate.png')
     this.tray = new Tray(trayIconPath)
 
     let menu = []
