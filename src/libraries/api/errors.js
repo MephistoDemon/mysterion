@@ -4,7 +4,7 @@ function isTimeoutError (error) {
   return error.code === CONNECTION_ABORTED_ERROR_CODE
 }
 
-function haveHttpStatus (err, expectedStatus) {
+function hasHttpStatus (err, expectedStatus) {
   var status = null
   if (err.response) {
     status = err.response.status
@@ -14,6 +14,6 @@ function haveHttpStatus (err, expectedStatus) {
 
 export {
   isTimeoutError,
-  haveHttpStatus,
+  hasHttpStatus,
   CONNECTION_ABORTED_ERROR_CODE
 }

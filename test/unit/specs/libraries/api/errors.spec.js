@@ -1,4 +1,4 @@
-import { haveHttpStatus } from '../../../../../src/libraries/api/errors'
+import { hasHttpStatus } from '../../../../../src/libraries/api/errors'
 
 function responseError (status) {
   const error = new Error()
@@ -6,19 +6,19 @@ function responseError (status) {
   return error
 }
 
-describe('haveHttpStatus', () => {
+describe('hasHttpStatus', () => {
   it('returns true when status equals', () => {
     const err = responseError(503)
-    expect(haveHttpStatus(err, 503)).to.eql(true)
+    expect(hasHttpStatus(err, 503)).to.eql(true)
   })
 
   it('returns false when status differs', () => {
     const err = responseError(500)
-    expect(haveHttpStatus(err, 503)).to.eql(false)
+    expect(hasHttpStatus(err, 503)).to.eql(false)
   })
 
   it('returns false when error has no response field', () => {
     const err = new Error('fake error')
-    expect(haveHttpStatus(err, 503)).to.eql(false)
+    expect(hasHttpStatus(err, 503)).to.eql(false)
   })
 })
