@@ -194,6 +194,13 @@ class Mysterion {
   buildTray () {
     const tray = new MysterionTray(this.window, this.config.inDevMode)
     tray.build()
+    ipcMain.on(communication.CHANGE_TRAY_STATUS, (evt, active) => {
+      if (active) {
+        tray.setActiveState()
+      } else {
+        tray.setPassiveState()
+      }
+    })
   }
 }
 

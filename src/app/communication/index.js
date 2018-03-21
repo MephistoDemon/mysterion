@@ -8,5 +8,6 @@ export default {
   TERMS_ACCEPTED: 'terms.accepted',
   APP_START: 'app.start',
   APP_ERROR: 'app.error',
-  HEALTHCHECK: 'healthcheck'
+  HEALTHCHECK: 'healthcheck',
+  CHANGE_TRAY_STATUS: 'change.tray.status'
 }

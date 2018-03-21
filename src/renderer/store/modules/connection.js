@@ -6,9 +6,20 @@ import bugReporter from '../../../app/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
+import {ipcRenderer} from 'electron'
+import communication from '../../../app/communication'
+
 const tequilapi = tequilAPI()
 
 const defaultStatistics = {
+}
+
+function makeTrayActive () {
+  ipcRenderer.send(communication.CHANGE_TRAY_STATUS, true)
+}
+
+function makeTrayPassive () {
+  ipcRenderer.send(communication.CHANGE_TRAY_STATUS, false)
 }
 
 const state = {
@@ -119,6 +130,7 @@ const actions = {
     commit(type.CONNECTION_STATISTICS_RESET)
     try {
       await tequilapi.connection.connect(consumerId, providerId)
+      makeTrayActive()
       commit(type.HIDE_ERROR)
     } catch (err) {
       commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
@@ -141,6 +153,7 @@ const actions = {
       let res = await tequilapi.connection.disconnect()
       dispatch(type.FETCH_CONNECTION_STATUS)
       dispatch(type.CONNECTION_IP)
+      makeTrayPassive()
       return res
     } catch (err) {
       commit(type.SHOW_ERROR, err)

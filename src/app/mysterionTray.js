@@ -5,9 +5,13 @@ import Window from './window'
 
 declare var __static: string
 
+const activeIconFilename: string = 'tray-activeTemplate.png'
+const passiveIconFilename: string = 'tray-passiveTemplate.png'
+
 class MysterionTray {
   window: Window
   inDevMode: boolean
+  _tray: Tray
 
   constructor (window: Window, inDevMode: boolean) {
     this.inDevMode = inDevMode
@@ -15,8 +19,8 @@ class MysterionTray {
   }
 
   build () {
-    const trayIconPath = path.join(__static, 'icons', 'tray-passiveTemplate.png')
-    const tray = new Tray(trayIconPath)
+    const iconPath = this._getIconPath(passiveIconFilename)
+    this._tray = new Tray(iconPath)
 
     let menu = []
 
@@ -37,8 +41,25 @@ class MysterionTray {
       }, ...menu]
     }
 
-    tray.setToolTip('Mysterium')
-    tray.setContextMenu(Menu.buildFromTemplate(menu))
+    this._tray.setToolTip('Mysterium')
+    this._tray.setContextMenu(Menu.buildFromTemplate(menu))
+  }
+
+  setActiveState () {
+    this._setIcon(activeIconFilename)
+  }
+
+  setPassiveState () {
+    this._setIcon(passiveIconFilename)
+  }
+
+  _setIcon (filename: string) {
+    const path = this._getIconPath(filename)
+    this._tray.setImage(path)
+  }
+
+  _getIconPath (filename: string): string {
+    return path.join(__static, 'icons', filename)
   }
 }
 
