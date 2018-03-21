@@ -27,8 +27,8 @@ describe('LimitedLinkedList', () => {
 
   it('doesn\'t exceed limits', () => {
     limitedLinkedList.insert('more content')
-    expect(limitedLinkedList.getOldest()).to.be.eql(['some', 'array'])
-    expect(limitedLinkedList.getNewest()).to.be.eql('more content')
-    expect(limitedLinkedList.getLength()).to.be.eql(5)
+    const arrayRepresentation = limitedLinkedList.toArray()
+    expect(arrayRepresentation.length).to.be.eql(5)
+    expect(arrayRepresentation.pop()).to.be.eql('more content')
   })
 })

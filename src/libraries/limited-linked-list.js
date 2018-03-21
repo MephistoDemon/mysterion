@@ -1,14 +1,15 @@
 import LinkedList from 'dbly-linked-list'
 
-/**
- * @class
- * Uses Doubly Linked List to store limited list of data.
- * when limit is reached and new element is inserted, the oldest one is removed
- * @param {number} limit - max size of list
- */
-export default function LimitedLinkedList (limit) {
-  // limit and linkedList are private members
-  let linkedList = new LinkedList(limit)
+export default class LimitedLinkedList {
+  /**
+   * Uses Doubly Linked List to store limited list of data.
+   * when limit is reached and new element is inserted, the oldest one is removed
+   * @param {number} limit - max size of list
+   */
+  constructor (limit) {
+    this._limit = limit
+    this._linkedList = new LinkedList(limit)
+  }
 
   /**
    * Appends item to the end of list.
@@ -16,26 +17,18 @@ export default function LimitedLinkedList (limit) {
    * keeping the size in limits
    * @param {*} data
    */
-  this.insert = (data) => {
-    if (linkedList.getSize() >= limit) {
-      linkedList.removeFirst()
+  insert (data) {
+    if (this._linkedList.getSize() >= this._limit) {
+      this._linkedList.removeFirst()
     }
-    linkedList.insert(data)
+    this._linkedList.insert(data)
   }
 
-  this.toArray = () => {
-    return linkedList.toArray()
-  }
-
-  this.getLength = () => {
-    return linkedList.getSize()
-  }
-
-  this.getOldest = () => {
-    return linkedList.getHeadNode().data
-  }
-
-  this.getNewest = () => {
-    return linkedList.getTailNode().data
+  /**
+   * returns array representation on the list
+   * @returns {*|T[]}
+   */
+  toArray () {
+    return this._linkedList.toArray()
   }
 }
