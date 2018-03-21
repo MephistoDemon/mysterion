@@ -30,7 +30,7 @@ describe('Standalone Process', () => {
     process.on(logLevel.LOG, data => logs.push(data))
     await delay(50)
   })
-  
+
   after(() => {
     process.stop()
   })

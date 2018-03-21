@@ -1,4 +1,6 @@
+// @flow
 import delay from './sleep'
+
 /**
  * Executes given function infinitely.
  * Ensures that time between function executions is above given threshold.
@@ -7,7 +9,11 @@ import delay from './sleep'
  * @param {!number} threshold - Minimum delay between function executions (in milliseconds).
  */
 class FunctionLooper {
-  constructor (func, threshold) {
+  func: Function
+  threshold: number
+  _running: boolean
+
+  constructor (func: Function, threshold: number) {
     this.func = func
     this.threshold = threshold
     this._running = false
@@ -34,7 +40,7 @@ class FunctionLooper {
   }
 }
 
-async function executeWithThreshold (func, threshold) {
+async function executeWithThreshold (func: Function, threshold: number) {
   const start = Date.now()
   await func()
   const end = Date.now()

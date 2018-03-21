@@ -1,8 +1,8 @@
 export default {
-  connectFailed: 'Connection to node failed. Try other one',
+  connectFailed: 'Connection to node failed. Choose different node',
   locationNotSelected: 'Please select location',
   initializationError: {
-    message: 'Failed to initialize Mysterion'
+    message: 'Failed to load Mysterion'
   },
   proposalsConnectionError: {
     message: 'Can\'t connect to Mysterium Network',
