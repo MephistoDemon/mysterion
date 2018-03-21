@@ -40,7 +40,7 @@
       "./bin/config"
     ],
     "extraResources": [
-      "./static/icons/tray.png"
+      "./static/icons/trayTemplate.png"
     ],
     "dmg": {
       "contents": [
