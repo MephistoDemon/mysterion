@@ -10,11 +10,11 @@ const passiveIconFilename: string = 'tray-passiveTemplate.png'
 
 class MysterionTray {
   window: Window
-  inDevMode: boolean
+  allowDevTools: boolean
   _tray: Tray
 
-  constructor (window: Window, inDevMode: boolean) {
-    this.inDevMode = inDevMode
+  constructor (window: Window, allowDevTools: boolean) {
+    this.allowDevTools = allowDevTools
     this.window = window
   }
 
@@ -31,7 +31,7 @@ class MysterionTray {
       }
     })
 
-    if (this.inDevMode) {
+    if (this.allowDevTools) {
       menu = [{
         label: 'Toggle DevTools',
         accelerator: 'Alt+Command+I',

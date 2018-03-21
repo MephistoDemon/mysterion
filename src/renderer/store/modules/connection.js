@@ -130,6 +130,7 @@ const actions = {
     commit(type.CONNECTION_STATISTICS_RESET)
     try {
       await tequilapi.connection.connect(consumerId, providerId)
+      // TODO: move out tray logic from connection
       makeTrayActive()
       commit(type.HIDE_ERROR)
     } catch (err) {
@@ -153,6 +154,7 @@ const actions = {
       let res = await tequilapi.connection.disconnect()
       dispatch(type.FETCH_CONNECTION_STATUS)
       dispatch(type.CONNECTION_IP)
+      // TODO: move out tray logic from connection
       makeTrayPassive()
       return res
     } catch (err) {
