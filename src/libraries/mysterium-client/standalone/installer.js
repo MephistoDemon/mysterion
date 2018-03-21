@@ -1,6 +1,6 @@
 class Installer {
-  processInstalled () {
-    return true
+  needsInstallation () {
+    return false
   }
 
   install () {}
