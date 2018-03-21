@@ -1,15 +1,22 @@
+// @flow
 import path from 'path'
 import {Menu, Tray, app} from 'electron'
+import Window from './window'
+
+declare var __static: string
 
 class MysterionTray {
-  constructor (window, inDevMode) {
+  window: Window
+  inDevMode: boolean
+
+  constructor (window: Window, inDevMode: boolean) {
     this.inDevMode = inDevMode
     this.window = window
   }
 
-  show () {
+  build () {
     const trayIconPath = path.join(__static, 'icons', 'tray-passiveTemplate.png')
-    this.tray = new Tray(trayIconPath)
+    const tray = new Tray(trayIconPath)
 
     let menu = []
 
@@ -30,8 +37,8 @@ class MysterionTray {
       }, ...menu]
     }
 
-    this.tray.setToolTip('Mysterium')
-    this.tray.setContextMenu(Menu.buildFromTemplate(menu))
+    tray.setToolTip('Mysterium')
+    tray.setContextMenu(Menu.buildFromTemplate(menu))
   }
 }
 

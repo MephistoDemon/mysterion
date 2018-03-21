@@ -193,7 +193,7 @@ class Mysterion {
 
   buildTray () {
     const tray = new MysterionTray(this.window, this.config.inDevMode)
-    tray.show()
+    tray.build()
   }
 }
 
