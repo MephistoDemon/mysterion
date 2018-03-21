@@ -11,7 +11,6 @@ const logsBuffer = {
   [logLevel.ERROR]: new LimitedLinkedList(300)
 }
 
-const getLogCache = (level) => logsBuffer[level].toArray().reverse().join('\n')
 const config = {
   captureUnhandledRejections: true,
   tags: {
@@ -56,6 +55,10 @@ const setUser = (userData) => {
 
 const pushToLogCache = (level, data) => {
   logsBuffer[level].insert(data)
+}
+
+const getLogCache = (level) => {
+  logsBuffer[level].toArray().reverse().join('\n')
 }
 
 export default {

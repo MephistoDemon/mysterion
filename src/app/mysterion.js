@@ -150,8 +150,8 @@ class Mysterion {
 
     this.process.start()
     this.monitoring.start()
-    this.process.on(processLogLevel.LOG, (data) => cacheLogs(processLogLevel.LOG, data))
-    this.process.on(processLogLevel.ERROR, (data) => cacheLogs(processLogLevel.ERROR, data))
+    this.process.onLog(processLogLevel.LOG, (data) => cacheLogs(processLogLevel.LOG, data))
+    this.process.onLog(processLogLevel.ERROR, (data) => cacheLogs(processLogLevel.ERROR, data))
     this.monitoring.onProcessReady(() => {
       updateRendererWithHealth()
       this.startApp()

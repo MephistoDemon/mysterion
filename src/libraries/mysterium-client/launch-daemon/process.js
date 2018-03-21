@@ -28,7 +28,7 @@ class Process {
     })
   }
 
-  on (level, cb) {
+  onLog (level, cb) {
     if (!stdFiles[level]) throw new Error(`Unknown daemon logging level: ${level}`)
     tailFile(this.dataDir + '/' + stdFiles[level], cb)
   }

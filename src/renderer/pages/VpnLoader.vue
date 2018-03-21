@@ -4,7 +4,7 @@
   import type from '@/store/types'
   import config from '@/config'
   import messages from '../../app/messages'
-  import delay from '../../libraries/sleep'
+  import sleep from '../../libraries/sleep'
   import bugReporter from '../../app/bug-reporting'
 
   async function identityGet ({dispatch, commit}) {
@@ -43,7 +43,7 @@
         await proposalPromise
         await dispatch(type.CLIENT_BUILD_INFO)
 
-        await delay(config.loadingScreenDelay)
+        await sleep(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)
         this.$router.push('/vpn')
       } catch (err) {

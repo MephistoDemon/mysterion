@@ -1,5 +1,7 @@
 import {spawn} from 'child_process'
 
+// these constants correspond to child process members
+// child.stdout and child.stderr
 export const logLevel = {LOG: 'stdout', ERROR: 'stderr'}
 
 class Process {
@@ -30,7 +32,7 @@ class Process {
    * @param {string} level
    * @param {LogCallback} cb
    */
-  on (level, cb) {
+  onLog (level, cb) {
     if (!Object.values(logLevel).includes(level) || !this.child[level]) {
       throw new Error(`Unknown logging level: ${level}`)
     }
