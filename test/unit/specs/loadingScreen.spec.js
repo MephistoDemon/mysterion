@@ -15,7 +15,7 @@ import loadingScreen from '@/pages/VpnLoader'
 
 import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
-import messages from "../../../src/app/messages";
+import messages from '../../../src/app/messages'
 
 Vue.use(Vuex)
 Vue.use(Router)
