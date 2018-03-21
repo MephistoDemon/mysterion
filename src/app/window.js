@@ -53,8 +53,6 @@ class Window {
         this.hide()
       }
     })
-
-    return this
   }
 
   resize ({width, height}) {

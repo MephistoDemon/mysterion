@@ -1,9 +1,9 @@
-import path from 'path'
 import Window from './window'
+import MysterionTray from './mysterionTray'
 import Terms from './terms/index'
 import TequilAPI from '../libraries/api/tequilapi'
 import communication from './communication/index'
-import {app, ipcMain, Menu, Tray} from 'electron'
+import {app, ipcMain} from 'electron'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 import {
   Installer as MysteriumDaemonInstaller,
@@ -70,7 +70,8 @@ class Mysterion {
     )
 
     try {
-      await this.window.open().on(communication.RENDERER_LOADED)
+      this.window.open()
+      await this.window.on(communication.RENDERER_LOADED)
     } catch (e) {
       // TODO: add an error wrapper method and send to sentry
       throw new Error('Failed to load app.')
@@ -191,30 +192,8 @@ class Mysterion {
   }
 
   buildTray () {
-    let trayIconPath = path.join(__static, 'icons', 'tray-passiveTemplate.png')
-    this.tray = new Tray(trayIconPath)
-
-    let menu = []
-
-    menu.push({
-      label: 'Quit',
-      click: () => {
-        app.quit()
-      }
-    })
-
-    if (this.config.inDevMode) {
-      menu = [{
-        label: 'Toggle DevTools',
-        accelerator: 'Alt+Command+I',
-        click: () => {
-          this.window.toggleDevTools()
-        }
-      }, ...menu]
-    }
-
-    this.tray.setToolTip('Mysterium')
-    this.tray.setContextMenu(Menu.buildFromTemplate(menu))
+    const tray = new MysterionTray(this.window, this.config.inDevMode)
+    tray.show()
   }
 }
 
