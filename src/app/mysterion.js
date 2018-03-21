@@ -76,7 +76,7 @@ class Mysterion {
       }
     }
 
-    // checks if daemon is installed
+    // checks if daemon is installed or daemon file is expired
     // if the installation fails, it sends a message to the renderer window
     if (this.installer.needsInstallation()) {
       try {

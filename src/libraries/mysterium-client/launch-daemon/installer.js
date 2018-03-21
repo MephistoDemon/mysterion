@@ -7,20 +7,17 @@ const DaemonDirectory = '/Library/LaunchDaemons'
 const InverseDomainPackageName = 'network.mysterium.mysteriumclient'
 const PropertyListFile = InverseDomainPackageName + '.plist'
 
+function getDaemonFileName () {
+  return path.join(DaemonDirectory, PropertyListFile)
+}
+
+function processInstalled () {
+  return fs.existsSync(getDaemonFileName())
+}
+
 class Installer {
   constructor (config) {
     this.config = config
-  }
-
-  processInstalled () {
-    if (fs.existsSync(this.getDaemonFileName())) {
-      return true
-    }
-    return false
-  }
-
-  getDaemonFileName () {
-    return path.join(DaemonDirectory, PropertyListFile)
   }
 
   template () {
@@ -69,26 +66,26 @@ class Installer {
       </plist>`
   }
 
-  pListChecksumMismatch () {
+  _pListChecksumMismatch () {
     let templateChecksum = md5(this.template())
-    let plistChecksum = md5(fs.readFileSync(this.getDaemonFileName()))
+    let plistChecksum = md5(fs.readFileSync(getDaemonFileName()))
     return templateChecksum !== plistChecksum
   }
 
   needsInstallation () {
-    return !this.processInstalled() || this.pListChecksumMismatch()
+    return !processInstalled() || this._pListChecksumMismatch()
   }
 
   install () {
     let tempPlistFile = path.join(this.config.runtimeDirectory, PropertyListFile)
     let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
     let script = `\
-      cp ${tempPlistFile} ${this.getDaemonFileName()}\
-      && launchctl load ${this.getDaemonFileName()}\
+      cp ${tempPlistFile} ${getDaemonFileName()}\
+      && launchctl load ${getDaemonFileName()}\
       && launchctl setenv PATH "${envPath}"\
     `
-    if (this.processInstalled()) {
-      script = `launchctl unload ${this.getDaemonFileName()} && ` + script
+    if (processInstalled()) {
+      script = `launchctl unload ${getDaemonFileName()} && ` + script
     }
     let command = `sh -c '${script}'`
 
