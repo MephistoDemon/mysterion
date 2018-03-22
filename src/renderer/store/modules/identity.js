@@ -1,5 +1,5 @@
 import type from '../types'
-import reporter from '../../../main/bug-reporting'
+import reporter from '../../../app/bug-reporting'
 import {ipcRenderer} from 'electron'
 import message from '../../../app/communication'
 

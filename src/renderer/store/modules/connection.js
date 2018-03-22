@@ -1,8 +1,8 @@
 import type from '../types'
 import tequilAPI from '../../../libraries/api/tequilapi'
-import {isTimeoutError} from '../../../libraries/api/errors'
+import {isTimeoutError, hasHttpStatus} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
-import bugReporter from '../../../main/bug-reporting'
+import bugReporter from '../../../app/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 const tequilapi = tequilAPI()
@@ -59,10 +59,9 @@ const actions = {
       const ip = await tequilapi.connection.ip()
       commit(type.CONNECTION_IP, ip)
     } catch (err) {
-      if (isTimeoutError(err)) {
+      if (isTimeoutError(err) || hasHttpStatus(err, 503)) {
         return
       }
-      commit(type.SHOW_ERROR, err)
       bugReporter.renderer.captureException(err)
     }
   },
