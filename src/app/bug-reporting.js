@@ -3,10 +3,13 @@ import Raven from 'raven'
 import RavenJs from 'raven-js'
 import {remote} from 'electron'
 import RavenVue from 'raven-js/plugins/vue'
-import {logLevel} from '../libraries/mysterium-client'
+import LimitedLinkedList from '../libraries/limited-linked-list'
+import {logLevel} from '../libraries/mysterium-client/index'
 
-const logsBuffer = { [logLevel.LOG]: [], [logLevel.ERROR]: [] }
-const maxLogBufferLength = 300
+const logsBuffer = {
+  [logLevel.LOG]: new LimitedLinkedList(300),
+  [logLevel.ERROR]: new LimitedLinkedList(300)
+}
 
 const config = {
   captureUnhandledRejections: true,
@@ -19,10 +22,11 @@ const config = {
     platform_release: os.release()
   },
   dataCallback: (data) => {
-    // sentry trims big data, so we reverse array to have latest on top
+    const stderr = getLogCache(logLevel.ERROR)
+    const stdout = getLogCache(logLevel.LOG)
     data.extra.logs = {
-      [logLevel.LOG]: logsBuffer[logLevel.LOG].reverse(),
-      [logLevel.ERROR]: logsBuffer[logLevel.ERROR].reverse()
+      [logLevel.LOG]: stdout,
+      [logLevel.ERROR]: stderr
     }
     return data
   }
@@ -50,10 +54,11 @@ const setUser = (userData) => {
 }
 
 const pushToLogCache = (level, data) => {
-  if (logsBuffer[level].length >= maxLogBufferLength) {
-    logsBuffer[level].shift()
-  }
-  logsBuffer[level].push(data)
+  logsBuffer[level].insert(data)
+}
+
+const getLogCache = (level) => {
+  logsBuffer[level].toArray().reverse().join('\n')
 }
 
 export default {

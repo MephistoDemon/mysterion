@@ -4,7 +4,8 @@
   import type from '@/store/types'
   import config from '@/config'
   import messages from '../../app/messages'
-  import bugReporter from '../../main/bug-reporting'
+  import sleep from '../../libraries/sleep'
+  import bugReporter from '../../app/bug-reporting'
 
   async function identityGet ({dispatch, commit}) {
     const identities = await dispatch(type.IDENTITY_LIST)
@@ -16,8 +17,6 @@
     commit(type.INIT_NEW_USER)
     return newIdentity
   }
-
-  const delay = time => new Promise(resolve => setTimeout(() => resolve(), time))
 
   export default {
     async mounted () {
@@ -44,7 +43,7 @@
         await proposalPromise
         await dispatch(type.CLIENT_BUILD_INFO)
 
-        await delay(config.loadingScreenDelay)
+        await sleep(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)
         this.$router.push('/vpn')
       } catch (err) {

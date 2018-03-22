@@ -1,17 +1,12 @@
 // @flow
-
-function delay (time) {
-  return new Promise(resolve => {
-    setTimeout(() => resolve(), time)
-  })
-}
+import sleep from './sleep'
 
 /**
  * Executes given function infinitely.
  * Ensures that time between function executions is above given threshold.
  * @constructor
  * @param {!function} func - Function to be executed
- * @param {!number} threshold - Minimum delay between function executions (in milliseconds).
+ * @param {!number} threshold - Minimum sleep between function executions (in milliseconds).
  */
 class FunctionLooper {
   func: Function
@@ -45,14 +40,14 @@ class FunctionLooper {
   }
 }
 
-async function executeWithThreshold (func: Function, threshold: number) {
+async function executeWithThreshold (func: Function, threshold: number): Promise<void> {
   const start = Date.now()
   await func()
   const end = Date.now()
 
   const elapsed = end - start
   if (elapsed < threshold) {
-    await delay(threshold - elapsed)
+    await sleep(threshold - elapsed)
   }
 }
 
