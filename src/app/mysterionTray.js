@@ -5,8 +5,8 @@ import Window from './window'
 
 declare var __static: string
 
-const activeIconFilename: string = 'tray-activeTemplate.png'
-const passiveIconFilename: string = 'tray-passiveTemplate.png'
+const activeIconFilename: string = 'trayActiveTemplate.png'
+const passiveIconFilename: string = 'trayPassiveTemplate.png'
 
 class MysterionTray {
   window: Window
