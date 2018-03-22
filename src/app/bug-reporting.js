@@ -58,7 +58,7 @@ const pushToLogCache = (level, data) => {
 }
 
 const getLogCache = (level) => {
-  logsBuffer[level].toArray().reverse().join('\n')
+  return logsBuffer[level].toArray().reverse().join('\n')
 }
 
 export default {
