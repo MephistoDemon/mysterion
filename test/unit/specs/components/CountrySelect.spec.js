@@ -1,24 +1,9 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
-import CountrySelect from '../../../../src/renderer/components/CountrySelect'
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import CountrySelectInjector from '!!vue-loader?inject!@/components/CountrySelect'
 
-const mountWithStore = function (list) {
-  const store = new Vuex.Store({
-    modules: {
-      proposal: {
-        state: {
-          list: list
-        }
-      }
-    }
-  })
-  const Constructor = Vue.extend(CountrySelect)
-  const vm = new Constructor({store}).$mount()
-
-  return vm
-}
-describe('CountrySelect', () => {
-  const list = [
+const tequilapiProposalsResponse = {
+  proposals: [
     {
       providerId: '0x1',
       serviceDefinition: {
@@ -50,28 +35,53 @@ describe('CountrySelect', () => {
       }
     }
   ]
+}
+const tequilapiConstructor = (teqAddr) => {
+  return {
+    proposal: {
+      list: async () => {
+        return tequilapiProposalsResponse
+      }
+    }
+  }
+}
+const CountrySelect = CountrySelectInjector({
+  '@/../libraries/api/tequilapi': tequilapiConstructor
+})
 
-  it('renders a list item for each proposal', () => {
-    const vm = mountWithStore(list)
-    expect(vm.$el.querySelectorAll('.multiselect__option-title')).to.have.lengthOf(list.length)
+const mountWithStore = function () {
+  const Constructor = Vue.extend(CountrySelect)
+  const vm = new Constructor().$mount()
+
+  return vm
+}
+describe('CountrySelect', () => {
+  it('renders a list item for each proposal', async () => {
+    const vm = mountWithStore()
+    await Vue.nextTick()
+    await Vue.nextTick()
+
+    expect(vm.countriesList).to.have.lengthOf(4)
+    expect(vm.$el.querySelectorAll('.multiselect__option-title')).to.have.lengthOf(4)
     expect(vm.$el.textContent).to.contain('Lithuania')
     expect(vm.$el.textContent).to.contain('United Kingdom')
     expect(vm.$el.textContent).to.contain('0x3')
     expect(vm.$el.textContent).to.contain('N/A')
   })
 
-  it('clicking an item changes v-model', () => {
-    const vm = mountWithStore(list)
-    const button = vm.$el.querySelector('.multiselect__option')
-    const clickEvent = new window.Event('click')
-    const selected = {
+  it('clicking an item changes v-model', async () => {
+    const vm = mountWithStore()
+    await Vue.nextTick()
+    await Vue.nextTick()
+
+    const countryExpected = {
       label: 'Lithuania',
       id: '0x1',
       code: 'lt'
     }
     // initiate the click and check whether it opened the dropdown
-    button.dispatchEvent(clickEvent)
-    vm._watcher.run()
-    expect(vm.country).to.include(selected)
+    const button = vm.$el.querySelector('.multiselect__option')
+    button.dispatchEvent(new window.Event('click'))
+    expect(vm.country).to.include(countryExpected)
   })
 })

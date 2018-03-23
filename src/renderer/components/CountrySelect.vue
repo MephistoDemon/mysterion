@@ -29,7 +29,7 @@
   import path from 'path'
   import countryList from '@/plugins/countries'
   import Multiselect from 'vue-multiselect'
-  import tequilAPI from '../../libraries/api/tequilapi'
+  import tequilAPI from '@/../libraries/api/tequilapi'
   import IconWorld from '@/assets/img/icon--world.svg'
 
   const tequilapi = tequilAPI()
@@ -91,6 +91,7 @@
       }
     },
     mounted () {
+      this.fetchCountries()
       setInterval(() => {
         this.fetchCountries()
       }, 10000)
