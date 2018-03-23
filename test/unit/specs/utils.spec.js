@@ -2,13 +2,12 @@
 
 import lolex from 'lolex'
 import { executeWithThreshold, FunctionLooper } from '@/../libraries/functionLooper'
+import { nextTick } from '@/../libraries/time'
 
 describe('utils', () => {
-  let realDelay, clock
+  let clock
 
   before(() => {
-    const realSetTimeout = setTimeout
-    realDelay = time => new Promise(resolve => realSetTimeout(() => resolve(), time))
     clock = lolex.install()
   })
 
@@ -18,7 +17,7 @@ describe('utils', () => {
 
   async function tickWithDelay (duration) {
     clock.tick(duration)
-    await realDelay(10)
+    await nextTick()
   }
 
   describe('FunctionLooper', () => {
