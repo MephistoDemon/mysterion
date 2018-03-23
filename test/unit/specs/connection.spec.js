@@ -170,7 +170,7 @@ describe('actions', () => {
 
   describe('STOP_ACTION_LOOPING', () => {
     it('stops and cleans update looper', async () => {
-      const actionLooper = new FunctionLooper(() => {}, 1000)
+      const actionLooper = new FunctionLooper(() => {}, 0)
       actionLooper.start()
       const state = {
         actionLoopers: {

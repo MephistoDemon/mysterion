@@ -3,6 +3,7 @@
 
 import lolex from 'lolex'
 import { executeWithThreshold, FunctionLooper } from '@/../libraries/functionLooper'
+import sleep from '@/../libraries/sleep'
 
 describe('utils', () => {
   let realDelay, clock
@@ -76,6 +77,26 @@ describe('utils', () => {
         await tickWithDelay(10000)
         expect(counter).to.eql(2)
       })
+
+      it('waits for the last execution', async () => {
+        let counter = 0
+        async function increaseCounter () {
+          await sleep(400)
+          counter++
+        }
+
+        const looper = new FunctionLooper(increaseCounter, 1000)
+        looper.start()
+
+        let stopped = false
+        looper.stop().then(() => { stopped = true })
+        expect(stopped).to.eql(false)
+        expect(counter).to.eql(0)
+
+        await tickWithDelay(1000)
+        expect(stopped).to.eql(true)
+        expect(counter).to.eql(1)
+      })
     })
 
     describe('.isRunning', () => {
@@ -89,6 +110,7 @@ describe('utils', () => {
         expect(looper.isRunning()).to.eql(true)
 
         looper.stop()
+        await tickWithDelay(1000)
         expect(looper.isRunning()).to.eql(false)
       })
     })

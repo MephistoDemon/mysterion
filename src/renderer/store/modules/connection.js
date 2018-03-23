@@ -78,10 +78,10 @@ const actions = {
     commit(type.SET_ACTION_LOOPER, {action, looper})
     return looper
   },
-  [type.STOP_ACTION_LOOPING] ({commit, state}, action) {
+  async [type.STOP_ACTION_LOOPING] ({commit, state}, action) {
     const looper = state.actionLoopers[action]
     if (looper) {
-      looper.stop()
+      await looper.stop()
     }
     commit(type.REMOVE_ACTION_LOOPER, action)
   },

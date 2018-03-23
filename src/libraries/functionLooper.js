@@ -12,6 +12,8 @@ class FunctionLooper {
   func: Function
   threshold: number
   _running: boolean
+  _stopping: boolean
+  _currentExecutionPromise: Promise<void>
 
   constructor (func: Function, threshold: number) {
     this.func = func
@@ -26,8 +28,11 @@ class FunctionLooper {
 
     const loop = async () => {
       // eslint-disable-next-line no-unmodified-loop-condition
-      while (this._running) {
-        await executeWithThreshold(this.func, this.threshold)
+      while (this._running && !this._stopping) {
+        this._currentExecutionPromise = new Promise(resolve => {
+          executeWithThreshold(this.func, this.threshold).then(() => { resolve() })
+        })
+        await this._currentExecutionPromise
       }
     }
 
@@ -35,8 +40,13 @@ class FunctionLooper {
     loop()
   }
 
-  stop () {
+  async stop () {
+    this._stopping = true
+    if (this._currentExecutionPromise) {
+      await this._currentExecutionPromise
+    }
     this._running = false
+    this._stopping = false
   }
 
   isRunning () {
@@ -49,6 +59,7 @@ async function executeWithThreshold (func: Function, threshold: number): Promise
   await func()
   const end = Date.now()
 
+  // TODO: allow skipping sleep when stopping FunctionLooper
   const elapsed = end - start
   if (elapsed < threshold) {
     await sleep(threshold - elapsed)
