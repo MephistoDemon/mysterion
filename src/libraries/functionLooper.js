@@ -1,5 +1,5 @@
 // @flow
-import sleep from './sleep'
+import {sleep} from './time'
 
 /**
  * Executes given function infinitely.
