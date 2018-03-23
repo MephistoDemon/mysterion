@@ -2,7 +2,7 @@
 
 import lolex from 'lolex'
 import { executeWithThreshold, FunctionLooper } from '@/../libraries/functionLooper'
-import { nextTick } from '@/../libraries/time'
+import utils from '../utils'
 
 describe('utils', () => {
   let clock
@@ -17,7 +17,7 @@ describe('utils', () => {
 
   async function tickWithDelay (duration) {
     clock.tick(duration)
-    await nextTick()
+    await utils.nextTick()
   }
 
   describe('FunctionLooper', () => {

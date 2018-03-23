@@ -11,9 +11,9 @@ import propStore from '@/store/modules/proposal'
 import mainStore from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
 import {tequilapi} from '@/../libraries/api/tequilapi'
-import {nextTick} from '@/../libraries/time'
 import loadingScreen from '@/pages/VpnLoader'
 
+import utils from '../utils'
 import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
 import messages from '../../../src/app/messages'
@@ -52,7 +52,7 @@ describe('loading screen', () => {
 
   async function mountAndPrepareLoadingScreen (tequilapi) {
     const vm = await mountComponent(tequilapi)
-    await nextTick() // wait for delay inside loader callback
+    await utils.nextTick() // wait for delay inside loader callback
     clock.tick(config.loadingScreenDelay) // skip loader delay
     return vm
   }
