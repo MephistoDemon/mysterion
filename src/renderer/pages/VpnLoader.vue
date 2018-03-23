@@ -4,7 +4,7 @@
   import type from '@/store/types'
   import config from '@/config'
   import messages from '../../app/messages'
-  import {sleep} from '../../libraries/time'
+  import sleep from '../../libraries/sleep'
   import bugReporter from '../../app/bug-reporting'
 
   async function identityGet ({dispatch, commit}) {
