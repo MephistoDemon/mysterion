@@ -13,6 +13,7 @@ import errorStore from '@/store/modules/errors'
 import {tequilapi} from '@/../libraries/api/tequilapi'
 import loadingScreen from '@/pages/VpnLoader'
 
+import utils from '../utils'
 import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
 import messages from '../../../src/app/messages'
@@ -47,11 +48,11 @@ async function mountComponent (tequilapi) {
 
 describe('loading screen', () => {
   let mock
-  let realDelay, clock
+  let clock
 
   async function mountAndPrepareLoadingScreen (tequilapi) {
     const vm = await mountComponent(tequilapi)
-    await realDelay(10) // wait for delay inside loader
+    await utils.nextTick() // wait for delay inside loader callback
     clock.tick(config.loadingScreenDelay) // skip loader delay
     return vm
   }
@@ -60,8 +61,6 @@ describe('loading screen', () => {
     mock = new MockAdapter(tequilapi.__axio)
     mock.onGet('/healthcheck').reply(200, {version: {commit: 'caed3112'}})
 
-    const realSetTimeout = setTimeout
-    realDelay = time => new Promise(resolve => realSetTimeout(() => resolve(), time))
     clock = lolex.install()
   })
 

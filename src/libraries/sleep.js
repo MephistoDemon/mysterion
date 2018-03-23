@@ -1,7 +1,7 @@
 /**
  * Returns a promise that is resolved after a given period of time
  * @param {number} time - time to take for promise resolution
- * @returns {Promise<any>}
+ * @returns {Promise<void>}
  */
 export default function (time) {
   return new Promise(resolve => {

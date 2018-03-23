@@ -68,4 +68,12 @@ function fakeTequilapiManipulator () {
   }
 }
 
-export default { fakeTequilapiManipulator }
+/**
+ * Returns a promise that is resolved after processing all currently queued events.
+ * @returns {Promise<void>}
+ */
+function nextTick () {
+  return new Promise(resolve => process.nextTick(resolve))
+}
+
+export default { fakeTequilapiManipulator, nextTick }
