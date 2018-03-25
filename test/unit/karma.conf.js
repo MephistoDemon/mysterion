@@ -54,9 +54,11 @@ module.exports = config => {
     frameworks: ['mocha', 'chai'],
     files: [
       '../../test/unit/index.js',
+      '../../src/**/*.spec.js'
     ],
     preprocessors: {
-      './index.js': ['webpack', 'sourcemap']
+      './index.js': ['webpack', 'sourcemap'],
+      '../../src/**/*.spec.js': ['webpack', 'sourcemap']
     },
     reporters: reporters,
     webpack: webpackConfig,

@@ -41,7 +41,9 @@
       "./bin/config"
     ],
     "extraResources": [
-      "./static/icons/trayTemplate.png"
+      "./static/icons/trayTemplate.png",
+      "./static/terms/terms.html",
+      "./static/terms/termsVersion.txt"
     ],
     "dmg": {
       "contents": [

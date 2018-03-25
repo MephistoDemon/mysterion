@@ -8,11 +8,11 @@ import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess, logLevel as processLogLevel} from '../libraries/mysterium-client/index'
 import bugReporter from './bug-reporting'
 
-function MysterionFactory (config, termsContent, termsVersion) {
+function MysterionFactory (config) {
   const tequilApi = new TequilAPI()
   return new Mysterion({
     config,
-    terms: new Terms(config.userDataDirectory, termsContent, termsVersion),
+    terms: new Terms(path.join(__static, 'terms'), config.userDataDirectory),
     installer: new MysteriumDaemonInstaller(config),
     monitoring: new ProcessMonitoring(tequilApi),
     process: new MysteriumProcess(tequilApi, config.userDataDirectory)
@@ -47,8 +47,15 @@ class Mysterion {
   }
 
   async bootstrap () {
+    let termsAccepted
+    try {
+      termsAccepted = this.terms.isAccepted()
+    } catch (e) {
+      bugReporter.main.captureException(e)
+      termsAccepted = false
+    }
     this.window = new Window(
-      this.terms.accepted()
+      termsAccepted
         ? this.config.windows.app
         : this.config.windows.terms,
       this.config.windows.url
@@ -63,7 +70,7 @@ class Mysterion {
 
     // make sure terms are up to date and accepted
     // declining terms will quit the app
-    if (!this.terms.accepted()) {
+    if (!this.terms.isAccepted()) {
       try {
         const accepted = await this.acceptTerms()
         if (!accepted) {
@@ -121,7 +128,7 @@ class Mysterion {
     this.window.send(communication.TERMS_ACCEPTED)
 
     try {
-      this.terms.store()
+      this.terms.accept()
     } catch (e) {
       console.error(e)
       throw new Error('Failed to make a local copy of terms and conditions. Please restart the app and try again.')

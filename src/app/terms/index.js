@@ -1,55 +1,58 @@
+/* @flow */
 import fs from 'fs'
 import path from 'path'
-import bugReporter from '../bug-reporting'
 
-const TermsFileName = 'terms.json'
+export const termsFileName = 'terms.html'
+export const versionFileName = 'version.txt'
 
 class Terms {
-  constructor (directory, content, version) {
-    this.directory = directory
-    this.content = content
-    this.version = version
+  exportDirectory: string
+  termsHtml: string
+  version: string
+
+  constructor (termsSrcDir: string, exportDirectory: string) {
+    this.exportDirectory = exportDirectory
+    this.termsHtml = fs.readFileSync(path.join(termsSrcDir, 'terms.html')).toString()
+    this.version = fs.readFileSync(path.join(termsSrcDir, 'termsVersion.txt')).toString()
   }
 
-  accepted () {
-    let path = this._getTermsPath()
+  isAccepted (): boolean {
+    let path = this._getExportedVersionPath()
     if (!fs.existsSync(path)) {
       return false
     }
 
     try {
-      let contents = JSON.parse(fs.readFileSync(path))
-      return contents.version === this.version
+      let contents = fs.readFileSync(path).toString()
+      return contents === this.version
     } catch (e) {
-      bugReporter.main.captureException(e)
-      console.error('unable to parse terms JSON', e.message)
+      console.error('unable to parse user accepted terms version file', e.message)
       return false
     }
   }
 
-  store () {
-    let contents = JSON.stringify({
-      content: this.content,
-      version: this.version
-    })
-
-    try {
-      fs.writeFileSync(this._getTermsPath(), contents)
-    } catch (e) {
-      throw new Error('Failed to store terms.')
-    }
+  /**
+   * @throws exception when write file fails
+   */
+  accept () {
+    fs.writeFileSync(this._getExportedTermsPath(), this.termsHtml)
+    fs.writeFileSync(this._getExportedVersionPath(), this.version)
   }
 
-  getContent () {
-    return this.content
+  getContent (): string {
+    return this.termsHtml
   }
 
-  getVersion () {
+  getVersion (): string {
     return this.version
   }
 
-  _getTermsPath () {
-    return path.join(this.directory, TermsFileName)
+  _getExportedVersionPath (): string {
+    return path.join(this.exportDirectory, versionFileName)
+  }
+
+  _getExportedTermsPath (): string {
+    return path.join(this.exportDirectory, termsFileName)
   }
 }
 

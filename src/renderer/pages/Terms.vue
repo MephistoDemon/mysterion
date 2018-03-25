@@ -3,7 +3,7 @@
     <div class="terms-content">
       <div style="height:10vh;border-bottom:1px solid #eee"></div>
       <div class="terms-box">
-        <pre>{{ termsAndConditions.content }}</pre>
+        <div style="padding:1rem 8rem;" v-html="termsAndConditions.content"></div>
       </div>
     </div>
     <div class="terms-actions">
@@ -16,8 +16,12 @@
   import {ipcRenderer} from 'electron'
   import {mapGetters} from 'vuex'
   import communication from '../../app/communication'
+  import termsHtml from '@/assets/terms.html'
   export default {
     name: 'terms',
+    data () {
+      return {termsHtml}
+    },
     methods: {
       accept () {
         ipcRenderer.send(communication.TERMS_ANSWERED, true)
@@ -41,11 +45,6 @@
     .terms-box {
       height: 80vh;
       overflow: scroll;
-      pre {
-        white-space: pre-line;
-        padding: 1rem 8rem;
-        max-width: 100vw;
-      }
     }
     .terms-actions {
       position: fixed;
