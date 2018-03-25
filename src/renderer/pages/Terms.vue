@@ -16,12 +16,9 @@
   import {ipcRenderer} from 'electron'
   import {mapGetters} from 'vuex'
   import communication from '../../app/communication'
-  import termsHtml from '@/assets/terms.html'
+  
   export default {
     name: 'terms',
-    data () {
-      return {termsHtml}
-    },
     methods: {
       accept () {
         ipcRenderer.send(communication.TERMS_ANSWERED, true)
