@@ -3,6 +3,7 @@ import Terms, {termsFileName, versionFileName} from './index'
 import fs from 'fs'
 import path from 'path'
 import util from 'util'
+import mkDirByPathSync from '../../libraries/mkDirByPathSync'
 
 const unlinkAsync = util.promisify(fs.unlink)
 const rmDirAsync = util.promisify(fs.rmdir)
@@ -13,8 +14,8 @@ const termsSrcDir = './static/terms'
 describe('Terms', () => {
   const terms = new Terms(termsSrcDir, mockDir)
 
-  before(function (done) {
-    fs.mkdir(mockDir, done)
+  before(function () {
+    mkDirByPathSync(mockDir)
   })
 
   after(async function () {
