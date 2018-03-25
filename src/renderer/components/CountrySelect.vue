@@ -9,6 +9,7 @@
                      :loading="countriesIsLoading"
                      :searchable="false"
                      :show-labels="false"
+                     @open="fetchCountries"
                      @input="onChange">
             <template slot="option" slot-scope="props">
                 <div class="multiselect__flag">
@@ -50,9 +51,6 @@
 
   export default {
     name: 'CountrySelect',
-    props: {
-      value: {}
-    },
     components: {
       Multiselect,
       IconWorld
@@ -91,10 +89,6 @@
       }
     },
     mounted () {
-      this.fetchCountries()
-      setInterval(() => {
-        this.fetchCountries()
-      }, 10000)
     }
   }
 </script>

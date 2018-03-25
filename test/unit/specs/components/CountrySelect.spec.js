@@ -39,7 +39,7 @@ const tequilapiProposalsResponse = {
 const tequilapiConstructor = (teqAddr) => {
   return {
     proposal: {
-      list: async () => {
+      list: () => {
         return tequilapiProposalsResponse
       }
     }
@@ -49,18 +49,16 @@ const CountrySelect = CountrySelectInjector({
   '@/../libraries/api/tequilapi': tequilapiConstructor
 })
 
-const mountWithStore = function () {
-  const Constructor = Vue.extend(CountrySelect)
-  const vm = new Constructor().$mount()
+describe.only('CountrySelect', () => {
+  let vm
+  before(function () {
+    vm = new Vue(CountrySelect).$mount()
+  })
 
-  return vm
-}
-describe('CountrySelect', () => {
   it('renders a list item for each proposal', async () => {
-    const vm = mountWithStore()
+    vm.fetchCountries()
     await Vue.nextTick()
     await Vue.nextTick()
-
     expect(vm.countriesList).to.have.lengthOf(4)
     expect(vm.$el.querySelectorAll('.multiselect__option-title')).to.have.lengthOf(4)
     expect(vm.$el.textContent).to.contain('Lithuania')
@@ -70,10 +68,6 @@ describe('CountrySelect', () => {
   })
 
   it('clicking an item changes v-model', async () => {
-    const vm = mountWithStore()
-    await Vue.nextTick()
-    await Vue.nextTick()
-
     const countryExpected = {
       label: 'Lithuania',
       id: '0x1',
