@@ -12,21 +12,20 @@ const defaultStatistics = {
 
 const state = {
   ip: null,
-  // TODO: undo renaming
-  remoteStatus: connectionStatus.NOT_CONNECTED,
+  status: connectionStatus.NOT_CONNECTED,
   statistics: defaultStatistics,
   actionLoopers: {}
 }
 
 const getters = {
-  status: state => state.remoteStatus,
+  status: state => state.status,
   connection: state => state,
   ip: state => state.ip
 }
 
 const mutations = {
-  [type.SET_CONNECTION_STATUS] (state, remoteStatus) {
-    state.remoteStatus = remoteStatus
+  [type.SET_CONNECTION_STATUS] (state, status) {
+    state.status = status
   },
   [type.CONNECTION_STATISTICS] (state, statistics) {
     state.statistics = statistics
@@ -86,7 +85,7 @@ const actions = {
     }
   },
   async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus) {
-    const oldStatus = state.remoteStatus
+    const oldStatus = state.status
     if (oldStatus === newStatus) {
       return
     }

@@ -35,7 +35,7 @@ describe('mutations', () => {
     it('updates remote status', () => {
       const state = {}
       connectionStatus(state, 'TESTING')
-      expect(state).to.eql({ remoteStatus: 'TESTING' })
+      expect(state).to.eql({ status: 'TESTING' })
     })
   })
 
@@ -257,7 +257,7 @@ describe('actions', () => {
       const looper = new FunctionLooper(noop, 1000)
       looper.start()
       const state = {
-        remoteStatus: connectionStatus.CONNECTED,
+        status: connectionStatus.CONNECTED,
         actionLoopers: {
           [type.CONNECTION_STATISTICS]: looper
         }
@@ -281,7 +281,7 @@ describe('actions', () => {
       const noop = () => {}
       const looper = new FunctionLooper(noop, 1000)
       const state = {
-        remoteStatus: connectionStatus.CONNECTED,
+        status: connectionStatus.CONNECTED,
         actionLoopers: {
           [type.CONNECTION_STATISTICS]: looper
         }
