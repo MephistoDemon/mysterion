@@ -136,52 +136,52 @@ describe('utils', () => {
       thresholdDone = false
     })
 
-    it('executes function with sync function', async () => {
-      const executePromise = executeWithThreshold(syncFunc, 10000).then(() => { thresholdDone = true })
+    describe('with sync function', () => {
+      it('executes function', async () => {
+        executeWithThreshold(syncFunc, 10000).then(() => { thresholdDone = true })
 
-      // not complete after 9s
-      await tickWithDelay(9000)
-      expect(funcDone).to.eql(true)
-      expect(thresholdDone).to.eql(false)
+        // not complete after 9s
+        await tickWithDelay(9000)
+        expect(funcDone).to.eql(true)
+        expect(thresholdDone).to.eql(false)
 
-      // complete after 10s
-      await tickWithDelay(9000)
-      expect(thresholdDone).to.eql(true)
-
-      await executePromise
+        // complete after 10s
+        await tickWithDelay(9000)
+        expect(thresholdDone).to.eql(true)
+      })
     })
 
-    it('executes function with async function', async () => {
-      const fastAsyncFunc = asyncFunc(5000)
-      const executePromise = executeWithThreshold(fastAsyncFunc, 10000).then(() => { thresholdDone = true })
+    describe('with async function', () => {
+      it('executes function', async () => {
+        const fastAsyncFunc = asyncFunc(5000)
+        executeWithThreshold(fastAsyncFunc, 10000).then(() => { thresholdDone = true })
 
-      // not complete after 9s
-      await tickWithDelay(9000)
-      expect(funcDone).to.eql(true)
-      expect(thresholdDone).to.eql(false)
+        // not complete after 9s
+        await tickWithDelay(9000)
+        expect(funcDone).to.eql(true)
+        expect(thresholdDone).to.eql(false)
 
-      // complete after 10s
-      await tickWithDelay(1000)
-      expect(thresholdDone).to.eql(true)
-
-      await executePromise
+        // complete after 10s
+        await tickWithDelay(1000)
+        expect(thresholdDone).to.eql(true)
+      })
     })
 
-    it('executes function with slow async function', async () => {
-      const slowAsyncFunc = asyncFunc(5000)
-      const executePromise = executeWithThreshold(slowAsyncFunc, 1000).then(() => { thresholdDone = true })
+    describe('with slow async function', () => {
+      it('executes function', async () => {
+        const slowAsyncFunc = asyncFunc(5000)
+        executeWithThreshold(slowAsyncFunc, 1000).then(() => { thresholdDone = true })
 
-      // not complete after 4s
-      await tickWithDelay(4000)
-      expect(funcDone).to.eql(false)
-      expect(thresholdDone).to.eql(false)
+        // not complete after 4s
+        await tickWithDelay(4000)
+        expect(funcDone).to.eql(false)
+        expect(thresholdDone).to.eql(false)
 
-      // complete after 10s
-      await tickWithDelay(6000)
-      expect(funcDone).to.eql(true)
-      expect(thresholdDone).to.eql(true)
-
-      await executePromise
+        // complete after 10s
+        await tickWithDelay(6000)
+        expect(funcDone).to.eql(true)
+        expect(thresholdDone).to.eql(true)
+      })
     })
   })
 })
