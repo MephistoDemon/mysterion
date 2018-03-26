@@ -13,7 +13,8 @@ class FunctionLooper {
   threshold: number
   _running: boolean
   _stopping: boolean
-  _currentExecutionPromise: Promise<void>
+  _currentExecutor: ThresholdExecutor
+  _currentPromise: Promise<void>
 
   constructor (func: Function, threshold: number) {
     this.func = func
@@ -29,10 +30,9 @@ class FunctionLooper {
     const loop = async () => {
       // eslint-disable-next-line no-unmodified-loop-condition
       while (this._running && !this._stopping) {
-        this._currentExecutionPromise = new Promise(resolve => {
-          executeWithThreshold(this.func, this.threshold).then(() => { resolve() })
-        })
-        await this._currentExecutionPromise
+        this._currentExecutor = new ThresholdExecutor(this.func, this.threshold)
+        this._currentPromise = this._currentExecutor.execute()
+        await this._currentPromise
       }
     }
 
@@ -42,9 +42,10 @@ class FunctionLooper {
 
   async stop () {
     this._stopping = true
-    if (this._currentExecutionPromise) {
-      await this._currentExecutionPromise
-    }
+
+    this._currentExecutor.cancel()
+    await this._currentPromise
+
     this._running = false
     this._stopping = false
   }
@@ -54,16 +55,46 @@ class FunctionLooper {
   }
 }
 
-async function executeWithThreshold (func: Function, threshold: number): Promise<void> {
-  const start = Date.now()
-  await func()
-  const end = Date.now()
+/**
+ * Executes given function and sleeps for remaining time.
+ * If .cancel() is invoked, than sleep is skipped after function finishes.
+ */
+class ThresholdExecutor {
+  _func: Function
+  _threshold: number
+  _canceled: boolean
 
-  // TODO: allow skipping sleep when stopping FunctionLooper
-  const elapsed = end - start
-  if (elapsed < threshold) {
-    await sleep(threshold - elapsed)
+  constructor (func: Function, threshold: number) {
+    this._func = func
+    this._threshold = threshold
+    this._canceled = false
+  }
+
+  /**
+   * Executes given function and sleeps for remaining time, if .cancel() was not invoked.
+   * @returns {Promise<void>}
+   */
+  async execute (): Promise<void> {
+    const elapsed = await this._timedExecution()
+    if (this._canceled || elapsed >= this._threshold) {
+      return
+    }
+    await sleep(this._threshold - elapsed)
+  }
+
+  /**
+   * Forces currently function execution to skip sleep.
+   */
+  cancel () {
+    this._canceled = true
+  }
+
+  async _timedExecution (): Promise<number> {
+    const start = Date.now()
+    await this._func()
+    const end = Date.now()
+    return end - start
   }
 }
 
-export { FunctionLooper, executeWithThreshold }
+export { FunctionLooper, ThresholdExecutor }

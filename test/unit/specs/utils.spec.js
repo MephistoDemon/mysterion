@@ -2,7 +2,7 @@
 // TODO: rename file to functionLooper.spec.js
 
 import lolex from 'lolex'
-import { executeWithThreshold, FunctionLooper } from '@/../libraries/functionLooper'
+import { FunctionLooper, ThresholdExecutor } from '@/../libraries/functionLooper'
 import sleep from '@/../libraries/sleep'
 import utils from '../utils'
 
@@ -92,7 +92,7 @@ describe('utils', () => {
         expect(stopped).to.eql(false)
         expect(counter).to.eql(0)
 
-        await tickWithDelay(1000)
+        await tickWithDelay(400)
         expect(stopped).to.eql(true)
         expect(counter).to.eql(1)
       })
@@ -115,7 +115,7 @@ describe('utils', () => {
     })
   })
 
-  describe('executeWithThreshold', () => {
+  describe('ThresholdExecutor', () => {
     let funcDone, thresholdDone
 
     const syncFunc = async () => {
@@ -136,9 +136,14 @@ describe('utils', () => {
       thresholdDone = false
     })
 
+    function markThresholdDone () {
+      thresholdDone = true
+    }
+
     describe('with sync function', () => {
       it('executes function', async () => {
-        executeWithThreshold(syncFunc, 10000).then(() => { thresholdDone = true })
+        const executor = new ThresholdExecutor(syncFunc, 10000)
+        executor.execute().then(markThresholdDone)
 
         // not complete after 9s
         await tickWithDelay(9000)
@@ -154,7 +159,8 @@ describe('utils', () => {
     describe('with async function', () => {
       it('executes function', async () => {
         const fastAsyncFunc = asyncFunc(5000)
-        executeWithThreshold(fastAsyncFunc, 10000).then(() => { thresholdDone = true })
+        const executor = new ThresholdExecutor(fastAsyncFunc, 10000)
+        executor.execute().then(markThresholdDone)
 
         // not complete after 9s
         await tickWithDelay(9000)
@@ -165,12 +171,28 @@ describe('utils', () => {
         await tickWithDelay(1000)
         expect(thresholdDone).to.eql(true)
       })
+
+      it('allows canceling sleep', async () => {
+        const slowAsyncFunc = asyncFunc(5000)
+        const executor = new ThresholdExecutor(slowAsyncFunc, 10000)
+        executor.execute().then(markThresholdDone)
+
+        // TODO: stop
+        executor.cancel()
+
+        // complete after 5s
+        await tickWithDelay(5000)
+        expect(thresholdDone).to.eql(true)
+      })
+
+      // TODO: canceling in the middle of sleep?
     })
 
     describe('with slow async function', () => {
       it('executes function', async () => {
         const slowAsyncFunc = asyncFunc(5000)
-        executeWithThreshold(slowAsyncFunc, 1000).then(() => { thresholdDone = true })
+        const executor = new ThresholdExecutor(slowAsyncFunc, 1000)
+        executor.execute().then(markThresholdDone)
 
         // not complete after 4s
         await tickWithDelay(4000)
