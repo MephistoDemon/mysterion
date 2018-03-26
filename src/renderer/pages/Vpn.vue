@@ -2,11 +2,11 @@
   <div class="page">
     <div class="page__control control">
       <div class="control__top">
-        <h1 :class="{'is-grey':status===-1}" v-text="statusTitle"></h1>
+        <h1 :class="{'is-grey':statusCode===-1}" v-text="statusTitle"></h1>
         <div class="control__location" v-if="ip">current IP: {{ip}}</div>
       </div>
       <div class="control__bottom">
-        <country-select v-model="country" class="control__countries" :class="{'is-disabled': status!==-1}"/>
+        <country-select v-model="country" class="control__countries" :class="{'is-disabled': statusCode!==-1}"/>
         <connection-button :provider-id="providerIdentity"></connection-button>
       </div>
       <div class="control__footer">
@@ -52,18 +52,18 @@
       }
     },
     computed: {
-      ...mapGetters(['connection', 'ip', 'errorMessage', 'showError', 'visibleStatus']),
-      status () {
-        switch (this.visibleStatus) {
+      ...mapGetters(['connection', 'status', 'ip', 'errorMessage', 'showError']),
+      statusCode () {
+        switch (this.status) {
           case 'NotConnected': return -1
           case 'Connecting': return 0
           case 'Connected': return 1
         }
       },
       statusTitle () {
-        switch (this.visibleStatus) {
+        switch (this.status) {
           case 'NotConnected': return 'Disconnected'
-          default: return this.visibleStatus
+          default: return this.status
         }
       },
       providerIdentity () {

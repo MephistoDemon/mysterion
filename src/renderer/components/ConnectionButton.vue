@@ -22,12 +22,12 @@
     },
     computed: {
       ...mapGetters({
-        visibleStatus: 'visibleStatus',
+        status: 'status',
         consumerId: 'currentIdentity'
       }),
       buttonText: (vm) => {
         let text = 'Connect'
-        switch (vm.visibleStatus) {
+        switch (vm.$store.getters.status) {
           case type.tequilapi.CONNECTED:
             text = 'Disconnect'
             break
@@ -44,7 +44,7 @@
         return text
       },
       buttonTransparent: (comp) => {
-        const status = comp.visibleStatus
+        const status = comp.$store.getters.status
         const isTransparent = (
           status === type.tequilapi.CONNECTING ||
           status === type.tequilapi.DISCONNECTING ||
@@ -57,7 +57,7 @@
     methods: {
       // TODO: rename - name is misleading when this button executes 'disconnect'
       connect: function () {
-        const status = this.visibleStatus
+        const status = this.$store.getters.status
         const canConnect = status === type.tequilapi.NOT_CONNECTED
         const canDisconnect = status === type.tequilapi.CONNECTED
 

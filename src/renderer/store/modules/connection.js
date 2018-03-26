@@ -12,16 +12,16 @@ const defaultStatistics = {
 
 const state = {
   ip: null,
+  // TODO: undo renaming
   remoteStatus: connectionStatus.NOT_CONNECTED,
   statistics: defaultStatistics,
   actionLoopers: {}
 }
 
 const getters = {
+  status: state => state.remoteStatus,
   connection: state => state,
-  ip: state => state.ip,
-  // TODO: remove
-  visibleStatus: state => state.remoteStatus
+  ip: state => state.ip
 }
 
 const mutations = {
