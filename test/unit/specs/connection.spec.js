@@ -343,7 +343,7 @@ describe('actions', () => {
       const committed = await executeAction(type.CONNECT, state)
       expect(committed).to.eql([
         {
-          key: type.SET_VISIBLE_STATUS,
+          key: type.SET_CONNECTION_STATUS,
           value: connectionStatus.CONNECTING
         },
         {
@@ -365,7 +365,7 @@ describe('actions', () => {
       }
       const committed = await executeAction(type.DISCONNECT, state)
       expect(committed[0]).to.eql({
-        key: type.SET_VISIBLE_STATUS,
+        key: type.SET_CONNECTION_STATUS,
         value: connectionStatus.DISCONNECTING
       })
     })

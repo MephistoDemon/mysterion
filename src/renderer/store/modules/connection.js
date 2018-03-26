@@ -48,6 +48,7 @@ const mutations = {
   [type.REMOVE_ACTION_LOOPER] (state, action) {
     delete state.actionLoopers[action]
   },
+  // TODO: remove
   [type.SET_VISIBLE_STATUS] (state, value) {
     state.visibleStatus = value
   }
@@ -126,7 +127,7 @@ const actions = {
     if (looper) {
       await looper.stop()
     }
-    commit(type.SET_VISIBLE_STATUS, connectionStatus.CONNECTING)
+    await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.CONNECTING)
     commit(type.CONNECTION_STATISTICS_RESET)
     try {
       await tequilapi.connection.connect(consumerId, providerId)
@@ -148,7 +149,7 @@ const actions = {
       await looper.stop()
     }
     try {
-      commit(type.SET_VISIBLE_STATUS, type.tequilapi.DISCONNECTING)
+      await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.DISCONNECTING)
       let res = await tequilapi.connection.disconnect()
       dispatch(type.FETCH_CONNECTION_STATUS)
       dispatch(type.CONNECTION_IP)
