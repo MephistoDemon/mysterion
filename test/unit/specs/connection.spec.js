@@ -110,16 +110,6 @@ describe('mutations', () => {
       })
     })
   })
-
-  describe('SET_VISIBLE_STATUS', () => {
-    it('sets flag in state', () => {
-      const state = {
-        visibleStatus: null
-      }
-      connection.mutations[type.SET_VISIBLE_STATUS](state, connectionStatus.CONNECTING)
-      expect(state.visibleStatus).to.eql(connectionStatus.CONNECTING)
-    })
-  })
 })
 
 describe('actions', () => {
@@ -299,20 +289,6 @@ describe('actions', () => {
 
       const committed = await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.CONNECTED)
       expect(committed).to.eql([])
-    })
-
-    it('resets visible status', async () => {
-      const state = {
-        visibleStatus: connectionStatus.CONNECTING,
-        remoteStatus: connectionStatus.NOT_CONNECTED
-      }
-      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.NOT_CONNECTED)
-      expect(committed).to.eql([
-        {
-          key: type.SET_VISIBLE_STATUS,
-          value: null
-        }
-      ])
     })
   })
 

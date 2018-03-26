@@ -13,7 +13,6 @@ const defaultStatistics = {
 const state = {
   ip: null,
   remoteStatus: connectionStatus.NOT_CONNECTED,
-  visibleStatus: null,
   statistics: defaultStatistics,
   actionLoopers: {}
 }
@@ -21,12 +20,8 @@ const state = {
 const getters = {
   connection: state => state,
   ip: state => state.ip,
-  visibleStatus: state => {
-    if (state.visibleStatus) {
-      return state.visibleStatus
-    }
-    return state.remoteStatus
-  }
+  // TODO: remove
+  visibleStatus: state => state.remoteStatus
 }
 
 const mutations = {
@@ -47,10 +42,6 @@ const mutations = {
   },
   [type.REMOVE_ACTION_LOOPER] (state, action) {
     delete state.actionLoopers[action]
-  },
-  // TODO: remove
-  [type.SET_VISIBLE_STATUS] (state, value) {
-    state.visibleStatus = value
   }
 }
 
@@ -96,9 +87,6 @@ const actions = {
   },
   async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus) {
     const oldStatus = state.remoteStatus
-    if (state.visibleStatus) {
-      commit(type.SET_VISIBLE_STATUS, null)
-    }
     if (oldStatus === newStatus) {
       return
     }
