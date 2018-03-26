@@ -5,6 +5,7 @@ import messages from '../../../app/messages'
 import bugReporter from '../../../app/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
+import config from '@/config'
 const tequilapi = tequilAPI()
 
 const defaultStatistics = {
@@ -94,7 +95,7 @@ const actions = {
     if (newStatus === connectionStatus.CONNECTED) {
       await dispatch(type.START_ACTION_LOOPING, {
         action: type.CONNECTION_STATISTICS,
-        threshold: 100
+        threshold: config.statisticsUpdateThreshold
       })
     }
     if (oldStatus === connectionStatus.CONNECTED) {
