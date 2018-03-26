@@ -6,7 +6,7 @@ const state = {
   init: '',
   visual: 'head',
   navOpen: false,
-  buildInfo: {},
+  clientBuildInfo: {},
   navVisible: true,
   errorMessage: null,
   showError: false
@@ -17,14 +17,14 @@ const getters = {
   visual: state => state.visual,
   navOpen: state => state.navOpen,
   navVisible: state => state.navVisible && !(state.init === type.INIT_PENDING),
-  buildInfo: state => state.buildInfo,
+  clientBuildInfo: state => state.clientBuildInfo,
   errorMessage: state => state.errorMessage,
   showError: state => state.showError
 }
 
 const mutations = {
   [type.CLIENT_BUILD_INFO] (state, buildInfo) {
-    state.buildInfo = buildInfo
+    state.clientBuildInfo = buildInfo
   },
   [type.SET_NAV_OPEN] (state, open) {
     state.navOpen = open

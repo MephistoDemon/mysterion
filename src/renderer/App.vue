@@ -37,9 +37,13 @@
       AppModal
     },
     computed: {
-      ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'buildInfo']),
+      ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
       version () {
-        return `v${remote.getGlobal('__version')}${this.buildInfo.buildNumber ? ' Build id: ' + this.buildInfo.buildNumber : ''}`
+        const mysterionSemantic = remote.getGlobal('__version')
+        const mysterionBuildNo = remote.getGlobal('__travisBuildNumber')
+        const mysterionVisibleVer = (mysterionSemantic === '0.0.1') ? mysterionBuildNo : `${mysterionSemantic}(${mysterionBuildNo})`
+        const clientVisibleVer = this.clientBuildInfo.buildNumber ? this.clientBuildInfo.buildNumber : ''
+        return `v${mysterionVisibleVer}.${clientVisibleVer}`
       }
     },
     async mounted () {
