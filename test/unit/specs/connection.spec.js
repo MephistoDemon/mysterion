@@ -301,17 +301,13 @@ describe('actions', () => {
       expect(committed).to.eql([])
     })
 
-    it('resets visible status when remote status changes', async () => {
+    it('resets visible status', async () => {
       const state = {
         visibleStatus: connectionStatus.CONNECTING,
         remoteStatus: connectionStatus.NOT_CONNECTED
       }
-      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.DISCONNECTING)
+      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.NOT_CONNECTED)
       expect(committed).to.eql([
-        {
-          key: type.SET_CONNECTION_STATUS,
-          value: connectionStatus.DISCONNECTING
-        },
         {
           key: type.SET_VISIBLE_STATUS,
           value: null
@@ -341,7 +337,10 @@ describe('actions', () => {
 
   describe('CONNECT', () => {
     it('marks connecting status, resets statistics, hides error', async () => {
-      const committed = await executeAction(type.CONNECT)
+      const state = {
+        actionLoopers: {}
+      }
+      const committed = await executeAction(type.CONNECT, state)
       expect(committed).to.eql([
         {
           key: type.SET_VISIBLE_STATUS,
@@ -361,7 +360,10 @@ describe('actions', () => {
 
   describe('DISCONNECT', () => {
     it('marks disconnecting status', async () => {
-      const committed = await executeAction(type.DISCONNECT)
+      const state = {
+        actionLoopers: {}
+      }
+      const committed = await executeAction(type.DISCONNECT, state)
       expect(committed[0]).to.eql({
         key: type.SET_VISIBLE_STATUS,
         value: connectionStatus.DISCONNECTING

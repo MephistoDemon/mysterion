@@ -95,6 +95,9 @@ const actions = {
   },
   async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus) {
     const oldStatus = state.remoteStatus
+    if (state.visibleStatus) {
+      commit(type.SET_VISIBLE_STATUS, null)
+    }
     if (oldStatus === newStatus) {
       return
     }
@@ -109,9 +112,6 @@ const actions = {
     if (oldStatus === connectionStatus.CONNECTED) {
       await dispatch(type.STOP_ACTION_LOOPING, type.CONNECTION_STATISTICS)
     }
-    if (state.visibleStatus) {
-      commit(type.SET_VISIBLE_STATUS, null)
-    }
   },
   async [type.CONNECTION_STATISTICS] ({commit}) {
     try {
@@ -121,10 +121,14 @@ const actions = {
       commit(type.SHOW_ERROR, err)
     }
   },
-  async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
+  async [type.CONNECT] ({commit, dispatch, state}, consumerId, providerId) {
+    const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
+    if (looper) {
+      await looper.stop()
+    }
+    commit(type.SET_VISIBLE_STATUS, connectionStatus.CONNECTING)
+    commit(type.CONNECTION_STATISTICS_RESET)
     try {
-      commit(type.SET_VISIBLE_STATUS, connectionStatus.CONNECTING)
-      commit(type.CONNECTION_STATISTICS_RESET)
       await tequilapi.connection.connect(consumerId, providerId)
       commit(type.HIDE_ERROR)
     } catch (err) {
@@ -132,19 +136,30 @@ const actions = {
       let error = new Error('Connection to node failed.')
       error.original = err
       throw error
+    } finally {
+      if (looper) {
+        looper.start()
+      }
     }
   },
   async [type.DISCONNECT] ({commit, dispatch}) {
+    const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
+    if (looper) {
+      await looper.stop()
+    }
     try {
-      let res = tequilapi.connection.disconnect()
       commit(type.SET_VISIBLE_STATUS, type.tequilapi.DISCONNECTING)
-      res = await res
+      let res = await tequilapi.connection.disconnect()
       dispatch(type.FETCH_CONNECTION_STATUS)
       dispatch(type.CONNECTION_IP)
       return res
     } catch (err) {
       commit(type.SHOW_ERROR, err)
       throw (err)
+    } finally {
+      if (looper) {
+        looper.start()
+      }
     }
   }
 }
