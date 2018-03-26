@@ -3,7 +3,7 @@ process.env.BABEL_ENV = 'main'
 
 const path = require('path')
 const {dependencies, version} = require('../package.json')
-const {travisBuildNumber} = require('../travis-build-number')
+const {travisBuildNumber} = require('../travis-build-number.json')
 const {sentry} = require('../services_conf.json')
 const webpack = require('webpack')
 
