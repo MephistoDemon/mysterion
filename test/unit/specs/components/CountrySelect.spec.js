@@ -49,7 +49,7 @@ const CountrySelect = CountrySelectInjector({
   '@/../libraries/api/tequilapi': tequilapiConstructor
 })
 
-describe.only('CountrySelect', () => {
+describe('CountrySelect', () => {
   let vm
   before(function () {
     vm = new Vue(CountrySelect).$mount()
