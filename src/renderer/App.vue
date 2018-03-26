@@ -39,11 +39,11 @@
     computed: {
       ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
       version () {
-        const mysterionSemantic = remote.getGlobal('__version')
-        const mysterionBuildNo = remote.getGlobal('__travisBuildNumber')
-        const mysterionVisibleVer = (mysterionSemantic === '0.0.1') ? mysterionBuildNo : `${mysterionSemantic}(${mysterionBuildNo})`
-        const clientVisibleVer = this.clientBuildInfo.buildNumber ? this.clientBuildInfo.buildNumber : ''
-        return `v${mysterionVisibleVer}.${clientVisibleVer}`
+        const mysterionSemanticVersion = remote.getGlobal('__version')
+        const mysterionBuildNumber = remote.getGlobal('__travisBuildNumber')
+        const mysterionVisibleVersion = (mysterionSemanticVersion === '0.0.1') ? mysterionBuildNumber : `${mysterionSemanticVersion}(${mysterionBuildNumber})`
+        const clientVisibleVersion = this.clientBuildInfo.buildNumber ? this.clientBuildInfo.buildNumber : ''
+        return `v${mysterionVisibleVersion}.${clientVisibleVersion}`
       }
     },
     async mounted () {
