@@ -22,10 +22,10 @@ const mountWithStore = function () {
       connection: {
         ...conStore,
         actions: {
-          async [type.CONNECT] ({dispatch, commit}, consumerId, providerId) {
+          [type.CONNECT] ({dispatch, commit}) {
             commit(type.SET_CONNECTION_STATUS, type.tequilapi.CONNECTED)
           },
-          async [type.DISCONNECT] ({dispatch, commit}) {
+          [type.DISCONNECT] ({dispatch, commit}) {
             commit(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
           }
         }
