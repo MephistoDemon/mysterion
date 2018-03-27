@@ -22,6 +22,12 @@ function MysterionFactory (config) {
 class Mysterion {
   constructor ({config, terms, installer, monitoring, process}) {
     Object.assign(this, {config, terms, installer, monitoring, process})
+    try {
+      this.terms.load()
+    } catch (e) {
+      bugReporter.main.captureException(e)
+      this.sendErrorToRenderer('Failed to load terms')
+    }
   }
 
   run () {
@@ -47,15 +53,8 @@ class Mysterion {
   }
 
   async bootstrap () {
-    let termsAccepted
-    try {
-      termsAccepted = this.terms.isAccepted()
-    } catch (e) {
-      bugReporter.main.captureException(e)
-      termsAccepted = false
-    }
     this.window = new Window(
-      termsAccepted
+      this.terms.isAccepted()
         ? this.config.windows.app
         : this.config.windows.terms,
       this.config.windows.url
@@ -79,6 +78,7 @@ class Mysterion {
           return
         }
       } catch (e) {
+        bugReporter.main.captureException(e)
         return this.sendErrorToRenderer(e.message)
       }
     }
@@ -89,6 +89,7 @@ class Mysterion {
       try {
         await this.installer.install()
       } catch (e) {
+        bugReporter.main.captureException(e)
         console.error(e)
         return this.sendErrorToRenderer('Failed to install mysterium_client daemon. Please restart the app and grant permissions.')
       }
@@ -144,7 +145,7 @@ class Mysterion {
       try {
         this.window.send(communication.HEALTHCHECK, this.monitoring.isRunning())
       } catch (e) {
-        // expecting last send calls to fail when window is closed
+        bugReporter.main.captureException(e)
         return
       }
 

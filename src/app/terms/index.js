@@ -3,17 +3,22 @@ import fs from 'fs'
 import path from 'path'
 
 export const termsFileName = 'terms.html'
-export const versionFileName = 'version.txt'
+export const versionFileName = 'termsVersion.txt'
 
 class Terms {
-  exportDirectory: string
+  _termsSrcDir: string
+  exportDir: string
   termsHtml: string
   version: string
 
   constructor (termsSrcDir: string, exportDirectory: string) {
-    this.exportDirectory = exportDirectory
-    this.termsHtml = fs.readFileSync(path.join(termsSrcDir, 'terms.html')).toString()
-    this.version = fs.readFileSync(path.join(termsSrcDir, 'termsVersion.txt')).toString()
+    this.exportDir = exportDirectory
+    this._termsSrcDir = termsSrcDir
+  }
+
+  load () {
+    this.termsHtml = fs.readFileSync(path.join(this._termsSrcDir, termsFileName)).toString()
+    this.version = fs.readFileSync(path.join(this._termsSrcDir, versionFileName)).toString()
   }
 
   isAccepted (): boolean {
@@ -48,11 +53,11 @@ class Terms {
   }
 
   _getExportedVersionPath (): string {
-    return path.join(this.exportDirectory, versionFileName)
+    return path.join(this.exportDir, versionFileName)
   }
 
   _getExportedTermsPath (): string {
-    return path.join(this.exportDirectory, termsFileName)
+    return path.join(this.exportDir, termsFileName)
   }
 }
 

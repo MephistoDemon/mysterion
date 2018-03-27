@@ -2,7 +2,7 @@
 import path from 'path'
 import fs from 'fs'
 
-export default function mkDirByPathSync (targetDir: string, isRelativeToScript: ?boolean): void {
+export function make (targetDir: string, isRelativeToScript: ?boolean): void {
   const sep = path.sep
   const initDir = path.isAbsolute(targetDir) ? sep : ''
   const baseDir = isRelativeToScript ? __dirname : '.'
@@ -20,4 +20,4 @@ export default function mkDirByPathSync (targetDir: string, isRelativeToScript: 
   }, initDir)
 }
 
-
+export default {make}
