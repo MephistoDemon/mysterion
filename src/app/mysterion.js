@@ -5,7 +5,11 @@ import TequilAPI from '../libraries/api/tequilapi'
 import communication from './communication/index'
 import {app, ipcMain, Menu, Tray} from 'electron'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
-import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess, logLevel as processLogLevel} from '../libraries/mysterium-client/index'
+import {
+  Installer as MysteriumDaemonInstaller,
+  Process as MysteriumProcess,
+  logLevel as processLogLevel
+} from '../libraries/mysterium-client/index'
 import bugReporter from './bug-reporting'
 
 function MysterionFactory (config) {
@@ -53,8 +57,16 @@ class Mysterion {
   }
 
   async bootstrap () {
-    this.window = new Window(
+    let termsAccepted
+    try {
       this.terms.isAccepted()
+    } catch (e) {
+      termsAccepted = false
+      bugReporter.main.captureException(e)
+    }
+
+    this.window = new Window(
+      termsAccepted
         ? this.config.windows.app
         : this.config.windows.terms,
       this.config.windows.url
@@ -69,7 +81,7 @@ class Mysterion {
 
     // make sure terms are up to date and accepted
     // declining terms will quit the app
-    if (!this.terms.isAccepted()) {
+    if (!termsAccepted) {
       try {
         const accepted = await this.acceptTerms()
         if (!accepted) {

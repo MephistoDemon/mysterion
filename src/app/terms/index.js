@@ -21,19 +21,17 @@ class Terms {
     this.version = fs.readFileSync(path.join(this._termsSrcDir, versionFileName)).toString()
   }
 
+  /**
+   * @throws exception when exported version file reading fails
+   */
   isAccepted (): boolean {
     let path = this._getExportedVersionPath()
     if (!fs.existsSync(path)) {
       return false
     }
 
-    try {
-      let contents = fs.readFileSync(path).toString()
-      return contents === this.version
-    } catch (e) {
-      console.error('unable to parse user accepted terms version file', e.message)
-      return false
-    }
+    let contents = fs.readFileSync(path).toString()
+    return contents === this.version
   }
 
   /**
