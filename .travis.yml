@@ -19,16 +19,16 @@ install:
 - nvm install 9
 - curl -o- -L https://yarnpkg.com/install.sh | bash
 - source ~/.bashrc
-- npm install -g xvfb-maybe
+- yarn global add xvfb-maybe
 - yarn
 script:
-- npm run unit
+- yarn unit
 before_deploy:
 - FORCE_DOWNLOAD=1 npm run download:bins
-- npm run test:integration
-- npm run build
+- yarn test:integration
+- yarn build
 - mkdir binaries
-- cp build/Mysterion-0.0.1.dmg binaries
+- cp build/Mysterion-*.dmg binaries
 deploy:
   - provider: pages
     edge:
