@@ -29,7 +29,7 @@ before_deploy:
 - bash util_scripts/travis-number.sh
 - yarn build
 - mkdir binaries
-- cp build/Mysterion-*.dmg binaries
+- cp build/Mysterion-*.dmg binaries/Mysterion-latest.dmg
 deploy:
   - provider: pages
     edge:
