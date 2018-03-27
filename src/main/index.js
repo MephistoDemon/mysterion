@@ -5,7 +5,7 @@ import MysterionConfig from '../app/mysterion-config'
 import bugReporter from '../app/bug-reporting'
 
 global.__version = process.env.MYSTERION_VERSION
-global.__travisBuildNumber = process.env.TRAVIS_BUILD_NUMBER
+global.__buildNumber = process.env.BUILD_NUMBER
 global.__sentryURL = process.env.SENTRY.publicURL
 global.__static = MysterionConfig.staticDirectoryPath
 

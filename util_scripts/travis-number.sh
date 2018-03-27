@@ -2,6 +2,6 @@
 
 cat >./travis-build-number.json <<EOF
 {
-  "travisBuildNumber": "$TRAVIS_JOB_NUMBER"
+  "buildNumber": "$TRAVIS_JOB_NUMBER"
 }
 EOF

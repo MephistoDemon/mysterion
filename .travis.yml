@@ -26,6 +26,7 @@ script:
 before_deploy:
 - FORCE_DOWNLOAD=1 npm run download:bins
 - npm run test:integration
+- bash util_scripts/travis-number.sh
 - npm run build
 - mkdir binaries
 - cp build/Mysterion-0.0.1.dmg binaries

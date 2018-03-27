@@ -40,8 +40,8 @@
       ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
       version () {
         const mysterionSemanticVersion = remote.getGlobal('__version')
-        const mysterionBuildNumber = remote.getGlobal('__travisBuildNumber')
-        const mysterionVisibleVersion = (mysterionSemanticVersion === '0.0.1') ? mysterionBuildNumber : `${mysterionSemanticVersion}(${mysterionBuildNumber})`
+        const mysterionBuildNumber = remote.getGlobal('__buildNumber')
+        const mysterionVisibleVersion = `${mysterionSemanticVersion}(${mysterionBuildNumber})`
         const clientVisibleVersion = this.clientBuildInfo.buildNumber ? this.clientBuildInfo.buildNumber : ''
         return `v${mysterionVisibleVersion}.${clientVisibleVersion}`
       }
