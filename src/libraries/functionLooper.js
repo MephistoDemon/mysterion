@@ -75,7 +75,7 @@ class ThresholdExecutor {
    * @returns {Promise<void>}
    */
   async execute (): Promise<void> {
-    const elapsed = await this._timedExecution()
+    const elapsed = await this._executeAndGetDuration()
     if (this._canceled || elapsed >= this._threshold) {
       return
     }
@@ -89,7 +89,7 @@ class ThresholdExecutor {
     this._canceled = true
   }
 
-  async _timedExecution (): Promise<number> {
+  async _executeAndGetDuration (): Promise<number> {
     const start = Date.now()
     await this._func()
     const end = Date.now()
