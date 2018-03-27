@@ -57,7 +57,7 @@ const actions = {
       bugReporter.renderer.captureException(err)
     }
   },
-  async [type.START_ACTION_LOOPING] ({dispatch, commit, state}, {action, threshold}) {
+  [type.START_ACTION_LOOPING] ({dispatch, commit, state}, {action, threshold}) {
     const currentLooper = state.actionLoopers[action]
     if (currentLooper) {
       console.log('Warning: requested to start looping action which is already looping: ' + action)
