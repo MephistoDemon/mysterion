@@ -1,3 +1,4 @@
+import path from 'path'
 import Window from './window'
 import MysterionTray from './mysterionTray'
 import Terms from './terms/index'
