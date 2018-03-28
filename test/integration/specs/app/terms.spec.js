@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import Terms, {termsFileName, versionFileName} from '../../../../src/app/terms/index'
+import Terms, {termsFileName} from '../../../../src/app/terms/index'
 import fs from 'fs'
 import path from 'path'
 import util from 'util'
@@ -21,15 +21,13 @@ describe('Terms', () => {
 
   after(async () => {
     await unlinkAsync(path.join(mockDir, termsFileName))
-    await unlinkAsync(path.join(mockDir, versionFileName))
     await rmDirAsync(mockDir)
   })
 
-  it('can save terms html and version to destination folder', () => {
+  it('can save terms html to destination folder', () => {
     terms.accept()
     expect(terms.isAccepted()).to.be.true
     expect(fs.existsSync(path.join(mockDir, termsFileName))).to.be.true
-    expect(fs.existsSync(path.join(mockDir, versionFileName))).to.be.true
   })
 
   it('validates version of accepted terms', () => {

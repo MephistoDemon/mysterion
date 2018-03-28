@@ -126,8 +126,7 @@ class Mysterion {
 
   async acceptTerms () {
     this.window.send(communication.TERMS_REQUESTED, {
-      content: this.terms.getContent(),
-      version: this.terms.getVersion()
+      content: this.terms.getContent()
     })
 
     const termsAnswer = await this.window.on(communication.TERMS_ANSWERED)
