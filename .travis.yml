@@ -23,9 +23,12 @@ install:
 - yarn
 script:
 - yarn unit
-- yarn test:integration
+#run e2e on Pull Requests env only
+- if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+  - FORCE_DOWNLOAD=1 npm run download:bins
+  - yarn test:integration
+  fi
 before_deploy:
-- FORCE_DOWNLOAD=1 npm run download:bins
 - bash util_scripts/travis-number.sh
 - yarn build
 - mkdir binaries
