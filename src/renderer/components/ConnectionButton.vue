@@ -55,6 +55,7 @@
       }
     },
     methods: {
+      // TODO: rename - name is misleading when this button executes 'disconnect'
       connect: function () {
         const status = this.$store.getters.status
         const canConnect = status === type.tequilapi.NOT_CONNECTED

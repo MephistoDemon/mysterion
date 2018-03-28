@@ -1,7 +1,9 @@
 /* eslint no-unused-expressions: 0 */
+// TODO: rename file to functionLooper.spec.js
 
 import lolex from 'lolex'
-import { executeWithThreshold, FunctionLooper } from '@/../libraries/functionLooper'
+import { FunctionLooper, ThresholdExecutor } from '@/../libraries/functionLooper'
+import sleep from '@/../libraries/sleep'
 import utils from '../../helpers/utils'
 
 describe('utils', () => {
@@ -41,6 +43,18 @@ describe('utils', () => {
         await tickWithDelay(1000)
         expect(counter).to.eql(4)
       })
+
+      it('does not starts second loop when invoked twice', () => {
+        let counter = 0
+        async function increaseCounter () {
+          counter++
+        }
+
+        const looper = new FunctionLooper(increaseCounter, 1000)
+        looper.start()
+        looper.start()
+        expect(counter).to.eql(1)
+      })
     })
 
     describe('.stop', () => {
@@ -62,6 +76,26 @@ describe('utils', () => {
         await tickWithDelay(10000)
         expect(counter).to.eql(2)
       })
+
+      it('waits for the last execution', async () => {
+        let counter = 0
+        async function increaseCounter () {
+          await sleep(400)
+          counter++
+        }
+
+        const looper = new FunctionLooper(increaseCounter, 1000)
+        looper.start()
+
+        let stopped = false
+        looper.stop().then(() => { stopped = true })
+        expect(stopped).to.eql(false)
+        expect(counter).to.eql(0)
+
+        await tickWithDelay(400)
+        expect(stopped).to.eql(true)
+        expect(counter).to.eql(1)
+      })
     })
 
     describe('.isRunning', () => {
@@ -75,12 +109,13 @@ describe('utils', () => {
         expect(looper.isRunning()).to.eql(true)
 
         looper.stop()
+        await tickWithDelay(1000)
         expect(looper.isRunning()).to.eql(false)
       })
     })
   })
 
-  describe('executeWithThreshold', () => {
+  describe('ThresholdExecutor', () => {
     let funcDone, thresholdDone
 
     const syncFunc = async () => {
@@ -101,52 +136,74 @@ describe('utils', () => {
       thresholdDone = false
     })
 
-    it('executes function with sync function', async () => {
-      const executePromise = executeWithThreshold(syncFunc, 10000).then(() => { thresholdDone = true })
+    function markThresholdDone () {
+      thresholdDone = true
+    }
 
-      // not complete after 9s
-      await tickWithDelay(9000)
-      expect(funcDone).to.eql(true)
-      expect(thresholdDone).to.eql(false)
+    describe('with sync function', () => {
+      it('executes function', async () => {
+        const executor = new ThresholdExecutor(syncFunc, 10000)
+        executor.execute().then(markThresholdDone)
 
-      // complete after 10s
-      await tickWithDelay(9000)
-      expect(thresholdDone).to.eql(true)
+        // not complete after 9s
+        await tickWithDelay(9000)
+        expect(funcDone).to.eql(true)
+        expect(thresholdDone).to.eql(false)
 
-      await executePromise
+        // complete after 10s
+        await tickWithDelay(9000)
+        expect(thresholdDone).to.eql(true)
+      })
     })
 
-    it('executes function with async function', async () => {
-      const fastAsyncFunc = asyncFunc(5000)
-      const executePromise = executeWithThreshold(fastAsyncFunc, 10000).then(() => { thresholdDone = true })
+    describe('with async function', () => {
+      it('executes function', async () => {
+        const fastAsyncFunc = asyncFunc(5000)
+        const executor = new ThresholdExecutor(fastAsyncFunc, 10000)
+        executor.execute().then(markThresholdDone)
 
-      // not complete after 9s
-      await tickWithDelay(9000)
-      expect(funcDone).to.eql(true)
-      expect(thresholdDone).to.eql(false)
+        // not complete after 9s
+        await tickWithDelay(9000)
+        expect(funcDone).to.eql(true)
+        expect(thresholdDone).to.eql(false)
 
-      // complete after 10s
-      await tickWithDelay(1000)
-      expect(thresholdDone).to.eql(true)
+        // complete after 10s
+        await tickWithDelay(1000)
+        expect(thresholdDone).to.eql(true)
+      })
 
-      await executePromise
+      it('allows canceling sleep', async () => {
+        const slowAsyncFunc = asyncFunc(5000)
+        const executor = new ThresholdExecutor(slowAsyncFunc, 10000)
+        executor.execute().then(markThresholdDone)
+
+        // TODO: stop
+        executor.cancel()
+
+        // complete after 5s
+        await tickWithDelay(5000)
+        expect(thresholdDone).to.eql(true)
+      })
+
+      // TODO: canceling in the middle of sleep?
     })
 
-    it('executes function with slow async function', async () => {
-      const slowAsyncFunc = asyncFunc(5000)
-      const executePromise = executeWithThreshold(slowAsyncFunc, 1000).then(() => { thresholdDone = true })
+    describe('with slow async function', () => {
+      it('executes function', async () => {
+        const slowAsyncFunc = asyncFunc(5000)
+        const executor = new ThresholdExecutor(slowAsyncFunc, 1000)
+        executor.execute().then(markThresholdDone)
 
-      // not complete after 4s
-      await tickWithDelay(4000)
-      expect(funcDone).to.eql(false)
-      expect(thresholdDone).to.eql(false)
+        // not complete after 4s
+        await tickWithDelay(4000)
+        expect(funcDone).to.eql(false)
+        expect(thresholdDone).to.eql(false)
 
-      // complete after 10s
-      await tickWithDelay(6000)
-      expect(funcDone).to.eql(true)
-      expect(thresholdDone).to.eql(true)
-
-      await executePromise
+        // complete after 10s
+        await tickWithDelay(6000)
+        expect(funcDone).to.eql(true)
+        expect(thresholdDone).to.eql(true)
+      })
     })
   })
 })

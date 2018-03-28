@@ -2,11 +2,11 @@
   <div class="page">
     <div class="page__control control">
       <div class="control__top">
-        <h1 :class="{'is-grey':status===-1}" v-text="statusTitle"></h1>
+        <h1 :class="{'is-grey':statusCode===-1}" v-text="statusTitle"></h1>
         <div class="control__location" v-if="ip">current IP: {{ip}}</div>
       </div>
       <div class="control__bottom">
-        <country-select v-model="country" class="control__countries" :class="{'is-disabled': status!==-1}"/>
+        <country-select v-model="country" class="control__countries" :class="{'is-disabled': statusCode!==-1}"/>
         <connection-button :provider-id="providerIdentity"></connection-button>
       </div>
       <div class="control__footer">
@@ -33,7 +33,9 @@
   import StatsDisplay from '../components/StatsDisplay'
   import ConnectionButton from '@/components/ConnectionButton'
   import AppError from '@/partials/AppError'
+  import config from '../config'
 
+  // TODO: move to config
   const CONNECTION_IP_THRESHOLD = 10000
 
   export default {
@@ -50,18 +52,18 @@
       }
     },
     computed: {
-      ...mapGetters(['connection', 'ip', 'errorMessage', 'showError']),
-      status () {
-        switch (this.connection.status) {
+      ...mapGetters(['connection', 'status', 'ip', 'errorMessage', 'showError']),
+      statusCode () {
+        switch (this.status) {
           case 'NotConnected': return -1
           case 'Connecting': return 0
           case 'Connected': return 1
         }
       },
       statusTitle () {
-        switch (this.connection.status) {
+        switch (this.status) {
           case 'NotConnected': return 'Disconnected'
-          default: return this.connection.status
+          default: return this.status
         }
       },
       providerIdentity () {
@@ -76,10 +78,10 @@
         action: type.CONNECTION_IP,
         threshold: CONNECTION_IP_THRESHOLD
       })
-      await this.$store.dispatch(type.CONNECTION_STATUS)
-      if (this.connection.status === type.tequilapi.CONNECTED) {
-        this.$store.dispatch(type.START_UPDATER)
-      }
+      this.$store.dispatch(type.START_ACTION_LOOPING, {
+        action: type.FETCH_CONNECTION_STATUS,
+        threshold: config.statusUpdateThreshold
+      })
     },
     beforeDestroy () {
     }

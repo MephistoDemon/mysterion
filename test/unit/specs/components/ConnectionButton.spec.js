@@ -22,11 +22,11 @@ const mountWithStore = function () {
       connection: {
         ...conStore,
         actions: {
-          [type.CONNECT] ({commit}, consumerId, providerId) {
-            commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTED)
+          [type.CONNECT] ({dispatch, commit}) {
+            commit(type.SET_CONNECTION_STATUS, type.tequilapi.CONNECTED)
           },
-          [type.DISCONNECT] ({commit}) {
-            commit(type.CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
+          [type.DISCONNECT] ({dispatch, commit}) {
+            commit(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
           }
         }
       }
@@ -43,7 +43,7 @@ const mountWithStore = function () {
 }
 
 describe('ConnectionButton', () => {
-  it('renders button text based on state', () => {
+  it('renders button text based on state', async () => {
     let rules = [
       ['NotConnected', 'Connect'],
       ['Connected', 'Disconnect'],
@@ -52,12 +52,12 @@ describe('ConnectionButton', () => {
     ]
     const vm = mountWithStore()
     for (let index in rules) {
-      vm.$store.commit(type.CONNECTION_STATUS, rules[index][0])
+      vm.$store.commit(type.SET_CONNECTION_STATUS, rules[index][0])
       vm._watcher.run()
-      expect(vm.$el.textContent).to.contain(rules[index][1])
+      expect(vm.$el.textContent).to.eql(rules[index][1])
     }
     // reset store
-    vm.$store.commit(type.CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
+    vm.$store.commit(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
   })
 
   it('clicks change state', () => {
@@ -68,11 +68,11 @@ describe('ConnectionButton', () => {
     button.dispatchEvent(clickEvent)
     vm._watcher.run()
     expect(vm.$store.state.connection.status).to.equal('Connected')
-    expect(vm.$el.textContent).to.contain('Disconnect')
+    expect(vm.$el.textContent).to.eql('Disconnect')
 
     // handle disconnect
     button.dispatchEvent(clickEvent)
     vm._watcher.run()
-    expect(vm.$el.textContent).to.contain('Connect')
+    expect(vm.$el.textContent).to.eql('Connect')
   })
 })

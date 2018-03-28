@@ -8,15 +8,6 @@ const stopPath = '/stop'
 
 const timeout = 5000
 
-export const types = {
-  connection: {
-    CONNECTED: 'Connected',
-    NOT_CONNECTED: 'NotConnected',
-    DISCONNECTING: 'Disconnecting',
-    CONNECTING: 'Connecting'
-  }
-}
-
 export let tequilapi = Constructor()
 
 export default function Constructor (teqAddr = 'http://127.0.0.1:4050') {

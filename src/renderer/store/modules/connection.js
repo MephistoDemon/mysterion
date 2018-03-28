@@ -4,7 +4,8 @@ import {isTimeoutError, hasHttpStatus} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
 import bugReporter from '../../../app/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
-import config from '../../config'
+import connectionStatus from '../../../libraries/api/connectionStatus'
+import config from '@/config'
 const tequilapi = tequilAPI()
 
 const defaultStatistics = {
@@ -12,9 +13,9 @@ const defaultStatistics = {
 
 const state = {
   ip: null,
-  status: 'NotConnected',
+  status: connectionStatus.NOT_CONNECTED,
   statistics: defaultStatistics,
-  updateLooper: null
+  actionLoopers: {}
 }
 
 const getters = {
@@ -24,7 +25,7 @@ const getters = {
 }
 
 const mutations = {
-  [type.CONNECTION_STATUS] (state, status) {
+  [type.SET_CONNECTION_STATUS] (state, status) {
     state.status = status
   },
   [type.CONNECTION_STATISTICS] (state, statistics) {
@@ -36,26 +37,15 @@ const mutations = {
   [type.CONNECTION_STATISTICS_RESET] (state) {
     state.statistics = defaultStatistics
   },
-  [type.SET_UPDATE_LOOPER] (state, updateLooper) {
-    state.updateLooper = updateLooper
+  [type.SET_ACTION_LOOPER] (state, {action, looper}) {
+    state.actionLoopers[action] = looper
+  },
+  [type.REMOVE_ACTION_LOOPER] (state, action) {
+    delete state.actionLoopers[action]
   }
 }
 
 const actions = {
-  async [type.START_UPDATER] ({dispatch, commit}) {
-    const looper = await dispatch(type.START_ACTION_LOOPING, {
-      action: type.CONNECTION_STATUS_ALL,
-      threshold: config.statusUpdateThreshold
-    })
-    commit(type.SET_UPDATE_LOOPER, looper)
-  },
-  [type.STOP_UPDATER] ({commit, state}) {
-    const looper = state.updateLooper
-    if (looper) {
-      looper.stop()
-    }
-    commit(type.SET_UPDATE_LOOPER, null)
-  },
   async [type.CONNECTION_IP] ({commit}) {
     try {
       const ip = await tequilapi.connection.ip()
@@ -67,25 +57,49 @@ const actions = {
       bugReporter.renderer.captureException(err)
     }
   },
-  async [type.START_ACTION_LOOPING] ({dispatch}, {action, threshold}) {
+  [type.START_ACTION_LOOPING] ({dispatch, commit, state}, {action, threshold}) {
+    const currentLooper = state.actionLoopers[action]
+    if (currentLooper) {
+      console.log('Warning: requested to start looping action which is already looping: ' + action)
+      return currentLooper
+    }
+
     const func = () => dispatch(action)
     const looper = new FunctionLooper(func, threshold)
     looper.start()
+    commit(type.SET_ACTION_LOOPER, {action, looper})
     return looper
   },
-  async [type.CONNECTION_STATUS_ALL] ({commit, dispatch}) {
-    const statusPromise = dispatch(type.CONNECTION_STATUS)
-    const statisticsPromise = dispatch(type.CONNECTION_STATISTICS)
-
-    await statusPromise
-    await statisticsPromise
+  async [type.STOP_ACTION_LOOPING] ({commit, state}, action) {
+    const looper = state.actionLoopers[action]
+    if (looper) {
+      await looper.stop()
+    }
+    commit(type.REMOVE_ACTION_LOOPER, action)
   },
-  async [type.CONNECTION_STATUS] ({commit}) {
+  async [type.FETCH_CONNECTION_STATUS] ({commit, dispatch}) {
     try {
       const res = await tequilapi.connection.status()
-      commit(type.CONNECTION_STATUS, res.status)
+      await dispatch(type.SET_CONNECTION_STATUS, res.status)
     } catch (err) {
       commit(type.SHOW_ERROR, err)
+    }
+  },
+  async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus) {
+    const oldStatus = state.status
+    if (oldStatus === newStatus) {
+      return
+    }
+    commit(type.SET_CONNECTION_STATUS, newStatus)
+
+    if (newStatus === connectionStatus.CONNECTED) {
+      await dispatch(type.START_ACTION_LOOPING, {
+        action: type.CONNECTION_STATISTICS,
+        threshold: config.statisticsUpdateThreshold
+      })
+    }
+    if (oldStatus === connectionStatus.CONNECTED) {
+      await dispatch(type.STOP_ACTION_LOOPING, type.CONNECTION_STATISTICS)
     }
   },
   async [type.CONNECTION_STATISTICS] ({commit}) {
@@ -96,35 +110,45 @@ const actions = {
       commit(type.SHOW_ERROR, err)
     }
   },
-  async [type.CONNECT] ({commit, dispatch}, consumerId, providerId) {
+  async [type.CONNECT] ({commit, dispatch, state}, consumerId, providerId) {
+    const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
+    if (looper) {
+      await looper.stop()
+    }
+    await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.CONNECTING)
+    commit(type.CONNECTION_STATISTICS_RESET)
     try {
-      commit(type.CONNECTION_STATUS, type.tequilapi.CONNECTING)
-      commit(type.CONNECTION_STATISTICS_RESET)
       await tequilapi.connection.connect(consumerId, providerId)
       commit(type.HIDE_ERROR)
-      // if we ask openvpn right away status still in not connected state
-      setTimeout(() => {
-        dispatch(type.START_UPDATER)
-      }, 1000)
     } catch (err) {
       commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
       let error = new Error('Connection to node failed.')
       error.original = err
       throw error
+    } finally {
+      if (looper) {
+        looper.start()
+      }
     }
   },
   async [type.DISCONNECT] ({commit, dispatch}) {
+    const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
+    if (looper) {
+      await looper.stop()
+    }
     try {
-      await dispatch(type.STOP_UPDATER)
-      let res = tequilapi.connection.disconnect()
-      commit(type.CONNECTION_STATUS, type.tequilapi.DISCONNECTING)
-      res = await res
-      dispatch(type.CONNECTION_STATUS)
+      await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.DISCONNECTING)
+      let res = await tequilapi.connection.disconnect()
+      dispatch(type.FETCH_CONNECTION_STATUS)
       dispatch(type.CONNECTION_IP)
       return res
     } catch (err) {
       commit(type.SHOW_ERROR, err)
       throw (err)
+    } finally {
+      if (looper) {
+        looper.start()
+      }
     }
   }
 }
