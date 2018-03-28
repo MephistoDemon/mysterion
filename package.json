@@ -43,7 +43,9 @@
     ],
     "extraResources": [
       "./static/icons/trayActiveTemplate.png",
+      "./static/icons/trayActiveTemplate@2x.png",
       "./static/icons/trayPassiveTemplate.png",
+      "./static/icons/trayPassiveTemplate@2x.png",
       "./static/terms/terms.html"
     ],
     "dmg": {
