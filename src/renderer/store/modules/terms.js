@@ -2,8 +2,7 @@ import type from '../types'
 
 const state = {
   terms: {
-    content: null,
-    version: null
+    content: null
   }
 }
 
