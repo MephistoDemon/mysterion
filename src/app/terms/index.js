@@ -1,55 +1,60 @@
+/* @flow */
 import fs from 'fs'
 import path from 'path'
-import bugReporter from '../bug-reporting'
+import crypto from 'crypto'
 
-const TermsFileName = 'terms.json'
+export const termsFileName = 'terms.html'
+
+function stringHashesMatch (userAcceptedTerms: string, currentTerms: string) {
+  const userAcceptedTermsHash = crypto.createHash('md5').update(userAcceptedTerms).digest('hex')
+  const currentTermsHash = crypto.createHash('md5').update(currentTerms).digest('hex')
+  return userAcceptedTermsHash === currentTermsHash
+}
 
 class Terms {
-  constructor (directory, content, version) {
-    this.directory = directory
-    this.content = content
-    this.version = version
+  _termsSrcDir: string
+  exportDir: string
+  termsHtml: string
+
+  constructor (termsSrcDir: string, exportDirectory: string) {
+    this.exportDir = exportDirectory
+    this._termsSrcDir = termsSrcDir
   }
 
-  accepted () {
-    let path = this._getTermsPath()
+  load () {
+    this.termsHtml = fs.readFileSync(path.join(this._termsSrcDir, termsFileName)).toString()
+  }
+
+  /**
+   * @throws exception when exported version file reading fails
+   */
+  isAccepted (): boolean {
+    let path = this._getExportedTermsPath()
     if (!fs.existsSync(path)) {
       return false
     }
 
-    try {
-      let contents = JSON.parse(fs.readFileSync(path))
-      return contents.version === this.version
-    } catch (e) {
-      bugReporter.main.captureException(e)
-      console.error('unable to parse terms JSON', e.message)
-      return false
-    }
+    let acceptedContents = fs.readFileSync(path).toString()
+    return stringHashesMatch(acceptedContents, this.termsHtml)
   }
 
-  store () {
-    let contents = JSON.stringify({
-      content: this.content,
-      version: this.version
-    })
-
-    try {
-      fs.writeFileSync(this._getTermsPath(), contents)
-    } catch (e) {
-      throw new Error('Failed to store terms.')
-    }
+  /**
+   * @throws exception when write file fails
+   */
+  accept () {
+    fs.writeFileSync(this._getExportedTermsPath(), this.termsHtml)
   }
 
-  getContent () {
-    return this.content
+  /**
+   * @throws exception when this.termsHtml is falsy
+   */
+  getContent (): string {
+    if (!this.termsHtml) throw new Error('Trying to get terms content, but termsHtml is undefined. Must do load() first')
+    return this.termsHtml
   }
 
-  getVersion () {
-    return this.version
-  }
-
-  _getTermsPath () {
-    return path.join(this.directory, TermsFileName)
+  _getExportedTermsPath (): string {
+    return path.join(this.exportDir, termsFileName)
   }
 }
 

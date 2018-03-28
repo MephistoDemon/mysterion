@@ -37,9 +37,13 @@
       AppModal
     },
     computed: {
-      ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'buildInfo']),
+      ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
       version () {
-        return `v${remote.getGlobal('__version')}${this.buildInfo.buildNumber ? ' Build id: ' + this.buildInfo.buildNumber : ''}`
+        const mysterionSemanticVersion = remote.getGlobal('__version')
+        const mysterionBuildNumber = remote.getGlobal('__buildNumber')
+        const mysterionVisibleVersion = `${mysterionSemanticVersion}(${mysterionBuildNumber})`
+        const clientVisibleVersion = this.clientBuildInfo.buildNumber ? this.clientBuildInfo.buildNumber : ''
+        return `v${mysterionVisibleVersion}.${clientVisibleVersion}`
       }
     },
     async mounted () {

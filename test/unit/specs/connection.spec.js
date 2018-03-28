@@ -3,7 +3,7 @@ import {expect} from 'chai'
 import type from '@/store/types'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import connectionInjector from 'inject-loader!@/store/modules/connection'
-import utils from '../utils'
+import utils from '../../helpers/utils'
 import { FunctionLooper } from '@/../libraries/functionLooper'
 import connectionStatus from '@/../libraries/api/connectionStatus'
 
