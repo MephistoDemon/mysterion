@@ -1,10 +1,9 @@
 /* eslint no-unused-expressions: 0 */
-// TODO: rename file to functionLooper.spec.js
 
 import lolex from 'lolex'
 import { FunctionLooper, ThresholdExecutor } from '@/../libraries/functionLooper'
 import sleep from '@/../libraries/sleep'
-import utils from '../../helpers/utils'
+import utils from '../../../helpers/utils'
 
 describe('utils', () => {
   let clock
