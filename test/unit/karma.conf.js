@@ -53,7 +53,7 @@ module.exports = config => {
     },
     frameworks: ['mocha', 'chai'],
     files: [
-      '../../test/unit/index.js',
+      '../../test/unit/index.js'
     ],
     preprocessors: {
       './index.js': ['webpack', 'sourcemap']

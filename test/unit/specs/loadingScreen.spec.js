@@ -13,7 +13,7 @@ import errorStore from '@/store/modules/errors'
 import {tequilapi} from '@/../libraries/api/tequilapi'
 import loadingScreen from '@/pages/VpnLoader'
 
-import utils from '../utils'
+import utils from '../../helpers/utils'
 import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
 import messages from '../../../src/app/messages'

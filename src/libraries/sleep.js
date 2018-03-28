@@ -3,7 +3,7 @@
  * @param {number} time - time to take for promise resolution
  * @returns {Promise<void>}
  */
-export default function (time) {
+export default function sleep (time) {
   return new Promise(resolve => {
     setTimeout(() => resolve(), time)
   })
