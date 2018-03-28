@@ -24,7 +24,7 @@ describe('Terms', () => {
     await rmDirAsync(mockDir)
   })
 
-  it('can save terms html and version to destination folder', () => {
+  it('can save terms html to destination folder', () => {
     terms.accept()
     expect(terms.isAccepted()).to.be.true
     expect(fs.existsSync(path.join(mockDir, termsFileName))).to.be.true
