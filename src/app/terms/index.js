@@ -42,11 +42,19 @@ class Terms {
     fs.writeFileSync(this._getExportedVersionPath(), this.version)
   }
 
+  /**
+   * @throws exception when this.termsHtml is falsy
+   */
   getContent (): string {
+    if (!this.termsHtml) throw new Error('Trying to get terms content, but termsHtml is undefined. Must do load() first')
     return this.termsHtml
   }
 
+  /**
+   * @throws exception when this.version is falsy
+   */
   getVersion (): string {
+    if (!this.version) throw new Error('Trying to get terms version, but version is undefined. Must do load() first')
     return this.version
   }
 

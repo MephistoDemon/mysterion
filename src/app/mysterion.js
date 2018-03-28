@@ -11,6 +11,7 @@ import {
   logLevel as processLogLevel
 } from '../libraries/mysterium-client/index'
 import bugReporter from './bug-reporting'
+import messages from "./messages"
 
 function MysterionFactory (config) {
   const tequilApi = new TequilAPI()
@@ -26,12 +27,6 @@ function MysterionFactory (config) {
 class Mysterion {
   constructor ({config, terms, installer, monitoring, process}) {
     Object.assign(this, {config, terms, installer, monitoring, process})
-    try {
-      this.terms.load()
-    } catch (e) {
-      bugReporter.main.captureException(e)
-      this.sendErrorToRenderer('Failed to load terms')
-    }
   }
 
   run () {
@@ -59,10 +54,12 @@ class Mysterion {
   async bootstrap () {
     let termsAccepted
     try {
-      this.terms.isAccepted()
+      this.terms.load()
+      termsAccepted = this.terms.isAccepted()
     } catch (e) {
       termsAccepted = false
       bugReporter.main.captureException(e)
+      // TODO: when we have message to renderer queue -- send this error message to renderer
     }
 
     this.window = new Window(
@@ -103,7 +100,7 @@ class Mysterion {
       } catch (e) {
         bugReporter.main.captureException(e)
         console.error(e)
-        return this.sendErrorToRenderer('Failed to install mysterium_client daemon. Please restart the app and grant permissions.')
+        return this.sendErrorToRenderer(messages.daemonInstallationError)
       }
     }
     // if all is good, let's boot up the client
@@ -143,8 +140,10 @@ class Mysterion {
     try {
       this.terms.accept()
     } catch (e) {
-      console.error(e)
-      throw new Error('Failed to make a local copy of terms and conditions. Please restart the app and try again.')
+      const error = new Error(messages.termsAcceptError)
+      error.original = e
+      console.error(error)
+      throw error
     }
 
     this.window.resize(this.config.windows.app)
@@ -189,7 +188,6 @@ class Mysterion {
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
-    bugReporter.main.captureException(error)
     this.window.send(communication.APP_ERROR, {message: error, hint: hint, fatal: fatal})
   }
 

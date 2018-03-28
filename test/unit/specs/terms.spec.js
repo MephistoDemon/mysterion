@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-expressions */
-import Terms, {termsFileName, versionFileName} from './index'
+import Terms, {termsFileName, versionFileName} from '../../../src/app/terms/index'
 import fs from 'fs'
 import path from 'path'
 import util from 'util'
-import dir from '../../libraries/directory'
+import dir from '../../helpers/directory'
 
 const unlinkAsync = util.promisify(fs.unlink)
 const rmDirAsync = util.promisify(fs.rmdir)

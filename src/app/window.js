@@ -1,4 +1,5 @@
 import {BrowserWindow, ipcMain} from 'electron'
+import bugReporter from './bug-reporting'
 
 function Message (sender, value) {
   return {
@@ -26,6 +27,7 @@ class Window {
   show () {
     this.window.show()
   }
+
   hide () {
     this.window.hide()
   }
@@ -41,7 +43,9 @@ class Window {
     this.window.on('closed', () => {
       this.window = null
     })
-    this.window.on('before-quit', () => { this.willQuitApp = true })
+    this.window.on('before-quit', () => {
+      this.willQuitApp = true
+    })
     this.window.on('close', (e) => {
       if (!this.willQuitApp) {
         /* the user only tried to close the window */
@@ -64,9 +68,11 @@ class Window {
    * @param data
    */
   send (event, data) {
-    if (this.window) {
-      this.window.webContents.send(event, data)
+    if (!this.window) {
+      bugReporter.main.captureException(new Error(`Failed to send message ${event} to renderer, but no window reference found.`))
+      return
     }
+    this.window.webContents.send(event, data)
   }
 
   /**
