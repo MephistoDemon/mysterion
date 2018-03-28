@@ -23,9 +23,9 @@ install:
 - yarn
 script:
 - npm run unit
+- npm run test:integration
 before_deploy:
 - FORCE_DOWNLOAD=1 npm run download:bins
-- npm run test:integration
 - npm run build
 - mkdir binaries
 - cp build/Mysterion-0.0.1.dmg binaries
