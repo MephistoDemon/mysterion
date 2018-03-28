@@ -2,7 +2,7 @@
 
 import lolex from 'lolex'
 import { executeWithThreshold, FunctionLooper } from '@/../libraries/functionLooper'
-import utils from '../utils'
+import utils from '../../helpers/utils'
 
 describe('utils', () => {
   let clock

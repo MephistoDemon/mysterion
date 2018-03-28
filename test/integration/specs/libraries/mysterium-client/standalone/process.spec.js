@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
-import Process, {logLevel} from '../../../../../src/libraries/mysterium-client/standalone/process'
+import Process, {logLevel} from '../../../../../../src/libraries/mysterium-client/standalone/process'
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import configInjector from 'inject-loader!../../../../../src/app/mysterion-config'
+import configInjector from 'inject-loader!../../../../../../src/app/mysterion-config'
 import {ChildProcess} from 'child_process'
-import sleep from '../../../../../src/libraries/sleep'
-import tequilAPI from '../../../../../src/libraries/api/tequilapi'
+import sleep from '../../../../../../src/libraries/sleep'
+import tequilAPI from '../../../../../../src/libraries/api/tequilapi'
 
 const config = configInjector({
   'electron': {

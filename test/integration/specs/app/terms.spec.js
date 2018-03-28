@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-expressions */
-import Terms, {termsFileName, versionFileName} from '../../../src/app/terms/index'
+import Terms, {termsFileName, versionFileName} from '../../../../src/app/terms/index'
 import fs from 'fs'
 import path from 'path'
 import util from 'util'
-import dir from '../../helpers/directory'
+import dir from '../../../helpers/directory'
 
 const unlinkAsync = util.promisify(fs.unlink)
 const rmDirAsync = util.promisify(fs.rmdir)
@@ -15,11 +15,11 @@ describe('Terms', () => {
   const terms = new Terms(termsSrcDir, mockDir)
   terms.load()
 
-  before(function () {
+  before(() => {
     dir.make(mockDir)
   })
 
-  after(async function () {
+  after(async () => {
     await unlinkAsync(path.join(mockDir, termsFileName))
     await unlinkAsync(path.join(mockDir, versionFileName))
     await rmDirAsync(mockDir)
@@ -33,7 +33,7 @@ describe('Terms', () => {
   })
 
   it('validates version of accepted terms', () => {
-    fs.writeFileSync(terms._getExportedVersionPath(), 'fake version')
+    fs.writeFileSync(terms._getExportedTermsPath(), 'fake terms')
     expect(terms.isAccepted()).to.be.false
   })
 })

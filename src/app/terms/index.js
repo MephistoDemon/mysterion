@@ -1,15 +1,20 @@
 /* @flow */
 import fs from 'fs'
 import path from 'path'
+import crypto from 'crypto'
 
 export const termsFileName = 'terms.html'
-export const versionFileName = 'termsVersion.txt'
+
+function stringHashesMatch (userAcceptedTerms: string, currentTerms: string) {
+  const userAcceptedTermsHash = crypto.createHash('md5').update(userAcceptedTerms).digest('hex')
+  const currentTermsHash = crypto.createHash('md5').update(currentTerms).digest('hex')
+  return userAcceptedTermsHash === currentTermsHash
+}
 
 class Terms {
   _termsSrcDir: string
   exportDir: string
   termsHtml: string
-  version: string
 
   constructor (termsSrcDir: string, exportDirectory: string) {
     this.exportDir = exportDirectory
@@ -18,20 +23,19 @@ class Terms {
 
   load () {
     this.termsHtml = fs.readFileSync(path.join(this._termsSrcDir, termsFileName)).toString()
-    this.version = fs.readFileSync(path.join(this._termsSrcDir, versionFileName)).toString()
   }
 
   /**
    * @throws exception when exported version file reading fails
    */
   isAccepted (): boolean {
-    let path = this._getExportedVersionPath()
+    let path = this._getExportedTermsPath()
     if (!fs.existsSync(path)) {
       return false
     }
 
-    let contents = fs.readFileSync(path).toString()
-    return contents === this.version
+    let acceptedContents = fs.readFileSync(path).toString()
+    return stringHashesMatch(acceptedContents, this.termsHtml)
   }
 
   /**
@@ -39,7 +43,6 @@ class Terms {
    */
   accept () {
     fs.writeFileSync(this._getExportedTermsPath(), this.termsHtml)
-    fs.writeFileSync(this._getExportedVersionPath(), this.version)
   }
 
   /**
@@ -48,18 +51,6 @@ class Terms {
   getContent (): string {
     if (!this.termsHtml) throw new Error('Trying to get terms content, but termsHtml is undefined. Must do load() first')
     return this.termsHtml
-  }
-
-  /**
-   * @throws exception when this.version is falsy
-   */
-  getVersion (): string {
-    if (!this.version) throw new Error('Trying to get terms version, but version is undefined. Must do load() first')
-    return this.version
-  }
-
-  _getExportedVersionPath (): string {
-    return path.join(this.exportDir, versionFileName)
   }
 
   _getExportedTermsPath (): string {

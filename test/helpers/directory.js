@@ -2,10 +2,10 @@
 import path from 'path'
 import fs from 'fs'
 
-export function make (targetDir: string, isRelativeToScript: ?boolean): void {
+export function make (targetDir: string): void {
   const sep = path.sep
   const initDir = path.isAbsolute(targetDir) ? sep : ''
-  const baseDir = isRelativeToScript ? __dirname : '.'
+  const baseDir = '.'
 
   targetDir.split(sep).reduce((parentDir, childDir) => {
     const curDir = path.resolve(baseDir, parentDir, childDir)
