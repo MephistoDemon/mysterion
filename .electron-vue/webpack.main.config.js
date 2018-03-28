@@ -3,6 +3,7 @@ process.env.BABEL_ENV = 'main'
 
 const path = require('path')
 const {dependencies, version} = require('../package.json')
+const {buildNumber} = require('../build-number.json')
 const {sentry} = require('../services_conf.json')
 const webpack = require('webpack')
 
@@ -50,6 +51,7 @@ let mainConfig = {
   },
   plugins: [
     new webpack.DefinePlugin({
+      'process.env.BUILD_NUMBER': JSON.stringify(buildNumber),
       'process.env.MYSTERION_VERSION': JSON.stringify(version),
       'process.env.SENTRY': JSON.stringify(sentry)
     }),

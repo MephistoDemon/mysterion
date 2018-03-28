@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import Terms, {termsFileName, versionFileName} from '../../../../src/app/terms/index'
+import Terms, {termsFileName} from '../../../../src/app/terms/index'
 import fs from 'fs'
 import path from 'path'
 import util from 'util'
