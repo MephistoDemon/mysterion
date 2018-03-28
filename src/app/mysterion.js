@@ -11,7 +11,7 @@ import {
   logLevel as processLogLevel
 } from '../libraries/mysterium-client/index'
 import bugReporter from './bug-reporting'
-import messages from "./messages"
+import messages from './messages'
 
 function MysterionFactory (config) {
   const tequilApi = new TequilAPI()
