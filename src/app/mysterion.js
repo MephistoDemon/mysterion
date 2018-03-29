@@ -200,7 +200,7 @@ class Mysterion {
       if (newStatus === connectionStatus.CONNECTED) {
         tray.setActiveState()
       }
-      if (oldStatus === connectionStatus.CONNECTED) {
+      if (newStatus === connectionStatus.NOT_CONNECTED) {
         tray.setPassiveState()
       }
     })
