@@ -6,7 +6,7 @@ import bugReporter from '../../../app/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
-import {ipcRenderer} from 'electron'
+import ipc from '../../ipc'
 import communication from '../../../app/communication'
 
 const tequilapi = tequilAPI()
@@ -15,11 +15,11 @@ const defaultStatistics = {
 }
 
 function makeTrayActive () {
-  ipcRenderer.send(communication.CHANGE_TRAY_STATUS, true)
+  ipc.send(communication.CHANGE_TRAY_STATUS, true)
 }
 
 function makeTrayPassive () {
-  ipcRenderer.send(communication.CHANGE_TRAY_STATUS, false)
+  ipc.send(communication.CHANGE_TRAY_STATUS, false)
 }
 
 const state = {
