@@ -21,12 +21,12 @@ install:
 - source ~/.bashrc
 - yarn global add xvfb-maybe
 - yarn
+- FORCE_DOWNLOAD=1 yarn download:bins
 script:
 - yarn lint
 - yarn unit
 #run e2e on Pull Requests env only
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-    FORCE_DOWNLOAD=1 yarn download:bins;
     yarn test:integration;
   fi
 before_deploy:
