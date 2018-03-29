@@ -9,5 +9,5 @@ export default {
   APP_START: 'app.start',
   APP_ERROR: 'app.error',
   HEALTHCHECK: 'healthcheck',
-  CHANGE_TRAY_STATUS: 'change.tray.status'
+  CONNECTION_STATUS_CHANGED: 'connection.status.changed'
 }

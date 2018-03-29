@@ -14,14 +14,6 @@ const tequilapi = tequilAPI()
 const defaultStatistics = {
 }
 
-function makeTrayActive () {
-  ipc.send(communication.CHANGE_TRAY_STATUS, true)
-}
-
-function makeTrayPassive () {
-  ipc.send(communication.CHANGE_TRAY_STATUS, false)
-}
-
 const state = {
   ip: null,
   status: connectionStatus.NOT_CONNECTED,
@@ -102,6 +94,7 @@ const actions = {
       return
     }
     commit(type.SET_CONNECTION_STATUS, newStatus)
+    ipc.send(communication.CONNECTION_STATUS_CHANGED, oldStatus, newStatus)
 
     if (newStatus === connectionStatus.CONNECTED) {
       await dispatch(type.START_ACTION_LOOPING, {
@@ -130,8 +123,6 @@ const actions = {
     commit(type.CONNECTION_STATISTICS_RESET)
     try {
       await tequilapi.connection.connect(consumerId, providerId)
-      // TODO: move out tray logic from connection
-      makeTrayActive()
       commit(type.HIDE_ERROR)
     } catch (err) {
       commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
@@ -154,8 +145,6 @@ const actions = {
       let res = await tequilapi.connection.disconnect()
       dispatch(type.FETCH_CONNECTION_STATUS)
       dispatch(type.CONNECTION_IP)
-      // TODO: move out tray logic from connection
-      makeTrayPassive()
       return res
     } catch (err) {
       commit(type.SHOW_ERROR, err)

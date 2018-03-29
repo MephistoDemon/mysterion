@@ -3,6 +3,7 @@ import Window from './window'
 import MysterionTray from './mysterionTray'
 import Terms from './terms/index'
 import TequilAPI from '../libraries/api/tequilapi'
+import connectionStatus from '../libraries/api/connectionStatus'
 import communication from './communication/index'
 import {app, ipcMain} from 'electron'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
@@ -195,10 +196,11 @@ class Mysterion {
   buildTray () {
     const tray = new MysterionTray(this.window, this.config.inDevMode)
     tray.build()
-    ipcMain.on(communication.CHANGE_TRAY_STATUS, (evt, active) => {
-      if (active) {
+    ipcMain.on(communication.CONNECTION_STATUS_CHANGED, (evt, oldStatus, newStatus) => {
+      if (newStatus === connectionStatus.CONNECTED) {
         tray.setActiveState()
-      } else {
+      }
+      if (oldStatus === connectionStatus.CONNECTED) {
         tray.setPassiveState()
       }
     })
