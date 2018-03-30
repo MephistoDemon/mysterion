@@ -4,7 +4,7 @@ import MysterionTray, { TrayIcon } from './mysterionTray'
 import Terms from './terms/index'
 import TequilAPI from '../libraries/api/tequilapi'
 import connectionStatus from '../libraries/api/connectionStatus'
-import communication from './communication'
+import communication from './communication/index'
 import {app, ipcMain} from 'electron'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 import {
@@ -61,6 +61,7 @@ class Mysterion {
     } catch (e) {
       termsAccepted = false
       bugReporter.main.captureException(e)
+      // TODO: when we have message to renderer queue -- send this error message to renderer
     }
 
     this.window = new Window(
