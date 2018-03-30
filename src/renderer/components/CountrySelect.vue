@@ -32,6 +32,7 @@
   import Multiselect from 'vue-multiselect'
   import tequilAPI from '@/../libraries/api/tequilapi'
   import IconWorld from '@/assets/img/icon--world.svg'
+  import type from '@/store/types'
 
   const tequilapi = tequilAPI()
 
@@ -64,8 +65,7 @@
     },
     methods: {
       onChange (country) {
-        this.$emit('change', country)
-        this.$emit('input', country)
+        this.$emit('selected', country)
       },
       countryLabel (country) {
         if (typeof country === 'object') {
@@ -81,17 +81,17 @@
       },
       async fetchCountries () {
         this.countriesIsLoading = true
+        let response
 
-        let response = await tequilapi.proposal.list()
-        this.countriesList = response.proposals.map(proposalToCountry)
+        try {
+          response = await tequilapi.proposal.list()
+          this.countriesList = response.proposals.map(proposalToCountry)
+        } catch (e) {
+          this.$store.commit(type.SHOW_ERROR, e)
+        }
 
         this.countriesIsLoading = false
       }
-    },
-    mounted () {
     }
   }
 </script>
-<style lang="less">
-
-</style>

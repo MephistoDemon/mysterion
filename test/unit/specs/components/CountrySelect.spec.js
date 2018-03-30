@@ -1,4 +1,5 @@
-import Vue from 'vue'
+/* eslint-disable no-unused-expressions */
+import {mount} from '@vue/test-utils'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import CountrySelectInjector from '!!vue-loader?inject!@/components/CountrySelect'
 
@@ -36,35 +37,37 @@ const tequilapiProposalsResponse = {
     }
   ]
 }
-const tequilapiConstructor = (teqAddr) => {
+
+const tequilapiConstructor = () => {
   return {
     proposal: {
       list: () => {
-        return tequilapiProposalsResponse
+        return Promise.resolve(tequilapiProposalsResponse)
       }
     }
   }
 }
+
 const CountrySelect = CountrySelectInjector({
   '@/../libraries/api/tequilapi': tequilapiConstructor
 })
 
-describe('CountrySelect', () => {
-  let vm
+describe.only('CountrySelect', () => {
+  let wrapper
   before(function () {
-    vm = new Vue(CountrySelect).$mount()
+    wrapper = mount(CountrySelect)
   })
 
   it('renders a list item for each proposal', async () => {
-    vm.fetchCountries()
-    await Vue.nextTick()
-    await Vue.nextTick()
-    expect(vm.countriesList).to.have.lengthOf(4)
-    expect(vm.$el.querySelectorAll('.multiselect__option-title')).to.have.lengthOf(4)
-    expect(vm.$el.textContent).to.contain('Lithuania')
-    expect(vm.$el.textContent).to.contain('United Kingdom')
-    expect(vm.$el.textContent).to.contain('0x3')
-    expect(vm.$el.textContent).to.contain('N/A')
+    wrapper.vm.fetchCountries()
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.countriesList).to.have.lengthOf(4)
+    expect(wrapper.findAll('.multiselect__option-title')).to.have.lengthOf(4)
+    expect(wrapper.text()).to.contain('Lithuania')
+    expect(wrapper.text()).to.contain('United Kingdom')
+    expect(wrapper.text()).to.contain('0x3')
+    expect(wrapper.text()).to.contain('N/A')
   })
 
   it('clicking an item changes v-model', async () => {
@@ -74,8 +77,9 @@ describe('CountrySelect', () => {
       code: 'lt'
     }
     // initiate the click and check whether it opened the dropdown
-    const button = vm.$el.querySelector('.multiselect__option')
-    button.dispatchEvent(new window.Event('click'))
-    expect(vm.country).to.include(countryExpected)
+    const button = wrapper.find('.multiselect__option')
+    button.trigger('click')
+    expect(wrapper.emitted().selected).to.be.ok
+    expect(wrapper.emitted().selected[0]).to.eql([countryExpected])
   })
 })
