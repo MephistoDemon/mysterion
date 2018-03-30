@@ -16,7 +16,7 @@ const iconFilenames = {
 }
 
 class MysterionTray {
-  _toggleDevTools: ?Function
+  _toggleDevTools: ?Functiona
   _tray: Tray
 
   /**
