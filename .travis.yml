@@ -24,6 +24,7 @@ install:
 - FORCE_DOWNLOAD=1 yarn download:bins
 script:
 - yarn lint
+- yarn flow
 - yarn unit
 #run e2e on Pull Requests env only
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
