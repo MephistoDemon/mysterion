@@ -8,7 +8,7 @@ const TrayIcon = {
   passive: 'passive'
 }
 
-type IconState = $Keys<typeof TrayIcon>
+type IconState = $Values<typeof TrayIcon>
 
 const iconFilenames = {
   [TrayIcon.active]: 'trayActiveTemplate.png',
