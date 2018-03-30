@@ -61,7 +61,6 @@ class Mysterion {
     } catch (e) {
       termsAccepted = false
       bugReporter.main.captureException(e)
-      // TODO: when we have message to renderer queue -- send this error message to renderer
     }
 
     this.window = new Window(
