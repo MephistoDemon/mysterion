@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import {mount} from '@vue/test-utils'
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import CountrySelectInjector from '!!vue-loader?inject!@/components/CountrySelect'
+import CountrySelect from '@/components/CountrySelect'
 
 const tequilapiProposalsResponse = {
   proposals: [
@@ -38,23 +37,18 @@ const tequilapiProposalsResponse = {
   ]
 }
 
-const tequilapiConstructor = () => {
-  return {
-    proposal: {
-      list: () => {
-        return Promise.resolve(tequilapiProposalsResponse)
-      }
+const tequilapiMock = {
+  proposal: {
+    list: () => {
+      return Promise.resolve(tequilapiProposalsResponse)
     }
   }
 }
 
-const CountrySelect = CountrySelectInjector({
-  '@/../libraries/api/tequilapi': tequilapiConstructor
-})
-
 describe('CountrySelect', () => {
   let wrapper
   before(function () {
+    CountrySelect.__Rewire__('tequilapi', tequilapiMock)
     wrapper = mount(CountrySelect)
   })
 
