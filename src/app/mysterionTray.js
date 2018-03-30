@@ -8,13 +8,14 @@ const activeIconFilename: string = 'trayActiveTemplate.png'
 const passiveIconFilename: string = 'trayPassiveTemplate.png'
 
 class MysterionTray {
-  _toggleDevTools: Function
-  _allowDevTools: boolean
+  _toggleDevTools: ?Function
   _tray: Tray
 
-  constructor (toggleDevTools: Function, allowDevTools: boolean) {
+  /**
+   * @param toggleDevTools if passed, menu entry for toggling dev tools will be created
+   */
+  constructor (toggleDevTools: ?Function) {
     this._toggleDevTools = toggleDevTools
-    this._allowDevTools = allowDevTools
   }
 
   build () {
@@ -30,12 +31,13 @@ class MysterionTray {
       }
     })
 
-    if (this._allowDevTools) {
+    const toggleDevTools = this._toggleDevTools
+    if (toggleDevTools != null) {
       menu = [{
         label: 'Toggle DevTools',
         accelerator: 'Alt+Command+I',
         click: () => {
-          this._toggleDevTools()
+          toggleDevTools()
         }
       }, ...menu]
     }
