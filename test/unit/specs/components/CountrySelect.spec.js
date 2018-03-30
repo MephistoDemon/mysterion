@@ -37,10 +37,12 @@ const tequilapiProposalsResponse = {
   ]
 }
 
-const tequilapiMock = {
-  proposal: {
-    list: () => {
-      return Promise.resolve(tequilapiProposalsResponse)
+const tequilapiMock = () => {
+  return {
+    proposal: {
+      list: () => {
+        return Promise.resolve(tequilapiProposalsResponse)
+      }
     }
   }
 }
@@ -48,7 +50,7 @@ const tequilapiMock = {
 describe('CountrySelect', () => {
   let wrapper
   before(function () {
-    CountrySelect.__Rewire__('tequilapi', tequilapiMock)
+    CountrySelect.__Rewire__('tequilAPI', tequilapiMock)
     wrapper = mount(CountrySelect)
   })
 

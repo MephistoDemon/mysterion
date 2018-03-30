@@ -36,7 +36,7 @@
   import messages from '@/../app/messages'
   import bugReporter from '@/../app/bugReporting/bug-reporting'
 
-  const tequilapi = tequilAPI()
+  let tequilapi
 
   function proposalToCountry (proposal) {
     let code
@@ -100,6 +100,9 @@
 
         this.countriesIsLoading = false
       }
+    },
+    mounted () {
+      tequilapi = tequilAPI()
     }
   }
 </script>
