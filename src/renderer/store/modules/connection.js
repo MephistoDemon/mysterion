@@ -6,6 +6,9 @@ import bugReporter from '../../../app/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
+import ipc from '../../ipc'
+import communication from '../../../app/communication'
+
 const tequilapi = tequilAPI()
 
 const defaultStatistics = {
@@ -91,6 +94,7 @@ const actions = {
       return
     }
     commit(type.SET_CONNECTION_STATUS, newStatus)
+    ipc.send(communication.CONNECTION_STATUS_CHANGED, oldStatus, newStatus)
 
     if (newStatus === connectionStatus.CONNECTED) {
       await dispatch(type.START_ACTION_LOOPING, {

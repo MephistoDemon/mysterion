@@ -6,11 +6,15 @@ import connectionInjector from 'inject-loader!@/store/modules/connection'
 import utils from '../../helpers/utils'
 import { FunctionLooper } from '@/../libraries/functionLooper'
 import connectionStatus from '@/../libraries/api/connectionStatus'
+import communication from '@/../app/communication'
+import FakeIpc from '../../helpers/fakeIpc'
 
 const fakeTequilapi = utils.fakeTequilapiManipulator()
+const fakeIpc = new FakeIpc()
 
 const connection = connectionInjector({
-  '../../../libraries/api/tequilapi': fakeTequilapi.getFakeApi
+  '../../../libraries/api/tequilapi': fakeTequilapi.getFakeApi,
+  '../../ipc': fakeIpc
 }).default
 
 async function executeAction (action, state = {}, payload = {}) {
@@ -223,12 +227,32 @@ describe('actions', () => {
   })
 
   describe('SET_CONNECTION_STATUS', () => {
+    beforeEach(() => {
+      fakeIpc.clean()
+    })
     it('commits new status', async () => {
       const committed = await executeAction(type.SET_CONNECTION_STATUS, {}, connectionStatus.CONNECTING)
       expect(committed).to.eql([{
         key: type.SET_CONNECTION_STATUS,
         value: connectionStatus.CONNECTING
       }])
+    })
+
+    it('sends new status to IPC', async () => {
+      const state = {
+        status: connectionStatus.NOT_CONNECTED
+      }
+      await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.CONNECTING)
+      expect(fakeIpc.lastChannel).to.eql(communication.CONNECTION_STATUS_CHANGED)
+      expect(fakeIpc.lastArgs).to.eql([connectionStatus.NOT_CONNECTED, connectionStatus.CONNECTING])
+    })
+
+    it('does not send new status to IPC when status does not change', async () => {
+      const state = {
+        status: connectionStatus.NOT_CONNECTED
+      }
+      await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.NOT_CONNECTED)
+      expect(fakeIpc.lastChannel).to.eql(null)
     })
 
     it('starts looping statistics when changing state to connected', async () => {
