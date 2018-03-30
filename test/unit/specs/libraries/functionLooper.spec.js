@@ -176,7 +176,6 @@ describe('utils', () => {
         const executor = new ThresholdExecutor(slowAsyncFunc, 10000)
         executor.execute().then(markThresholdDone)
 
-        // TODO: stop
         executor.cancel()
 
         // complete after 5s
