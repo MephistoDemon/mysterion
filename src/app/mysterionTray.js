@@ -1,8 +1,7 @@
 // @flow
 import path from 'path'
 import {Menu, Tray, app} from 'electron'
-
-declare var __static: string
+import {__static} from './electronEnv'
 
 const TrayIcon = {
   active: 'active',
