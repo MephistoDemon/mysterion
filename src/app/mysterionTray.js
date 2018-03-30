@@ -1,7 +1,6 @@
 // @flow
 import path from 'path'
 import {Menu, Tray, app} from 'electron'
-import Window from './window'
 
 declare var __static: string
 
@@ -9,13 +8,13 @@ const activeIconFilename: string = 'trayActiveTemplate.png'
 const passiveIconFilename: string = 'trayPassiveTemplate.png'
 
 class MysterionTray {
-  window: Window
-  allowDevTools: boolean
+  _toggleDevTools: Function
+  _allowDevTools: boolean
   _tray: Tray
 
-  constructor (window: Window, allowDevTools: boolean) {
-    this.allowDevTools = allowDevTools
-    this.window = window
+  constructor (toggleDevTools: Function, allowDevTools: boolean) {
+    this._toggleDevTools = toggleDevTools
+    this._allowDevTools = allowDevTools
   }
 
   build () {
@@ -31,12 +30,12 @@ class MysterionTray {
       }
     })
 
-    if (this.allowDevTools) {
+    if (this._allowDevTools) {
       menu = [{
         label: 'Toggle DevTools',
         accelerator: 'Alt+Command+I',
         click: () => {
-          this.window.toggleDevTools()
+          this._toggleDevTools()
         }
       }, ...menu]
     }
