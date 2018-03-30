@@ -1,5 +1,6 @@
 export default {
   connectFailed: 'Connection to node failed. Choose different node',
+  proposalsFetchFail: 'Failed to load proposals',
   locationNotSelected: 'Please select location',
   initializationError: {
     message: 'Failed to load Mysterion'

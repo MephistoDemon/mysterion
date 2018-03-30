@@ -52,7 +52,7 @@ const CountrySelect = CountrySelectInjector({
   '@/../libraries/api/tequilapi': tequilapiConstructor
 })
 
-describe.only('CountrySelect', () => {
+describe('CountrySelect', () => {
   let wrapper
   before(function () {
     wrapper = mount(CountrySelect)

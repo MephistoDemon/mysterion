@@ -33,6 +33,8 @@
   import tequilAPI from '@/../libraries/api/tequilapi'
   import IconWorld from '@/assets/img/icon--world.svg'
   import type from '@/store/types'
+  import messages from '@/../app/messages'
+  import bugReporter from '@/../app/bugReporting/bug-reporting'
 
   const tequilapi = tequilAPI()
 
@@ -87,7 +89,13 @@
           response = await tequilapi.proposal.list()
           this.countriesList = response.proposals.map(proposalToCountry)
         } catch (e) {
-          this.$store.commit(type.SHOW_ERROR, e)
+          console.log('Proposal fetching in initialization failed', e)
+
+          const error = new Error(messages.proposalsFetchFail)
+          error.original = e
+
+          this.$store.commit(type.SHOW_ERROR, error)
+          bugReporter.renderer.captureException(error)
         }
 
         this.countriesIsLoading = false
