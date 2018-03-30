@@ -4,8 +4,17 @@ import {Menu, Tray, app} from 'electron'
 
 declare var __static: string
 
-const activeIconFilename: string = 'trayActiveTemplate.png'
-const passiveIconFilename: string = 'trayPassiveTemplate.png'
+const TrayIcon = {
+  active: 'active',
+  passive: 'passive'
+}
+
+type IconState = $Keys<typeof TrayIcon>
+
+const iconFilenames = {
+  [TrayIcon.active]: 'trayActiveTemplate.png',
+  [TrayIcon.passive]: 'trayPassiveTemplate.png'
+}
 
 class MysterionTray {
   _toggleDevTools: ?Function
@@ -19,7 +28,7 @@ class MysterionTray {
   }
 
   build () {
-    const iconPath = this._getIconPath(passiveIconFilename)
+    const iconPath = this._getIconPath(TrayIcon.passive)
     this._tray = new Tray(iconPath)
 
     let menu = []
@@ -46,22 +55,16 @@ class MysterionTray {
     this._tray.setContextMenu(Menu.buildFromTemplate(menu))
   }
 
-  setActiveState () {
-    this._setIcon(activeIconFilename)
-  }
-
-  setPassiveState () {
-    this._setIcon(passiveIconFilename)
-  }
-
-  _setIcon (filename: string) {
-    const path = this._getIconPath(filename)
+  setIcon (state: IconState) {
+    const path = this._getIconPath(state)
     this._tray.setImage(path)
   }
 
-  _getIconPath (filename: string): string {
+  _getIconPath (state: IconState) {
+    const filename = iconFilenames[state]
     return path.join(__static, 'icons', filename)
   }
 }
 
 export default MysterionTray
+export { TrayIcon }

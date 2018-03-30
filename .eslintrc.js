@@ -8,12 +8,17 @@ module.exports = {
     browser: true,
     node: true
   },
-  extends: 'standard',
+  extends: [
+    'standard',
+    'plugin:flowtype/recommended'
+  ],
   globals: {
     __static: true
   },
   plugins: [
-    'html'
+    'html',
+    'eslint-plugin-flowtype',
+    'flowtype'
   ],
   'rules': {
     // allow paren-less arrow functions

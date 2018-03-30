@@ -1,6 +1,6 @@
 import path from 'path'
 import Window from './window'
-import MysterionTray from './mysterionTray'
+import MysterionTray, { TrayIcon } from './mysterionTray'
 import Terms from './terms/index'
 import TequilAPI from '../libraries/api/tequilapi'
 import connectionStatus from '../libraries/api/connectionStatus'
@@ -199,10 +199,10 @@ class Mysterion {
     tray.build()
     ipcMain.on(communication.CONNECTION_STATUS_CHANGED, (evt, oldStatus, newStatus) => {
       if (newStatus === connectionStatus.CONNECTED) {
-        tray.setActiveState()
+        tray.setIcon(TrayIcon.active)
       }
       if (newStatus === connectionStatus.NOT_CONNECTED) {
-        tray.setPassiveState()
+        tray.setIcon(TrayIcon.passive)
       }
     })
   }
