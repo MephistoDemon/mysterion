@@ -35,9 +35,6 @@
   import AppError from '@/partials/AppError'
   import config from '../config'
 
-  // TODO: move to config
-  const CONNECTION_IP_THRESHOLD = 10000
-
   export default {
     name: 'Main',
     components: {
@@ -76,7 +73,7 @@
     async mounted () {
       this.$store.dispatch(type.START_ACTION_LOOPING, {
         action: type.CONNECTION_IP,
-        threshold: CONNECTION_IP_THRESHOLD
+        threshold: config.ipUpdateThreshold
       })
       this.$store.dispatch(type.START_ACTION_LOOPING, {
         action: type.FETCH_CONNECTION_STATUS,

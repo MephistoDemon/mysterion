@@ -2,7 +2,7 @@
     <div>
         <div class="control__action btn"
              :class="{'btn--transparent':buttonTransparent}"
-             @click="connect"
+             @click="buttonPressed"
              v-text="buttonText">
         </div>
     </div>
@@ -55,8 +55,7 @@
       }
     },
     methods: {
-      // TODO: rename - name is misleading when this button executes 'disconnect'
-      connect: function () {
+      buttonPressed: function () {
         const status = this.$store.getters.status
         const canConnect = status === type.tequilapi.NOT_CONNECTED
         const canDisconnect = status === type.tequilapi.CONNECTED
