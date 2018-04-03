@@ -16,13 +16,15 @@ const iconFilenames = {
 }
 
 class MysterionTray {
+  _activateWindow: Function
   _toggleDevTools: ?Function
   _tray: Tray
 
   /**
    * @param toggleDevTools if passed, menu entry for toggling dev tools will be created
    */
-  constructor (toggleDevTools: ?Function) {
+  constructor (activateWindow: Function, toggleDevTools: ?Function) {
+    this._activateWindow = activateWindow
     this._toggleDevTools = toggleDevTools
   }
 
@@ -31,6 +33,19 @@ class MysterionTray {
     this._tray = new Tray(iconPath)
 
     let menu = []
+    menu.push({
+      label: 'Show main view',
+      click: this._activateWindow
+    })
+
+    const toggleDevTools = this._toggleDevTools
+    if (toggleDevTools != null) {
+      menu.push({
+        label: 'Toggle DevTools',
+        accelerator: 'Alt+Command+I',
+        click: toggleDevTools
+      })
+    }
 
     menu.push({
       label: 'Quit',
@@ -38,17 +53,6 @@ class MysterionTray {
         app.quit()
       }
     })
-
-    const toggleDevTools = this._toggleDevTools
-    if (toggleDevTools != null) {
-      menu = [{
-        label: 'Toggle DevTools',
-        accelerator: 'Alt+Command+I',
-        click: () => {
-          toggleDevTools()
-        }
-      }, ...menu]
-    }
 
     this._tray.setToolTip('Mysterium')
     this._tray.setContextMenu(Menu.buildFromTemplate(menu))
