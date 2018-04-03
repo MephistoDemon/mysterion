@@ -193,7 +193,7 @@ class Mysterion {
   }
 
   buildTray () {
-    const toggleDevTools = this.config.inDevMode ? this.window.toggleDevTools : null
+    const toggleDevTools = this.config.inDevMode ? () => { this.window.toggleDevTools() } : null
     const tray = new MysterionTray(toggleDevTools)
     tray.build()
     ipcMain.on(communication.CONNECTION_STATUS_CHANGED, (evt, oldStatus, newStatus) => {
