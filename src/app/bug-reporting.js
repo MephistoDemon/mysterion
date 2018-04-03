@@ -29,6 +29,9 @@ const config = {
       [logLevel.ERROR]: stderr
     }
     return data
+  },
+  autoBreadcrumbs: {
+    console: true
   }
 }
 
