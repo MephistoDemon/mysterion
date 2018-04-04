@@ -33,8 +33,9 @@ script:
 before_deploy:
 - bash util_scripts/travis-number.sh
 - yarn build
-- mkdir binaries
+- mkdir binaries && mkdir releases
 - cp build/Mysterion-*.dmg binaries/Mysterion-latest.dmg
+- cp build/Mysterion-*.dmg releases/
 deploy:
   - provider: pages
     edge:
@@ -46,6 +47,14 @@ deploy:
     target-branch: mysterion_$TRAVIS_OS_NAME
     repo: MysteriumNetwork/build-artifacts
     on:
+      branch: master
+  - provider: releases
+    file_glob: true
+    file: releases/*
+    skip_cleanup: true
+    api_key: "$GITHUB_API_TOKEN"
+    on:
+      tags: true
       branch: master
 
 notifications:
