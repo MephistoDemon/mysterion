@@ -1,11 +1,12 @@
 /* eslint no-unused-expressions: 0 */
 import {expect} from 'chai'
+import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
-import tequilAPI from '@/../libraries/api/tequilapi'
+import {TequilapiFactory} from '@/../libraries/api/tequilapi'
 
-const tequilApi = tequilAPI()
-
-const mock = new MockAdapter(tequilApi.__axio)
+const axioInstance = axios.create()
+const tequilApi = TequilapiFactory(axioInstance)
+const mock = new MockAdapter(axioInstance)
 
 describe('tequilAPI', () => {
   it('creates some new identity', async () => {
@@ -14,7 +15,7 @@ describe('tequilAPI', () => {
       const newID = await tequilApi.identity.create('')
       expect(newID).to.be.eql({id: '0xMOKFACE'})
     } catch (err) {
-      expect(err.message).to.be.undefined
+      expect(err).to.be.undefined
     }
   })
 
