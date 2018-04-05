@@ -9,7 +9,8 @@ import lolex from 'lolex'
 import idStore from '@/store/modules/identity'
 import mainStore from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
-import {tequilapi} from '@/../libraries/api/tequilapi'
+import {TequilapiFactory} from '@/../libraries/api/tequilapi'
+import axios from 'axios'
 import VpnLoader from '@/pages/VpnLoader'
 
 import utils from '../../../helpers/utils'
@@ -19,6 +20,9 @@ import messages from '../../../../src/app/messages'
 
 Vue.use(Vuex)
 Vue.use(Router)
+
+const axioInstance = axios.create()
+const tequilapi = TequilapiFactory(axioInstance)
 
 async function mountComponent (tequilapi) {
   const router = new Router({routes: []})
@@ -54,7 +58,7 @@ describe('VpnLoader', () => {
   }
 
   before(async () => {
-    mock = new MockAdapter(tequilapi.__axio)
+    mock = new MockAdapter(axioInstance)
     mock.onGet('/healthcheck').reply(200, {version: {commit: 'caed3112'}})
 
     clock = lolex.install()
