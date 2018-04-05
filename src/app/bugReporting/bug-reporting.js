@@ -30,20 +30,6 @@ const config = {
   }
 }
 
-const installInMain = () => {
-  config.release = global.__version
-  const url = process.env.SENTRY.privateURL
-  Raven.config(url, config).install()
-  return Raven
-}
-
-const installInRenderer = (Vue) => {
-  config.release = remote.getGlobal('__version')
-  const url = remote.getGlobal('__sentryURL')
-  RavenJs.config(url, config).install().addPlugin(RavenVue, Vue)
-  return RavenJs
-}
-
 const setUser = (userData) => {
   RavenJs.setUserContext(userData)
   Raven.setContext({
@@ -57,7 +43,10 @@ class RendererBugReporter {
   }
 
   install (vue) {
-    installInRenderer(vue)
+    config.release = remote.getGlobal('__version')
+    const url = remote.getGlobal('__sentryURL')
+    RavenJs.config(url, config).install().addPlugin(RavenVue, vue)
+    return RavenJs
   }
 
   captureException (ex, options) {
@@ -71,7 +60,10 @@ class MainBugReporter {
   }
 
   install () {
-    installInMain()
+    config.release = global.__version
+    const url = process.env.SENTRY.privateURL
+    Raven.config(url, config).install()
+    return Raven
   }
 
   captureException (ex, options) {
