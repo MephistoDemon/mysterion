@@ -16,7 +16,7 @@
                     </a>
                 </li>
                 <li class="nav__item">
-                    <a class="nav__trigger" href="#" @click="openRemoteLink('https://mysterium.zendesk.com/hc/en-us/requests/new')">
+                    <a class="nav__trigger" href="#" @click="reportIssue">
                         <icon-issue class="nav__icon nav__icon--issue"/>
                         <span class="nav__text">report issue</span>
                     </a>
@@ -41,6 +41,7 @@
   import IconIssue from '@/assets/img/icon--issue.svg'
   import IconEye from '@/assets/img/icon--eye.svg'
   import IconQuit from '@/assets/img/icon--quit.svg'
+  import bugReporter from '@/../app/bug-reporting'
 
   export default {
     name: 'AppNav',
@@ -63,6 +64,10 @@
       },
       openRemoteLink (url) {
         shell.openExternal(url)
+      },
+      reportIssue () {
+        bugReporter.renderer.raven.captureMessage('User opened issue report form.')
+        bugReporter.renderer.raven.showReportDialog()
       }
     }
   }
