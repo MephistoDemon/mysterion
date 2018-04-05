@@ -3,13 +3,8 @@ import Raven from 'raven'
 import RavenJs from 'raven-js'
 import {remote} from 'electron'
 import RavenVue from 'raven-js/plugins/vue'
-import LimitedLinkedList from '../../libraries/limited-linked-list'
 import {logLevel} from '../../libraries/mysterium-client/index'
-
-const logsBuffer = {
-  [logLevel.LOG]: new LimitedLinkedList(300),
-  [logLevel.ERROR]: new LimitedLinkedList(300)
-}
+import {pushToLogCache, getLogCache} from './logsCache'
 
 const config = {
   captureUnhandledRejections: true,
@@ -54,14 +49,6 @@ const setUser = (userData) => {
   Raven.setContext({
     user: userData
   })
-}
-
-const pushToLogCache = (level, data) => {
-  logsBuffer[level].insert(data)
-}
-
-const getLogCache = (level) => {
-  return logsBuffer[level].toArray().reverse().join('\n')
 }
 
 export default {
