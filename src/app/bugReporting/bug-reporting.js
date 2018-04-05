@@ -3,8 +3,8 @@ import Raven from 'raven'
 import RavenJs from 'raven-js'
 import {remote} from 'electron'
 import RavenVue from 'raven-js/plugins/vue'
-import LimitedLinkedList from '../libraries/limited-linked-list'
-import {logLevel} from '../libraries/mysterium-client/index'
+import LimitedLinkedList from '../../libraries/limited-linked-list'
+import {logLevel} from '../../libraries/mysterium-client/index'
 
 const logsBuffer = {
   [logLevel.LOG]: new LimitedLinkedList(300),

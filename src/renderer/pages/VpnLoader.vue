@@ -5,7 +5,7 @@
   import config from '@/config'
   import messages from '../../app/messages'
   import sleep from '../../libraries/sleep'
-  import bugReporter from '../../app/bug-reporting'
+  import bugReporter from '../../app/bugReporting/bug-reporting'
 
   async function identityGet ({dispatch, commit}) {
     const identities = await dispatch(type.IDENTITY_LIST)

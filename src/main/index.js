@@ -2,7 +2,7 @@
 
 import MysterionFactory from '../app/mysterion'
 import MysterionConfig from '../app/mysterion-config'
-import bugReporter from '../app/bug-reporting'
+import bugReporter from '../app/bugReporting/bug-reporting'
 
 global.__version = process.env.MYSTERION_VERSION
 global.__buildNumber = process.env.BUILD_NUMBER

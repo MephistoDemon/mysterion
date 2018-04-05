@@ -7,7 +7,7 @@ import store from './store'
 
 import {ipcRenderer} from 'electron'
 import communication from '../app/communication'
-import bugReporter from '../app/bug-reporting'
+import bugReporter from '../app/bugReporting/bug-reporting'
 const raven = bugReporter.renderer.install(Vue)
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
