@@ -1,13 +1,10 @@
-# Decentralized VPN built on blockchain
+# Mysterion - decentralized VPN built on blockchain
 
-VPN desktop UI (OSX, Windows, Linux) for Mysterium Network
+Mysterion is desktop application to access Mysterion Network - decentralized VPN built on blockchain.
 
 - Homepage https://mysterium.network/
 - [Whitepaper](https://mysterium.network/whitepaper.pdf)
-
-# mysterion
-
-> mysterium client desktop interface application
+- [Stable](https://github.com/MysteriumNetwork/mysterion/releases/latest) release
 
 #### Build Setup
 
@@ -54,4 +51,5 @@ This project was generated with [electron-vue](https://github.com/SimulatedGREG/
 
 # License
 
-This project is licensed under the terms of the GNU General Public License v3.0.
+This project is licensed under the terms of the GNU General Public License v3.0 (see [details](./LICENSE)).
+
