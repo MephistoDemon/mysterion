@@ -1,34 +1,9 @@
-import os from 'os'
 import Raven from 'raven'
 import RavenJs from 'raven-js'
 import {remote} from 'electron'
 import RavenVue from 'raven-js/plugins/vue'
-import {logLevel} from '../../libraries/mysterium-client/index'
-import {pushToLogCache, getLogCache} from './logsCache'
-
-const config = {
-  captureUnhandledRejections: true,
-  tags: {
-    environment: process.env.NODE_ENV,
-    process: process.type,
-    electron: process.versions.electron,
-    chrome: process.versions.chrome,
-    platform: os.platform(),
-    platform_release: os.release()
-  },
-  dataCallback: (data) => {
-    const stderr = getLogCache(logLevel.ERROR)
-    const stdout = getLogCache(logLevel.LOG)
-    data.extra.logs = {
-      [logLevel.LOG]: stdout,
-      [logLevel.ERROR]: stderr
-    }
-    return data
-  },
-  autoBreadcrumbs: {
-    console: true
-  }
-}
+import {pushToLogCache} from './logsCache'
+import config from './config'
 
 const setUser = (userData) => {
   RavenJs.setUserContext(userData)
