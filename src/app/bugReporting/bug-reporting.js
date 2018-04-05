@@ -51,17 +51,37 @@ const setUser = (userData) => {
   })
 }
 
+class RendererBugReporter {
+  constructor () {
+    this.raven = RavenJs
+  }
+
+  install (vue) {
+    installInRenderer(vue)
+  }
+
+  captureException (ex, options) {
+    RavenJs.captureException(ex, options)
+  }
+}
+
+class MainBugReporter {
+  constructor () {
+    this.raven = Raven
+  }
+
+  install () {
+    installInMain()
+  }
+
+  captureException (ex, options) {
+    Raven.captureException(ex, options)
+  }
+}
+
 export default {
-  renderer: {
-    install: installInRenderer,
-    captureException: RavenJs.captureException.bind(RavenJs),
-    raven: RavenJs
-  },
-  main: {
-    install: installInMain,
-    captureException: Raven.captureException.bind(Raven),
-    raven: Raven
-  },
+  renderer: new RendererBugReporter(),
+  main: new MainBugReporter(),
   setUser,
   pushToLogCache
 }
