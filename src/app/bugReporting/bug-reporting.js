@@ -6,6 +6,8 @@ import RavenVue from 'raven-js/plugins/vue'
 import {pushToLogCache} from './logsCache'
 import config from './config'
 
+declare var SENTRY_CONFIG: Object
+
 const setUser = (userData: any) => {
   RavenJs.setUserContext(userData)
   Raven.setContext({
@@ -13,9 +15,12 @@ const setUser = (userData: any) => {
   })
 }
 
-declare var SENTRY_CONFIG: Object
+interface BugReporter {
+  raven: any;
+  captureException (ex: any, options: any): void;
+}
 
-class RendererBugReporter {
+class RendererBugReporter implements BugReporter {
   raven: any
 
   constructor () {
@@ -34,7 +39,7 @@ class RendererBugReporter {
   }
 }
 
-class MainBugReporter {
+class MainBugReporter implements BugReporter {
   raven: any
 
   constructor () {
