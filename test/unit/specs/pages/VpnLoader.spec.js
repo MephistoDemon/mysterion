@@ -10,6 +10,7 @@ import idStore from '@/store/modules/identity'
 import mainStore from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
 import {TequilapiFactory} from '@/../libraries/api/tequilapi'
+import dependencies from '@/dependencies'
 import axios from 'axios'
 import VpnLoader from '@/pages/VpnLoader'
 
@@ -23,13 +24,13 @@ Vue.use(Router)
 
 const axioInstance = axios.create()
 const tequilapi = TequilapiFactory(axioInstance)
-mainStore.__Rewire__('tequilapi', tequilapi)
+dependencies.constant('tequilapi', tequilapi)
 
-async function mountComponent (tequilapi) {
+async function mountComponent () {
   const router = new Router({routes: []})
   const store = new Vuex.Store({
     modules: {
-      identity: {...idStore(tequilapi)},
+      identity: idStore,
       main: mainStore,
       errors: errorStore
     },
@@ -51,8 +52,8 @@ describe('VpnLoader', () => {
   let mock
   let clock
 
-  async function mountAndPrepareLoadingScreen (tequilapi) {
-    const vm = await mountComponent(tequilapi)
+  async function mountAndPrepareLoadingScreen () {
+    const vm = await mountComponent()
     await utils.nextTick() // wait for delay inside loader callback
     clock.tick(config.loadingScreenDelay) // skip loader delay
     return vm
@@ -75,7 +76,7 @@ describe('VpnLoader', () => {
     before(async () => {
       mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
       mock.onPut('/identities/0xC001FACE/unlock').reply(200)
-      vm = await mountAndPrepareLoadingScreen(tequilapi)
+      vm = await mountAndPrepareLoadingScreen()
     })
 
     it('loads without errors', async () => {
@@ -96,7 +97,7 @@ describe('VpnLoader', () => {
       mock.onGet('/identities').replyOnce(200, {identities: []})
       mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
       mock.onPut('/identities/0xC001FACE/unlock').reply(200)
-      vm = await mountAndPrepareLoadingScreen(tequilapi)
+      vm = await mountAndPrepareLoadingScreen()
     })
 
     it('loads without errors', async () => {
@@ -120,7 +121,7 @@ describe('VpnLoader', () => {
       let vm
       before(async () => {
         mock.onGet('/identities').replyOnce(500)
-        vm = await mountComponent(tequilapi)
+        vm = await mountComponent()
       })
 
       it('should notify user with an overlay', () => {
@@ -135,7 +136,7 @@ describe('VpnLoader', () => {
       before(async () => {
         mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
         mock.onPut('/identities/0xC001FACE/unlock').replyOnce(500)
-        vm = await mountComponent(tequilapi)
+        vm = await mountComponent()
       })
 
       it('should notify user with an overlay', () => {

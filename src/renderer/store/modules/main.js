@@ -1,6 +1,6 @@
 // TODO: rename to `vpn.js` to be consistent with `Vpn.vue`
 import type from '../types'
-import {tequilapi} from '../../../libraries/api/tequilapi'
+import dependencies from '../../dependencies'
 
 const state = {
   init: '',
@@ -21,6 +21,8 @@ const getters = {
   errorMessage: state => state.errorMessage,
   showError: state => state.showError
 }
+
+const tequilapi = dependencies.get('tequilapi')
 
 const mutations = {
   [type.CLIENT_BUILD_INFO] (state, buildInfo) {

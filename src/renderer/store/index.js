@@ -7,7 +7,6 @@ import connection from './modules/connection'
 import clientProcess from './modules/clientProcess'
 import terms from './modules/terms'
 import errors from './modules/errors'
-
 import identity from './modules/identity'
 Vue.use(Vuex)
 
@@ -19,7 +18,7 @@ export default new Vuex.Store({
     connection,
     errors,
     terms,
-    identity: identity(tequilapi),
+    identity,
     clientProcess: clientProcess(tequilapi)
   },
   strict: process.env.NODE_ENV !== 'production'
