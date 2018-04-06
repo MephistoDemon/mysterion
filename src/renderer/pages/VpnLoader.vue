@@ -32,6 +32,7 @@
         commit(type.INIT_SUCCESS)
         this.$router.push('/vpn')
       } catch (err) {
+        commit(type.INIT_FAIL)
         commit(type.OVERLAY_ERROR, messages.initializationError)
         bugReporter.renderer.captureException(err)
       }
