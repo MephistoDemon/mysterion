@@ -4,6 +4,7 @@ import axios from 'axios'
 import App from './App'
 import router from './router'
 import store from './store'
+import dependencies from './dependencies'
 
 import bugReporter from '../app/bugReporting/bug-reporting'
 import RendererCommunication from '../app/communication/renderer-communication'
@@ -13,6 +14,7 @@ bugReporter.renderer.install(Vue)
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
+Vue.use(dependencies)
 
 new Vue({
   components: {App},
