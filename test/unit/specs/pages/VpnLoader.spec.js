@@ -6,8 +6,6 @@ import Vuex from 'vuex'
 import Router from 'vue-router'
 import lolex from 'lolex'
 
-import idStore from '@/store/modules/identity'
-import mainStore from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
 import {TequilapiFactory} from '@/../libraries/api/tequilapi'
 import dependencies from '@/dependencies'
@@ -25,6 +23,9 @@ Vue.use(Router)
 const axioInstance = axios.create()
 const tequilapi = TequilapiFactory(axioInstance)
 dependencies.constant('tequilapi', tequilapi)
+// using require here so that stores pick up mocked tequilapi
+const idStore = require('@/store/modules/identity').default
+const mainStore = require('@/store/modules/main').default
 
 async function mountComponent () {
   const router = new Router({routes: []})
