@@ -31,7 +31,7 @@ export default function Constructor (teqAddr = 'http://127.0.0.1:4050') {
       disconnect: async () => axioAdapter.delete(conPath),
       status: async () => axioAdapter.get(conPath),
       ip: async () => {
-        const res = await axioAdapter.get(conPath + '/ip')
+        const res = await axioAdapter.get(conPath + '/ip', {timeout})
         return res.ip
       },
       statistics: async () => axioAdapter.get(conPath + '/statistics')
@@ -44,7 +44,7 @@ export default function Constructor (teqAddr = 'http://127.0.0.1:4050') {
 }
 
 function adapterFactory (teqAddr) {
-  const teqAxio = axios.create({baseURL: teqAddr, timeout})
+  const teqAxio = axios.create({baseURL: teqAddr})
   const axioAdapter = {
     async get (path, options = {}) {
       const res = await teqAxio.get(path, options)
