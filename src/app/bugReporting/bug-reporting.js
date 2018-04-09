@@ -25,7 +25,6 @@ class RendererBugReporter implements BugReporter {
     config.release = remote.getGlobal('__version')
     const url = remote.getGlobal('__sentryURL')
     RavenJs.config(url, config).install().addPlugin(RavenVue, vue)
-    return RavenJs
   }
 
   captureException (ex: Error | string, options: Object) {
@@ -38,7 +37,6 @@ class MainBugReporter implements BugReporter {
     config.release = global.__version
     const url = SENTRY_CONFIG.privateURL
     Raven.config(url, config).install()
-    return Raven
   }
 
   captureException (ex: Error | string, options: Object) {
