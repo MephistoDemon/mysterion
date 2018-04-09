@@ -16,6 +16,7 @@ const setUser = (userData: any) => {
 }
 
 interface BugReporter {
+  install (options: Object): void;
   captureException (ex: Error | string, options: Object): void;
 }
 
