@@ -16,17 +16,10 @@ const setUser = (userData: any) => {
 }
 
 interface BugReporter {
-  raven: any;
   captureException (ex: any, options: any): void;
 }
 
 class RendererBugReporter implements BugReporter {
-  raven: any
-
-  constructor () {
-    this.raven = RavenJs
-  }
-
   install (vue: any) {
     config.release = remote.getGlobal('__version')
     const url = remote.getGlobal('__sentryURL')
@@ -40,12 +33,6 @@ class RendererBugReporter implements BugReporter {
 }
 
 class MainBugReporter implements BugReporter {
-  raven: any
-
-  constructor () {
-    this.raven = Raven
-  }
-
   install () {
     config.release = global.__version
     const url = SENTRY_CONFIG.privateURL
