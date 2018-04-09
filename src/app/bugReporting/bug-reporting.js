@@ -21,7 +21,7 @@ interface BugReporter {
 }
 
 class RendererBugReporter implements BugReporter {
-  install (vue: any) {
+  install (vue: Object) {
     config.release = remote.getGlobal('__version')
     const url = remote.getGlobal('__sentryURL')
     RavenJs.config(url, config).install().addPlugin(RavenVue, vue)
