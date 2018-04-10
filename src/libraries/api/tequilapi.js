@@ -6,7 +6,7 @@ const conPath = '/connection'
 const healthCheckPath = '/healthcheck'
 const stopPath = '/stop'
 
-const timeout = 5000
+const IP_TIMEOUT = 5000
 
 export let tequilapi = Constructor()
 
@@ -31,7 +31,7 @@ export default function Constructor (teqAddr = 'http://127.0.0.1:4050') {
       disconnect: async () => axioAdapter.delete(conPath),
       status: async () => axioAdapter.get(conPath),
       ip: async () => {
-        const res = await axioAdapter.get(conPath + '/ip', {timeout})
+        const res = await axioAdapter.get(conPath + '/ip', {timeout: IP_TIMEOUT})
         return res.ip
       },
       statistics: async () => axioAdapter.get(conPath + '/statistics')
