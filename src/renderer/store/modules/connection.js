@@ -51,7 +51,7 @@ const mutations = {
 const actions = {
   async [type.CONNECTION_IP] ({commit}) {
     try {
-      const ip = await tequilapi.connection.ip()
+      const ip = await tequilapi.connection.ip({timeout: config.ipUpdateTimeout})
       commit(type.CONNECTION_IP, ip)
     } catch (err) {
       if (isTimeoutError(err) || hasHttpStatus(err, 503)) {

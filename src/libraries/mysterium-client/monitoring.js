@@ -36,7 +36,7 @@ class ProcessMonitoring {
 
   async _healthCheck () {
     try {
-      await this.api.healthCheck(500)
+      await this.api.healthCheck({timeout: 500})
       this.clientIsRunning = true
     } catch (e) {
       this.clientIsRunning = false

@@ -23,7 +23,7 @@ class Process {
   }
 
   start () {
-    this.tequilapi.healthCheck(100).catch(() => {
+    this.tequilapi.healthCheck({timeout: 100}).catch(() => {
       console.log('touched the daemon, now it should be up')
     })
   }
