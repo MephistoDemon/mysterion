@@ -1,18 +1,7 @@
-import dependencies from 'vue-inject'
-import TequilAPI from '@/../libraries/api/tequilapi'
+import containerFactory from './container'
+import containerBootstrap from './bootstrap'
 
-dependencies.constant(
-  'tequilapi.config',
-  {
-    'baseURL': 'http://127.0.0.1:4050'
-  }
-)
-dependencies.service(
-  'tequilapi',
-  ['tequilapi.config'],
-  (config) => {
-    return new TequilAPI(config.baseURL)
-  }
-)
+const container = containerFactory()
+containerBootstrap(container)
 
-export default dependencies
+export default container

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import {createLocalVue, mount} from '@vue/test-utils'
 import CountrySelect from '@/components/CountrySelect'
-import dependencies from 'vue-inject'
+import DependenciesFactory from '@/dependencies/container'
 
 const tequilapiProposalsResponse = {
   proposals: [
@@ -50,6 +50,7 @@ describe('CountrySelect', () => {
   let wrapper
 
   beforeEach(() => {
+    let dependencies = DependenciesFactory()
     dependencies.constant('tequilapi', tequilapi)
 
     const vue = createLocalVue()
