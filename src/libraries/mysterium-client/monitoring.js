@@ -1,4 +1,5 @@
 const healthCheckInterval = 1500
+const healthcheckTimeout = 500
 
 class ProcessMonitoring {
   constructor (tequilApi) {
@@ -36,7 +37,7 @@ class ProcessMonitoring {
 
   async _healthCheck () {
     try {
-      await this.api.healthCheck({timeout: 500})
+      await this.api.healthCheck(healthcheckTimeout)
       this.clientIsRunning = true
     } catch (e) {
       this.clientIsRunning = false

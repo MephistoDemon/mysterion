@@ -1,5 +1,7 @@
 import {Tail} from 'tail'
 
+const healthCheckTimeout = 100
+
 export const logLevel = {
   LOG: 'stdout',
   ERROR: 'stderr'
@@ -23,7 +25,7 @@ class Process {
   }
 
   start () {
-    this.tequilapi.healthCheck({timeout: 100}).catch(() => {
+    this.tequilapi.healthCheck(healthCheckTimeout).catch(() => {
       console.log('touched the daemon, now it should be up')
     })
   }
