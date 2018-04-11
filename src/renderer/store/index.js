@@ -1,25 +1,26 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import tequilAPI from '../../libraries/api/tequilapi'
+import dependencies from '../dependencies'
 
-import main from './modules/main'
+import mainFactory from './modules/main'
 import connection from './modules/connection'
-import clientProcess from './modules/clientProcess'
+import clientProcessFactory from './modules/clientProcess'
 import terms from './modules/terms'
 import errors from './modules/errors'
-import identity from './modules/identity'
+import identityFactory from './modules/identity'
+
 Vue.use(Vuex)
 
-const tequilapi = tequilAPI()
+const tequilapi = dependencies.get('tequilapi')
 
 export default new Vuex.Store({
   modules: {
-    main,
+    main: mainFactory(tequilapi),
     connection,
     errors,
     terms,
-    identity,
-    clientProcess: clientProcess(tequilapi)
+    identity: identityFactory(tequilapi),
+    clientProcess: clientProcessFactory(tequilapi)
   },
   strict: process.env.NODE_ENV !== 'production'
 })
