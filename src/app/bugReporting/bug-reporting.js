@@ -17,6 +17,7 @@ const setUser = (userData: any) => {
 
 interface BugReporter {
   install (options: Object): void;
+
   captureException (ex: Error | string, options: Object): void;
 }
 
@@ -29,6 +30,14 @@ class RendererBugReporter implements BugReporter {
 
   captureException (ex: Error | string, options: Object) {
     RavenJs.captureException(ex, options)
+  }
+
+  captureMessage (msg: string, options?: Object): void {
+    RavenJs.captureMessage(msg, options)
+  }
+
+  showReportDialog (options?: Object): void {
+    RavenJs.showReportDialog(options)
   }
 }
 
@@ -43,7 +52,7 @@ class MainBugReporter implements BugReporter {
     Raven.captureException(ex, options)
   }
 
-  setRequestHeadersReferer (session) {
+  setRequestHeadersReferer (session: Object) {
     session.defaultSession.webRequest.onBeforeSendHeaders({
       urls: ['https://sentry.io/api/embed/error-page/*']
     }, (details, call) => {

@@ -66,8 +66,8 @@
         shell.openExternal(url)
       },
       reportIssue () {
-        bugReporter.renderer.raven.captureMessage('User opened issue report form.')
-        bugReporter.renderer.raven.showReportDialog()
+        bugReporter.renderer.captureMessage('User opened issue report form.')
+        bugReporter.renderer.showReportDialog()
       }
     }
   }
