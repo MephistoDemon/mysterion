@@ -7,8 +7,8 @@ import store from './store'
 
 import {ipcRenderer} from 'electron'
 import communication from '../app/communication'
-import bugReporter from '../app/bug-reporting'
-const raven = bugReporter.renderer.install(Vue)
+import bugReporter from '../app/bugReporting/bug-reporting'
+bugReporter.renderer.install(Vue)
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
@@ -22,7 +22,7 @@ new Vue({
 }).$mount('#app')
 
 window.addEventListener('unhandledrejection', (evt) => {
-  raven.captureException(evt.reason, {
+  bugReporter.renderer.captureException(evt.reason, {
     extra: evt.reason.response ? evt.reason.response.data : evt.reason
   })
 })

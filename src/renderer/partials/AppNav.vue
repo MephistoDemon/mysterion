@@ -41,7 +41,7 @@
   import IconIssue from '@/assets/img/icon--issue.svg'
   import IconEye from '@/assets/img/icon--eye.svg'
   import IconQuit from '@/assets/img/icon--quit.svg'
-  import bugReporter from '@/../app/bug-reporting'
+  import bugReporter from '@/../app/bugReporting/bug-reporting'
 
   export default {
     name: 'AppNav',

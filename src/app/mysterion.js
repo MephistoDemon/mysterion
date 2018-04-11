@@ -12,7 +12,7 @@ import {
   Process as MysteriumProcess,
   logLevel as processLogLevel
 } from '../libraries/mysterium-client/index'
-import bugReporter from './bug-reporting'
+import bugReporter from './bugReporting/bug-reporting'
 import messages from './messages'
 
 function MysterionFactory (config) {

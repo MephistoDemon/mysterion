@@ -53,7 +53,7 @@ let mainConfig = {
     new webpack.DefinePlugin({
       'process.env.BUILD_NUMBER': JSON.stringify(buildNumber),
       'process.env.MYSTERION_VERSION': JSON.stringify(version),
-      'process.env.SENTRY': JSON.stringify(sentry)
+      'SENTRY_CONFIG': JSON.stringify(sentry)
     }),
     new webpack.NoEmitOnErrorsPlugin()
   ],
