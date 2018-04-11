@@ -4,7 +4,7 @@ import dependencies from '../dependencies'
 
 import mainFactory from './modules/main'
 import connection from './modules/connection'
-import clientProcessFactory from './modules/clientProcess'
+import clientProcess from './modules/clientProcess'
 import terms from './modules/terms'
 import errors from './modules/errors'
 import identityFactory from './modules/identity'
@@ -16,11 +16,11 @@ const tequilapi = dependencies.get('tequilapi')
 export default new Vuex.Store({
   modules: {
     main: mainFactory(tequilapi),
+    identity: identityFactory(tequilapi),
     connection,
     errors,
     terms,
-    identity: identityFactory(tequilapi),
-    clientProcess: clientProcessFactory(tequilapi)
+    clientProcess
   },
   strict: process.env.NODE_ENV !== 'production'
 })
