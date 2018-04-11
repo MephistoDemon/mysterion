@@ -14,6 +14,7 @@ import {
 } from '../libraries/mysterium-client/index'
 import bugReporter from './bugReporting/bug-reporting'
 import messages from './messages'
+import MainCommunication from './communication/main-communication'
 
 function MysterionFactory (config) {
   const tequilApi = new TequilAPI()
@@ -197,7 +198,8 @@ class Mysterion {
     const toggleDevTools = this.config.inDevMode ? () => { this.window.toggleDevTools() } : null
     const tray = new MysterionTray(activateWindow, toggleDevTools)
     tray.build()
-    ipcMain.on(communication.CONNECTION_STATUS_CHANGED, (evt, oldStatus, newStatus) => {
+    const mainCommunication = new MainCommunication(ipcMain)
+    mainCommunication.onConnectionStatusChange((oldStatus, newStatus) => {
       if (newStatus === connectionStatus.CONNECTED) {
         tray.setIcon(TrayIcon.active)
       }

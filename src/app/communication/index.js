@@ -1,4 +1,4 @@
-// TODO: move app/communication/index.js to app/communication.js
+// TODO: rename to messages.js
 export default {
   MYSTERIUM_CLIENT_LOG: 'mysterium.client.log',
   IDENTITY_SET: 'identity.set',

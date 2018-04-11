@@ -7,7 +7,7 @@ import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
 import ipc from '../../ipc'
-import communication from '../../../app/communication'
+import RendererCommunication from '../../../app/communication/renderer-communication'
 
 const tequilapi = tequilAPI()
 
@@ -94,7 +94,8 @@ const actions = {
       return
     }
     commit(type.SET_CONNECTION_STATUS, newStatus)
-    ipc.send(communication.CONNECTION_STATUS_CHANGED, oldStatus, newStatus)
+    const rendererCommunication = new RendererCommunication(ipc)
+    rendererCommunication.sendConnectionStatusChange(oldStatus, newStatus)
 
     if (newStatus === connectionStatus.CONNECTED) {
       await dispatch(type.START_ACTION_LOOPING, {
