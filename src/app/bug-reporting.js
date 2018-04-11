@@ -35,6 +35,15 @@ const config = {
   }
 }
 
+function setRequestHeadersReferer (session) {
+  session.defaultSession.webRequest.onBeforeSendHeaders({
+    urls: ['https://sentry.io/api/embed/error-page/*']
+  }, (details, call) => {
+    details.requestHeaders['Referer'] = '*'
+    call({requestHeaders: details.requestHeaders})
+  })
+}
+
 const installInMain = () => {
   config.release = global.__version
   const url = process.env.SENTRY.privateURL
@@ -73,7 +82,8 @@ export default {
   main: {
     install: installInMain,
     captureException: Raven.captureException.bind(Raven),
-    raven: Raven
+    raven: Raven,
+    setRequestHeadersReferer
   },
   setUser,
   pushToLogCache
