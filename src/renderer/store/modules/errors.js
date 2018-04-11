@@ -1,22 +1,32 @@
+// @flow
 import type from '../types'
 
-const state = {
+type OverlayError = {
+  message: string,
+  hint: ?string
+}
+
+type State = {
+  overlay: ?OverlayError
+}
+
+const state:State = {
   overlay: null
 }
 
 const mutations = {
-  [type.OVERLAY_ERROR] (state, { message, hint = null }) {
-    state.overlay = { message, hint }
+  [type.OVERLAY_ERROR] (state: State, error: OverlayError) {
+    state.overlay = error
   }
 }
 
 const getters = {
-  overlayError: (store) => store.overlay
+  overlayError: (store: Object) => store.overlay
 }
 
 const actions = {
-  [type.OVERLAY_ERROR] ({commit}, { message, hint = null }) {
-    commit(type.OVERLAY_ERROR, { message, hint })
+  [type.OVERLAY_ERROR] ({commit}, error: OverlayError) {
+    commit(type.OVERLAY_ERROR, error)
   }
 }
 
