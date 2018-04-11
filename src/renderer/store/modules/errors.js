@@ -5,8 +5,8 @@ const state = {
 }
 
 const mutations = {
-  [type.OVERLAY_ERROR] (state, error) {
-    state.overlay = error
+  [type.OVERLAY_ERROR] (state, { message, hint = null }) {
+    state.overlay = { message, hint }
   }
 }
 
@@ -15,8 +15,8 @@ const getters = {
 }
 
 const actions = {
-  [type.OVERLAY_ERROR] ({commit}, error) {
-    commit(type.OVERLAY_ERROR, error)
+  [type.OVERLAY_ERROR] ({commit}, { message, hint = null }) {
+    commit(type.OVERLAY_ERROR, { message, hint })
   }
 }
 
