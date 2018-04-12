@@ -1,27 +1,32 @@
 // @flow
 import messages from './index'
-
-interface IpcMain {
-  on (channel: string, callback: Function): void
-}
+import type {Ipc} from './ipc'
 
 /**
- * This allows sending messages to ipcMain.
+ * This allows main process communicating with renderer process.
  */
 class MainCommunication {
-  _ipc: IpcMain
+  _ipc: Ipc
 
-  constructor (ipc: IpcMain) {
+  constructor (ipc: Ipc) {
     this._ipc = ipc
+  }
+
+  sendMysteriumClientLog ({ level, data }: { level: string, data: string}) {
+    this._send(messages.MYSTERIUM_CLIENT_LOG, {level, data})
   }
 
   onConnectionStatusChange (callback: Function) {
     this._on(messages.CONNECTION_STATUS_CHANGED, callback)
   }
 
+  _send (channel: string, ...args: Array<mixed>) {
+    this._ipc.send(channel, ...args)
+  }
+
   _on (channel: string, callback: Function) {
     this._ipc.on(channel, (event, ...args) => {
-      // eslint-disable-next-line
+      // eslint-disable-next-line standard/no-callback-literal
       callback(...args)
     })
   }

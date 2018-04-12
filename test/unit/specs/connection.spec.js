@@ -12,9 +12,11 @@ import FakeIpc from '../../helpers/fakeIpc'
 const fakeTequilapi = utils.fakeTequilapiManipulator()
 const fakeIpc = new FakeIpc()
 
+const fakeBuildIpcRenderer = () => fakeIpc
+
 const connection = connectionInjector({
   '../../../libraries/api/tequilapi': fakeTequilapi.getFakeApi,
-  '../../ipc': fakeIpc
+  '../../../app/communication/ipcRenderer': { buildIpcRenderer: fakeBuildIpcRenderer }
 }).default
 
 async function executeAction (action, state = {}, payload = {}) {

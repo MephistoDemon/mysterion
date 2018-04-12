@@ -7,7 +7,7 @@ import store from './store'
 
 import bugReporter from '../app/bugReporting/bug-reporting'
 import RendererCommunication from '../app/communication/renderer-communication'
-import ipc from './ipc'
+import IpcRenderer from '../app/communication/ipcRenderer'
 bugReporter.renderer.install(Vue)
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
@@ -27,7 +27,9 @@ window.addEventListener('unhandledrejection', (evt) => {
   })
 })
 
-const rendererCommunication = new RendererCommunication(ipc)
+const ipcRenderer = new IpcRenderer()
+
+const rendererCommunication = new RendererCommunication(ipcRenderer)
 rendererCommunication.onMysteriumClientLog(({ level, data }) => {
   bugReporter.pushToLogCache(level, data)
 })

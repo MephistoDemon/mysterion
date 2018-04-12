@@ -1,19 +1,15 @@
 // @flow
 
 import messages from './index'
-
-interface IpcRenderer {
-  send (channel: string, ...args: Array<mixed>): void,
-  on (channel: string, callback: Function): void
-}
+import type {Ipc} from './ipc'
 
 /**
- * This allows receiving messages from ipc
+ * This allows renderer process communicating with main process.
  */
 class RendererCommunication {
-  _ipc: IpcRenderer
+  _ipc: Ipc
 
-  constructor (ipc: IpcRenderer) {
+  constructor (ipc: Ipc) {
     this._ipc = ipc
   }
 
