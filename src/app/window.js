@@ -1,5 +1,5 @@
 import {BrowserWindow, ipcMain} from 'electron'
-import bugReporter from './bug-reporting'
+import bugReporter from './bugReporting/bug-reporting'
 
 function Message (sender, value) {
   return {
