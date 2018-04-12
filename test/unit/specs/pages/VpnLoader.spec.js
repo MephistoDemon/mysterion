@@ -11,12 +11,12 @@ import propStore from '@/store/modules/proposal'
 import mainStore from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
 import {tequilapi} from '@/../libraries/api/tequilapi'
-import loadingScreen from '@/pages/VpnLoader'
+import VpnLoader from '@/pages/VpnLoader'
 
-import utils from '../../helpers/utils'
+import utils from '../../../helpers/utils'
 import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
-import messages from '../../../src/app/messages'
+import messages from '../../../../src/app/messages'
 
 Vue.use(Vuex)
 Vue.use(Router)
@@ -38,7 +38,7 @@ async function mountComponent (tequilapi) {
   })
   const vm = new Vue({
     template: '<div><test></test></div>',
-    components: {'test': loadingScreen},
+    components: {'test': VpnLoader},
     store,
     router
   })
@@ -46,7 +46,7 @@ async function mountComponent (tequilapi) {
   return vm
 }
 
-describe('loading screen', () => {
+describe('VpnLoader', () => {
   let mock
   let clock
 
