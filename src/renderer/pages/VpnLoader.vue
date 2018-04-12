@@ -34,6 +34,7 @@
             err.response.data.message.includes('connect: network is unreachable')
           if (!isNetworkUnreachable) {
             commit(type.OVERLAY_ERROR, {message: messages.initializationError.message})
+            console.log('Proposal fetching in initialization failed', err)
             bugReporter.renderer.captureException(err)
             return
           }
