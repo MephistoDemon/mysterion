@@ -12,4 +12,4 @@ yarn-error.log
 .idea
 .env
 bin/*
-
+npm-package.json
