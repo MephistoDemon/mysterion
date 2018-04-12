@@ -63,6 +63,7 @@
       })
 
       ipcRenderer.on(communication.APP_ERROR, (event, error) => {
+        console.log('APP_ERROR received from ipc:', event)
         this.$store.dispatch(type.OVERLAY_ERROR, error)
       })
 
