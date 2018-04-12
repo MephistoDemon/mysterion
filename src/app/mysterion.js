@@ -5,7 +5,7 @@ import Terms from './terms/index'
 import TequilAPI from '../libraries/api/tequilapi'
 import connectionStatus from '../libraries/api/connectionStatus'
 import communication from './communication/index'
-import {app, ipcMain, session} from 'electron'
+import {app, ipcMain} from 'electron'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 import {
   Installer as MysteriumDaemonInstaller,
@@ -36,7 +36,6 @@ class Mysterion {
     app.on('ready', () => {
       this.bootstrap()
       this.buildTray()
-      bugReporter.main.setRequestHeadersReferer(session)
     })
     // fired when all windows are closed
     app.on('window-all-closed', () => this.onWindowsClosed())
@@ -78,6 +77,9 @@ class Mysterion {
       // TODO: add an error wrapper method and send to sentry
       throw new Error('Failed to load app.')
     }
+
+    // add referer header to all requests sent from renderer. Required for sentry feedback form
+    this.window.onBeforeSendHeaders(bugReporter.requestHeadersRewriteOptions)
 
     // make sure terms are up to date and accepted
     // declining terms will quit the app

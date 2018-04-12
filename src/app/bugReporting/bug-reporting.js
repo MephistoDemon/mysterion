@@ -15,6 +15,21 @@ const setUser = (userData: any) => {
   })
 }
 
+interface requestHeaderRewriteParams {
+  filter: {
+    urls: Array<string>
+  },
+  listener(headers: Object, next: Function): void
+}
+
+const requestHeadersRewriteOptions: requestHeaderRewriteParams = {
+  filter: { urls: ['https://sentry.io/api/embed/error-page/*'] },
+  listener: function (headers, next) {
+    headers['Referer'] = '*'
+    next(headers)
+  }
+}
+
 interface BugReporter {
   install (options: Object): void;
 
@@ -51,20 +66,12 @@ class MainBugReporter implements BugReporter {
   captureException (ex: Error | string, options: Object) {
     Raven.captureException(ex, options)
   }
-
-  setRequestHeadersReferer (session: Object) {
-    session.defaultSession.webRequest.onBeforeSendHeaders({
-      urls: ['https://sentry.io/api/embed/error-page/*']
-    }, (details, call) => {
-      details.requestHeaders['Referer'] = '*'
-      call({requestHeaders: details.requestHeaders})
-    })
-  }
 }
 
 export default {
   renderer: new RendererBugReporter(),
   main: new MainBugReporter(),
   setUser,
-  pushToLogCache
+  pushToLogCache,
+  requestHeadersRewriteOptions
 }
