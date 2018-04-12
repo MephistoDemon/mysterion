@@ -1,6 +1,6 @@
 import type from '../types'
 import tequilAPI from '../../../libraries/api/tequilapi'
-import {isTimeoutError, hasHttpStatus, CLOSED_REQUEST_CODE} from '../../../libraries/api/errors'
+import {isTimeoutError, hasHttpStatus, responseCodes} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
 import bugReporter from '../../../app/bugReporting/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
@@ -125,7 +125,7 @@ const actions = {
       await tequilapi.connection.connect(consumerId, providerId)
       commit(type.HIDE_ERROR)
     } catch (err) {
-      if (hasHttpStatus(err, CLOSED_REQUEST_CODE)) {
+      if (hasHttpStatus(err, responseCodes.CLOSED_REQUEST)) {
         return
       }
       commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
