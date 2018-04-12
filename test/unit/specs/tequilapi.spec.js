@@ -45,7 +45,7 @@ describe('tequilAPI error handling', () => {
       const a = await tequilApi.healthCheck()
       expect(a).to.be.undefined
     } catch (err) {
-      expect(err.message).to.include('timeout')
+      expect(err.message).to.match(/timeout of .*ms exceeded/)
     }
   })
 
