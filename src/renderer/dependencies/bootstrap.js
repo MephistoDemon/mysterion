@@ -1,3 +1,4 @@
+import vueBootstrap from './modules/vue'
 import tequilapiBootstrap from './modules/tequilapi'
 
 /**
@@ -6,6 +7,7 @@ import tequilapiBootstrap from './modules/tequilapi'
  * @param {Object} container
  */
 function bootstrap (container) {
+  vueBootstrap(container)
   tequilapiBootstrap(container)
 }
 

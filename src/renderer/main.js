@@ -2,7 +2,6 @@ import Vue from 'vue'
 import axios from 'axios'
 
 import App from './App'
-import router from './router'
 import store from './store'
 import dependencies from './dependencies'
 
@@ -18,7 +17,7 @@ Vue.use(dependencies)
 
 new Vue({
   components: {App},
-  router,
+  router: dependencies.get('vue-router'),
   store,
   template: '<App/>'
 }).$mount('#app')
