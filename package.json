@@ -24,7 +24,8 @@
     "test:integration:start-server": "karma start test/integration/karma.conf.js",
     "unit:start-server": "karma start test/unit/karma.conf.js",
     "unit:run": "karma run test/unit/karma.conf.js",
-    "postinstall": "npm run && npm run lint:fix"
+    "postinstall": "npm run && npm run lint:fix",
+    "ci": "yarn lint && yarn flow && yarn unit"
   },
   "build": {
     "productName": "Mysterion",
