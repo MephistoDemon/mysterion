@@ -17,7 +17,7 @@ class RendererCommunication {
     return this._send(messages.CONNECTION_STATUS_CHANGED, oldStatus, newStatus)
   }
 
-  onMysteriumClientLog (callback: Function) {
+  onMysteriumClientLog (callback: (level: string, data: string) => void) {
     this._on(messages.MYSTERIUM_CLIENT_LOG, callback)
   }
 

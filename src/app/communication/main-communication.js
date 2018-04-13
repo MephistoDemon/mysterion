@@ -16,7 +16,7 @@ class MainCommunication {
     this._send(messages.MYSTERIUM_CLIENT_LOG, level, data)
   }
 
-  onConnectionStatusChange (callback: Function) {
+  onConnectionStatusChange (callback: (oldStatus: string, newStatus: string) => void) {
     this._on(messages.CONNECTION_STATUS_CHANGED, callback)
   }
 
