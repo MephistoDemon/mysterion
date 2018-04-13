@@ -1,7 +1,7 @@
 const CONNECTION_ABORTED_ERROR_CODE = 'ECONNABORTED'
 
-const responseCodes = {
-  CLOSED_REQUEST: 499
+const httpResponseCodes = {
+  CLIENT_CLOSED_REQUEST: 499
 }
 
 function isTimeoutError (error) {
@@ -20,5 +20,5 @@ export {
   isTimeoutError,
   hasHttpStatus,
   CONNECTION_ABORTED_ERROR_CODE,
-  responseCodes
+  httpResponseCodes
 }

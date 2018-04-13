@@ -1,4 +1,4 @@
-import { CONNECTION_ABORTED_ERROR_CODE, responseCodes } from '../../src/libraries/api/errors'
+import { CONNECTION_ABORTED_ERROR_CODE, httpResponseCodes } from '../../src/libraries/api/errors'
 
 function fakeTequilapiManipulator () {
   let statusFail = false
@@ -11,7 +11,7 @@ function fakeTequilapiManipulator () {
   const fakeTimeoutError = new Error('Mock timeout error')
   fakeTimeoutError.code = CONNECTION_ABORTED_ERROR_CODE
   const fakeClosedRequestError = new Error('Mock closed request error')
-  fakeClosedRequestError.response = { status: responseCodes.CLOSED_REQUEST }
+  fakeClosedRequestError.response = { status: httpResponseCodes.CLIENT_CLOSED_REQUEST }
 
   return {
     getFakeApi: function () {
