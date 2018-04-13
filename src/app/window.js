@@ -65,12 +65,12 @@ class Window {
    * @param event
    * @param data
    */
-  send (event, data) {
+  send (event, ...args) {
     if (!this.window) {
       bugReporter.main.captureException(new Error(`Failed to send message ${event} to renderer, but no window reference found.`))
       return
     }
-    this.window.webContents.send(event, data)
+    this.window.webContents.send(event, ...args)
   }
 
   /**

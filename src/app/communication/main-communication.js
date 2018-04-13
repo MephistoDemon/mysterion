@@ -12,8 +12,8 @@ class MainCommunication {
     this._ipc = ipc
   }
 
-  sendMysteriumClientLog ({ level, data }: { level: string, data: string}) {
-    this._send(messages.MYSTERIUM_CLIENT_LOG, {level, data})
+  sendMysteriumClientLog (level: string, data: string) {
+    this._send(messages.MYSTERIUM_CLIENT_LOG, level, data)
   }
 
   onConnectionStatusChange (callback: Function) {

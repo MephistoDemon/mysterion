@@ -26,8 +26,9 @@ class RendererCommunication {
   }
 
   _on (channel: string, callback: Function) {
-    this._ipc.on(channel, (event, data) => {
-      callback(data)
+    this._ipc.on(channel, (event, ...args) => {
+      // eslint-disable-next-line standard/no-callback-literal
+      callback(...args)
     })
   }
 }

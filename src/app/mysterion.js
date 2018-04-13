@@ -169,7 +169,7 @@ class Mysterion {
       setTimeout(() => updateRendererWithHealth(), 1500)
     }
     const cacheLogs = (level, data) => {
-      this.communication.sendMysteriumClientLog({level, data})
+      this.communication.sendMysteriumClientLog(level, data)
       bugReporter.pushToLogCache(level, data)
     }
 
