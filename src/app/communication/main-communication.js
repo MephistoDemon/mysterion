@@ -21,14 +21,13 @@ class MainCommunication {
     this._on(messages.CONNECTION_STATUS_CHANGED, callback)
   }
 
-  _send (channel: string, ...args: Array<mixed>) {
-    this._ipc.send(channel, ...args)
+  _send (channel: string, data: mixed) {
+    this._ipc.send(channel, data)
   }
 
-  _on (channel: string, callback: Function) {
-    this._ipc.on(channel, (event, ...args) => {
-      // eslint-disable-next-line standard/no-callback-literal
-      callback(...args)
+  _on (channel: string, callback: (data: any) => void) {
+    this._ipc.on(channel, (event, data) => {
+      callback(data)
     })
   }
 }

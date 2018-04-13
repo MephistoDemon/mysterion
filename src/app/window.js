@@ -65,12 +65,14 @@ class Window {
    * @param event
    * @param data
    */
-  send (event, ...args) {
+  send (event, data) {
     if (!this.window) {
-      bugReporter.main.captureException(new Error(`Failed to send message ${event} to renderer, but no window reference found.`))
+      const message = `Failed to send message ${event} to renderer, because window is already closed`
+      // TODO: use captureMessage instead
+      bugReporter.main.captureException(new Error(message))
       return
     }
-    this.window.webContents.send(event, ...args)
+    this.window.webContents.send(event, data)
   }
 
   /**

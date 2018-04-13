@@ -11,8 +11,8 @@ class IpcMain implements Ipc {
     this._window = window
   }
 
-  send (channel: string, ...args: Array<mixed>) {
-    this._window.send(channel, ...args)
+  send (channel: string, data?: mixed) {
+    this._window.send(channel, data)
   }
 
   on (channel: string, callback: Function) {

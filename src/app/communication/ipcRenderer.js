@@ -3,8 +3,8 @@ import {ipcRenderer} from 'electron'
 import type {Ipc} from './ipc'
 
 class IpcRenderer implements Ipc {
-  send (channel: string, ...args: Array<mixed>) {
-    ipcRenderer.send(channel, ...args)
+  send (channel: string, data?: mixed) {
+    ipcRenderer.send(channel, data)
   }
   on (channel: string, callback: Function) {
     ipcRenderer.on(channel, callback)
