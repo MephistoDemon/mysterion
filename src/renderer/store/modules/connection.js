@@ -114,7 +114,7 @@ const actions = {
       commit(type.SHOW_ERROR, err)
     }
   },
-  async [type.CONNECT] ({commit, dispatch, state}, consumerId, providerId) {
+  async [type.CONNECT] ({commit, dispatch, state}, connectionDetails) {
     const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
     if (looper) {
       await looper.stop()
@@ -122,7 +122,7 @@ const actions = {
     await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.CONNECTING)
     commit(type.CONNECTION_STATISTICS_RESET)
     try {
-      await tequilapi.connection.connect(consumerId, providerId)
+      await tequilapi.connection.connect(connectionDetails, config.connectTimeout)
       commit(type.HIDE_ERROR)
     } catch (err) {
       commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)

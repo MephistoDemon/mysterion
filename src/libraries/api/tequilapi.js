@@ -7,7 +7,6 @@ const healthCheckPath = '/healthcheck'
 const stopPath = '/stop'
 
 const DEFAULT_TIMEOUT = 5000
-const CONNECTION_TIMEOUT = 50000
 
 export let tequilapi = Constructor()
 
@@ -18,28 +17,30 @@ export default function Constructor (teqAddr = 'http://127.0.0.1:4050', defaultT
       list: async () => axioAdapter.get(idPath),
       create: async (passphrase) => axioAdapter.post(idPath, {passphrase}),
       unlock: async ({id, passphrase}) => {
-        axioAdapter.put(idPath + '/' + id + '/unlock', {passphrase})
+        return axioAdapter.put(idPath + '/' + id + '/unlock', {passphrase})
       }
     },
     proposal: {
       list: async () => axioAdapter.get(propPath)
     },
     connection: {
-      connect: async ({consumerId, providerId}, timeout = CONNECTION_TIMEOUT) => {
-        axioAdapter.put(conPath, {
+      connect: async ({consumerId, providerId}, timeout) => {
+        return axioAdapter.put(conPath, {
           consumerId: consumerId,
           providerId: providerId
-        }, {timeout})
+        }, null, timeout ? {timeout} : undefined)
       },
       disconnect: async () => axioAdapter.delete(conPath),
       status: async () => axioAdapter.get(conPath),
-      ip: async (timeout = DEFAULT_TIMEOUT) => {
-        const res = await axioAdapter.get(conPath + '/ip', {timeout})
+      ip: async (timeout) => {
+        const res = await axioAdapter.get(conPath + '/ip', timeout ? {timeout} : undefined)
         return res.ip
       },
       statistics: async () => axioAdapter.get(conPath + '/statistics')
     },
-    healthCheck: async (timeout = DEFAULT_TIMEOUT) => axioAdapter.get(healthCheckPath, {timeout}),
+    healthCheck: async (timeout) => {
+      return axioAdapter.get(healthCheckPath, timeout ? {timeout} : undefined)
+    },
     stop: async () => axioAdapter.post(stopPath),
     __axio: teqAxio // we need this for mocking
   }
