@@ -32,7 +32,7 @@
             text = 'Disconnect'
             break
           case type.tequilapi.CONNECTING:
-            text = 'Connecting'
+            text = 'Cancel'
             break
           case type.tequilapi.NOT_CONNECTED:
             text = 'Connect'
@@ -58,7 +58,10 @@
       buttonPressed: function () {
         const status = this.$store.getters.status
         const canConnect = status === type.tequilapi.NOT_CONNECTED
-        const canDisconnect = status === type.tequilapi.CONNECTED
+        const canDisconnect = (
+          status === type.tequilapi.CONNECTED ||
+          status === type.tequilapi.CONNECTING
+        )
 
         if (canDisconnect) {
           this.$store.dispatch(type.DISCONNECT)

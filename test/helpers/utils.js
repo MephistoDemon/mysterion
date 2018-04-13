@@ -1,13 +1,17 @@
-import {CONNECTION_ABORTED_ERROR_CODE} from '../../src/libraries/api/errors'
+import { CONNECTION_ABORTED_ERROR_CODE, httpResponseCodes } from '../../src/libraries/api/errors'
 
 function fakeTequilapiManipulator () {
   let statusFail = false
   let statisticsFail = false
   let ipFail = false
   let ipTimeout = false
+  let connectFail = false
+  let connectFailClosedRequest = false
   const fakeError = new Error('Mock error')
   const fakeTimeoutError = new Error('Mock timeout error')
   fakeTimeoutError.code = CONNECTION_ABORTED_ERROR_CODE
+  const fakeClosedRequestError = new Error('Mock closed request error')
+  fakeClosedRequestError.response = { status: httpResponseCodes.CLIENT_CLOSED_REQUEST }
 
   return {
     getFakeApi: function () {
@@ -36,7 +40,15 @@ function fakeTequilapiManipulator () {
             }
             return 'mock statistics'
           },
-          connect: async ({consumerId, providerId}) => null,
+          connect: async function ({consumerId, providerId}) {
+            if (connectFailClosedRequest) {
+              throw fakeClosedRequestError
+            }
+            if (connectFail) {
+              throw fakeError
+            }
+            return null
+          },
           disconnect: async () => null
         }
       }
@@ -46,6 +58,8 @@ function fakeTequilapiManipulator () {
       this.setStatisticsFail(false)
       this.setIpFail(false)
       this.setIpTimeout(false)
+      this.setConnectFail(false)
+      this.setConnectFailClosedRequest(false)
     },
     setStatusFail: function (value) {
       statusFail = value
@@ -58,6 +72,12 @@ function fakeTequilapiManipulator () {
     },
     setIpFail: function (value) {
       ipFail = value
+    },
+    setConnectFail: function (value) {
+      connectFail = value
+    },
+    setConnectFailClosedRequest: function (value) {
+      connectFailClosedRequest = value
     },
     getFakeError: function () {
       return fakeError
@@ -76,4 +96,13 @@ function nextTick () {
   return new Promise(resolve => process.nextTick(resolve))
 }
 
-export default { fakeTequilapiManipulator, nextTick }
+const captureAsyncError = async (func) => {
+  try {
+    await func()
+  } catch (e) {
+    return e
+  }
+  return null
+}
+
+export default { fakeTequilapiManipulator, nextTick, captureAsyncError }

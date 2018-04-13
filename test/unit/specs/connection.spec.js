@@ -356,6 +356,39 @@ describe('actions', () => {
         }
       ])
     })
+
+    describe('when connection fails', () => {
+      beforeEach(() => {
+        fakeTequilapi.setConnectFail(true)
+      })
+
+      it('throws error', async () => {
+        fakeTequilapi.setConnectFail(true)
+        const state = {
+          actionLoopers: {}
+        }
+        const f = async () => { await executeAction(type.CONNECT, state) }
+        const error = await utils.captureAsyncError(f)
+        expect(error).to.be.an('error')
+        expect(error.message).to.eql('Connection to node failed.')
+      })
+    })
+
+    describe('when connection was cancelled', () => {
+      beforeEach(() => {
+        fakeTequilapi.setConnectFailClosedRequest(true)
+      })
+
+      it('does not throw error and does not show error', async () => {
+        const state = {
+          actionLoopers: {}
+        }
+        const committed = await executeAction(type.CONNECT, state)
+        committed.forEach((action) => {
+          expect(action.key).not.to.eql('SHOW_ERROR_MESSAGE')
+        })
+      })
+    })
   })
 
   describe('DISCONNECT', () => {
