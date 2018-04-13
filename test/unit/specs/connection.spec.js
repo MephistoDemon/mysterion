@@ -232,6 +232,7 @@ describe('actions', () => {
     beforeEach(() => {
       fakeIpc.clean()
     })
+
     it('commits new status', async () => {
       const committed = await executeAction(type.SET_CONNECTION_STATUS, {}, connectionStatus.CONNECTING)
       expect(committed).to.eql([{
@@ -246,7 +247,10 @@ describe('actions', () => {
       }
       await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.CONNECTING)
       expect(fakeIpc.lastChannel).to.eql(communication.CONNECTION_STATUS_CHANGED)
-      expect(fakeIpc.lastArgs).to.eql([connectionStatus.NOT_CONNECTED, connectionStatus.CONNECTING])
+      expect(fakeIpc.lastArgs[0]).to.eql({
+        oldStatus: connectionStatus.NOT_CONNECTED,
+        newStatus: connectionStatus.CONNECTING
+      })
     })
 
     it('does not send new status to IPC when status does not change', async () => {

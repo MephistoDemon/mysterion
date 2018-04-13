@@ -96,7 +96,7 @@ const actions = {
     commit(type.SET_CONNECTION_STATUS, newStatus)
     const ipcRenderer = buildIpcRenderer()
     const rendererCommunication = new RendererCommunication(ipcRenderer)
-    rendererCommunication.sendConnectionStatusChange(oldStatus, newStatus)
+    rendererCommunication.sendConnectionStatusChange({ oldStatus, newStatus })
 
     if (newStatus === connectionStatus.CONNECTED) {
       await dispatch(type.START_ACTION_LOOPING, {

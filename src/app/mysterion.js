@@ -169,7 +169,7 @@ class Mysterion {
       setTimeout(() => updateRendererWithHealth(), 1500)
     }
     const cacheLogs = (level, data) => {
-      this.communication.sendMysteriumClientLog(level, data)
+      this.communication.sendMysteriumClientLog({ level, data })
       bugReporter.pushToLogCache(level, data)
     }
 
@@ -202,7 +202,7 @@ class Mysterion {
     const toggleDevTools = this.config.inDevMode ? () => { this.window.toggleDevTools() } : null
     const tray = new MysterionTray(activateWindow, toggleDevTools)
     tray.build()
-    this.communication.onConnectionStatusChange((oldStatus, newStatus) => {
+    this.communication.onConnectionStatusChange(({ oldStatus, newStatus }) => {
       if (newStatus === connectionStatus.CONNECTED) {
         tray.setIcon(TrayIcon.active)
       }

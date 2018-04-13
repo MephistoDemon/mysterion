@@ -30,6 +30,6 @@ window.addEventListener('unhandledrejection', (evt) => {
 const ipcRenderer = new IpcRenderer()
 
 const rendererCommunication = new RendererCommunication(ipcRenderer)
-rendererCommunication.onMysteriumClientLog((level, data) => {
+rendererCommunication.onMysteriumClientLog(({ level, data }) => {
   bugReporter.pushToLogCache(level, data)
 })

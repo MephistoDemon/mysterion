@@ -2,6 +2,7 @@
 
 import messages from './index'
 import type {Ipc} from './ipc'
+import type {ConnectionStatusChangeData, MysteriumClientLogData} from './dto'
 
 /**
  * This allows renderer process communicating with main process.
@@ -13,11 +14,11 @@ class RendererCommunication {
     this._ipc = ipc
   }
 
-  sendConnectionStatusChange (oldStatus: string, newStatus: string) {
-    return this._send(messages.CONNECTION_STATUS_CHANGED, oldStatus, newStatus)
+  sendConnectionStatusChange (data: ConnectionStatusChangeData) {
+    return this._send(messages.CONNECTION_STATUS_CHANGED, data)
   }
 
-  onMysteriumClientLog (callback: (level: string, data: string) => void) {
+  onMysteriumClientLog (callback: (MysteriumClientLogData) => void) {
     this._on(messages.MYSTERIUM_CLIENT_LOG, callback)
   }
 
