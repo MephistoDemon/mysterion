@@ -17,7 +17,7 @@ export default function Constructor (teqAddr = 'http://127.0.0.1:4050', defaultT
       list: async () => axioAdapter.get(idPath),
       create: async (passphrase) => axioAdapter.post(idPath, {passphrase}),
       unlock: async ({id, passphrase}) => {
-        return axioAdapter.put(idPath + '/' + id + '/unlock', {passphrase})
+        axioAdapter.put(idPath + '/' + id + '/unlock', {passphrase})
       }
     },
     proposal: {
@@ -32,13 +32,13 @@ export default function Constructor (teqAddr = 'http://127.0.0.1:4050', defaultT
       },
       disconnect: async () => axioAdapter.delete(conPath),
       status: async () => axioAdapter.get(conPath),
-      ip: async (timeout) => {
+      ip: async (timeout = null) => {
         const res = await axioAdapter.get(conPath + '/ip', timeout ? {timeout} : undefined)
         return res.ip
       },
       statistics: async () => axioAdapter.get(conPath + '/statistics')
     },
-    healthCheck: async (timeout) => {
+    healthCheck: async (timeout = null) => {
       return axioAdapter.get(healthCheckPath, timeout ? {timeout} : undefined)
     },
     stop: async () => axioAdapter.post(stopPath),
