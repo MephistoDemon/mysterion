@@ -247,7 +247,7 @@ describe('actions', () => {
       }
       await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.CONNECTING)
       expect(fakeMessageBus.lastChannel).to.eql(communication.CONNECTION_STATUS_CHANGED)
-      expect(fakeMessageBus.lastArgs[0]).to.eql({
+      expect(fakeMessageBus.lastData).to.eql({
         oldStatus: connectionStatus.NOT_CONNECTED,
         newStatus: connectionStatus.CONNECTING
       })
