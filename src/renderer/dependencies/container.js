@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import Injector from 'vue-inject'
 
 /**
@@ -6,7 +7,10 @@ import Injector from 'vue-inject'
  * @return {Object}
  */
 function factory () {
-  return Injector.spawn()
+  const container = Injector.spawn()
+  Vue.use(container)
+
+  return container
 }
 
 export default factory
