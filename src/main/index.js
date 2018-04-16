@@ -1,13 +1,12 @@
 // @flow
-
 'use strict'
 
+import dependencies from './dependencies'
 import path from 'path'
 import Mysterion from '../app/mysterion'
 import mysterionConfig from '../app/mysterion-config'
 import bugReporter from '../app/bugReporting/bug-reporting'
 import Terms from '../app/terms'
-import TequilAPI from '../libraries/api/tequilapi'
 import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 
@@ -18,7 +17,7 @@ global.__buildNumber = process.env.BUILD_NUMBER
 global.__sentryURL = SENTRY_CONFIG.publicURL
 global.__static = mysterionConfig.staticDirectoryPath
 
-const tequilApi = new TequilAPI('http://127.0.0.1:4050')
+const tequilApi = dependencies.get('tequilapi')
 
 const mysterion = new Mysterion({
   config: mysterionConfig,
