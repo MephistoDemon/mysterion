@@ -1,10 +1,12 @@
+// @flow
+import type {Container} from '../../../app/di'
 import Vue from 'vue'
 import axios from 'axios'
 import App from '../../App'
 import storeFactory from '../../store/factory'
 import routerFactory from '../../router/factory'
 
-function bootstrap (container) {
+function bootstrap (container: Container) {
   container.service(
     'vue-application',
     [],
