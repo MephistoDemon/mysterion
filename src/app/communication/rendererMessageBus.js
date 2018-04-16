@@ -7,7 +7,9 @@ class RendererMessageBus implements MessageBus {
     ipcRenderer.send(channel, data)
   }
   on (channel: string, callback: Function): void {
-    ipcRenderer.on(channel, callback)
+    ipcRenderer.on(channel, (event, data) => {
+      callback(data)
+    })
   }
 }
 

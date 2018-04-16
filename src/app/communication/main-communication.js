@@ -28,9 +28,7 @@ class MainCommunication {
   }
 
   _on (channel: string, callback: (data: any) => void) {
-    this._messageBus.on(channel, (event, data) => {
-      callback(data)
-    })
+    this._messageBus.on(channel, callback)
   }
 }
 

@@ -17,7 +17,9 @@ class MainMessageBus implements MessageBus {
   }
 
   on (channel: string, callback: Function): void {
-    ipcMain.on(channel, callback)
+    ipcMain.on(channel, (event, data) => {
+      callback(data)
+    })
   }
 }
 
