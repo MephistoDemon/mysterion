@@ -14,6 +14,7 @@ import {
 } from '../libraries/mysterium-client/index'
 import bugReporter from './bugReporting/bug-reporting'
 import messages from './messages'
+import applyHeaderRewrites from './AJAXHeaderRewrites'
 
 function MysterionFactory (config) {
   const tequilApi = new TequilAPI()
@@ -78,8 +79,15 @@ class Mysterion {
       throw new Error('Failed to load app.')
     }
 
-    // add referer header to all requests sent from renderer. Required for sentry feedback form
-    this.window.onBeforeSendHeaders(bugReporter.requestHeadersRewriteOptions)
+    // add referer headers Required for sentry feedback form
+    try {
+      applyHeaderRewrites()
+    } catch (err) {
+      const error = new Error('Failed to setup AJAX Header Rewrites')
+      error.original = err
+      console.error(error)
+      bugReporter.main.captureException(error)
+    }
 
     // make sure terms are up to date and accepted
     // declining terms will quit the app
@@ -197,7 +205,8 @@ class Mysterion {
 
   buildTray () {
     const activateWindow = () => { this.window.show() }
-    const toggleDevTools = this.config.inDevMode ? () => { this.window.toggleDevTools() } : null
+    // const toggleDevTools = this.config.inDevMode ? () => { this.window.toggleDevTools() } : null
+    const toggleDevTools = () => { this.window.toggleDevTools() }
     const tray = new MysterionTray(activateWindow, toggleDevTools)
     tray.build()
     ipcMain.on(communication.CONNECTION_STATUS_CHANGED, (evt, oldStatus, newStatus) => {

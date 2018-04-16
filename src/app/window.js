@@ -1,4 +1,4 @@
-import {BrowserWindow, ipcMain, session} from 'electron'
+import {BrowserWindow, ipcMain} from 'electron'
 import bugReporter from './bugReporting/bug-reporting'
 
 function Message (sender, value) {
@@ -18,17 +18,6 @@ class Window {
     }
     this.url = url
     this.window = new BrowserWindow(options)
-  }
-
-  onBeforeSendHeaders ({filter, listener}) {
-    try {
-      session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, next) => {
-        listener(details.requestHeaders, next)
-      })
-    } catch (err) {
-      console.error(err)
-      bugReporter.main.captureException(err)
-    }
   }
 
   exists () {
