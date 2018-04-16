@@ -1,6 +1,6 @@
 // @flow
+import type {Container} from '../app/di'
 import TequilAPI from '../libraries/api/tequilapi'
-import type {Container} from "../app/di"
 
 function bootstrap (container: Container) {
   container.constant(

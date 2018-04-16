@@ -1,13 +1,6 @@
 // @flow
+import type {Container, ServiceFactory} from './index'
 import Jpex from 'jpex'
-
-type ServiceFactory = (...dependencies: Array<mixed>) => mixed
-
-export interface Container {
-  get (name: string): mixed,
-  constant (name: string, value: mixed): void,
-  service (name: string, dependencies: Array<string>, factory: ServiceFactory): void,
-}
 
 class JpexContainer implements Container {
   jpex: Jpex
@@ -17,7 +10,7 @@ class JpexContainer implements Container {
   }
 
   get (name: string): mixed {
-    this.jpex.$resolve(name)
+    return this.jpex.$resolve(name)
   }
 
   constant (name: string, value: mixed): void {

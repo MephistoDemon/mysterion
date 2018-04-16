@@ -1,13 +1,12 @@
 // @flow
-import type {Container} from '../app/di/container'
-import JpexContainer from '../app/di/container'
+import DIContainer from '../app/di/jpex-container'
 import tequilapiBootstrap from '../dependencies/tequilapi'
 
 /**
  * Bootstraps all application dependencies into DI container
  */
-function bootstrap (): Container {
-  const container = new JpexContainer()
+function bootstrap (): DIContainer {
+  const container = new DIContainer()
   tequilapiBootstrap(container)
 
   return container
