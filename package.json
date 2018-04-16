@@ -88,6 +88,7 @@
     "raven-js": "^3.22.3",
     "sudo-prompt": "^8.1.0",
     "tail": "^1.2.3",
+    "uuid": "^3.2.1",
     "vue": "^2.5.13",
     "vue-electron": "^1.0.6",
     "vue-inject": "^2.0.1",
