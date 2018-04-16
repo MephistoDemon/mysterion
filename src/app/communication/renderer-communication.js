@@ -15,19 +15,19 @@ class RendererCommunication {
 
   // TODO: remaining other messages
 
-  sendConnectionStatusChange (data: ConnectionStatusChangeData) {
+  sendConnectionStatusChange (data: ConnectionStatusChangeData): void {
     return this._send(messages.CONNECTION_STATUS_CHANGED, data)
   }
 
-  onMysteriumClientLog (callback: (MysteriumClientLogData) => void) {
+  onMysteriumClientLog (callback: (MysteriumClientLogData) => void): void {
     this._on(messages.MYSTERIUM_CLIENT_LOG, callback)
   }
 
-  _send (channel: string, data: mixed) {
+  _send (channel: string, data: mixed): void {
     this._messageBus.send(channel, data)
   }
 
-  _on (channel: string, callback: (data: any) => void) {
+  _on (channel: string, callback: (data: any) => void): void {
     this._messageBus.on(channel, callback)
   }
 }

@@ -15,19 +15,19 @@ class MainCommunication {
 
   // TODO: remaining other messages
 
-  sendMysteriumClientLog (data: MysteriumClientLogData) {
+  sendMysteriumClientLog (data: MysteriumClientLogData): void {
     this._send(messages.MYSTERIUM_CLIENT_LOG, data)
   }
 
-  onConnectionStatusChange (callback: (ConnectionStatusChangeData) => void) {
+  onConnectionStatusChange (callback: (ConnectionStatusChangeData) => void): void {
     this._on(messages.CONNECTION_STATUS_CHANGED, callback)
   }
 
-  _send (channel: string, data: mixed) {
+  _send (channel: string, data: mixed): void {
     this._messageBus.send(channel, data)
   }
 
-  _on (channel: string, callback: (data: any) => void) {
+  _on (channel: string, callback: (data: any) => void): void {
     this._messageBus.on(channel, callback)
   }
 }
