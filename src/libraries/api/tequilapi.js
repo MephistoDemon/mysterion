@@ -44,7 +44,13 @@ export default function Constructor (teqAddr = 'http://127.0.0.1:4050') {
 }
 
 function adapterFactory (teqAddr) {
-  const teqAxio = axios.create({baseURL: teqAddr, timeout})
+  const teqAxio = axios.create({
+    baseURL: teqAddr,
+    timeout,
+    headers: {
+      'Cache-Control': 'no-cache, no-store'
+    }
+  })
   const axioAdapter = {
     async get (path, options = {}) {
       const res = await teqAxio.get(path, options)

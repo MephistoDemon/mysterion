@@ -8,6 +8,7 @@ function Message (sender, value) {
   }
 }
 
+// TODO: find better name - AppWindow?
 class Window {
   constructor ({width, height}, url) {
     let options = {
@@ -67,7 +68,9 @@ class Window {
    */
   send (event, data) {
     if (!this.window) {
-      bugReporter.main.captureException(new Error(`Failed to send message ${event} to renderer, but no window reference found.`))
+      const message = `Failed to send message ${event} to renderer, because window is already closed`
+      // TODO: use captureMessage instead
+      bugReporter.main.captureException(new Error(message))
       return
     }
     this.window.webContents.send(event, data)

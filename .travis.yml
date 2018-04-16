@@ -23,9 +23,7 @@ install:
 - yarn
 - FORCE_DOWNLOAD=1 yarn download:bins
 script:
-- yarn lint
-- yarn flow
-- yarn unit
+- yarn ci
 #run e2e on Pull Requests env only
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
     yarn test:integration;
@@ -61,12 +59,12 @@ notifications:
   slack:
     rooms:
       - secure: >
-          gLtCJ8tQMJp4RUoeDSvZq+j9CY4p22gFu0gVZguHyxRSzRF5WaoJUdMRmILiYxPvyQ1LsD03XKr6nomRTJKz9uEWMOPcCZHclbkCDvYCbuGhF1
-          mlGcUInTRdcqcBPbQYBTzXoJ8eeOM7l/LqdtoVM8AHsXh9SFNtsAUyqGS191sVwB9LEtAWGpOIraPVUSOh7g4I0P1ZLafH+9A0Ogpq4ca55nSi
-          1B4+ld90zmlkiNJOaXvrSO9Vh7Sa7PhpWYvIeSFt1E8S8aUZeCxVupS9/s6CA7MHe3UZqS8+vwOnnYsWrskZwpbyBBDUswfyKiYBHVmy+gw8Hn
-          mfQKzOgs5bs8a5kyrhh2aYtiIP978Ie6XOmjFv9c/k3F30f7f1RTzW8y/vhDxoBjLALpLfZ4daiXdQWbi8tj8JbrIKE8kc/cbyW+9EeG7ivURO
-          cLyM+6deZbP1dIp8GPgdjyR7pkKsDc3CQuVjrXO8sTlcPvzrtd1D8M6n2SYywzT6WFXMHQkqQu+PxXirVGzFN86lz8XM4SoGs26z2OUBvHshqM
-          b3CSvD5Yw/s1mHq2kUuYhQbHdGc4hnnz4nVG4A8ckiGQ9zsLDtTSRDLwaU42KJ2P99ApfkizFsycqmm5/jpssVe+wgH9cU1R5zaySwvZnK2FND
-          wskSzB2t9ilnmKy4ABmw+08=
+          MRTSnzKnwmkxR4yz74eT6Cp1lyIZjlAvRssiaFr+OmtQcQlRmmCayKeUSygvaUHrNQgLuc5dzv1DKsdSb/qAE0To+3C3VE+wrZvtw+KyrYIzxG
+          GQdcNviP5DaTqNo1ah15Vw5Cac823F6K7HIDgBpj2u8dN4R/JEtL52dY8MSRXIGu5IBqxDOA0gpQa+lP4UzRCRo3dx8PvisCx9JhPR0AoPjDOp
+          luXZjigB5qtqrzB7XczvUXJVMdTm6YXyBT1R3xyQri/77RVEPB/LHFMxNl/ntDVQUb8Wyw+Oyc/mbRjbbNdPaWZAsVqkdUy7f49ZPg91Ja+wwr
+          L5waUkwiYjeVe/cHLwSVaiAhCS51li0ura1CLKMxF6kBohy6GnRMdJlUE4Yf54uCECKpA+4YVFyCC1/E0h1D6kIvDxpa/mqven2oQwBoh7jz27
+          JIsTVPlMF/b1swlL+Bt5zqxx+IHyrDmIylLyWhMBBtZ4IO5JLgXP9RIP5Bd/CPfFQcdB13/fN1y8cOP6V7aK4Yjoa3NA0MLeHkZx5JeP1lgtrn
+          IdM3dB9yo4qiA3y+qzPo8fawW715HRHNlgLnWtT5fAswEECDLCQnUaFLAzrVQmpQXuGK3hJHvBIEjh/NLbQsJ6OVzDGc4kthZSVU2Uq516KiD5
+          7aGX4NEmu2sFxuuYdiyhaBU=
     on_success: change
     on_failure: always
