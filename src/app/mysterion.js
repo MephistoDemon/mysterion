@@ -74,7 +74,7 @@ class Mysterion {
 
     try {
       this.window.open()
-      await this.window.on(communication.RENDERER_LOADED)
+      await this.window.wait(communication.RENDERER_LOADED)
     } catch (e) {
       // TODO: add an error wrapper method and send to sentry
       throw new Error('Failed to load app.')
@@ -136,7 +136,7 @@ class Mysterion {
       content: this.terms.getContent()
     })
 
-    const termsAnswer = await this.window.on(communication.TERMS_ANSWERED)
+    const termsAnswer = await this.window.wait(communication.TERMS_ANSWERED)
     if (!termsAnswer.value) {
       return false
     }

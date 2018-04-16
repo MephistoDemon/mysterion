@@ -1,5 +1,6 @@
-import {BrowserWindow, ipcMain} from 'electron'
+import {BrowserWindow} from 'electron'
 import bugReporter from './bugReporting/bug-reporting'
+import MainMessageBus from './communication/mainMessageBus'
 
 // TODO: find better name - AppWindow?
 class Window {
@@ -70,14 +71,15 @@ class Window {
   }
 
   /**
-   * Ipc communication event
+   * Waits for IPC communication event
    *
    * @param event
    * @returns {Promise<void>}
    */
-  on (event) {
+  wait (event) {
     return new Promise((resolve) => {
-      ipcMain.on(event, async () => {
+      const messageBus = new MainMessageBus(this.send)
+      messageBus.on(event, () => {
         resolve()
       })
     })
