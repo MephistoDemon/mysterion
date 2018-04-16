@@ -1,23 +1,18 @@
 import {expect} from 'chai'
 
 import type from '@/store/types'
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import connectionInjector from 'inject-loader!@/store/modules/connection'
+import {mutations, actionsFactory} from '@/store/modules/connection'
 import utils from '../../../helpers/utils'
-import FakeMessageBus from '../../../helpers/fakeMessageBus'
 import { FunctionLooper } from '@/../libraries/functionLooper'
 import connectionStatus from '@/../libraries/api/connectionStatus'
 import communication from '@/../app/communication'
+import RendererCommunication from '@/../app/communication/renderer-communication'
+import FakeMessageBus from '../../../helpers/fakeMessageBus'
 
 const fakeTequilapi = utils.fakeTequilapiManipulator()
+
 const fakeMessageBus = new FakeMessageBus()
-
-const fakeBuildRendererMessageBus = () => fakeMessageBus
-
-const connection = connectionInjector({
-  '../../../libraries/api/tequilapi': fakeTequilapi.getFakeApi,
-  '../../../app/communication/rendererMessageBus': { buildRendererMessageBus: fakeBuildRendererMessageBus }
-}).default
+const rendererCommunication = new RendererCommunication(fakeMessageBus)
 
 async function executeAction (action, state = {}, payload = {}) {
   const mutations = []
@@ -27,7 +22,9 @@ async function executeAction (action, state = {}, payload = {}) {
 
   const dispatch = (action, payload = {}) => {
     const context = {commit, dispatch, state}
-    return connection.actions[action](context, payload)
+    const actions = actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication)
+
+    return actions[action](context, payload)
   }
 
   await dispatch(action, payload)
@@ -36,7 +33,7 @@ async function executeAction (action, state = {}, payload = {}) {
 
 describe('mutations', () => {
   describe('SET_CONNECTION_STATUS', () => {
-    const connectionStatus = connection.mutations[type.SET_CONNECTION_STATUS]
+    const connectionStatus = mutations[type.SET_CONNECTION_STATUS]
 
     it('updates remote status', () => {
       const state = {}
@@ -46,7 +43,7 @@ describe('mutations', () => {
   })
 
   describe('CONNECTION_STATISTICS', () => {
-    const connectionStatistics = connection.mutations[type.CONNECTION_STATISTICS]
+    const connectionStatistics = mutations[type.CONNECTION_STATISTICS]
 
     it('updates statistics', () => {
       const state = {}
@@ -56,7 +53,7 @@ describe('mutations', () => {
   })
 
   describe('CONNECTION_IP', () => {
-    const connectionIp = connection.mutations[type.CONNECTION_IP]
+    const connectionIp = mutations[type.CONNECTION_IP]
 
     it('updates ip', () => {
       const state = { ip: 'old' }
@@ -68,7 +65,7 @@ describe('mutations', () => {
   describe('CONNECTION_STATISTICS_RESET', () => {
     it('resets statistics', () => {
       let state = {}
-      connection.mutations[type.CONNECTION_STATISTICS_RESET](state)
+      mutations[type.CONNECTION_STATISTICS_RESET](state)
       expect(state.statistics).to.eql({})
     })
   })
@@ -82,7 +79,7 @@ describe('mutations', () => {
         action: type.CONNECTION_IP,
         looper: new FunctionLooper()
       }
-      connection.mutations[type.SET_ACTION_LOOPER](state, actionLooper1)
+      mutations[type.SET_ACTION_LOOPER](state, actionLooper1)
       expect(state.actionLoopers).to.eql({
         [actionLooper1.action]: actionLooper1.looper
       })
@@ -91,7 +88,7 @@ describe('mutations', () => {
         action: type.FETCH_CONNECTION_STATUS,
         looper: new FunctionLooper()
       }
-      connection.mutations[type.SET_ACTION_LOOPER](state, actionLooper2)
+      mutations[type.SET_ACTION_LOOPER](state, actionLooper2)
       expect(state.actionLoopers).to.eql({
         [actionLooper1.action]: actionLooper1.looper,
         [actionLooper2.action]: actionLooper2.looper
@@ -110,7 +107,7 @@ describe('mutations', () => {
           [type.FETCH_CONNECTION_STATUS]: statusLooper
         }
       }
-      connection.mutations[type.REMOVE_ACTION_LOOPER](state, type.CONNECTION_IP)
+      mutations[type.REMOVE_ACTION_LOOPER](state, type.CONNECTION_IP)
       expect(state.actionLoopers).to.eql({
         [type.FETCH_CONNECTION_STATUS]: statusLooper
       })

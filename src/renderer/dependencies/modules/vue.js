@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import axios from 'axios'
+import RendererCommunication from '../../../app/communication/renderer-communication'
+import RendererMessageBus from '../../../app/communication/rendererMessageBus'
 import App from '../../App'
 import storeFactory from '../../store/factory'
 import routerFactory from '../../router/factory'
@@ -29,7 +31,10 @@ function bootstrap (container) {
     'vue-store',
     ['tequilapi'],
     (tequilapi) => {
-      return storeFactory(tequilapi)
+      const rendererMessageBus = new RendererMessageBus()
+      const rendererCommunication = new RendererCommunication(rendererMessageBus)
+
+      return storeFactory(tequilapi, rendererCommunication)
     }
   )
 

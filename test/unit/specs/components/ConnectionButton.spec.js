@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import ConnectionButton from '../../../../src/renderer/components/ConnectionButton'
 import type from '../../../../src/renderer/store/types'
-import conStore from '@/store/modules/connection'
+import {state, mutations, getters} from '@/store/modules/connection'
 
 const mountWithStore = function () {
   const store = new Vuex.Store({
@@ -20,7 +20,9 @@ const mountWithStore = function () {
         }
       },
       connection: {
-        ...conStore,
+        state,
+        mutations,
+        getters,
         actions: {
           [type.CONNECT] ({dispatch, commit}) {
             commit(type.SET_CONNECTION_STATUS, type.tequilapi.CONNECTED)
