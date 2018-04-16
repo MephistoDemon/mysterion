@@ -54,7 +54,8 @@ const mutations = {
     if (err && err.response && err.response.data && err.response.data.message) {
       state.errorMessage = err.response.data.message
       return
-    } else if (err.message) {
+    }
+    if (err.message) {
       state.errorMessage = err.message
       return
     }
