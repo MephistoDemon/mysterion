@@ -23,6 +23,10 @@ class RendererCommunication {
     return this._send(messages.IDENTITY_SET, data)
   }
 
+  sendRendererLoaded (): void {
+    return this._send(messages.RENDERER_LOADED)
+  }
+
   onMysteriumClientLog (callback: (MysteriumClientLogData) => void): void {
     this._on(messages.MYSTERIUM_CLIENT_LOG, callback)
   }

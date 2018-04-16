@@ -31,6 +31,15 @@ describe('RendererCommunication', () => {
     })
   })
 
+  describe('sendRendererLoaded', () => {
+    it('sends message to bus', () => {
+      communication.sendRendererLoaded()
+
+      expect(fakeMessageBus.lastChannel).to.eql(messages.RENDERER_LOADED)
+      expect(fakeMessageBus.lastData).to.eql(undefined)
+    })
+  })
+
   describe('onMysteriumClientLog', () => {
     it('receives message from bus', () => {
       let callbackData = null

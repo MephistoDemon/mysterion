@@ -22,11 +22,13 @@
   import type from '@/store/types'
   import AppVisual from '@/partials/AppVisual'
   import AppNav from '@/partials/AppNav'
+  import messages from '../app/communication'
 
   import {ipcRenderer, remote} from 'electron'
-  import communication from '../app/communication'
   import AppError from '@/partials/AppError'
   import AppModal from '@/partials/AppModal'
+  import RendererMessageBus from '../app/communication/rendererMessageBus'
+  import RendererCommunication from '../app/communication/renderer-communication'
 
   export default {
     name: 'App',
@@ -47,29 +49,32 @@
       }
     },
     async mounted () {
+      const messageBus = new RendererMessageBus()
+      const communication = new RendererCommunication(messageBus)
+
       // we need to notify the main process that we're up
-      ipcRenderer.send(communication.RENDERER_LOADED, true)
-      ipcRenderer.on(communication.TERMS_REQUESTED, (event, terms) => {
+      communication.sendRendererLoaded()
+      ipcRenderer.on(messages.TERMS_REQUESTED, (event, terms) => {
         this.$store.dispatch(type.TERMS, terms)
         this.$router.push('/terms')
       })
 
-      ipcRenderer.on(communication.APP_START, () => {
+      ipcRenderer.on(messages.APP_START, () => {
         this.$router.push('/load')
       })
 
-      ipcRenderer.on(communication.TERMS_ACCEPTED, () => {
+      ipcRenderer.on(messages.TERMS_ACCEPTED, () => {
         this.$router.push('/')
       })
 
-      ipcRenderer.on(communication.APP_ERROR, (event, error) => {
+      ipcRenderer.on(messages.APP_ERROR, (event, error) => {
         console.log('APP_ERROR received from ipc:', event)
         this.$store.dispatch(type.OVERLAY_ERROR, error)
       })
 
       let previousClientRunningState = true
 
-      ipcRenderer.on(communication.HEALTHCHECK, (event, clientRunningState) => {
+      ipcRenderer.on(messages.HEALTHCHECK, (event, clientRunningState) => {
         // do nothing while on terms page
         if (this.$route.name === 'terms') {
           return
