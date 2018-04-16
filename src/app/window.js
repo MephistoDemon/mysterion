@@ -1,13 +1,6 @@
 import {BrowserWindow, ipcMain} from 'electron'
 import bugReporter from './bugReporting/bug-reporting'
 
-function Message (sender, value) {
-  return {
-    sender: sender,
-    value: value
-  }
-}
-
 // TODO: find better name - AppWindow?
 class Window {
   constructor ({width, height}, url) {
@@ -80,21 +73,12 @@ class Window {
    * Ipc communication event
    *
    * @param event
-   * @param timeoutInterval
-   * @returns {Promise<any>}
+   * @returns {Promise<void>}
    */
-  on (event, timeoutInterval = 0) {
-    return new Promise((resolve, reject) => {
-      let timeout
-      if (timeoutInterval > 0) {
-        timeout = setTimeout(() => {
-          reject(new Error('Failed to load the window in time.'))
-        }, timeoutInterval)
-      }
-
-      ipcMain.on(event, async (event, value) => {
-        resolve(Message(event.sender, value))
-        clearInterval(timeout)
+  on (event) {
+    return new Promise((resolve) => {
+      ipcMain.on(event, async () => {
+        resolve()
       })
     })
   }
