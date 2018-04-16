@@ -66,7 +66,6 @@
         shell.openExternal(url)
       },
       reportIssue () {
-        bugReporter.renderer.captureMessage('User opened issue report form.')
         bugReporter.renderer.showReportDialog()
       }
     }

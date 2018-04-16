@@ -37,6 +37,7 @@ class RendererBugReporter implements BugReporter {
   }
 
   showReportDialog (options?: Object): void {
+    RavenJs.captureMessage('User opened issue report form.')
     RavenJs.showReportDialog(options)
   }
 }
