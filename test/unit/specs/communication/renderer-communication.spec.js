@@ -21,6 +21,16 @@ describe('RendererCommunication', () => {
     })
   })
 
+  describe('sendIdentitySet', () => {
+    it('sends message to bus', () => {
+      const data = { id: '0xC001FACE00000123' }
+      communication.sendIdentitySet(data)
+
+      expect(fakeMessageBus.lastChannel).to.eql(messages.IDENTITY_SET)
+      expect(fakeMessageBus.lastData).to.eql(data)
+    })
+  })
+
   describe('onMysteriumClientLog', () => {
     it('receives message from bus', () => {
       let callbackData = null

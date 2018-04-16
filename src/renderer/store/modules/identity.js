@@ -1,7 +1,7 @@
 import type from '../types'
 import reporter from '../../../app/bugReporting/bug-reporting'
-import {ipcRenderer} from 'electron'
-import message from '../../../app/communication'
+import RendererMessageBus from '../../../app/communication/rendererMessageBus'
+import RendererCommunication from '../../../app/communication/renderer-communication'
 
 const state = {
   current: null,
@@ -12,7 +12,9 @@ const mutations = {
   [type.IDENTITY_GET_SUCCESS] (state, identity) {
     state.current = identity // { id: '0xC001FACE00000123' }
     reporter.setUser(identity)
-    ipcRenderer.send(message.IDENTITY_SET, identity)
+    const messageBus = new RendererMessageBus()
+    const communication = new RendererCommunication(messageBus)
+    communication.sendIdentitySet(identity)
   },
   [type.IDENTITY_LIST_SUCCESS] (state, data) {
     state.identites = data
