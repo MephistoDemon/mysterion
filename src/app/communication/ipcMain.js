@@ -2,17 +2,18 @@
 import {ipcMain} from 'electron'
 
 import type { Ipc } from './ipc'
-import Window from '../window'
+
+type Sender = (channel: string, data?: mixed) => void
 
 class IpcMain implements Ipc {
-  _window: any
+  _send: Sender
 
-  constructor (window: Window) {
-    this._window = window
+  constructor (send: Sender) {
+    this._send = send
   }
 
   send (channel: string, data?: mixed): void {
-    this._window.send(channel, data)
+    this._send(channel, data)
   }
 
   on (channel: string, callback: Function): void {

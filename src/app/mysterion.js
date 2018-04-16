@@ -80,7 +80,7 @@ class Mysterion {
       throw new Error('Failed to load app.')
     }
 
-    this.ipc = new IpcMain(this.window)
+    this.ipc = new IpcMain(this.window.send)
     this.communication = new MainCommunication(this.ipc)
 
     // make sure terms are up to date and accepted
