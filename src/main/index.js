@@ -18,7 +18,7 @@ global.__buildNumber = process.env.BUILD_NUMBER
 global.__sentryURL = SENTRY_CONFIG.publicURL
 global.__static = mysterionConfig.staticDirectoryPath
 
-const tequilApi = new TequilAPI()
+const tequilApi = new TequilAPI('http://127.0.0.1:4050')
 
 const mysterion = new Mysterion({
   config: mysterionConfig,

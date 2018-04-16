@@ -9,7 +9,7 @@ import lolex from 'lolex'
 import idStoreFactory from '@/store/modules/identity'
 import mainStoreFactory from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
-import {TequilapiFactory} from '@/../libraries/api/tequilapi'
+import {tequilapiFactory} from '@/../libraries/api/tequilapi'
 import axios from 'axios'
 import VpnLoader from '@/pages/VpnLoader'
 
@@ -57,7 +57,7 @@ describe('VpnLoader', () => {
 
   function mockTequilapi () {
     const axioInstance = axios.create()
-    tequilapi = TequilapiFactory(axioInstance)
+    tequilapi = tequilapiFactory(axioInstance)
     mock = new MockAdapter(axioInstance)
 
     return [tequilapi, mock]

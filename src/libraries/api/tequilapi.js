@@ -8,20 +8,18 @@ const stopPath = '/stop'
 
 const DEFAULT_TIMEOUT = 5000
 
-export let tequilapi = Constructor()
-
-export default function Constructor (teqAddr = 'http://127.0.0.1:4050', defaultTimeout = DEFAULT_TIMEOUT) {
+function TequilAPI (baseURL, defaultTimeout = DEFAULT_TIMEOUT) {
   const axioInstance = axios.create({
-    baseURL: teqAddr,
-    defaultTimeout,
+    baseURL: baseURL,
+    timeout: defaultTimeout,
     headers: {
       'Cache-Control': 'no-cache, no-store'
     }
   })
-  return TequilapiFactory(axioInstance)
+  return tequilapiFactory(axioInstance)
 }
 
-export function TequilapiFactory (axioInstance) {
+function tequilapiFactory (axioInstance) {
   const axioAdapter = adapterFactory(axioInstance)
 
   return {
@@ -77,3 +75,6 @@ function adapterFactory (teqAxio) {
     }
   }
 }
+
+export {TequilAPI, tequilapiFactory}
+export default TequilAPI
