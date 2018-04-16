@@ -5,7 +5,7 @@ import Terms from './terms/index'
 import TequilAPI from '../libraries/api/tequilapi'
 import connectionStatus from '../libraries/api/connectionStatus'
 import communication from './communication/index'
-import {app, ipcMain} from 'electron'
+import {app} from 'electron'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 import {
   Installer as MysteriumDaemonInstaller,
@@ -14,6 +14,8 @@ import {
 } from '../libraries/mysterium-client/index'
 import bugReporter from './bugReporting/bug-reporting'
 import messages from './messages'
+import MainCommunication from './communication/main-communication'
+import MainMessageBus from './communication/mainMessageBus'
 
 function MysterionFactory (config) {
   const tequilApi = new TequilAPI()
@@ -33,8 +35,8 @@ class Mysterion {
 
   run () {
     // fired when app has been launched
-    app.on('ready', () => {
-      this.bootstrap()
+    app.on('ready', async () => {
+      await this.bootstrap()
       this.buildTray()
     })
     // fired when all windows are closed
@@ -77,6 +79,9 @@ class Mysterion {
       // TODO: add an error wrapper method and send to sentry
       throw new Error('Failed to load app.')
     }
+
+    this.messageBus = new MainMessageBus(this.window.send)
+    this.communication = new MainCommunication(this.messageBus)
 
     // make sure terms are up to date and accepted
     // declining terms will quit the app
@@ -164,7 +169,7 @@ class Mysterion {
       setTimeout(() => updateRendererWithHealth(), 1500)
     }
     const cacheLogs = (level, data) => {
-      this.window.send(communication.MYSTERIUM_CLIENT_LOG, {data, level})
+      this.communication.sendMysteriumClientLog({ level, data })
       bugReporter.pushToLogCache(level, data)
     }
 
@@ -176,7 +181,7 @@ class Mysterion {
       updateRendererWithHealth()
       this.startApp()
     })
-    ipcMain.on(communication.IDENTITY_SET, (evt, identity) => {
+    this.messageBus.on(communication.IDENTITY_SET, (evt, identity) => {
       bugReporter.setUser(identity)
     })
   }
@@ -197,7 +202,7 @@ class Mysterion {
     const toggleDevTools = this.config.inDevMode ? () => { this.window.toggleDevTools() } : null
     const tray = new MysterionTray(activateWindow, toggleDevTools)
     tray.build()
-    ipcMain.on(communication.CONNECTION_STATUS_CHANGED, (evt, oldStatus, newStatus) => {
+    this.communication.onConnectionStatusChange(({ oldStatus, newStatus }) => {
       if (newStatus === connectionStatus.CONNECTED) {
         tray.setIcon(TrayIcon.active)
       }
