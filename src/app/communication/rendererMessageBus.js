@@ -13,9 +13,4 @@ class RendererMessageBus implements MessageBus {
   }
 }
 
-function buildRendererMessageBus (): RendererMessageBus {
-  return new RendererMessageBus()
-}
-
 export default RendererMessageBus
-export { buildRendererMessageBus }

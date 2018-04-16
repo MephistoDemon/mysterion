@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import dependencies from './dependencies'
 import bugReporter from '../app/bugReporting/bug-reporting'
-import RendererCommunication from '../app/communication/renderer-communication'
-import RendererMessageBus from '../app/communication/rendererMessageBus'
 
 bugReporter.renderer.install(Vue)
 
@@ -15,9 +13,7 @@ window.addEventListener('unhandledrejection', (evt) => {
   })
 })
 
-const rendererMessageBus = new RendererMessageBus()
-
-const rendererCommunication = new RendererCommunication(rendererMessageBus)
+const rendererCommunication = dependencies.get('rendererCommunication')
 rendererCommunication.onMysteriumClientLog(({ level, data }) => {
   bugReporter.pushToLogCache(level, data)
 })

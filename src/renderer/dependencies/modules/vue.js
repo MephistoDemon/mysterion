@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import axios from 'axios'
-import RendererCommunication from '../../../app/communication/renderer-communication'
-import RendererMessageBus from '../../../app/communication/rendererMessageBus'
 import App from '../../App'
 import storeFactory from '../../store/factory'
 import routerFactory from '../../router/factory'
@@ -29,11 +27,8 @@ function bootstrap (container) {
 
   container.service(
     'vue-store',
-    ['tequilapi'],
-    (tequilapi) => {
-      const rendererMessageBus = new RendererMessageBus()
-      const rendererCommunication = new RendererCommunication(rendererMessageBus)
-
+    ['tequilapi', 'rendererCommunication'],
+    (tequilapi, rendererCommunication) => {
       return storeFactory(tequilapi, rendererCommunication)
     }
   )
