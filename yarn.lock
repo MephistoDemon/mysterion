@@ -5203,6 +5203,10 @@ jpex@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/jpex/-/jpex-2.0.0.tgz#d1c6726d539fde2c169089d7d54af0381241e389"
 
+jpex@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/jpex/-/jpex-2.1.0.tgz#da389aed51b2296b3095d0ba059db3f2a7f3f69f"
+
 js-base64@^2.1.8, js-base64@^2.1.9:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.3.2.tgz#a79a923666372b580f8e27f51845c6f7e8fbfbaf"

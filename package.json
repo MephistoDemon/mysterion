@@ -80,6 +80,7 @@
     "axios": "^0.16.1",
     "dbly-linked-list": "^0.2.0",
     "file-size": "^1.0.0",
+    "jpex": "^2.1.0",
     "less": "^2.7.3",
     "less-loader": "^4.0.5",
     "lolex": "^2.3.2",
