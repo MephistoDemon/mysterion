@@ -15,7 +15,7 @@ import {
 import bugReporter from './bugReporting/bug-reporting'
 import messages from './messages'
 import MainCommunication from './communication/main-communication'
-import IpcMain from './communication/ipcMain'
+import MainMessageBus from './communication/mainMessageBus'
 
 function MysterionFactory (config) {
   const tequilApi = new TequilAPI()
@@ -80,8 +80,8 @@ class Mysterion {
       throw new Error('Failed to load app.')
     }
 
-    this.ipc = new IpcMain(this.window.send)
-    this.communication = new MainCommunication(this.ipc)
+    this.messageBus = new MainMessageBus(this.window.send)
+    this.communication = new MainCommunication(this.messageBus)
 
     // make sure terms are up to date and accepted
     // declining terms will quit the app
@@ -181,7 +181,7 @@ class Mysterion {
       updateRendererWithHealth()
       this.startApp()
     })
-    this.ipc.on(communication.IDENTITY_SET, (evt, identity) => {
+    this.messageBus.on(communication.IDENTITY_SET, (evt, identity) => {
       bugReporter.setUser(identity)
     })
   }

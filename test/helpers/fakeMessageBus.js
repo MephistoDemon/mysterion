@@ -1,5 +1,5 @@
 // @flow
-export default class FakeIpc {
+export default class FakeMessageBus {
   lastChannel: ?string
   lastArgs: ?Array<mixed>
 

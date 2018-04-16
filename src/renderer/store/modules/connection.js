@@ -6,7 +6,7 @@ import bugReporter from '../../../app/bugReporting/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
-import { buildIpcRenderer } from '../../../app/communication/ipcRenderer'
+import { buildRendererMessageBus } from '../../../app/communication/rendererMessageBus'
 import RendererCommunication from '../../../app/communication/renderer-communication'
 
 const tequilapi = tequilAPI()
@@ -94,8 +94,8 @@ const actions = {
       return
     }
     commit(type.SET_CONNECTION_STATUS, newStatus)
-    const ipcRenderer = buildIpcRenderer()
-    const rendererCommunication = new RendererCommunication(ipcRenderer)
+    const rendererMessageBus = buildRendererMessageBus()
+    const rendererCommunication = new RendererCommunication(rendererMessageBus)
     rendererCommunication.sendConnectionStatusChange({ oldStatus, newStatus })
 
     if (newStatus === connectionStatus.CONNECTED) {

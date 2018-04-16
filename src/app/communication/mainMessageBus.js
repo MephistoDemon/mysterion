@@ -1,11 +1,11 @@
 // @flow
 import {ipcMain} from 'electron'
 
-import type { Ipc } from './ipc'
+import type { MessageBus } from './messageBus'
 
 type Sender = (channel: string, data?: mixed) => void
 
-class IpcMain implements Ipc {
+class MainMessageBus implements MessageBus {
   _send: Sender
 
   constructor (send: Sender) {
@@ -21,4 +21,4 @@ class IpcMain implements Ipc {
   }
 }
 
-export default IpcMain
+export default MainMessageBus

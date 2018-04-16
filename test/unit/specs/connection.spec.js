@@ -7,16 +7,16 @@ import utils from '../../helpers/utils'
 import { FunctionLooper } from '@/../libraries/functionLooper'
 import connectionStatus from '@/../libraries/api/connectionStatus'
 import communication from '@/../app/communication'
-import FakeIpc from '../../helpers/fakeIpc'
+import FakeMessageBus from '../../helpers/fakeMessageBus'
 
 const fakeTequilapi = utils.fakeTequilapiManipulator()
-const fakeIpc = new FakeIpc()
+const fakeMessageBus = new FakeMessageBus()
 
-const fakeBuildIpcRenderer = () => fakeIpc
+const fakeBuildRendererMessageBus = () => fakeMessageBus
 
 const connection = connectionInjector({
   '../../../libraries/api/tequilapi': fakeTequilapi.getFakeApi,
-  '../../../app/communication/ipcRenderer': { buildIpcRenderer: fakeBuildIpcRenderer }
+  '../../../app/communication/rendererMessageBus': { buildRendererMessageBus: fakeBuildRendererMessageBus }
 }).default
 
 async function executeAction (action, state = {}, payload = {}) {
@@ -230,7 +230,7 @@ describe('actions', () => {
 
   describe('SET_CONNECTION_STATUS', () => {
     beforeEach(() => {
-      fakeIpc.clean()
+      fakeMessageBus.clean()
     })
 
     it('commits new status', async () => {
@@ -246,8 +246,8 @@ describe('actions', () => {
         status: connectionStatus.NOT_CONNECTED
       }
       await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.CONNECTING)
-      expect(fakeIpc.lastChannel).to.eql(communication.CONNECTION_STATUS_CHANGED)
-      expect(fakeIpc.lastArgs[0]).to.eql({
+      expect(fakeMessageBus.lastChannel).to.eql(communication.CONNECTION_STATUS_CHANGED)
+      expect(fakeMessageBus.lastArgs[0]).to.eql({
         oldStatus: connectionStatus.NOT_CONNECTED,
         newStatus: connectionStatus.CONNECTING
       })
@@ -258,7 +258,7 @@ describe('actions', () => {
         status: connectionStatus.NOT_CONNECTED
       }
       await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.NOT_CONNECTED)
-      expect(fakeIpc.lastChannel).to.eql(null)
+      expect(fakeMessageBus.lastChannel).to.eql(null)
     })
 
     it('starts looping statistics when changing state to connected', async () => {
