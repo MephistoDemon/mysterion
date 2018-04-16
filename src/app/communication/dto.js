@@ -9,3 +9,7 @@ export type MysteriumClientLogData = {
   level: string,
   data: mixed
 }
+
+export type IdentitySetData = {
+  id: string
+}

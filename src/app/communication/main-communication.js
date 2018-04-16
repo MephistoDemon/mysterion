@@ -1,7 +1,7 @@
 // @flow
 import messages from './index'
 import type {MessageBus} from './messageBus'
-import type {ConnectionStatusChangeData, MysteriumClientLogData} from './dto'
+import type {ConnectionStatusChangeData, IdentitySetData, MysteriumClientLogData} from './dto'
 
 /**
  * This allows main process communicating with renderer process.
@@ -21,6 +21,10 @@ class MainCommunication {
 
   onConnectionStatusChange (callback: (ConnectionStatusChangeData) => void): void {
     this._on(messages.CONNECTION_STATUS_CHANGED, callback)
+  }
+
+  onIdentitySet (callback: (IdentitySetData) => void) {
+    this._on(messages.IDENTITY_SET, callback)
   }
 
   _send (channel: string, data: mixed): void {

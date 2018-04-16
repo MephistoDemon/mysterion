@@ -80,8 +80,8 @@ class Mysterion {
       throw new Error('Failed to load app.')
     }
 
-    this.messageBus = new MainMessageBus(this.window.send)
-    this.communication = new MainCommunication(this.messageBus)
+    const messageBus = new MainMessageBus(this.window.send)
+    this.communication = new MainCommunication(messageBus)
 
     // make sure terms are up to date and accepted
     // declining terms will quit the app
@@ -181,7 +181,7 @@ class Mysterion {
       updateRendererWithHealth()
       this.startApp()
     })
-    this.messageBus.on(communication.IDENTITY_SET, (evt, identity) => {
+    this.communication.onIdentitySet((identity) => {
       bugReporter.setUser(identity)
     })
   }

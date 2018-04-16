@@ -34,4 +34,18 @@ describe('MainCommunication', () => {
       expect(callbackData).to.eql(data)
     })
   })
+
+  describe('onIdentitySet', () => {
+    it('receives message from bus', () => {
+      let callbackData = null
+      communication.onIdentitySet((data) => {
+        callbackData = data
+      })
+
+      const data = { id: '0xC001FACE00000123' }
+      fakeMessageBus.triggerOn(messages.IDENTITY_SET, data)
+
+      expect(callbackData).to.eql(data)
+    })
+  })
 })
