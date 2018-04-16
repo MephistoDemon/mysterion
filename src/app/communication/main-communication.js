@@ -13,6 +13,8 @@ class MainCommunication {
     this._ipc = ipc
   }
 
+  // TODO: remaining other messages
+
   sendMysteriumClientLog (data: MysteriumClientLogData) {
     this._send(messages.MYSTERIUM_CLIENT_LOG, data)
   }

@@ -13,6 +13,8 @@ class RendererCommunication {
     this._ipc = ipc
   }
 
+  // TODO: remaining other messages
+
   sendConnectionStatusChange (data: ConnectionStatusChangeData) {
     return this._send(messages.CONNECTION_STATUS_CHANGED, data)
   }
