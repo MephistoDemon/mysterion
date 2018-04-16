@@ -8,6 +8,7 @@ function Message (sender, value) {
   }
 }
 
+// TODO: find better name - AppWindow?
 class Window {
   constructor ({width, height}, url) {
     let options = {
