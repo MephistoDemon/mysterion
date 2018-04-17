@@ -24,7 +24,7 @@
   import AppNav from '@/partials/AppNav'
   import messages from '../app/communication'
 
-  import {ipcRenderer, remote} from 'electron'
+  import {remote} from 'electron'
   import AppError from '@/partials/AppError'
   import AppModal from '@/partials/AppModal'
   import RendererMessageBus from '../app/communication/rendererMessageBus'
@@ -54,27 +54,27 @@
 
       // we need to notify the main process that we're up
       communication.sendRendererLoaded()
-      ipcRenderer.on(messages.TERMS_REQUESTED, (event, terms) => {
+      messageBus.on(messages.TERMS_REQUESTED, (terms) => {
         this.$store.dispatch(type.TERMS, terms)
         this.$router.push('/terms')
       })
 
-      ipcRenderer.on(messages.APP_START, () => {
+      messageBus.on(messages.APP_START, () => {
         this.$router.push('/load')
       })
 
-      ipcRenderer.on(messages.TERMS_ACCEPTED, () => {
+      messageBus.on(messages.TERMS_ACCEPTED, () => {
         this.$router.push('/')
       })
 
-      ipcRenderer.on(messages.APP_ERROR, (event, error) => {
+      messageBus.on(messages.APP_ERROR, (error) => {
         console.log('APP_ERROR received from ipc:', event)
         this.$store.dispatch(type.OVERLAY_ERROR, error)
       })
 
       let previousClientRunningState = true
 
-      ipcRenderer.on(messages.HEALTHCHECK, (event, clientRunningState) => {
+      messageBus.on(messages.HEALTHCHECK, (clientRunningState) => {
         // do nothing while on terms page
         if (this.$route.name === 'terms') {
           return
