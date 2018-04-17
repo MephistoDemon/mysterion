@@ -1,7 +1,7 @@
 // @flow
 import messages from './index'
 import type {MessageBus} from './messageBus'
-import type {ConnectionStatusChangeData, IdentitySetData, MysteriumClientLogData} from './dto'
+import type {ConnectionStatusChangeDTO, IdentitySetDTO, MysteriumClientLogDTO} from './dto'
 
 /**
  * This allows renderer process communicating with main process.
@@ -15,27 +15,27 @@ class RendererCommunication {
 
   // TODO: remaining other messages
 
-  sendConnectionStatusChange (data: ConnectionStatusChangeData): void {
-    return this._send(messages.CONNECTION_STATUS_CHANGED, data)
+  sendConnectionStatusChange (dto: ConnectionStatusChangeDTO): void {
+    return this._send(messages.CONNECTION_STATUS_CHANGED, dto)
   }
 
-  sendIdentitySet (data: IdentitySetData): void {
-    return this._send(messages.IDENTITY_SET, data)
+  sendIdentitySet (dto: IdentitySetDTO): void {
+    return this._send(messages.IDENTITY_SET, dto)
   }
 
   sendRendererLoaded (): void {
     return this._send(messages.RENDERER_LOADED)
   }
 
-  onMysteriumClientLog (callback: (MysteriumClientLogData) => void): void {
+  onMysteriumClientLog (callback: (MysteriumClientLogDTO) => void): void {
     this._on(messages.MYSTERIUM_CLIENT_LOG, callback)
   }
 
-  _send (channel: string, data: mixed): void {
-    this._messageBus.send(channel, data)
+  _send (channel: string, dto: mixed): void {
+    this._messageBus.send(channel, dto)
   }
 
-  _on (channel: string, callback: (data: any) => void): void {
+  _on (channel: string, callback: (dto: any) => void): void {
     this._messageBus.on(channel, callback)
   }
 }
