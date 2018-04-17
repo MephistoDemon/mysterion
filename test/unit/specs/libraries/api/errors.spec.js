@@ -1,9 +1,18 @@
+// @flow
 import { hasHttpStatus } from '../../../../../src/libraries/api/errors'
+import { describe, it, expect } from '../../../../helpers/dependencies'
+
+class ResponseError extends Error {
+  response: Object
+
+  constructor (response: Object) {
+    super()
+    this.response = response
+  }
+}
 
 function responseError (status) {
-  const error = new Error()
-  error.response = { status }
-  return error
+  return new ResponseError({ status })
 }
 
 describe('hasHttpStatus', () => {
