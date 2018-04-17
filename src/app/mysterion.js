@@ -81,8 +81,9 @@ class Mysterion {
       throw new Error('Failed to open window.')
     }
 
-    const messageBus = new MainMessageBus(this.window.send)
-    this.communication = new MainCommunication(messageBus)
+    const send = this.window.send.bind(this.window)
+    this.messageBus = new MainMessageBus(send)
+    this.communication = new MainCommunication(this.messageBus)
 
     try {
       await waitForMessage(this.communication.onRendererLoaded.bind(this.communication))
@@ -142,7 +143,7 @@ class Mysterion {
   }
 
   async acceptTerms () {
-    this.window.send(communication.TERMS_REQUESTED, {
+    this.messageBus.send(communication.TERMS_REQUESTED, {
       content: this.terms.getContent()
     })
 
@@ -151,7 +152,7 @@ class Mysterion {
       return false
     }
 
-    this.window.send(communication.TERMS_ACCEPTED)
+    this.messageBus.send(communication.TERMS_ACCEPTED)
 
     try {
       this.terms.accept()
@@ -170,7 +171,7 @@ class Mysterion {
   async startProcess () {
     const updateRendererWithHealth = () => {
       try {
-        this.window.send(communication.HEALTHCHECK, this.monitoring.isRunning())
+        this.messageBus.send(communication.HEALTHCHECK, this.monitoring.isRunning())
       } catch (e) {
         bugReporter.main.captureException(e)
         return
@@ -200,7 +201,7 @@ class Mysterion {
    * notifies the renderer that we're good to go and sets up the system tray
    */
   startApp () {
-    this.window.send(communication.APP_START)
+    this.messageBus.send(communication.APP_START)
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
