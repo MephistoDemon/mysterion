@@ -1,4 +1,5 @@
 // @flow
+import {describe, it, expect, beforeEach} from '../../../helpers/dependencies'
 import applyHeaderWrites from '../../../../src/app/browserAJAXHeaderWriter'
 import type {HeaderRewriteRules} from '../../../../src/app/browserAJAXHeaderWriter'
 

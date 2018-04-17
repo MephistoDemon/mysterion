@@ -11,5 +11,7 @@ declare var it: Function
 
 // chai
 declare var expect: Function
+declare var before: Function
+declare var beforeEach: Function
 
-export { describe, it, expect }
+export { describe, it, expect, before, beforeEach }
