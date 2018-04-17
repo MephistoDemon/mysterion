@@ -76,6 +76,7 @@ class Window {
    * @param event
    * @returns {Promise<void>}
    */
+  // TODO: remove once it's not used anymore
   wait (event) {
     return new Promise((resolve) => {
       const messageBus = new MainMessageBus(this.send)

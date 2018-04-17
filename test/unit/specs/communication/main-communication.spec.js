@@ -48,4 +48,17 @@ describe('MainCommunication', () => {
       expect(callbackData).to.eql(data)
     })
   })
+
+  describe('onRendererLoaded', () => {
+    it('receives message from bus', () => {
+      let callbackInvoked = false
+      communication.onRendererLoaded(() => {
+        callbackInvoked = true
+      })
+
+      fakeMessageBus.triggerOn(messages.RENDERER_LOADED)
+
+      expect(callbackInvoked).to.eql(true)
+    })
+  })
 })

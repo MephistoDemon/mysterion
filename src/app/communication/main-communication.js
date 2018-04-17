@@ -27,6 +27,10 @@ class MainCommunication {
     this._on(messages.IDENTITY_SET, callback)
   }
 
+  onRendererLoaded (callback: () => void) {
+    this._on(messages.RENDERER_LOADED, callback)
+  }
+
   _send (channel: string, data: mixed): void {
     this._messageBus.send(channel, data)
   }

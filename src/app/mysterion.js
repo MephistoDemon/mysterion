@@ -16,6 +16,7 @@ import bugReporter from './bugReporting/bug-reporting'
 import messages from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
+import { waitForMessage } from './communication/utils'
 
 function MysterionFactory (config) {
   const tequilApi = new TequilAPI()
@@ -74,14 +75,23 @@ class Mysterion {
 
     try {
       this.window.open()
-      await this.window.wait(communication.RENDERER_LOADED)
     } catch (e) {
-      // TODO: add an error wrapper method and send to sentry
-      throw new Error('Failed to load app.')
+      console.log(e)
+      bugReporter.main.captureException(e)
+      throw new Error('Failed to open window.')
     }
 
     const messageBus = new MainMessageBus(this.window.send)
     this.communication = new MainCommunication(messageBus)
+
+    try {
+      await waitForMessage(this.communication.onRendererLoaded.bind(this.communication))
+    } catch (e) {
+      console.log(e)
+      bugReporter.main.captureException(e)
+      // TODO: add an error wrapper method
+      throw new Error('Failed to load app.')
+    }
 
     // make sure terms are up to date and accepted
     // declining terms will quit the app
