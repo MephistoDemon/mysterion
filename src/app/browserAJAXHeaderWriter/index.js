@@ -11,7 +11,9 @@ export type HeaderRewriteRules = {
 function registerHeaderWriteRule (session: Object, rule: HeaderRewriteRules) {
   const {urls, write} = rule
   session.webRequest.onBeforeSendHeaders({urls}, (details, next) => {
-    write(details.requestHeaders, next)
+    write(details.requestHeaders, (headers) => {
+      next({requestHeaders: headers})
+    })
   })
 }
 

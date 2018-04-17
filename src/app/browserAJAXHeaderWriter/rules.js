@@ -6,7 +6,7 @@ const rules: Array<HeaderRewriteRules> = [
     urls: ['https://sentry.io/api/embed/error-page/*'],
     write: function (headers, next) {
       headers['Referer'] = '*'
-      next({requestHeaders: headers})
+      next(headers)
     }
   }
 ]
