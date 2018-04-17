@@ -3,8 +3,8 @@ import type {HeaderRewriteRules} from './index.js'
 
 const rules: Array<HeaderRewriteRules> = [
   {
-    filter: {urls: ['https://sentry.io/api/embed/error-page/*']},
-    rewriter: function (headers, next) {
+    urls: ['https://sentry.io/api/embed/error-page/*'],
+    write: function (headers, next) {
       headers['Referer'] = '*'
       next({requestHeaders: headers})
     }

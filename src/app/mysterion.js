@@ -13,7 +13,7 @@ import {
   logLevel as processLogLevel
 } from '../libraries/mysterium-client/index'
 import bugReporter from './bugReporting/bug-reporting'
-import applyHeaderRewrites from './AJAXHeaderRewrites'
+import applyHeaderWrites from './browserAJAXHeaderWriter'
 import messages from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
@@ -81,15 +81,7 @@ class Mysterion {
       throw new Error('Failed to load app.')
     }
 
-    // add referer headers Required for sentry feedback form
-    try {
-      applyHeaderRewrites()
-    } catch (err) {
-      const error = new Error('Failed to setup AJAX Header Rewrites')
-      error.original = err
-      console.error(error)
-      bugReporter.main.captureException(error)
-    }
+    setupSentryFeedbackForm()
 
     this.messageBus = new MainMessageBus(this.window.send)
     this.communication = new MainCommunication(this.messageBus)
@@ -210,8 +202,7 @@ class Mysterion {
 
   buildTray () {
     const activateWindow = () => { this.window.show() }
-    // const toggleDevTools = this.config.inDevMode ? () => { this.window.toggleDevTools() } : null
-    const toggleDevTools = () => { this.window.toggleDevTools() }
+    const toggleDevTools = this.config.inDevMode ? () => { this.window.toggleDevTools() } : null
     const tray = new MysterionTray(activateWindow, toggleDevTools)
     tray.build()
     this.communication.onConnectionStatusChange(({ oldStatus, newStatus }) => {
@@ -222,6 +213,17 @@ class Mysterion {
         tray.setIcon(TrayIcon.passive)
       }
     })
+  }
+}
+
+function setupSentryFeedbackForm () {
+  try {
+    applyHeaderWrites()
+  } catch (err) {
+    const error = new Error('Failed to setup AJAX Header Rewrites')
+    error.original = err
+    console.error(error)
+    bugReporter.main.captureException(error)
   }
 }
 
