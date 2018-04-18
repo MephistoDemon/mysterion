@@ -18,13 +18,18 @@
   &--active {
     z-index: 3;
   }
+  &__spinner {
+    left: 1px;
+    width: 27px;
+    height: 28px;
+  }
   &__tags {
     min-height: initial;
     padding: 0.4rem 4rem 0 2.2rem;
     border-radius: 0;
     background: transparent;
     border-radius: 3px;
-    border: 2px solid @main;
+    border: 1px solid @main;
     transition: border-color 200ms @easeOutQuad;
   }
   &__single {
@@ -33,8 +38,8 @@
     overflow-x: hidden;
   }
   &__content-wrapper {
-    top: 0;
-    border: 2px solid @main;
+    border: 1px solid @main;
+    border-top: none;
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
   }

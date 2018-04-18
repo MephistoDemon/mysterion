@@ -12,7 +12,7 @@
         }],
         "stage-0"
       ],
-      "plugins": ["istanbul"]
+      "plugins": ["istanbul", "rewire"]
     },
     "main": {
       "presets": [

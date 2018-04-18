@@ -6,7 +6,7 @@
         <div class="control__location" v-if="ip">current IP: {{ip}}</div>
       </div>
       <div class="control__bottom">
-        <country-select v-model="country" class="control__countries" :class="{'is-disabled': statusCode!==-1}"/>
+        <country-select v-on:selected="setCountry" class="control__countries" :class="{'is-disabled': statusCode!==-1}"/>
         <connection-button :provider-id="providerIdentity"></connection-button>
       </div>
       <div class="control__footer">
@@ -68,7 +68,8 @@
       }
     },
     methods: {
-      ...mapMutations({ hideErr: type.HIDE_ERROR })
+      ...mapMutations({ hideErr: type.HIDE_ERROR }),
+      setCountry (data) { this.country = data }
     },
     async mounted () {
       this.$store.dispatch(type.START_ACTION_LOOPING, {
@@ -79,8 +80,6 @@
         action: type.FETCH_CONNECTION_STATUS,
         threshold: config.statusUpdateThreshold
       })
-    },
-    beforeDestroy () {
     }
   }
 </script>
