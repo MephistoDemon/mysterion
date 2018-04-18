@@ -115,8 +115,8 @@ describe('VpnLoader', () => {
     })
   })
 
-  describe('error handling', () => {
-    describe('generic', () => {
+  describe('identities error handling', () => {
+    describe('identity listing failed', () => {
       let vm
       before(async () => {
         mock.onGet('/identities').replyOnce(500)
@@ -130,7 +130,7 @@ describe('VpnLoader', () => {
       })
     })
 
-    describe('in proposals response body we get message: connect: network unreachable', () => {
+    describe('identity unlocking failed', () => {
       let vm
       before(async () => {
         mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
