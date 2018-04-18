@@ -79,8 +79,7 @@ class Window {
   // TODO: remove once it's not used anymore
   wait (event) {
     return new Promise((resolve) => {
-      const send = this.send.bind(this)
-      const messageBus = new MainMessageBus(send)
+      const messageBus = new MainMessageBus(this.send)
       messageBus.on(event, () => {
         resolve()
       })
