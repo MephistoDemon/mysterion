@@ -34,7 +34,7 @@ const customRule: Array<HeaderRewriteRules> = [
   }
 ]
 
-describe.only('browserRequestHeaderWriter', () => {
+describe('browserRequestHeaderWriter', () => {
   beforeEach(() => {
     defaultHeaders = {requestHeaders: {}}
   })
