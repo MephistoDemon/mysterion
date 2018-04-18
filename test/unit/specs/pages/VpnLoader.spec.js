@@ -61,7 +61,6 @@ describe('VpnLoader', () => {
   before(async () => {
     mock = new MockAdapter(axioInstance)
     mock.onGet('/healthcheck').reply(200, {version: {commit: 'caed3112'}})
-    mock.onPut('/identities/0xC001FACE/unlock').reply(200)
 
     clock = lolex.install()
   })
@@ -75,6 +74,7 @@ describe('VpnLoader', () => {
     let vm
     before(async () => {
       mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
+      mock.onPut('/identities/0xC001FACE/unlock').reply(200)
       vm = await mountAndPrepareLoadingScreen(tequilapi)
     })
 
@@ -95,6 +95,7 @@ describe('VpnLoader', () => {
     before(async () => {
       mock.onGet('/identities').replyOnce(200, {identities: []})
       mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
+      mock.onPut('/identities/0xC001FACE/unlock').reply(200)
       vm = await mountAndPrepareLoadingScreen(tequilapi)
     })
 
