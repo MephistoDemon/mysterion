@@ -3,6 +3,9 @@ import type {Container, ServiceFactory} from './index'
 import Vue from 'vue'
 import Injector from 'vue-inject'
 
+/**
+ * Implementation of DI container which is Vue plugin at the same time.
+ */
 class VueContainer implements Container {
   injector: Injector
 

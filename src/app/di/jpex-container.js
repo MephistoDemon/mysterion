@@ -2,6 +2,9 @@
 import type {Container, ServiceFactory} from './index'
 import Jpex from 'jpex'
 
+/**
+ * Implementation of DI container which works via Jpex library.
+ */
 class JpexContainer implements Container {
   jpex: Jpex
 
