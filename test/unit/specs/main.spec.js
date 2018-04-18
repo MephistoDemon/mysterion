@@ -25,6 +25,14 @@ describe('mutations', () => {
       expect(state.showError).to.eql(true)
       expect(state.errorMessage).to.eql('Response message')
     })
+
+    it('displays Unknown error if no error.message found', () => {
+      const state = {}
+      const err = new Error()
+      main.mutations[type.SHOW_ERROR](state, err)
+      expect(state.showError).to.eql(true)
+      expect(state.errorMessage).to.eql('Unknown error')
+    })
   })
 
   describe('SHOW_ERROR_MESSAGE', () => {

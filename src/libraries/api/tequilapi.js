@@ -6,12 +6,12 @@ const conPath = '/connection'
 const healthCheckPath = '/healthcheck'
 const stopPath = '/stop'
 
-const timeout = 5000
+const DEFAULT_TIMEOUT = 5000
 
 export let tequilapi = Constructor()
 
-export default function Constructor (teqAddr = 'http://127.0.0.1:4050') {
-  const {teqAxio, axioAdapter} = adapterFactory(teqAddr)
+export default function Constructor (teqAddr = 'http://127.0.0.1:4050', defaultTimeout = DEFAULT_TIMEOUT) {
+  const {teqAxio, axioAdapter} = adapterFactory(teqAddr, defaultTimeout)
   const api = {
     identity: {
       list: async () => axioAdapter.get(idPath),
@@ -24,29 +24,33 @@ export default function Constructor (teqAddr = 'http://127.0.0.1:4050') {
       list: async () => axioAdapter.get(propPath)
     },
     connection: {
-      connect: async ({consumerId, providerId}) => axioAdapter.put(conPath, {
-        consumerId: consumerId,
-        providerId: providerId
-      }),
+      connect: async ({consumerId, providerId}, timeout) => {
+        return axioAdapter.put(conPath, {
+          consumerId: consumerId,
+          providerId: providerId
+        }, null, timeout ? {timeout} : undefined)
+      },
       disconnect: async () => axioAdapter.delete(conPath),
       status: async () => axioAdapter.get(conPath),
-      ip: async () => {
-        const res = await axioAdapter.get(conPath + '/ip')
+      ip: async (timeout = null) => {
+        const res = await axioAdapter.get(conPath + '/ip', timeout ? {timeout} : undefined)
         return res.ip
       },
       statistics: async () => axioAdapter.get(conPath + '/statistics')
     },
-    healthCheck: async (timeout) => axioAdapter.get(healthCheckPath, {timeout}),
+    healthCheck: async (timeout = null) => {
+      return axioAdapter.get(healthCheckPath, timeout ? {timeout} : undefined)
+    },
     stop: async () => axioAdapter.post(stopPath),
     __axio: teqAxio // we need this for mocking
   }
   return api
 }
 
-function adapterFactory (teqAddr) {
+function adapterFactory (teqAddr, defaultTimeout) {
   const teqAxio = axios.create({
     baseURL: teqAddr,
-    timeout,
+    timeout: defaultTimeout,
     headers: {
       'Cache-Control': 'no-cache, no-store'
     }
