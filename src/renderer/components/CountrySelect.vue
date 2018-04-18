@@ -100,7 +100,8 @@
           console.log('Countries loading failed', e)
 
           if (isNetworkUnreachable(e)) {
-            this.$store.commit(type.OVERLAY_ERROR, messages.countriesLoadingNetworkError)
+            let message = messages.countriesLoadingNetworkError.message + ' ' + messages.countriesLoadingNetworkError.hint
+            this.$store.commit(type.SHOW_ERROR_MESSAGE, message)
           } else {
             this.$store.commit(type.SHOW_ERROR_MESSAGE, messages.countriesLoadingFailed)
           }
