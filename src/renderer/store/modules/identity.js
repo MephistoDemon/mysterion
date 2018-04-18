@@ -14,7 +14,7 @@ const mutations = {
     reporter.setUser(identity)
     const messageBus = new RendererMessageBus()
     const communication = new RendererCommunication(messageBus)
-    communication.sendIdentitySet(identity)
+    communication.sendCurrentIdentityChange(identity)
   },
   [type.IDENTITY_LIST_SUCCESS] (state, data) {
     state.identites = data

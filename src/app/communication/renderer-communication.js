@@ -19,8 +19,8 @@ class RendererCommunication {
     return this._send(messages.CONNECTION_STATUS_CHANGED, dto)
   }
 
-  sendIdentitySet (dto: IdentitySetDTO): void {
-    return this._send(messages.IDENTITY_SET, dto)
+  sendCurrentIdentityChange (dto: IdentitySetDTO): void {
+    return this._send(messages.CURRENT_IDENTITY_CHANGED, dto)
   }
 
   sendRendererLoaded (): void {

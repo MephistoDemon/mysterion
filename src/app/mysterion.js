@@ -192,7 +192,7 @@ class Mysterion {
       updateRendererWithHealth()
       this.startApp()
     })
-    this.communication.onIdentitySet((identity) => {
+    this.communication.onCurrentIdentityChange((identity) => {
       bugReporter.setUser(identity)
     })
   }

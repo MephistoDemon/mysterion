@@ -21,12 +21,12 @@ describe('RendererCommunication', () => {
     })
   })
 
-  describe('sendIdentitySet', () => {
+  describe('sendCurrentIdentityChange', () => {
     it('sends message to bus', () => {
       const data = { id: '0xC001FACE00000123' }
-      communication.sendIdentitySet(data)
+      communication.sendCurrentIdentityChange(data)
 
-      expect(fakeMessageBus.lastChannel).to.eql(messages.IDENTITY_SET)
+      expect(fakeMessageBus.lastChannel).to.eql(messages.CURRENT_IDENTITY_CHANGED)
       expect(fakeMessageBus.lastData).to.eql(data)
     })
   })

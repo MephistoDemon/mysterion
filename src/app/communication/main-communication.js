@@ -23,8 +23,8 @@ class MainCommunication {
     this._on(messages.CONNECTION_STATUS_CHANGED, callback)
   }
 
-  onIdentitySet (callback: (IdentitySetDTO) => void) {
-    this._on(messages.IDENTITY_SET, callback)
+  onCurrentIdentityChange (callback: (IdentitySetDTO) => void) {
+    this._on(messages.CURRENT_IDENTITY_CHANGED, callback)
   }
 
   onRendererLoaded (callback: () => void) {

@@ -2,7 +2,7 @@
 export default {
   CONNECTION_STATUS_CHANGED: 'connection.status.changed',
   MYSTERIUM_CLIENT_LOG: 'mysterium.client.log',
-  IDENTITY_SET: 'identity.set',
+  CURRENT_IDENTITY_CHANGED: 'current.identity.changed',
   RENDERER_LOADED: 'renderer.loaded',
 
   // TODO: refactor these message to be used in communication

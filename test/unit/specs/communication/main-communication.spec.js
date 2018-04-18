@@ -35,15 +35,15 @@ describe('MainCommunication', () => {
     })
   })
 
-  describe('onIdentitySet', () => {
+  describe('onCurrentIdentityChange', () => {
     it('receives message from bus', () => {
       let callbackData = null
-      communication.onIdentitySet((data) => {
+      communication.onCurrentIdentityChange((data) => {
         callbackData = data
       })
 
       const data = { id: '0xC001FACE00000123' }
-      fakeMessageBus.triggerOn(messages.IDENTITY_SET, data)
+      fakeMessageBus.triggerOn(messages.CURRENT_IDENTITY_CHANGED, data)
 
       expect(callbackData).to.eql(data)
     })
