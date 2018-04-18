@@ -28,7 +28,7 @@
 
 <script>
   import path from 'path'
-  import countryList from '@/plugins/countries'
+  import getCountryName from '@/plugins/countries'
   import Multiselect from 'vue-multiselect'
   import IconWorld from '@/assets/img/icon--world.svg'
   import type from '@/store/types'
@@ -43,7 +43,7 @@
       code = proposal.serviceDefinition.locationOriginate.country.toLowerCase()
     }
     return {
-      label: code ? countryList.GetName(code) : proposal.providerId,
+      label: code ? getCountryName(code) : proposal.providerId,
       id: proposal.providerId,
       code: code
     }
@@ -103,3 +103,6 @@
     }
   }
 </script>
+<style lang="less">
+
+</style>
