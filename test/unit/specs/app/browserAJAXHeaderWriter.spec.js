@@ -1,40 +1,39 @@
 // @flow
 import {describe, it, expect, beforeEach} from '../../../helpers/dependencies'
-import applyHeaderWrites from '../../../../src/app/browserAJAXHeaderWriter'
-import type {HeaderRewriteRules} from '../../../../src/app/browserAJAXHeaderWriter'
+import applyHeaderWrites from '../../../../src/app/rendererRequestHeaders'
+import type {HeaderRule} from '../../../../src/app/rendererRequestHeaders'
 
 let resultHeaders
-const next = headers => {
-  resultHeaders = headers
-}
 let defaultHeaders
 
 const fakeBrowserSession = {
   webRequest: {
     onBeforeSendHeaders: function (filter, callback) {
-      callback(defaultHeaders, next)
+      callback(defaultHeaders, headers => {
+        resultHeaders = headers
+      })
     }
   }
 }
 
-const customRule: Array<HeaderRewriteRules> = [
+const customRules: Array<HeaderRule> = [
   {
     urls: ['some url'],
-    write: function (headers, next) {
+    write: function (headers) {
       headers['CustomHeader'] = 'FakeHeader'
-      next(headers)
+      return headers
     }
   },
   {
     urls: ['some other url'],
-    write: function (headers, next) {
+    write: function (headers) {
       headers['CustomOtherHeader'] = 'FakeOtherHeader'
-      next(headers)
+      return headers
     }
   }
 ]
 
-describe('browserRequestHeaderWriter', () => {
+describe.only('registerHeaderRules', () => {
   beforeEach(() => {
     defaultHeaders = {requestHeaders: {}}
   })
@@ -44,7 +43,7 @@ describe('browserRequestHeaderWriter', () => {
   })
 
   it('applies given headers', () => {
-    applyHeaderWrites(fakeBrowserSession, customRule)
+    applyHeaderWrites(fakeBrowserSession, customRules)
     expect(resultHeaders).to.be.eql({
       requestHeaders: {
         CustomHeader: 'FakeHeader',
