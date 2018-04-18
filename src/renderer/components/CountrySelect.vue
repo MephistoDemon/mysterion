@@ -52,6 +52,15 @@
     }
   }
 
+  function isNetworkUnreachable (err) {
+    return (
+      err.response &&
+      err.response.data &&
+      err.response.data.message &&
+      err.response.data.message.includes('connect: network is unreachable')
+    )
+  }
+
   export default {
     name: 'CountrySelect',
     components: {
@@ -90,11 +99,13 @@
         } catch (e) {
           console.log('Countries loading failed', e)
 
-          const error = new Error(messages.countriesLoadingFailed)
-          error.original = e
+          if (isNetworkUnreachable(e)) {
+            this.$store.commit(type.OVERLAY_ERROR, messages.countriesLoadingNetworkError)
+          } else {
+            this.$store.commit(type.SHOW_ERROR_MESSAGE, messages.countriesLoadingFailed)
+          }
 
-          this.$store.commit(type.SHOW_ERROR, error)
-          bugReporter.renderer.captureException(error)
+          bugReporter.renderer.captureException(e)
         }
 
         this.countriesAreLoading = false
