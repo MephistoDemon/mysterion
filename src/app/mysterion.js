@@ -16,7 +16,7 @@ import bugReporter from './bugReporting/bug-reporting'
 import messages from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
-import { waitForMessage } from './communication/utils'
+import { waitForFirstEvent } from './communication/utils'
 
 function MysterionFactory (config) {
   const tequilApi = new TequilAPI()
@@ -86,7 +86,7 @@ class Mysterion {
     this.communication = new MainCommunication(this.messageBus)
 
     try {
-      await waitForMessage(this.communication.onRendererLoaded.bind(this.communication))
+      await waitForFirstEvent(this.communication.onRendererLoaded.bind(this.communication))
     } catch (e) {
       console.log(e)
       bugReporter.main.captureException(e)
