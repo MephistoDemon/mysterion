@@ -1,7 +1,7 @@
 import {BrowserWindow} from 'electron'
 import bugReporter from './bugReporting/bug-reporting'
 import MainMessageBus from './communication/mainMessageBus'
-import {waitForFirstEvent} from './communication/utils'
+import {onFirstEvent} from './communication/utils'
 
 // TODO: find better name - AppWindow?
 class Window {
@@ -81,7 +81,7 @@ class Window {
   async wait (event) {
     const messageBus = new MainMessageBus(this.send)
     const subscriber = (callback) => messageBus.on(event, callback)
-    await waitForFirstEvent(subscriber)
+    await onFirstEvent(subscriber)
   }
 
   toggleDevTools () {
