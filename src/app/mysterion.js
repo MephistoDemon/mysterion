@@ -76,7 +76,7 @@ class Mysterion {
     try {
       this.window.open()
     } catch (e) {
-      console.log(e)
+      console.error(e)
       bugReporter.main.captureException(e)
       throw new Error('Failed to open window.')
     }
@@ -88,7 +88,7 @@ class Mysterion {
     try {
       await onFirstEvent(this.communication.onRendererLoaded.bind(this.communication))
     } catch (e) {
-      console.log(e)
+      console.error(e)
       bugReporter.main.captureException(e)
       // TODO: add an error wrapper method
       throw new Error('Failed to load app.')
