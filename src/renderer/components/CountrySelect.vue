@@ -6,7 +6,7 @@
                      :custom-label="countryLabel"
                      placeholder="Choose country"
                      :options="countriesList"
-                     :loading="countriesIsLoading"
+                     :loading="countriesAreLoading"
                      :searchable="false"
                      :show-labels="false"
                      @open="fetchCountries"
@@ -62,7 +62,7 @@
       return {
         country: null,
         countriesList: [],
-        countriesIsLoading: false
+        countriesAreLoading: false
       }
     },
     methods: {
@@ -82,7 +82,7 @@
         return path.join('static', 'flags', code + '.svg')
       },
       async fetchCountries () {
-        this.countriesIsLoading = true
+        this.countriesAreLoading = true
         let response
 
         try {
@@ -98,7 +98,7 @@
           bugReporter.renderer.captureException(error)
         }
 
-        this.countriesIsLoading = false
+        this.countriesAreLoading = false
       }
     },
     mounted () {
