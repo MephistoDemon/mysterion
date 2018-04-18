@@ -10,6 +10,6 @@ export type MysteriumClientLogDTO = {
   data: mixed
 }
 
-export type IdentitySetDTO = {
+export type CurrentIdentityChangeDTO = {
   id: string
 }

@@ -1,7 +1,7 @@
 // @flow
 import messages from './index'
 import type {MessageBus} from './messageBus'
-import type {ConnectionStatusChangeDTO, IdentitySetDTO, MysteriumClientLogDTO} from './dto'
+import type {ConnectionStatusChangeDTO, CurrentIdentityChangeDTO, MysteriumClientLogDTO} from './dto'
 
 /**
  * This allows renderer process communicating with main process.
@@ -19,7 +19,7 @@ class RendererCommunication {
     return this._send(messages.CONNECTION_STATUS_CHANGED, dto)
   }
 
-  sendCurrentIdentityChange (dto: IdentitySetDTO): void {
+  sendCurrentIdentityChange (dto: CurrentIdentityChangeDTO): void {
     return this._send(messages.CURRENT_IDENTITY_CHANGED, dto)
   }
 
