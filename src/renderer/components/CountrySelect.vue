@@ -88,9 +88,9 @@
           const response = await tequilapi.proposal.list()
           this.countriesList = response.proposals.map(proposalToCountry)
         } catch (e) {
-          console.log('Proposal fetching in initialization failed', e)
+          console.log('Countries loading failed', e)
 
-          const error = new Error(messages.proposalsFetchFail)
+          const error = new Error(messages.countriesLoadingFailed)
           error.original = e
 
           this.$store.commit(type.SHOW_ERROR, error)
