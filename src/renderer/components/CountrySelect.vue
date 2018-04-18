@@ -83,10 +83,9 @@
       },
       async fetchCountries () {
         this.countriesAreLoading = true
-        let response
 
         try {
-          response = await tequilapi.proposal.list()
+          const response = await tequilapi.proposal.list()
           this.countriesList = response.proposals.map(proposalToCountry)
         } catch (e) {
           console.log('Proposal fetching in initialization failed', e)
