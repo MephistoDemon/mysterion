@@ -49,7 +49,7 @@ const tequilapiMock = () => {
 
 describe('CountrySelect', () => {
   let wrapper
-  before(function () {
+  beforeEach(() => {
     CountrySelect.__Rewire__('tequilAPI', tequilapiMock)
     wrapper = mount(CountrySelect)
   })
@@ -58,6 +58,7 @@ describe('CountrySelect', () => {
     wrapper.vm.fetchCountries()
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
+
     expect(wrapper.vm.countriesList).to.have.lengthOf(4)
     expect(wrapper.findAll('.multiselect__option-title')).to.have.lengthOf(4)
     expect(wrapper.text()).to.contain('Lithuania')
@@ -72,9 +73,11 @@ describe('CountrySelect', () => {
       id: '0x1',
       code: 'lt'
     }
+
     // initiate the click and check whether it opened the dropdown
-    const button = wrapper.find('.multiselect__option')
-    button.trigger('click')
+    await wrapper.vm.fetchCountries()
+    wrapper.find('.multiselect__option').trigger('click')
+
     expect(wrapper.emitted().selected).to.be.ok
     expect(wrapper.emitted().selected[0]).to.eql([countryExpected])
   })
