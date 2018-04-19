@@ -13,18 +13,20 @@
   </div>
 </template>
 <script>
-  import {ipcRenderer} from 'electron'
   import {mapGetters} from 'vuex'
   import communication from '../../app/communication'
-  
+  import RendererMessageBus from '../../app/communication/rendererMessageBus'
+
   export default {
     name: 'terms',
     methods: {
       accept () {
-        ipcRenderer.send(communication.TERMS_ANSWERED, true)
+        const messageBus = new RendererMessageBus()
+        messageBus.send(communication.TERMS_ANSWERED, true)
       },
       decline () {
-        ipcRenderer.send(communication.TERMS_ANSWERED, false)
+        const messageBus = new RendererMessageBus()
+        messageBus.send(communication.TERMS_ANSWERED, false)
       }
     },
     computed: {
