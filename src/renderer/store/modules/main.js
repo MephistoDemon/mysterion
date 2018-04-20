@@ -50,8 +50,16 @@ const mutations = {
     state.newUser = true
   },
   [type.SHOW_ERROR] (state, err) {
-    state.errorMessage = err.response ? err.response.data.message : err.message
     state.showError = true
+    if (err && err.response && err.response.data && err.response.data.message) {
+      state.errorMessage = err.response.data.message
+      return
+    }
+    if (err.message) {
+      state.errorMessage = err.message
+      return
+    }
+    state.errorMessage = 'Unknown error'
   },
   [type.SHOW_ERROR_MESSAGE] (state, errorMessage) {
     state.errorMessage = errorMessage

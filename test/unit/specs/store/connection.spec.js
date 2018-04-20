@@ -3,11 +3,11 @@ import {expect} from 'chai'
 import type from '@/store/types'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import connectionInjector from 'inject-loader!@/store/modules/connection'
-import utils from '../../helpers/utils'
+import utils from '../../../helpers/utils'
+import FakeMessageBus from '../../../helpers/fakeMessageBus'
 import { FunctionLooper } from '@/../libraries/functionLooper'
 import connectionStatus from '@/../libraries/api/connectionStatus'
 import communication from '@/../app/communication'
-import FakeMessageBus from '../../helpers/fakeMessageBus'
 
 const fakeTequilapi = utils.fakeTequilapiManipulator()
 const fakeMessageBus = new FakeMessageBus()

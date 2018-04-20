@@ -21,6 +21,25 @@ describe('RendererCommunication', () => {
     })
   })
 
+  describe('sendCurrentIdentityChange', () => {
+    it('sends message to bus', () => {
+      const data = { id: '0xC001FACE00000123' }
+      communication.sendCurrentIdentityChange(data)
+
+      expect(fakeMessageBus.lastChannel).to.eql(messages.CURRENT_IDENTITY_CHANGED)
+      expect(fakeMessageBus.lastData).to.eql(data)
+    })
+  })
+
+  describe('sendRendererLoaded', () => {
+    it('sends message to bus', () => {
+      communication.sendRendererLoaded()
+
+      expect(fakeMessageBus.lastChannel).to.eql(messages.RENDERER_LOADED)
+      expect(fakeMessageBus.lastData).to.eql(undefined)
+    })
+  })
+
   describe('onMysteriumClientLog', () => {
     it('receives message from bus', () => {
       let callbackData = null

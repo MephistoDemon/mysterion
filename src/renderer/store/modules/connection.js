@@ -51,7 +51,7 @@ const mutations = {
 const actions = {
   async [type.CONNECTION_IP] ({commit}) {
     try {
-      const ip = await tequilapi.connection.ip()
+      const ip = await tequilapi.connection.ip(config.ipUpdateTimeout)
       commit(type.CONNECTION_IP, ip)
     } catch (err) {
       if (isTimeoutError(err) || hasHttpStatus(err, 503)) {
@@ -116,7 +116,7 @@ const actions = {
       commit(type.SHOW_ERROR, err)
     }
   },
-  async [type.CONNECT] ({commit, dispatch, state}, consumerId, providerId) {
+  async [type.CONNECT] ({commit, dispatch, state}, connectionDetails) {
     const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
     if (looper) {
       await looper.stop()
@@ -124,7 +124,7 @@ const actions = {
     await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.CONNECTING)
     commit(type.CONNECTION_STATISTICS_RESET)
     try {
-      await tequilapi.connection.connect(consumerId, providerId)
+      await tequilapi.connection.connect(connectionDetails, config.connectTimeout)
       commit(type.HIDE_ERROR)
     } catch (err) {
       const cancelConnectionCode = httpResponseCodes.CLIENT_CLOSED_REQUEST

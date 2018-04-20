@@ -6,13 +6,25 @@ const conPath = '/connection'
 const healthCheckPath = '/healthcheck'
 const stopPath = '/stop'
 
-const timeout = 5000
+const DEFAULT_TIMEOUT = 5000
 
 export let tequilapi = Constructor()
 
-export default function Constructor (teqAddr = 'http://127.0.0.1:4050') {
-  const {teqAxio, axioAdapter} = adapterFactory(teqAddr)
-  const api = {
+export default function Constructor (teqAddr = 'http://127.0.0.1:4050', defaultTimeout = DEFAULT_TIMEOUT) {
+  const axioInstance = axios.create({
+    baseURL: teqAddr,
+    defaultTimeout,
+    headers: {
+      'Cache-Control': 'no-cache, no-store'
+    }
+  })
+  return TequilapiFactory(axioInstance)
+}
+
+export function TequilapiFactory (axioInstance) {
+  const axioAdapter = adapterFactory(axioInstance)
+
+  return {
     identity: {
       list: async () => axioAdapter.get(idPath),
       create: async (passphrase) => axioAdapter.post(idPath, {passphrase}),
@@ -24,34 +36,29 @@ export default function Constructor (teqAddr = 'http://127.0.0.1:4050') {
       list: async () => axioAdapter.get(propPath)
     },
     connection: {
-      connect: async ({consumerId, providerId}) => axioAdapter.put(conPath, {
-        consumerId: consumerId,
-        providerId: providerId
-      }),
+      connect: async ({consumerId, providerId}, timeout) => {
+        return axioAdapter.put(conPath, {
+          consumerId: consumerId,
+          providerId: providerId
+        }, null, timeout ? {timeout} : undefined)
+      },
       disconnect: async () => axioAdapter.delete(conPath),
       status: async () => axioAdapter.get(conPath),
-      ip: async () => {
-        const res = await axioAdapter.get(conPath + '/ip')
+      ip: async (timeout = null) => {
+        const res = await axioAdapter.get(conPath + '/ip', timeout ? {timeout} : undefined)
         return res.ip
       },
       statistics: async () => axioAdapter.get(conPath + '/statistics')
     },
-    healthCheck: async (timeout) => axioAdapter.get(healthCheckPath, {timeout}),
-    stop: async () => axioAdapter.post(stopPath),
-    __axio: teqAxio // we need this for mocking
+    healthCheck: async (timeout = null) => {
+      return axioAdapter.get(healthCheckPath, timeout ? {timeout} : undefined)
+    },
+    stop: async () => axioAdapter.post(stopPath)
   }
-  return api
 }
 
-function adapterFactory (teqAddr) {
-  const teqAxio = axios.create({
-    baseURL: teqAddr,
-    timeout,
-    headers: {
-      'Cache-Control': 'no-cache, no-store'
-    }
-  })
-  const axioAdapter = {
+function adapterFactory (teqAxio) {
+  return {
     async get (path, options = {}) {
       const res = await teqAxio.get(path, options)
       return res.data
@@ -68,9 +75,5 @@ function adapterFactory (teqAddr) {
       const res = await teqAxio.delete(path)
       return res.data
     }
-  }
-  return {
-    teqAxio,
-    axioAdapter
   }
 }

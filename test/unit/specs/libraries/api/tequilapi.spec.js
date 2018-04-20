@@ -1,11 +1,12 @@
 /* eslint no-unused-expressions: 0 */
 import {expect} from 'chai'
+import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
-import tequilAPI from '../../../src/libraries/api/tequilapi'
+import {TequilapiFactory} from '@/../libraries/api/tequilapi'
 
-const tequilApi = tequilAPI()
-
-const mock = new MockAdapter(tequilApi.__axio)
+const axioInstance = axios.create()
+const tequilApi = TequilapiFactory(axioInstance)
+const mock = new MockAdapter(axioInstance)
 
 describe('tequilAPI', () => {
   it('creates some new identity', async () => {
@@ -14,7 +15,7 @@ describe('tequilAPI', () => {
       const newID = await tequilApi.identity.create('')
       expect(newID).to.be.eql({id: '0xMOKFACE'})
     } catch (err) {
-      expect(err.message).to.be.undefined
+      expect(err).to.be.undefined
     }
   })
 
@@ -45,7 +46,7 @@ describe('tequilAPI error handling', () => {
       const a = await tequilApi.healthCheck()
       expect(a).to.be.undefined
     } catch (err) {
-      expect(err.message).to.include('timeout')
+      expect(err.message).to.match(/timeout of .*ms exceeded/)
     }
   })
 

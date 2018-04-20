@@ -1,4 +1,4 @@
-import connectionStatus from '../../libraries/api/connectionStatus'
+import connectionStatus from '@/../libraries/api/connectionStatus'
 
 export default {
   tequilapi: connectionStatus,
@@ -13,8 +13,6 @@ export default {
 
   IDENTITY_GET_SUCCESS: 'IDENTITY_GET_SUCCESS',
   IDENTITY_LIST_SUCCESS: 'IDENTITY_LIST_SUCCESS',
-
-  PROPOSAL_LIST_SUCCESS: 'PROPOSAL_LIST_SUCCESS',
 
   LOG_INFO: 'LOG_INFO',
   LOG_ERROR: 'LOG_ERROR',
@@ -45,7 +43,6 @@ export default {
   IDENTITY_UNLOCK: 'IDENTITY_UNLOCK',
 
   FETCH_CONNECTION_STATUS: 'FETCH_CONNECTION_STATUS',
-  PROPOSAL_LIST: 'PROPOSAL_LIST',
 
   CONNECT: 'CONNECT',
   DISCONNECT: 'DISCONNECT',

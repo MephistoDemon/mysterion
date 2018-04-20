@@ -5,9 +5,11 @@
                      v-model="country"
                      :custom-label="countryLabel"
                      placeholder="Choose country"
-                     :options="countries"
+                     :options="countriesList"
+                     :loading="countriesAreLoading"
                      :searchable="false"
                      :show-labels="false"
+                     @open="fetchCountries"
                      @input="onChange">
             <template slot="option" slot-scope="props">
                 <div class="multiselect__flag">
@@ -25,11 +27,16 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex'
   import path from 'path'
   import countryList from '@/plugins/countries'
   import Multiselect from 'vue-multiselect'
+  import tequilAPI from '@/../libraries/api/tequilapi'
   import IconWorld from '@/assets/img/icon--world.svg'
+  import type from '@/store/types'
+  import messages from '@/../app/messages'
+  import bugReporter from '@/../app/bugReporting/bug-reporting'
+
+  let tequilapi
 
   function proposalToCountry (proposal) {
     let code
@@ -47,34 +54,20 @@
 
   export default {
     name: 'CountrySelect',
-    props: {
-      value: {}
-    },
     components: {
       Multiselect,
       IconWorld
     },
     data () {
       return {
-        country: null
+        country: null,
+        countriesList: [],
+        countriesAreLoading: false
       }
-    },
-    computed: {
-      ...mapState({
-        countries: (state) => {
-          let countries = []
-          if (typeof state.proposal.list !== 'undefined') {
-            countries = state.proposal.list.map(proposalToCountry)
-          }
-
-          return countries
-        }
-      })
     },
     methods: {
       onChange (country) {
-        this.$emit('change', country)
-        this.$emit('input', country)
+        this.$emit('selected', country)
       },
       countryLabel (country) {
         if (typeof country === 'object') {
@@ -87,10 +80,28 @@
         }
 
         return path.join('static', 'flags', code + '.svg')
+      },
+      async fetchCountries () {
+        this.countriesAreLoading = true
+
+        try {
+          const response = await tequilapi.proposal.list()
+          this.countriesList = response.proposals.map(proposalToCountry)
+        } catch (e) {
+          console.log('Countries loading failed', e)
+
+          const error = new Error(messages.countriesLoadingFailed)
+          error.original = e
+
+          this.$store.commit(type.SHOW_ERROR, error)
+          bugReporter.renderer.captureException(error)
+        }
+
+        this.countriesAreLoading = false
       }
+    },
+    mounted () {
+      tequilapi = tequilAPI()
     }
   }
 </script>
-<style lang="less">
-
-</style>

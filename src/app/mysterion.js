@@ -17,6 +17,7 @@ import applyHeaderWrites from './browserAJAXHeaderWriter'
 import messages from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
+import { onFirstEvent } from './communication/utils'
 
 function MysterionFactory (config) {
   const tequilApi = new TequilAPI()
@@ -75,16 +76,28 @@ class Mysterion {
 
     try {
       this.window.open()
-      await this.window.on(communication.RENDERER_LOADED)
     } catch (e) {
-      // TODO: add an error wrapper method and send to sentry
-      throw new Error('Failed to load app.')
+      console.error(e)
+      bugReporter.main.captureException(e)
+      throw new Error('Failed to open window.')
     }
+
 
     setupSentryFeedbackForm()
 
-    this.messageBus = new MainMessageBus(this.window.send)
+    const send = this.window.send.bind(this.window)
+    this.messageBus = new MainMessageBus(send)
+
     this.communication = new MainCommunication(this.messageBus)
+
+    try {
+      await onFirstEvent(this.communication.onRendererLoaded.bind(this.communication))
+    } catch (e) {
+      console.error(e)
+      bugReporter.main.captureException(e)
+      // TODO: add an error wrapper method
+      throw new Error('Failed to load app.')
+    }
 
     // make sure terms are up to date and accepted
     // declining terms will quit the app
@@ -135,16 +148,16 @@ class Mysterion {
   }
 
   async acceptTerms () {
-    this.window.send(communication.TERMS_REQUESTED, {
+    this.messageBus.send(communication.TERMS_REQUESTED, {
       content: this.terms.getContent()
     })
 
-    const termsAnswer = await this.window.on(communication.TERMS_ANSWERED)
+    const termsAnswer = await this.window.wait(communication.TERMS_ANSWERED)
     if (!termsAnswer.value) {
       return false
     }
 
-    this.window.send(communication.TERMS_ACCEPTED)
+    this.messageBus.send(communication.TERMS_ACCEPTED)
 
     try {
       this.terms.accept()
@@ -163,7 +176,7 @@ class Mysterion {
   async startProcess () {
     const updateRendererWithHealth = () => {
       try {
-        this.window.send(communication.HEALTHCHECK, this.monitoring.isRunning())
+        this.messageBus.send(communication.HEALTHCHECK, this.monitoring.isRunning())
       } catch (e) {
         bugReporter.main.captureException(e)
         return
@@ -184,7 +197,7 @@ class Mysterion {
       updateRendererWithHealth()
       this.startApp()
     })
-    this.messageBus.on(communication.IDENTITY_SET, (evt, identity) => {
+    this.communication.onCurrentIdentityChange((identity) => {
       bugReporter.setUser(identity)
     })
   }
@@ -193,7 +206,7 @@ class Mysterion {
    * notifies the renderer that we're good to go and sets up the system tray
    */
   startApp () {
-    this.window.send(communication.APP_START)
+    this.messageBus.send(communication.APP_START)
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
