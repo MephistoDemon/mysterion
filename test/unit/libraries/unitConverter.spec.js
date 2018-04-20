@@ -1,4 +1,4 @@
-import {bytesReadable, timeDisplay} from '../../../../src/libraries/unitConverter'
+import {bytesReadable, timeDisplay} from '../../../src/libraries/unitConverter'
 
 describe('BytesReadable', () => {
   it('returns object with value (fixed 2 decimals) and units ', () => {
