@@ -22,10 +22,5 @@ describe('TequilApi', () => {
       expect(proposalObj.serviceType).to.equal('openvpn')
       expect(proposalObj.serviceDefinition.locationOriginate.country).to.equal('LT')
     })
-
-    it('.getCountryName', async () => {
-      const proposalObj = new ProposalDto(proposal)
-      expect(proposalObj.getCountryName()).to.equal('Lithuania')
-    })
   })
 })
