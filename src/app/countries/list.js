@@ -1,6 +1,6 @@
 // @flow
 
-const countries = {
+export default {
   'aw': 'Aruba',
   'af': 'Afghanistan',
   'ao': 'Angola',
@@ -241,20 +241,3 @@ const countries = {
   'zm': 'Zambia',
   'zw': 'Zimbabwe'
 }
-
-/**
- * @param countryCode string
- *
- * @returns string
- */
-function GetCountryName (countryCode: string) {
-  countryCode = countryCode.toLowerCase()
-
-  if (typeof countries[countryCode] !== 'undefined') {
-    return countries[countryCode]
-  }
-
-  return 'N/A'
-}
-
-export default GetCountryName
