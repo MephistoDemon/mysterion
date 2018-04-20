@@ -13,7 +13,7 @@ describe('tequilAPI', () => {
       api = new TequilApi(adapter)
     })
 
-    it('.getProposals returns new proposal instances', async () => {
+    it('.findProposals returns new proposal instances', async () => {
       const response = {
         proposals: [{
           id: 1,
@@ -39,7 +39,7 @@ describe('tequilAPI', () => {
       }
       adapter.setProposalsResponse(response)
 
-      const proposals = await api.getProposals()
+      const proposals = await api.findProposals()
       expect(proposals).to.have.lengthOf(2)
       expect(proposals[0]).to.deep.equal(new ProposalDto(response.proposals[0]))
       expect(proposals[1]).to.deep.equal(new ProposalDto(response.proposals[1]))
