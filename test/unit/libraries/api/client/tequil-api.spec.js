@@ -1,7 +1,7 @@
 import {expect} from 'chai'
-import FakeAdapter from '../../../../src/libraries/api/client/adapters/fake-adapter'
-import ProposalDto from '../../../../src/libraries/api/client/dto/proposal'
-import TequilApi from '../../../../src/libraries/api/client/tequil-api'
+import FakeAdapter from '../../../../../src/libraries/api/client/adapters/fake-adapter'
+import ProposalDto from '../../../../../src/libraries/api/client/dto/proposal'
+import TequilApi from '../../../../../src/libraries/api/client/tequil-api'
 
 describe('TequilApi', () => {
   describe('client', () => {
