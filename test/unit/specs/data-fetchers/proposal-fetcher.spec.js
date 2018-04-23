@@ -75,7 +75,7 @@ describe('DataFetchers', () => {
         await tickWithDelay(1000)
         expect(counter).to.equal(1)
 
-        fetcher.stop()
+        await fetcher.stop()
 
         await tickWithDelay(1000)
 

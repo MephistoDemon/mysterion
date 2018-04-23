@@ -29,10 +29,8 @@ class ProposalFetcher {
     return await this.api.findProposals()
   }
 
-  stop (): this {
-    this.loop.stop()
-
-    return this
+  async stop () {
+    await this.loop.stop()
   }
 
   subscribe (callback: Function): this {
