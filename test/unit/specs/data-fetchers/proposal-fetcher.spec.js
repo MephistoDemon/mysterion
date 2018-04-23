@@ -82,5 +82,16 @@ describe('DataFetchers', () => {
         expect(counter).to.equal(1)
       })
     })
+
+    describe('.fetch', () => {
+      it('returns proposals', async () => {
+        const fetcher = new ProposalFetcher(new TequilApi(adapter))
+        const proposals = await fetcher.fetch()
+
+        expect(proposals[0]).to.deep.equal({id: '0x1'})
+        expect(proposals[1]).to.deep.equal({id: '0x2'})
+        expect(proposals.length).to.equal(2)
+      })
+    })
   })
 })
