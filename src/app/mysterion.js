@@ -1,15 +1,9 @@
-import path from 'path'
 import Window from './window'
 import MysterionTray, { TrayIcon } from './mysterionTray'
-import Terms from './terms/index'
-import TequilAPI from '../libraries/api/tequilapi'
 import connectionStatus from '../libraries/api/connectionStatus'
 import communication from './communication/index'
 import {app} from 'electron'
-import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 import {
-  Installer as MysteriumDaemonInstaller,
-  Process as MysteriumProcess,
   logLevel as processLogLevel
 } from '../libraries/mysterium-client/index'
 import bugReporter from './bugReporting/bug-reporting'
@@ -17,17 +11,6 @@ import messages from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
 import { onFirstEvent } from './communication/utils'
-
-function MysterionFactory (config) {
-  const tequilApi = new TequilAPI()
-  return new Mysterion({
-    config,
-    terms: new Terms(path.join(__static, 'terms'), config.userDataDirectory),
-    installer: new MysteriumDaemonInstaller(config),
-    monitoring: new ProcessMonitoring(tequilApi),
-    process: new MysteriumProcess(tequilApi, config.userDataDirectory)
-  })
-}
 
 class Mysterion {
   constructor ({config, terms, installer, monitoring, process}) {
@@ -224,4 +207,4 @@ class Mysterion {
   }
 }
 
-export default MysterionFactory
+export default Mysterion
