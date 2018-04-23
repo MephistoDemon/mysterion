@@ -22,11 +22,13 @@
   import type from '@/store/types'
   import AppVisual from '@/partials/AppVisual'
   import AppNav from '@/partials/AppNav'
+  import messages from '../app/communication'
 
-  import {ipcRenderer, remote} from 'electron'
-  import communication from '../app/communication'
+  import {remote} from 'electron'
   import AppError from '@/partials/AppError'
   import AppModal from '@/partials/AppModal'
+  import RendererMessageBus from '../app/communication/rendererMessageBus'
+  import RendererCommunication from '../app/communication/renderer-communication'
 
   export default {
     name: 'App',
@@ -47,29 +49,32 @@
       }
     },
     async mounted () {
+      const messageBus = new RendererMessageBus()
+      const communication = new RendererCommunication(messageBus)
+
       // we need to notify the main process that we're up
-      ipcRenderer.send(communication.RENDERER_LOADED, true)
-      ipcRenderer.on(communication.TERMS_REQUESTED, (event, terms) => {
+      communication.sendRendererLoaded()
+      messageBus.on(messages.TERMS_REQUESTED, (terms) => {
         this.$store.dispatch(type.TERMS, terms)
         this.$router.push('/terms')
       })
 
-      ipcRenderer.on(communication.APP_START, () => {
+      messageBus.on(messages.APP_START, () => {
         this.$router.push('/load')
       })
 
-      ipcRenderer.on(communication.TERMS_ACCEPTED, () => {
+      messageBus.on(messages.TERMS_ACCEPTED, () => {
         this.$router.push('/')
       })
 
-      ipcRenderer.on(communication.APP_ERROR, (event, error) => {
+      messageBus.on(messages.APP_ERROR, (error) => {
         console.log('APP_ERROR received from ipc:', event)
         this.$store.dispatch(type.OVERLAY_ERROR, error)
       })
 
       let previousClientRunningState = true
 
-      ipcRenderer.on(communication.HEALTHCHECK, (event, clientRunningState) => {
+      messageBus.on(messages.HEALTHCHECK, (clientRunningState) => {
         // do nothing while on terms page
         if (this.$route.name === 'terms') {
           return

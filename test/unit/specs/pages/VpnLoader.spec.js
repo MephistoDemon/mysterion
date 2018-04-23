@@ -7,10 +7,10 @@ import Router from 'vue-router'
 import lolex from 'lolex'
 
 import idStore from '@/store/modules/identity'
-import propStore from '@/store/modules/proposal'
 import mainStore from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
-import {tequilapi} from '@/../libraries/api/tequilapi'
+import {TequilapiFactory} from '@/../libraries/api/tequilapi'
+import axios from 'axios'
 import VpnLoader from '@/pages/VpnLoader'
 
 import utils from '../../../helpers/utils'
@@ -21,28 +21,29 @@ import messages from '../../../../src/app/messages'
 Vue.use(Vuex)
 Vue.use(Router)
 
-const router = new Router({routes: []})
-const mountVM = async (vm) => {
-  await vm.$mount()
-}
+const axioInstance = axios.create()
+const tequilapi = TequilapiFactory(axioInstance)
+mainStore.__Rewire__('tequilapi', tequilapi)
 
 async function mountComponent (tequilapi) {
+  const router = new Router({routes: []})
   const store = new Vuex.Store({
     modules: {
       identity: {...idStore(tequilapi)},
-      proposal: {...propStore(tequilapi)},
       main: mainStore,
       errors: errorStore
     },
     strict: false
   })
+
   const vm = new Vue({
     template: '<div><test></test></div>',
     components: {'test': VpnLoader},
     store,
     router
   })
-  await mountVM(vm)
+  await vm.$mount()
+
   return vm
 }
 
@@ -58,7 +59,7 @@ describe('VpnLoader', () => {
   }
 
   before(async () => {
-    mock = new MockAdapter(tequilapi.__axio)
+    mock = new MockAdapter(axioInstance)
     mock.onGet('/healthcheck').reply(200, {version: {commit: 'caed3112'}})
 
     clock = lolex.install()
@@ -73,7 +74,6 @@ describe('VpnLoader', () => {
     let vm
     before(async () => {
       mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
-      mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
       mock.onPut('/identities/0xC001FACE/unlock').reply(200)
       vm = await mountAndPrepareLoadingScreen(tequilapi)
     })
@@ -85,9 +85,6 @@ describe('VpnLoader', () => {
     it('assigns first fetched ID to state.tequilapi.currentId', () => {
       expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACE'})
     })
-    it('stores proposal list in store', () => {
-      expect(vm.$store.state.proposal.list).to.eql([{id: '0xCEEDBEEF'}])
-    })
     it('routes to main', () => {
       expect(vm.$route.path).to.be.eql('/vpn')
     })
@@ -97,9 +94,8 @@ describe('VpnLoader', () => {
     let vm
     before(async () => {
       mock.onGet('/identities').replyOnce(200, {identities: []})
-      mock.onGet('/proposals').replyOnce(200, {proposals: [{id: '0xCEEDBEEF'}]})
       mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
-      mock.onPut('/identities/0xC001FACY/unlock').replyOnce(200)
+      mock.onPut('/identities/0xC001FACE/unlock').reply(200)
       vm = await mountAndPrepareLoadingScreen(tequilapi)
     })
 
@@ -119,11 +115,10 @@ describe('VpnLoader', () => {
     })
   })
 
-  describe('error handling', () => {
-    describe('generic', () => {
+  describe('identities error handling', () => {
+    describe('identity listing failed', () => {
       let vm
       before(async () => {
-        mock.onGet('/proposals').replyOnce(500)
         mock.onGet('/identities').replyOnce(500)
         vm = await mountComponent(tequilapi)
       })
@@ -135,19 +130,17 @@ describe('VpnLoader', () => {
       })
     })
 
-    describe('in proposals response body we get message: connect: network unreachable', () => {
+    describe('identity unlocking failed', () => {
       let vm
       before(async () => {
-        mock.onGet('/proposals').replyOnce(500, {message: 'something connect: network is unreachable'})
         mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
-        mock.onPut('/identities/0xC001FACE/unlock').replyOnce(200)
+        mock.onPut('/identities/0xC001FACE/unlock').replyOnce(500)
         vm = await mountComponent(tequilapi)
       })
 
       it('should notify user with an overlay', () => {
         expect(vm.$store.getters.overlayError).to.eql({
-          message: 'Can\'t connect to Mysterium Network',
-          hint: 'Please check your internet connection.'
+          message: messages.initializationError.message
         })
       })
     })

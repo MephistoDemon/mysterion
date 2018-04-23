@@ -1,12 +1,7 @@
-import {BrowserWindow, ipcMain} from 'electron'
+import {BrowserWindow} from 'electron'
 import bugReporter from './bugReporting/bug-reporting'
-
-function Message (sender, value) {
-  return {
-    sender: sender,
-    value: value
-  }
-}
+import MainMessageBus from './communication/mainMessageBus'
+import {onFirstEvent} from './communication/utils'
 
 // TODO: find better name - AppWindow?
 class Window {
@@ -77,26 +72,16 @@ class Window {
   }
 
   /**
-   * Ipc communication event
+   * Waits for IPC communication event
    *
    * @param event
-   * @param timeoutInterval
-   * @returns {Promise<any>}
+   * @returns {Promise<void>}
    */
-  on (event, timeoutInterval = 0) {
-    return new Promise((resolve, reject) => {
-      let timeout
-      if (timeoutInterval > 0) {
-        timeout = setTimeout(() => {
-          reject(new Error('Failed to load the window in time.'))
-        }, timeoutInterval)
-      }
-
-      ipcMain.on(event, async (event, value) => {
-        resolve(Message(event.sender, value))
-        clearInterval(timeout)
-      })
-    })
+  // TODO: remove once it's not used anymore
+  async wait (event) {
+    const messageBus = new MainMessageBus(this.send)
+    const subscriber = (callback) => messageBus.on(event, callback)
+    await onFirstEvent(subscriber)
   }
 
   toggleDevTools () {
