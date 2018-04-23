@@ -117,7 +117,7 @@ class Mysterion {
 
   async onWillQuit () {
     this.monitoring.stop()
-    await this.proposalFetcher.stop()
+    this.proposalFetcher.stop()
 
     try {
       await this.process.stop()

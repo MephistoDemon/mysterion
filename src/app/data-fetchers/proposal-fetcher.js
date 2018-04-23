@@ -14,7 +14,6 @@ class ProposalFetcher {
     this.api = api
   }
 
-  // on demand fetch
   run (interval: number = 5000): this {
     this.loop = new FunctionLooper(async () => {
       this._notifySubscribers(await this.fetch())
@@ -29,8 +28,8 @@ class ProposalFetcher {
     return await this.api.findProposals()
   }
 
-  async stop () {
-    await this.loop.stop()
+  stop () {
+    this.loop.stop()
   }
 
   subscribe (callback: Function): this {
