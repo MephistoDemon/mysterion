@@ -1,5 +1,5 @@
 export default {
-  connectFailed: 'Connection failed. Choose s different country',
+  connectFailed: 'Connection failed. Try another country',
   countriesLoadingFailed: 'Failed to load country list',
   locationNotSelected: 'Please select location',
   initializationError: {
