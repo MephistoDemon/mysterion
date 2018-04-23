@@ -83,6 +83,8 @@
         this.countriesAreLoading = true
 
         try {
+          const response = await tequilapi.proposal.list()
+          if (response.proposals.length < 1) throw new Error('Empty proposal list received')
           const response = await this.tequilapi.proposal.list()
           this.countriesList = response.proposals.map(proposalToCountry)
         } catch (e) {
