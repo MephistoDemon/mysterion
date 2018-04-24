@@ -37,6 +37,7 @@ describe('VpnLoader', () => {
       strict: false
     })
 
+    // TODO Migrate to createLocalVue() from package '@vue/test-utils'
     const vm = new Vue({
       template: '<div><test></test></div>',
       components: {'test': VpnLoader},
