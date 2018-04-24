@@ -2,7 +2,7 @@
 import {createLocalVue, mount} from '@vue/test-utils'
 import CountrySelect from '@/components/CountrySelect'
 import DIContainer from '../../../../src/app/di/vue-container'
-import Vuex from 'vuex'
+import {Store} from 'vuex'
 import type from '@/store/types'
 import messages from '@/../app/messages'
 
@@ -48,66 +48,59 @@ const tequilapi = {
     }
   }
 }
-const tequilapiMockEmptyProposalArray = () => {
-  return {
-    proposal: {
-      list: () => {
-        return Promise.resolve({proposals: []})
-      }
+const tequilapiMockEmptyProposalArray = {
+  proposal: {
+    list: () => {
+      return Promise.resolve({proposals: []})
     }
   }
 }
-const tequilapiMockThrows = () => {
-  return {
-    proposal: {
-      list: () => {
-        throw new Error('Anything')
-      }
+
+const tequilapiMockThrows = {
+  proposal: {
+    list: () => {
+      throw new Error('Anything')
     }
   }
+}
+
+function mountWith (tequilapi, store) {
+  const vue = createLocalVue()
+
+  const dependencies = new DIContainer(vue)
+  dependencies.constant('tequilapi', tequilapi)
+
+  return mount(CountrySelect, {
+    localVue: vue,
+    store
+  })
 }
 
 describe('CountrySelect', () => {
   describe('errors', () => {
     let store
-    let storeObj = {
-      mutations: {
-        [type.SHOW_ERROR] (state, error) {
-          state.errorMessage = error.message
-        }
-      }
-    }
     beforeEach(() => {
-      store = new Vuex.Store(storeObj)
+      store = new Store({
+        mutations: {
+          [type.SHOW_ERROR] (state, error) {
+            state.errorMessage = error.message
+          }
+        }
+      })
     })
 
-    it('commits \'' + messages.countriesLoadingFailed + '\' when empty proposal list is received', async () => {
-      const vue = createLocalVue()
-
-      const dependencies = new DIContainer(vue)
-      dependencies.constant('tequilapi', tequilapiMockEmptyProposalArray)
-
-      const wrapper = mount(CountrySelect, {
-        localVue: vue,
-        store
-      })
+    it(`commits ${messages.countriesEmptyList} when empty proposal list is received`, async () => {
+      const wrapper = mountWith(tequilapiMockEmptyProposalArray, store)
 
       wrapper.vm.fetchCountries()
       await wrapper.vm.$nextTick()
 
-      expect(wrapper.vm.$store.state.errorMessage).to.eql(messages.countriesLoadingFailed)
+      expect(wrapper.vm.$store.state.errorMessage).to.eql(messages.countriesEmptyList)
     })
 
-    it('commits \'' + messages.countriesLoadingFailed + '\' when proposal listing throws', async () => {
-      const vue = createLocalVue()
+    it(`commits ${messages.countriesLoadingFailed} when proposal listing throws`, async () => {
+      const wrapper = mountWith(tequilapiMockThrows, store)
 
-      const dependencies = new DIContainer(vue)
-      dependencies.constant('tequilapi', tequilapiMockThrows)
-
-      const wrapper = mount(CountrySelect, {
-        localVue: vue,
-        store
-      })
       wrapper.vm.fetchCountries()
       await wrapper.vm.$nextTick()
 
@@ -118,14 +111,7 @@ describe('CountrySelect', () => {
   describe('when getting list of proposals', () => {
     let wrapper
     beforeEach(() => {
-      const vue = createLocalVue()
-
-      const dependencies = new DIContainer(vue)
-      dependencies.constant('tequilapi', tequilapi)
-
-      wrapper = mount(CountrySelect, {
-        localVue: vue
-      })
+      wrapper = mountWith(tequilapi)
     })
 
     it('renders a list item for each proposal', async () => {

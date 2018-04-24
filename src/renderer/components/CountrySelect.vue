@@ -83,9 +83,10 @@
         this.countriesAreLoading = true
 
         try {
-          const response = await tequilapi.proposal.list()
-          if (response.proposals.length < 1) throw new Error('Empty proposal list received')
           const response = await this.tequilapi.proposal.list()
+          if (response.proposals.length < 1) {
+            this.$store.commit(type.SHOW_ERROR, {message: messages.countriesEmptyList})
+          }
           this.countriesList = response.proposals.map(proposalToCountry)
         } catch (e) {
           console.log('Countries loading failed', e)
