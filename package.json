@@ -80,6 +80,7 @@
     "axios": "^0.16.1",
     "dbly-linked-list": "^0.2.0",
     "file-size": "^1.0.0",
+    "jpex": "^2.1.0",
     "less": "^2.7.3",
     "less-loader": "^4.0.5",
     "lolex": "^2.3.2",
@@ -90,6 +91,7 @@
     "tail": "^1.2.3",
     "vue": "^2.5.13",
     "vue-electron": "^1.0.6",
+    "vue-inject": "^2.0.1",
     "vue-multiselect": "^2.0.8",
     "vue-router": "^2.5.3",
     "vuex": "^2.3.1"
@@ -103,7 +105,6 @@
     "babel-loader": "^7.1.1",
     "babel-plugin-istanbul": "^4.1.1",
     "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-plugin-rewire": "^1.1.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-flow": "^6.23.0",
     "babel-preset-stage-0": "^6.24.1",

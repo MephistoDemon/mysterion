@@ -14,19 +14,15 @@ const getters = {
   clientIsRunning: (store) => store.running
 }
 
-function factory () {
-  const actions = {
-    setClientRunningState ({commit}, clientIsRunning) {
-      commit(type.MYST_PROCESS_RUNNING, clientIsRunning)
-    }
-  }
-
-  return {
-    state,
-    mutations,
-    getters,
-    actions
+const actions = {
+  setClientRunningState ({commit}, clientIsRunning) {
+    commit(type.MYST_PROCESS_RUNNING, clientIsRunning)
   }
 }
 
-export default factory
+export default {
+  state,
+  mutations,
+  getters,
+  actions
+}

@@ -6,10 +6,10 @@ import Vuex from 'vuex'
 import Router from 'vue-router'
 import lolex from 'lolex'
 
-import idStore from '@/store/modules/identity'
-import mainStore from '@/store/modules/main'
+import idStoreFactory from '@/store/modules/identity'
+import mainStoreFactory from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
-import {TequilapiFactory} from '@/../libraries/api/tequilapi'
+import {tequilapiFactory} from '@/../libraries/api/tequilapi'
 import axios from 'axios'
 import VpnLoader from '@/pages/VpnLoader'
 
@@ -21,35 +21,33 @@ import messages from '../../../../src/app/messages'
 Vue.use(Vuex)
 Vue.use(Router)
 
-const axioInstance = axios.create()
-const tequilapi = TequilapiFactory(axioInstance)
-mainStore.__Rewire__('tequilapi', tequilapi)
-
-async function mountComponent (tequilapi) {
-  const router = new Router({routes: []})
-  const store = new Vuex.Store({
-    modules: {
-      identity: {...idStore(tequilapi)},
-      main: mainStore,
-      errors: errorStore
-    },
-    strict: false
-  })
-
-  const vm = new Vue({
-    template: '<div><test></test></div>',
-    components: {'test': VpnLoader},
-    store,
-    router
-  })
-  await vm.$mount()
-
-  return vm
-}
-
 describe('VpnLoader', () => {
+  let tequilapi
   let mock
   let clock
+
+  async function mountComponent (tequilapi) {
+    const router = new Router({routes: []})
+    const store = new Vuex.Store({
+      modules: {
+        identity: idStoreFactory(tequilapi),
+        main: mainStoreFactory(tequilapi),
+        errors: errorStore
+      },
+      strict: false
+    })
+
+    // TODO Migrate to createLocalVue() from package '@vue/test-utils'
+    const vm = new Vue({
+      template: '<div><test></test></div>',
+      components: {'test': VpnLoader},
+      store,
+      router
+    })
+    await vm.$mount()
+
+    return vm
+  }
 
   async function mountAndPrepareLoadingScreen (tequilapi) {
     const vm = await mountComponent(tequilapi)
@@ -58,8 +56,16 @@ describe('VpnLoader', () => {
     return vm
   }
 
-  before(async () => {
+  function mockTequilapi () {
+    const axioInstance = axios.create()
+    tequilapi = tequilapiFactory(axioInstance)
     mock = new MockAdapter(axioInstance)
+
+    return [tequilapi, mock]
+  }
+
+  before(async () => {
+    [tequilapi, mock] = mockTequilapi()
     mock.onGet('/healthcheck').reply(200, {version: {commit: 'caed3112'}})
 
     clock = lolex.install()

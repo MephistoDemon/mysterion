@@ -2,10 +2,10 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
-import {TequilapiFactory} from '@/../libraries/api/tequilapi'
+import {tequilapiFactory} from '@/../libraries/api/tequilapi'
 
 const axioInstance = axios.create()
-const tequilApi = TequilapiFactory(axioInstance)
+const tequilApi = tequilapiFactory(axioInstance)
 const mock = new MockAdapter(axioInstance)
 
 describe('tequilAPI', () => {

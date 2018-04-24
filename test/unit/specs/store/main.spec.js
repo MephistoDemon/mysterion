@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 
-import main from '@/store/modules/main'
+import {mutations} from '@/store/modules/main'
 import type from '@/store/types'
 
 describe('mutations', () => {
@@ -8,7 +8,8 @@ describe('mutations', () => {
     it('saves message and shows it with ordinary error', () => {
       const state = {}
       const err = new Error('My error')
-      main.mutations[type.SHOW_ERROR](state, err)
+      mutations[type.SHOW_ERROR](state, err)
+
       expect(state.showError).to.eql(true)
       expect(state.errorMessage).to.eql('My error')
     })
@@ -21,7 +22,8 @@ describe('mutations', () => {
           message: 'Response message'
         }
       }
-      main.mutations[type.SHOW_ERROR](state, err)
+      mutations[type.SHOW_ERROR](state, err)
+
       expect(state.showError).to.eql(true)
       expect(state.errorMessage).to.eql('Response message')
     })
@@ -29,7 +31,7 @@ describe('mutations', () => {
     it('displays Unknown error if no error.message found', () => {
       const state = {}
       const err = new Error()
-      main.mutations[type.SHOW_ERROR](state, err)
+      mutations[type.SHOW_ERROR](state, err)
       expect(state.showError).to.eql(true)
       expect(state.errorMessage).to.eql('Unknown error')
     })
@@ -38,7 +40,8 @@ describe('mutations', () => {
   describe('SHOW_ERROR_MESSAGE', () => {
     it('saves message and shows it', () => {
       const state = {}
-      main.mutations[type.SHOW_ERROR_MESSAGE](state, 'error message')
+      mutations[type.SHOW_ERROR_MESSAGE](state, 'error message')
+
       expect(state.showError).to.eql(true)
       expect(state.errorMessage).to.eql('error message')
     })
@@ -49,7 +52,8 @@ describe('mutations', () => {
       const state = {
         showError: true
       }
-      main.mutations[type.HIDE_ERROR](state)
+      mutations[type.HIDE_ERROR](state)
+
       expect(state.showError).to.eql(false)
     })
   })

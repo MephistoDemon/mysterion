@@ -30,13 +30,10 @@
   import path from 'path'
   import countryList from '@/plugins/countries'
   import Multiselect from 'vue-multiselect'
-  import tequilAPI from '@/../libraries/api/tequilapi'
   import IconWorld from '@/assets/img/icon--world.svg'
   import type from '@/store/types'
   import messages from '@/../app/messages'
   import bugReporter from '@/../app/bugReporting/bug-reporting'
-
-  let tequilapi
 
   function proposalToCountry (proposal) {
     let code
@@ -54,6 +51,7 @@
 
   export default {
     name: 'CountrySelect',
+    dependencies: ['tequilapi'],
     components: {
       Multiselect,
       IconWorld
@@ -85,7 +83,7 @@
         this.countriesAreLoading = true
 
         try {
-          const response = await tequilapi.proposal.list()
+          const response = await this.tequilapi.proposal.list()
           this.countriesList = response.proposals.map(proposalToCountry)
         } catch (e) {
           console.log('Countries loading failed', e)
@@ -99,9 +97,6 @@
 
         this.countriesAreLoading = false
       }
-    },
-    mounted () {
-      tequilapi = tequilAPI()
     }
   }
 </script>

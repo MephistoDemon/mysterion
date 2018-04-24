@@ -38,12 +38,11 @@ const getters = {
 
 const getPassword = async () => ''
 
-function factory (tequilapi) {
-  const actions = {
+function actionsFactory (tequilapi) {
+  return {
     async [type.IDENTITY_CREATE] ({commit}) {
       try {
-        const newIdentity = await tequilapi.identity.create(await getPassword())
-        return newIdentity
+        return await tequilapi.identity.create(await getPassword())
       } catch (err) {
         commit(type.SHOW_ERROR, err)
         throw (err)
@@ -71,13 +70,21 @@ function factory (tequilapi) {
       }
     }
   }
+}
 
+function factory (tequilapi) {
   return {
     state,
+    getters,
     mutations,
-    actions,
-    getters
+    actions: actionsFactory(tequilapi)
   }
 }
 
+export {
+  state,
+  getters,
+  mutations,
+  actionsFactory
+}
 export default factory

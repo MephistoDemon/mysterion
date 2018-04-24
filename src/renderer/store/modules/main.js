@@ -1,6 +1,5 @@
 // TODO: rename to `vpn.js` to be consistent with `Vpn.vue`
 import type from '../types'
-import {tequilapi} from '../../../libraries/api/tequilapi'
 
 const state = {
   init: '',
@@ -70,24 +69,37 @@ const mutations = {
   }
 }
 
-const actions = {
-  switchNav ({commit}, open) {
-    commit(type.SET_NAV_OPEN, open)
-  },
-  setVisual ({commit}, visual) {
-    commit(type.SET_VISUAL, visual)
-  },
-  async [type.CLIENT_BUILD_INFO] ({commit}) {
-    const res = await tequilapi.healthCheck()
-    commit(type.CLIENT_BUILD_INFO, res.version)
-  },
-  setNavVisibility ({commit}, visible) {
-    commit(type.SET_NAV_VISIBLE, visible)
+function actionsFactory (tequilapi) {
+  return {
+    switchNav ({commit}, open) {
+      commit(type.SET_NAV_OPEN, open)
+    },
+    setVisual ({commit}, visual) {
+      commit(type.SET_VISUAL, visual)
+    },
+    async [type.CLIENT_BUILD_INFO] ({commit}) {
+      const res = await tequilapi.healthCheck()
+      commit(type.CLIENT_BUILD_INFO, res.version)
+    },
+    setNavVisibility ({commit}, visible) {
+      commit(type.SET_NAV_VISIBLE, visible)
+    }
   }
 }
-export default {
+
+function factory (tequilapi) {
+  return {
+    state,
+    mutations,
+    getters,
+    actions: actionsFactory(tequilapi)
+  }
+}
+
+export {
   state,
   mutations,
   getters,
-  actions
+  actionsFactory
 }
+export default factory

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
-import {mount} from '@vue/test-utils'
+import {createLocalVue, mount} from '@vue/test-utils'
 import CountrySelect from '@/components/CountrySelect'
+import DIContainer from '../../../../src/app/di/vue-container'
 
 const tequilapiProposalsResponse = {
   proposals: [
@@ -37,21 +38,26 @@ const tequilapiProposalsResponse = {
   ]
 }
 
-const tequilapiMock = () => {
-  return {
-    proposal: {
-      list: () => {
-        return Promise.resolve(tequilapiProposalsResponse)
-      }
+const tequilapi = {
+  proposal: {
+    list: () => {
+      return Promise.resolve(tequilapiProposalsResponse)
     }
   }
 }
 
 describe('CountrySelect', () => {
   let wrapper
+
   beforeEach(() => {
-    CountrySelect.__Rewire__('tequilAPI', tequilapiMock)
-    wrapper = mount(CountrySelect)
+    const vue = createLocalVue()
+
+    const dependencies = new DIContainer(vue)
+    dependencies.constant('tequilapi', tequilapi)
+
+    wrapper = mount(CountrySelect, {
+      localVue: vue
+    })
   })
 
   it('renders a list item for each proposal', async () => {
