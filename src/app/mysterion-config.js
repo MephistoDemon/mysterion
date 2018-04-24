@@ -7,7 +7,7 @@ if (process.env.NODE_ENV === 'development') {
   appContentsPath = path.resolve(__dirname, '../../')
 }
 
-const MysterionConfig = {
+const mysterionConfig = {
   inDevMode: process.env.NODE_ENV === 'development',
 
   /**
@@ -64,4 +64,4 @@ const MysterionConfig = {
   }
 }
 
-export default MysterionConfig
+export default mysterionConfig
