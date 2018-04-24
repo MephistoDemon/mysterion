@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import {bootstrap} from '../../../../../src/main/dependencies'
-import JpexContainer from '../../../../../src/app/di/jpex-container'
+import {bootstrap} from '../../../../src/main/dependencies/index'
+import JpexContainer from '../../../../src/app/di/jpex-container'
 
 describe('MainDependencies', () => {
   it('bootstrap', () => {

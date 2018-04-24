@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import LimitedLinkedList from '../../../../src/libraries/limited-linked-list'
+import LimitedLinkedList from '../../../src/libraries/limited-linked-list'
 
 describe('LimitedLinkedList', () => {
   let limitedLinkedList

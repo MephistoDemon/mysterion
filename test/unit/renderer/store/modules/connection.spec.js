@@ -2,12 +2,12 @@ import {expect} from 'chai'
 
 import type from '@/store/types'
 import {mutations, actionsFactory} from '@/store/modules/connection'
-import utils from '../../../helpers/utils'
+import utils from '../../../../helpers/utils'
 import { FunctionLooper } from '@/../libraries/functionLooper'
 import connectionStatus from '@/../libraries/api/connectionStatus'
 import communication from '@/../app/communication'
 import RendererCommunication from '@/../app/communication/renderer-communication'
-import FakeMessageBus from '../../../helpers/fakeMessageBus'
+import FakeMessageBus from '../../../../helpers/fakeMessageBus'
 
 const fakeTequilapi = utils.fakeTequilapiManipulator()
 
