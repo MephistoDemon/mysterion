@@ -2,6 +2,7 @@
 
 import {HttpInterface} from './adapters/interface'
 import ProposalDto from './dto/proposal'
+import ProposalsResponseDto from './dto/proposals-response'
 
 class TequilApi {
   http: HttpInterface
@@ -14,31 +15,16 @@ class TequilApi {
     return this.http.get('healthcheck', {timeout})
   }
 
-  async findProposals (filter: ProposalsFilter): Array<ProposalDto> {
-    let proposals: Array<ProposalDto> = []
-    let response: { proposals: Array<ProposalDto> } = {proposals: []}
-
+  async findProposals (filter: ProposalsFilter): Promise<Array<ProposalDto>> {
     const options = {}
     if (filter) {
       options['params'] = filterToURLParams(filter)
     }
 
-    try {
-      response = await this.http.get('proposals', options)
-      if (typeof response.proposals !== 'undefined') {
-        proposals = response.proposals.map((proposal) => {
-          proposal = new ProposalDto(proposal)
+    const response = await this.http.get('proposals', options)
+    const responseDto = new ProposalsResponseDto(response)
 
-          return proposal
-        })
-      }
-    } catch (e) {
-      // $FlowFixMe
-      return proposals
-    }
-
-    // $FlowFixMe
-    return proposals
+    return responseDto.proposals
   }
 }
 
