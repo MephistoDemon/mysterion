@@ -1,4 +1,4 @@
-import {ElkCollector, newEvent} from '../../../../../src/libraries/statistics/collector'
+import {ElkCollector, newEvent} from '../../../../src/libraries/statistics/collector'
 import MockAdapter from 'axios-mock-adapter'
 
 describe('Elk collector', () => {

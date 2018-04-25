@@ -5,7 +5,6 @@ import bugReporter from '../../../app/bugReporting/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
-import createConnectEventTracker from '../../../libraries/statistics/connection'
 
 const defaultStatistics = {
 }
@@ -44,7 +43,7 @@ const mutations = {
   }
 }
 
-function actionsFactory (tequilapi, rendererCommunication) {
+function actionsFactory (tequilapi, rendererCommunication, createEventTracker) {
   return {
     async [type.CONNECTION_IP] ({commit}) {
       try {
@@ -112,8 +111,8 @@ function actionsFactory (tequilapi, rendererCommunication) {
       }
     },
     async [type.CONNECT] ({commit, dispatch, state}, connectionDetails) {
-      let eventTracker = createConnectEventTracker()
-      eventTracker.ConnectStartedEvent({
+      let eventTracker = createEventTracker()
+      eventTracker.ConnectStarted({
         consumer_id: connectionDetails,
         provider_id: connectionDetails
       })
@@ -125,18 +124,18 @@ function actionsFactory (tequilapi, rendererCommunication) {
       commit(type.CONNECTION_STATISTICS_RESET)
       try {
         await tequilapi.connection.connect(connectionDetails)
-        eventTracker.ConnectEndedEvent()
+        eventTracker.ConnectEnded()
         commit(type.HIDE_ERROR)
       } catch (err) {
         const cancelConnectionCode = httpResponseCodes.CLIENT_CLOSED_REQUEST
         if (hasHttpStatus(err, cancelConnectionCode)) {
-          eventTracker.ConnectCanceledEvent()
+          eventTracker.ConnectCanceled()
           return
         }
         commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
         let error = new Error('Connection to node failed.')
         error.original = err
-        eventTracker.ConnectEndedEvent(error.toString())
+        eventTracker.ConnectEnded(error.toString())
         throw error
       } finally {
         if (looper) {
@@ -167,12 +166,12 @@ function actionsFactory (tequilapi, rendererCommunication) {
   }
 }
 
-function factory (tequilapi, ipc) {
+function factory (tequilapi, ipc, eventTrackerFactory) {
   return {
     state,
     getters,
     mutations,
-    actions: actionsFactory(tequilapi, ipc)
+    actions: actionsFactory(tequilapi, ipc, eventTrackerFactory)
   }
 }
 

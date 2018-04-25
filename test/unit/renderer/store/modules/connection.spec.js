@@ -14,6 +14,14 @@ const fakeTequilapi = factoryTequilapiManipulator()
 const fakeMessageBus = new FakeMessageBus()
 const rendererCommunication = new RendererCommunication(fakeMessageBus)
 
+const fakeEventTrackerFactory = () => {
+  return {
+    ConnectStarted: () => {},
+    ConnectEnded: () => {},
+    ConnectCanceled: () => {}
+  }
+}
+
 async function executeAction (action, state = {}, payload = {}) {
   const mutations = []
   const commit = (key, value) => {
@@ -22,7 +30,7 @@ async function executeAction (action, state = {}, payload = {}) {
 
   const dispatch = (action, payload = {}) => {
     const context = {commit, dispatch, state}
-    const actions = actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication)
+    const actions = actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeEventTrackerFactory)
 
     return actions[action](context, payload)
   }

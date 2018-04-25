@@ -1,4 +1,4 @@
-import {ConnectEventTracker} from '../../../../../src/libraries/statistics/connection'
+import {ConnectEventTracker} from '../../../../src/libraries/statistics/connection'
 import {remote} from 'electron'
 
 describe('Connection statistics', () => {
