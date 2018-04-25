@@ -8,6 +8,7 @@ import ProposalDTO from '../../../../src/libraries/api/client/dto/proposal'
 describe('DataFetchers', () => {
   describe('ProposalFetcher', () => {
     let clock
+    let interval = 1001
 
     before(() => {
       clock = lolex.install()
@@ -33,13 +34,18 @@ describe('DataFetchers', () => {
       {id: '0x2'}
     ])
 
+    let fetcher
+
+    beforeEach(() => {
+      fetcher = new ProposalFetcher(tequilapi, interval)
+    })
+
     describe('.run', () => {
       it('triggers subscriber callbacks', async () => {
-        const fetcher = new ProposalFetcher(tequilapi)
         let counter = 0
 
         fetcher.subscribe(() => counter++)
-        fetcher.run(1001)
+        fetcher.start()
 
         await tickWithDelay(1000)
         expect(counter).to.equal(1)
@@ -49,28 +55,26 @@ describe('DataFetchers', () => {
       })
 
       it('triggers subscriber callbacks with proposals', async () => {
-        const fetcher = new ProposalFetcher(tequilapi)
         let proposals = []
 
         fetcher.subscribe((fetchedProposals) => {
           proposals = fetchedProposals
         })
 
-        fetcher.run(1001)
+        fetcher.start(1001)
 
         await tickWithDelay(1000)
 
+        expect(proposals.length).to.equal(2)
         expect(proposals[0]).to.deep.equal({id: '0x1'})
         expect(proposals[1]).to.deep.equal({id: '0x2'})
-        expect(proposals.length).to.equal(2)
       })
 
       it('stops', async () => {
-        const fetcher = new ProposalFetcher(tequilapi)
         let counter = 0
 
         fetcher.subscribe(() => counter++)
-        fetcher.run(1001)
+        fetcher.start()
 
         await tickWithDelay(1000)
         expect(counter).to.equal(1)
@@ -85,12 +89,11 @@ describe('DataFetchers', () => {
 
     describe('.fetch', () => {
       it('returns proposals', async () => {
-        const fetcher = new ProposalFetcher(new TequilApi(adapter))
         const proposals = await fetcher.fetch()
 
+        expect(proposals.length).to.equal(2)
         expect(proposals[0]).to.deep.equal({id: '0x1'})
         expect(proposals[1]).to.deep.equal({id: '0x2'})
-        expect(proposals.length).to.equal(2)
       })
     })
   })

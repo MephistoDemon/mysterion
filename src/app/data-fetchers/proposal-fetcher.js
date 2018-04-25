@@ -5,41 +5,45 @@ import TequilApi from '../../libraries/api/client/tequil-api'
 import {FunctionLooper} from '../../libraries/functionLooper'
 
 class ProposalFetcher {
-  api: TequilApi
-  proposals: Array<ProposalDto> = []
-  loop: FunctionLooper
-  subscribers: Array<Function> = []
+  _api: TequilApi
+  _proposals: Array<ProposalDto> = []
+  _loop: FunctionLooper
+  _subscribers: Array<Function> = []
+  _interval: number
 
-  constructor (api: TequilApi) {
-    this.api = api
+  constructor (api: TequilApi, interval: number = 5000) {
+    this._api = api
+    this._interval = interval
   }
 
-  run (interval: number = 5000): this {
-    this.loop = new FunctionLooper(async () => {
+  start (): this {
+    this._loop = new FunctionLooper(async () => {
       this._notifySubscribers(await this.fetch())
-    }, interval)
+    }, this._interval)
 
-    this.loop.start()
+    this._loop.start()
 
     return this
   }
 
   async fetch (): Promise<Array<ProposalDto>> {
-    return await this.api.findProposals()
+    const proposals = await this._api.findProposals()
+
+    return proposals
   }
 
   stop () {
-    this.loop.stop()
+    this._loop.stop()
   }
 
   subscribe (callback: Function): this {
-    this.subscribers.push(callback)
+    this._subscribers.push(callback)
 
     return this
   }
 
   _notifySubscribers (proposals: Array<ProposalDto>) {
-    this.subscribers.forEach((callback) => {
+    this._subscribers.forEach((callback) => {
       callback(proposals)
     })
   }
