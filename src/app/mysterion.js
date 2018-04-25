@@ -7,7 +7,7 @@ import {
   logLevel as processLogLevel
 } from '../libraries/mysterium-client/index'
 import bugReporter from './bugReporting/bug-reporting'
-import applyHeaderWrites from './browserAJAXHeaderWriter'
+import applyHeaderWrites from './rendererRequestHeaders'
 import messages from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
@@ -64,7 +64,6 @@ class Mysterion {
       bugReporter.main.captureException(e)
       throw new Error('Failed to open window.')
     }
-
 
     setupSentryFeedbackForm()
 
@@ -211,7 +210,6 @@ class Mysterion {
     })
   }
 }
-
 
 function setupSentryFeedbackForm () {
   try {

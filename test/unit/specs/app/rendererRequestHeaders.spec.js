@@ -33,7 +33,7 @@ const customRules: Array<HeaderRule> = [
   }
 ]
 
-describe.only('registerHeaderRules', () => {
+describe('registerHeaderRules', () => {
   beforeEach(() => {
     defaultHeaders = {requestHeaders: {}}
   })
