@@ -2,6 +2,9 @@
 import {createLocalVue, mount} from '@vue/test-utils'
 import CountrySelect from '@/components/CountrySelect'
 import DIContainer from '../../../../src/app/di/vue-container'
+import {Store} from 'vuex'
+import type from '@/store/types'
+import messages from '@/../app/messages'
 
 const tequilapiProposalsResponse = {
   proposals: [
@@ -45,46 +48,98 @@ const tequilapi = {
     }
   }
 }
+const tequilapiMockEmptyProposalArray = {
+  proposal: {
+    list: () => {
+      return Promise.resolve({proposals: []})
+    }
+  }
+}
+
+const tequilapiMockThrows = {
+  proposal: {
+    list: () => {
+      throw new Error('Anything')
+    }
+  }
+}
+
+function mountWith (tequilapi, store) {
+  const vue = createLocalVue()
+
+  const dependencies = new DIContainer(vue)
+  dependencies.constant('tequilapi', tequilapi)
+
+  return mount(CountrySelect, {
+    localVue: vue,
+    store
+  })
+}
 
 describe('CountrySelect', () => {
-  let wrapper
+  describe('errors', () => {
+    let store
+    beforeEach(() => {
+      store = new Store({
+        mutations: {
+          [type.SHOW_ERROR] (state, error) {
+            state.errorMessage = error.message
+          }
+        }
+      })
+    })
 
-  beforeEach(() => {
-    const vue = createLocalVue()
+    it(`commits ${messages.countryListIsEmpty} when empty proposal list is received`, async () => {
+      const wrapper = mountWith(tequilapiMockEmptyProposalArray, store)
 
-    const dependencies = new DIContainer(vue)
-    dependencies.constant('tequilapi', tequilapi)
+      wrapper.vm.fetchCountries()
+      await wrapper.vm.$nextTick()
 
-    wrapper = mount(CountrySelect, {
-      localVue: vue
+      expect(wrapper.vm.$store.state.errorMessage).to.eql(messages.countryListIsEmpty)
+    })
+
+    it(`commits ${messages.countryLoadingFailed} when proposal listing throws`, async () => {
+      const wrapper = mountWith(tequilapiMockThrows, store)
+
+      wrapper.vm.fetchCountries()
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.$store.state.errorMessage).to.eql(messages.countryLoadingFailed)
     })
   })
 
-  it('renders a list item for each proposal', async () => {
-    wrapper.vm.fetchCountries()
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
+  describe('when getting list of proposals', () => {
+    let wrapper
+    beforeEach(() => {
+      wrapper = mountWith(tequilapi)
+    })
 
-    expect(wrapper.vm.countriesList).to.have.lengthOf(4)
-    expect(wrapper.findAll('.multiselect__option-title')).to.have.lengthOf(4)
-    expect(wrapper.text()).to.contain('Lithuania')
-    expect(wrapper.text()).to.contain('United Kingdom')
-    expect(wrapper.text()).to.contain('0x3')
-    expect(wrapper.text()).to.contain('N/A')
-  })
+    it('renders a list item for each proposal', async () => {
+      wrapper.vm.fetchCountries()
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.$nextTick()
 
-  it('clicking an item changes v-model', async () => {
-    const countryExpected = {
-      label: 'Lithuania',
-      id: '0x1',
-      code: 'lt'
-    }
+      expect(wrapper.vm.countriesList).to.have.lengthOf(4)
+      expect(wrapper.findAll('.multiselect__option-title')).to.have.lengthOf(4)
+      expect(wrapper.text()).to.contain('Lithuania')
+      expect(wrapper.text()).to.contain('United Kingdom')
+      expect(wrapper.text()).to.contain('0x3')
+      expect(wrapper.text()).to.contain('N/A')
+    })
 
-    // initiate the click and check whether it opened the dropdown
-    await wrapper.vm.fetchCountries()
-    wrapper.find('.multiselect__option').trigger('click')
+    it('clicking an item changes v-model', async () => {
+      const countryExpected = {
+        label: 'Lithuania',
+        id: '0x1',
+        code: 'lt'
+      }
 
-    expect(wrapper.emitted().selected).to.be.ok
-    expect(wrapper.emitted().selected[0]).to.eql([countryExpected])
+      // initiate the click and check whether it opened the dropdown
+      await wrapper.vm.fetchCountries()
+      wrapper.find('.multiselect__option').trigger('click')
+
+      expect(wrapper.emitted().selected).to.be.ok
+      expect(wrapper.emitted().selected[0]).to.eql([countryExpected])
+    })
   })
 })
