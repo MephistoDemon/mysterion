@@ -85,13 +85,13 @@
         try {
           const response = await this.tequilapi.proposal.list()
           if (response.proposals.length < 1) {
-            this.$store.commit(type.SHOW_ERROR, {message: messages.countriesEmptyList})
+            this.$store.commit(type.SHOW_ERROR, {message: messages.countryListIsEmpty})
           }
           this.countriesList = response.proposals.map(proposalToCountry)
         } catch (e) {
           console.log('Countries loading failed', e)
 
-          const error = new Error(messages.countriesLoadingFailed)
+          const error = new Error(messages.countryLoadingFailed)
           error.original = e
 
           this.$store.commit(type.SHOW_ERROR, error)

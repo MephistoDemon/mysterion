@@ -1,7 +1,7 @@
 export default {
   connectFailed: 'Connection failed. Try another country',
-  countriesLoadingFailed: 'Failed to load country list',
-  countriesEmptyList: 'No countries available',
+  countryLoadingFailed: 'Failed to load country list',
+  countryListIsEmpty: 'No countries available',
   locationNotSelected: 'Please select location',
   initializationError: {
     message: 'Failed to load Mysterion'

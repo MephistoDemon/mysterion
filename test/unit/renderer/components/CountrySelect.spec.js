@@ -89,22 +89,22 @@ describe('CountrySelect', () => {
       })
     })
 
-    it(`commits ${messages.countriesEmptyList} when empty proposal list is received`, async () => {
+    it(`commits ${messages.countryListIsEmpty} when empty proposal list is received`, async () => {
       const wrapper = mountWith(tequilapiMockEmptyProposalArray, store)
 
       wrapper.vm.fetchCountries()
       await wrapper.vm.$nextTick()
 
-      expect(wrapper.vm.$store.state.errorMessage).to.eql(messages.countriesEmptyList)
+      expect(wrapper.vm.$store.state.errorMessage).to.eql(messages.countryListIsEmpty)
     })
 
-    it(`commits ${messages.countriesLoadingFailed} when proposal listing throws`, async () => {
+    it(`commits ${messages.countryLoadingFailed} when proposal listing throws`, async () => {
       const wrapper = mountWith(tequilapiMockThrows, store)
 
       wrapper.vm.fetchCountries()
       await wrapper.vm.$nextTick()
 
-      expect(wrapper.vm.$store.state.errorMessage).to.eql(messages.countriesLoadingFailed)
+      expect(wrapper.vm.$store.state.errorMessage).to.eql(messages.countryLoadingFailed)
     })
   })
 
