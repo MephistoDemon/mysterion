@@ -28,10 +28,12 @@
 
 <script>
   import path from 'path'
+  import type from '@/store/types'
+  import messages from '@/../app/messages'
   import {getCountryCodeFromProposal, getCountryNameFromProposal} from '@/../app/countries'
   import Multiselect from 'vue-multiselect'
   import IconWorld from '@/assets/img/icon--world.svg'
-  // import bugReporter from '@/../app/bugReporting/bug-reporting'
+  import bugReporter from '@/../app/bugReporting/bug-reporting'
 
   function proposalToCountry (proposal) {
     return {
@@ -78,8 +80,17 @@
     },
     mounted () {
       this.rendererCommunication.onProposalUpdate((proposals) => {
-        this.countriesList = proposals.map(proposalToCountry)
         this.countriesAreLoading = false
+
+        if (proposals.length < 1) {
+          const error = new Error(messages.countriesLoadingFailed)
+
+          this.$store.commit(type.SHOW_ERROR, error)
+          bugReporter.renderer.captureException(error)
+          return
+        }
+
+        this.countriesList = proposals.map(proposalToCountry)
       })
     }
   }

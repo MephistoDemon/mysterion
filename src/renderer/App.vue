@@ -55,7 +55,6 @@
       // we need to notify the main process that we're up
       communication.sendRendererLoaded()
       communication.onConnectionRequest((proposal) => {
-        console.log(proposal)
         this.$store.dispatch(type.CONNECT, {
           consumerId: this.$store.getters.currentIdentity,
           providerId: proposal.providerId
