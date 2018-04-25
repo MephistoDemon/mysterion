@@ -12,7 +12,7 @@ function bootstrap (container: Container) {
   )
   container.service(
     'proposalFetcher',
-    ['tequilapi', 'proposalFetcher.config'],
+    ['tequilapiFlow', 'proposalFetcher.config'],
     (tequilapi, config: any) => {
       return new ProposalFetcher(tequilapi, config.interval)
     }

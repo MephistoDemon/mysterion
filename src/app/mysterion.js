@@ -1,11 +1,8 @@
 import Window from './window'
-import MysterionTray, {TrayIcon} from './mysterionTray'
-import connectionStatus from '../libraries/api/connectionStatus'
+import TrayBuilder from './tray/builder'
 import communication from './communication/index'
 import {app} from 'electron'
-import {
-  logLevel as processLogLevel
-} from '../libraries/mysterium-client/index'
+import {logLevel as processLogLevel} from '../libraries/mysterium-client/index'
 import bugReporter from './bugReporting/bug-reporting'
 import messages from './messages'
 import MainCommunication from './communication/main-communication'
@@ -188,8 +185,14 @@ class Mysterion {
    * notifies the renderer that we're good to go and sets up the system tray
    */
   startApp () {
-    this.messageBus.send(communication.APP_START)
+    this.proposalFetcher.subscribe((proposals) => this.communication.sendProposals(proposals))
     this.proposalFetcher.start()
+
+    this.communication.onProposalUpdateRequest(async () => {
+      this.communication.sendProposals(await this.proposalFetcher.fetch())
+    })
+
+    this.messageBus.send(communication.APP_START)
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
@@ -197,22 +200,8 @@ class Mysterion {
   }
 
   buildTray () {
-    const activateWindow = () => {
-      this.window.show()
-    }
-    const toggleDevTools = this.config.inDevMode ? () => {
-      this.window.toggleDevTools()
-    } : null
-    const tray = new MysterionTray(activateWindow, toggleDevTools)
+    const tray = new TrayBuilder(app, this.window, this.communication, this.proposalFetcher)
     tray.build()
-    this.communication.onConnectionStatusChange(({oldStatus, newStatus}) => {
-      if (newStatus === connectionStatus.CONNECTED) {
-        tray.setIcon(TrayIcon.active)
-      }
-      if (newStatus === connectionStatus.NOT_CONNECTED) {
-        tray.setIcon(TrayIcon.passive)
-      }
-    })
   }
 }
 
