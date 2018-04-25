@@ -1,4 +1,5 @@
 // @flow
+import ServiceDefinitionDto from './service-definition'
 
 class ProposalDto {
   id: number
@@ -6,21 +7,17 @@ class ProposalDto {
   serviceType: string
   serviceDefinition: {
     locationOriginate: {
-      country: string
+      country: ?string
     }
   }
 
   constructor (data: Object) {
-    Object.assign(this, {
-      id: data.id,
-      providerId: data.providerId,
-      serviceType: data.serviceType,
-      serviceDefinition: {
-        locationOriginate: {
-          country: data.serviceDefinition.locationOriginate.country
-        }
-      }
-    })
+    this.id = data.id
+    this.providerId = data.providerId
+    this.serviceType = data.serviceType
+    if (data.serviceDefinition) {
+      this.serviceDefinition = new ServiceDefinitionDto(data.serviceDefinition)
+    }
   }
 }
 
