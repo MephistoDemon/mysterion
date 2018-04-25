@@ -5,6 +5,7 @@ import bugReporter from '../../../app/bugReporting/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
+import {ConnectEventTracker, currentUserTime} from '../../../libraries/statistics/connection'
 
 const defaultStatistics = {
 }
@@ -43,7 +44,7 @@ const mutations = {
   }
 }
 
-function actionsFactory (tequilapi, rendererCommunication, createEventTracker) {
+function actionsFactory (tequilapi, rendererCommunication, elkCollector) {
   return {
     async [type.CONNECTION_IP] ({commit}) {
       try {
@@ -111,7 +112,7 @@ function actionsFactory (tequilapi, rendererCommunication, createEventTracker) {
       }
     },
     async [type.CONNECT] ({commit, dispatch, state}, connectionDetails) {
-      let eventTracker = createEventTracker()
+      let eventTracker = new ConnectEventTracker(elkCollector, currentUserTime)
       eventTracker.ConnectStarted({
         consumer_id: connectionDetails,
         provider_id: connectionDetails

@@ -3,17 +3,17 @@
 import axios from 'axios'
 import {remote} from 'electron'
 
-export type Event = {
+type Event = {
   application_scope: string,
   event_name: string,
   context: any
 }
 
-export interface Collector {
+interface Collector {
   sendEvents (...events: Array<Event>): Promise<any>
 }
 
-export class ElkCollector implements Collector {
+class ElkCollector implements Collector {
   _axiosApi: axios
 
   constructor (url: string) {
@@ -31,7 +31,7 @@ export class ElkCollector implements Collector {
   }
 }
 
-export function newEvent (name: string, context: any): Event {
+function newEvent (name: string, context: any): Event {
   const appVersion = `${remote.getGlobal('__version')}(${remote.getGlobal('__buildNumber')})`
   return {
     application_scope: 'mysterion_application',
@@ -40,3 +40,6 @@ export function newEvent (name: string, context: any): Event {
     context: context
   }
 }
+
+export type {Event, Collector}
+export {ElkCollector, newEvent}

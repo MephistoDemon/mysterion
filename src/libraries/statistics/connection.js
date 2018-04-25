@@ -1,20 +1,19 @@
 // @flow
-import {Collector, ElkCollector, newEvent} from './collector'
-import {AggregatingCollector} from './aggregating-collector'
+import {Collector, newEvent} from './collector'
 
-export type UserTime = {
+type UserTime = {
   localTime: number,
   utcTime: number
 }
 
-export type UserTimeProvider = () => UserTime
+type UserTimeProvider = () => UserTime
 
-export type ConnectDetails = {
+type ConnectDetails = {
   consumer_id: string,
   provider_id: string
 }
 
-export class ConnectEventTracker {
+class ConnectEventTracker {
   _collector: Collector
   _userTimeProvider: UserTimeProvider
   _connectStarted: boolean
@@ -74,7 +73,5 @@ function currentUserTime () {
   }
 }
 
-const elkCollector = new ElkCollector('http://metrics.mysterium.network:8091')
-const aggregator = new AggregatingCollector(elkCollector, 10)
-const connectEventTrackerFactory = () => new ConnectEventTracker(aggregator, currentUserTime)
-export default connectEventTrackerFactory
+export type {UserTime, UserTimeProvider, ConnectDetails}
+export {currentUserTime, ConnectEventTracker}

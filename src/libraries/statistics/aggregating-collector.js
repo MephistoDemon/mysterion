@@ -1,7 +1,7 @@
 // @flow
 import {type Event, Collector} from './collector'
 
-export class AggregatingCollector implements Collector {
+class AggregatingCollector implements Collector {
   _events: Array<Event>
   _delegate: Collector
   _accumulatorSize: number
@@ -34,3 +34,5 @@ export class AggregatingCollector implements Collector {
     return this._delegate.sendEvents(...eventsToSend)
   }
 }
+
+export {AggregatingCollector}
