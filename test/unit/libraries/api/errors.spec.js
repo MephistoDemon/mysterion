@@ -1,6 +1,6 @@
 // @flow
-import { hasHttpStatus } from '../../../../../src/libraries/api/errors'
-import { describe, it, expect } from '../../../../helpers/dependencies'
+import { hasHttpStatus } from '../../../../src/libraries/api/errors'
+import { describe, it, expect } from '../../../helpers/dependencies'
 
 class ResponseError extends Error {
   response: Object

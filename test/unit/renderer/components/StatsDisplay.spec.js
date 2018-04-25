@@ -3,14 +3,13 @@ import StatsDisplay from '../../../../src/renderer/components/StatsDisplay'
 
 const mount = function (connection) {
   // TODO Migrate to createLocalVue() from package '@vue/test-utils'
-  const Comp = new Vue({
+  const vm = new Vue({
     template: '<div><stats-display :connection="connection"/></div>',
     components: { 'stats-display': StatsDisplay },
     data: { connection: connection }
   })
-  const vm = Comp.$mount()
 
-  return vm
+  return vm.$mount()
 }
 
 describe('StatsDisplay', () => {
