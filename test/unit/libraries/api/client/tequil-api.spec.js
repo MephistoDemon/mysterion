@@ -1,19 +1,17 @@
-import {expect} from 'chai'
 import FakeAdapter from '../../../../../src/libraries/api/client/adapters/fake-adapter'
 import ProposalDto from '../../../../../src/libraries/api/client/dto/proposal'
 import TequilApi from '../../../../../src/libraries/api/client/tequil-api'
 
 describe('tequilAPI', () => {
-  describe('client', () => {
-    let api
-    let adapter
+  let api
+  let adapter
+  beforeEach(() => {
+    adapter = new FakeAdapter()
+    api = new TequilApi(adapter)
+  })
 
-    before(() => {
-      adapter = new FakeAdapter()
-      api = new TequilApi(adapter)
-    })
-
-    it('.findProposals returns new proposal instances', async () => {
+  describe('client.findProposals()', () => {
+    it('returns proposals instances', async () => {
       const response = {
         proposals: [{
           id: 1,
@@ -45,7 +43,20 @@ describe('tequilAPI', () => {
       expect(proposals[1]).to.deep.equal(new ProposalDto(response.proposals[1]))
     })
 
-    it('.healthcheck', async () => {
+    it('handles error', async () => {
+      const errorExpected = new Error('Failed request')
+      adapter.setError(errorExpected)
+
+      try {
+        await api.findProposals()
+      } catch (e) {
+        expect(e).to.equal(errorExpected)
+      }
+    })
+  })
+
+  describe('client.healthcheck()', () => {
+    it('returns response', async () => {
       const response = {
         uptime: '1h10m',
         process: 1111,

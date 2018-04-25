@@ -3,36 +3,45 @@
 import {HttpInterface} from './interface'
 
 class FakeAdapter implements HttpInterface {
-  proposals: mixed
-  healthcheck: mixed
+  proposals: Array<Object>
+  healthcheck: Object
+  error: Error
 
-  setProposalsResponse (proposals: mixed) {
+  setError (error: Error) {
+    this.error = error
+  }
+
+  setProposalsResponse (proposals: Array<Object>) {
     this.proposals = proposals
   }
 
-  setHealthcheckResponse (healthcheck: mixed) {
+  setHealthcheckResponse (healthcheck: Object) {
     this.healthcheck = healthcheck
   }
 
-  async get (path: string, options: ?Object): any {
+  async get (path: string, options: ?Object): Promise<?mixed> {
+    if (this.error) {
+      throw this.error
+    }
+
     if (path === 'proposals') {
-      return this.proposals
+      return Promise.resolve(this.proposals)
     }
 
     if (path === 'healthcheck') {
-      return this.healthcheck
+      return Promise.resolve(this.healthcheck)
     }
 
-    return {}
+    throw new Error('Unknown path given: ' + path)
   }
 
-  async post (path: string, data: mixed, options: ?Object): any {
+  async post (path: string, data: mixed, options: ?Object): Promise<?Object> {
   }
 
-  async delete (path: string, options: ?Object): any {
+  async delete (path: string, options: ?Object): Promise<?Object> {
   }
 
-  async put (path: string, data: mixed, options: ?Object): any {
+  async put (path: string, data: mixed, options: ?Object): Promise<?Object> {
   }
 }
 
