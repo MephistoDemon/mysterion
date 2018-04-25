@@ -1,6 +1,4 @@
 // @flow
-import {session} from 'electron'
-import defaultRules from './sentryRules'
 
 export type HeaderRule = {
   urls: Array<string>,
@@ -8,19 +6,12 @@ export type HeaderRule = {
   write(headers: Object): Object
 }
 
-function registerHeaderRule (browserSession: Object, rule: HeaderRule) {
-  const {urls, write} = rule
-  browserSession.webRequest.onBeforeSendHeaders({urls}, (details, next) => {
-    next({requestHeaders: write(details.requestHeaders)})
-  })
-}
-
-function registerHeaderRules (
-  browserSession?: Object = session.defaultSession,
-  rules: Array<HeaderRule> = defaultRules
-) {
+function registerHeaderRules (browserSession: Object, rules: Array<HeaderRule>) {
   rules.forEach((rule) => {
-    registerHeaderRule(browserSession, rule)
+    const {urls, write} = rule
+    browserSession.webRequest.onBeforeSendHeaders({urls}, (details, next) => {
+      next({requestHeaders: write(details.requestHeaders)})
+    })
   })
 }
 

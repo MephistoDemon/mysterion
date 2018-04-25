@@ -1,5 +1,5 @@
 // @flow
-import {describe, it, expect, beforeEach} from '../../../helpers/dependencies'
+import {describe, it, expect, before} from '../../../helpers/dependencies'
 import applyHeaderWrites from '../../../../src/app/rendererRequestHeaders'
 import type {HeaderRule} from '../../../../src/app/rendererRequestHeaders'
 
@@ -34,12 +34,8 @@ const customRules: Array<HeaderRule> = [
 ]
 
 describe('registerHeaderRules', () => {
-  beforeEach(() => {
+  before(() => {
     defaultHeaders = {requestHeaders: {}}
-  })
-  it('applies default headers', () => {
-    applyHeaderWrites(fakeBrowserSession)
-    expect(resultHeaders).to.be.eql({requestHeaders: {Referer: '*'}})
   })
 
   it('applies given headers', () => {

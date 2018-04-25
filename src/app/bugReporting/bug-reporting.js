@@ -18,7 +18,7 @@ const setUser = (userData: any) => {
 interface BugReporter {
   install (options: Object): void;
 
-  captureException (ex: Error | string, options: ?Object): void;
+  captureException (ex: Error | string): void;
 }
 
 class RendererBugReporter implements BugReporter {
@@ -28,13 +28,12 @@ class RendererBugReporter implements BugReporter {
     RavenJs.config(url, config).install().addPlugin(RavenVue, vue)
   }
 
-  captureException (ex: Error | string, options: ?Object) {
-    RavenJs.captureException(ex, options)
+  captureException (ex: Error | string) {
+    RavenJs.captureException(ex)
   }
 
-  showReportDialog (): void {
-    RavenJs.captureMessage('User opened issue report form.')
-    RavenJs.showReportDialog()
+  getRavenInstance (): Object {
+    return RavenJs
   }
 }
 
@@ -45,8 +44,8 @@ class MainBugReporter implements BugReporter {
     Raven.config(url, config).install()
   }
 
-  captureException (ex: Error | string, options: ?Object) {
-    Raven.captureException(ex, options)
+  captureException (ex: Error | string) {
+    Raven.captureException(ex)
   }
 }
 

@@ -2,12 +2,12 @@ import Window from './window'
 import MysterionTray, { TrayIcon } from './mysterionTray'
 import connectionStatus from '../libraries/api/connectionStatus'
 import communication from './communication/index'
-import {app} from 'electron'
+import {app, session as browserSession} from 'electron'
 import {
   logLevel as processLogLevel
 } from '../libraries/mysterium-client/index'
 import bugReporter from './bugReporting/bug-reporting'
-import applyHeaderWrites from './rendererRequestHeaders'
+import {install as installFeedbackForm} from './bugReporting/feedback-form'
 import messages from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
@@ -213,9 +213,9 @@ class Mysterion {
 
 function setupSentryFeedbackForm () {
   try {
-    applyHeaderWrites()
+    installFeedbackForm(browserSession.defaultSession)
   } catch (err) {
-    const error = new Error('Failed to setup AJAX Header Rewrites')
+    const error = new Error('Failed to install Feedback form')
     error.original = err
     console.error(error)
     bugReporter.main.captureException(error)
