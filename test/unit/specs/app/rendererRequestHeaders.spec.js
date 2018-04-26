@@ -39,7 +39,7 @@ describe('registerHeaderRules', () => {
   })
 
   it('applies given headers', () => {
-    applyHeaderWrites(fakeBrowserSession, customRules)
+    for (let rule of customRules) applyHeaderWrites(fakeBrowserSession, rule)
     expect(resultHeaders).to.be.eql({
       requestHeaders: {
         CustomHeader: 'FakeHeader',
