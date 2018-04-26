@@ -1,5 +1,5 @@
 // @flow
-import {EventCollector, newEvent} from './collector'
+import {EventCollector, Event} from './collector'
 
 type UserTime = {
   localTime: number,
@@ -7,28 +7,31 @@ type UserTime = {
 }
 
 type UserTimeProvider = () => UserTime
+type EventFactory = (name: string, details: Object) => Event
 
 type ConnectDetails = {
-  consumer_id: string,
-  provider_id: string
+  consumerId: string,
+  providerId: string
 }
 
 class ConnectEventTracker {
   _collector: EventCollector
   _userTimeProvider: UserTimeProvider
+  _eventFactory: EventFactory
   _connectStarted: boolean
   _eventDetails: any
-  constructor (collector: EventCollector, userTimeProvider: UserTimeProvider) {
+  constructor (collector: EventCollector, userTimeProvider: UserTimeProvider, eventFactory: EventFactory) {
     this._collector = collector
     this._userTimeProvider = userTimeProvider
+    this._eventFactory = eventFactory
     this._connectStarted = false
     this._eventDetails = {}
   }
 
   ConnectStarted (connectDetails: ConnectDetails): void {
     this._eventDetails = {
-      started_at: this._userTimeProvider(),
-      connection_details: connectDetails
+      startedAt: this._userTimeProvider(),
+      connectDetails: connectDetails
     }
     this._connectStarted = true
   }
@@ -38,15 +41,15 @@ class ConnectEventTracker {
     this._insertEndTimesIntoEventDetails()
     if (error) {
       this._eventDetails['error'] = error
-      return this._collector.collectEvents(newEvent('connect_failed', this._eventDetails))
+      return this._collector.collectEvents(this._eventFactory('connect_failed', this._eventDetails))
     }
-    return this._collector.collectEvents(newEvent('connect_successful', this._eventDetails))
+    return this._collector.collectEvents(this._eventFactory('connect_successful', this._eventDetails))
   }
 
   async ConnectCanceled (): Promise<any> {
     this._checkConnectStarted()
     this._insertEndTimesIntoEventDetails()
-    this._collector.collectEvents(newEvent('connect_canceled', this._eventDetails))
+    return this._collector.collectEvents(this._eventFactory('connect_canceled', this._eventDetails))
   }
 
   _checkConnectStarted (): void {
@@ -57,9 +60,9 @@ class ConnectEventTracker {
 
   _insertEndTimesIntoEventDetails (): void {
     let endtime = this._userTimeProvider()
-    let delta = endtime.utcTime - this._eventDetails['started_at'].utcTime
-    this._eventDetails['time_delta'] = delta
-    this._eventDetails['ended_at'] = endtime
+    let delta = endtime.utcTime - this._eventDetails['startedAt'].utcTime
+    this._eventDetails['timeDelta'] = delta
+    this._eventDetails['endedAt'] = endtime
   }
 }
 

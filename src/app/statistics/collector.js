@@ -1,11 +1,16 @@
 // @flow
 
 import axios from 'axios'
-import {remote} from 'electron'
+
+type ApplicationInfo = {
+  name: string,
+  version: string
+}
 
 type Event = {
-  application_scope: string,
-  event_name: string,
+  application: ApplicationInfo,
+  createdAt: number,
+  eventName: string,
   context: any
 }
 
@@ -31,15 +36,14 @@ class ElkCollector implements EventCollector {
   }
 }
 
-function newEvent (name: string, context: any): Event {
-  const appVersion = `${remote.getGlobal('__version')}(${remote.getGlobal('__buildNumber')})`
+function newEvent (info: ApplicationInfo, name: string, createdAt: number, context: any): Event {
   return {
-    application_scope: 'mysterion_application',
-    application_version: appVersion,
-    event_name: name,
+    application: info,
+    createdAt: createdAt,
+    eventName: name,
     context: context
   }
 }
 
-export type {Event, EventCollector}
+export type {Event, EventCollector, ApplicationInfo}
 export {ElkCollector, newEvent}

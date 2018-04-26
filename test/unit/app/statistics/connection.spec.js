@@ -1,5 +1,4 @@
-import {ConnectEventTracker} from '../../../../src/libraries/statistics/connection'
-import {remote} from 'electron'
+import {ConnectEventTracker} from '../../../../src/app/statistics/connection'
 
 describe('Connection statistics', () => {
   let mockedCollector = {
@@ -10,11 +9,17 @@ describe('Connection statistics', () => {
     }
   }
   const connectionDetails = {
-    consumer_id: 'consumer_id',
-    provider_id: 'provider_id'
+    consumerId: 'consumerId',
+    providerId: 'providerId'
   }
 
-  const appVersion = `${remote.getGlobal('__version')}(${remote.getGlobal('__buildNumber')})`
+  let mockedEventFactory = (eventName, details) => {
+    return {
+      name: eventName,
+      scope: 'mocked_event',
+      context: details
+    }
+  }
 
   let mockedTimeProvider
 
@@ -30,83 +35,80 @@ describe('Connection statistics', () => {
   })
 
   it('sends connect failed event', async () => {
-    const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider)
+    const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider, mockedEventFactory)
     eventTracker.ConnectStarted(connectionDetails)
     await eventTracker.ConnectEnded('some error')
     expect(mockedCollector.events[0]).to.deep.eql(
       {
-        application_scope: 'mysterion_application',
-        application_version: appVersion,
-        event_name: 'connect_failed',
+        scope: 'mocked_event',
+        name: 'connect_failed',
         context: {
-          connection_details: {
-            consumer_id: 'consumer_id',
-            provider_id: 'provider_id'
+          connectDetails: {
+            consumerId: 'consumerId',
+            providerId: 'providerId'
           },
-          started_at: {
+          startedAt: {
             utcTime: 123,
             localTime: 321
           },
-          ended_at: {
+          endedAt: {
             utcTime: 246,
             localTime: 444
           },
-          time_delta: 123,
+          timeDelta: 123,
           error: 'some error'
         }
       }
     )
   })
   it('sends connect successful event', async () => {
-    const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider)
+    const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider, mockedEventFactory)
     eventTracker.ConnectStarted(connectionDetails)
     await eventTracker.ConnectEnded()
     expect(mockedCollector.events[0]).to.deep.eql(
       {
-        application_scope: 'mysterion_application',
-        application_version: appVersion,
-        event_name: 'connect_successful',
+        scope: 'mocked_event',
+        name: 'connect_successful',
         context: {
-          connection_details: {
-            consumer_id: 'consumer_id',
-            provider_id: 'provider_id'
+          connectDetails: {
+            consumerId: 'consumerId',
+            providerId: 'providerId'
           },
-          started_at: {
+          startedAt: {
             utcTime: 123,
             localTime: 321
           },
-          ended_at: {
+          endedAt: {
             utcTime: 246,
             localTime: 444
           },
-          time_delta: 123
+          timeDelta: 123
         }
       }
     )
   })
   it('sends connect canceled event', async () => {
-    const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider)
+    const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider, mockedEventFactory)
     eventTracker.ConnectStarted(connectionDetails)
     await eventTracker.ConnectCanceled()
     expect(mockedCollector.events[0]).to.deep.eql(
       {
-        application_scope: 'mysterion_application',
-        application_version: appVersion,
-        event_name: 'connect_canceled',
+        scope: 'mocked_event',
+        name: 'connect_canceled',
         context: {
-          connection_details: {
-            consumer_id: 'consumer_id',
-            provider_id: 'provider_id'
+          connectDetails: {
+            consumerId: 'consumerId',
+            providerId: 'providerId'
           },
-          started_at: {
+          startedAt: {
             utcTime: 123,
             localTime: 321
           },
-          ended_at: {
+          endedAt: {
             utcTime: 246,
             localTime: 444
           },
-          time_delta: 123
+          timeDelta: 123
         }
       }
     )

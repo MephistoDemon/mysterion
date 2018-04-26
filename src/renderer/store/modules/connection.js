@@ -5,7 +5,7 @@ import bugReporter from '../../../app/bugReporting/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
-import {ConnectEventTracker, currentUserTime} from '../../../libraries/statistics/connection'
+import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/connection'
 
 const defaultStatistics = {
 }
@@ -44,7 +44,7 @@ const mutations = {
   }
 }
 
-function actionsFactory (tequilapi, rendererCommunication, elkCollector) {
+function actionsFactory (tequilapi, rendererCommunication, statsCollector, statsEventsFactory) {
   return {
     async [type.CONNECTION_IP] ({commit}) {
       try {
@@ -112,10 +112,10 @@ function actionsFactory (tequilapi, rendererCommunication, elkCollector) {
       }
     },
     async [type.CONNECT] ({commit, dispatch, state}, connectionDetails) {
-      let eventTracker = new ConnectEventTracker(elkCollector, currentUserTime)
+      let eventTracker = new ConnectEventTracker(statsCollector, currentUserTime, statsEventsFactory)
       eventTracker.ConnectStarted({
-        consumer_id: connectionDetails.consumerId,
-        provider_id: connectionDetails.providerId
+        consumerId: connectionDetails.consumerId,
+        providerId: connectionDetails.providerId
       })
       const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
       if (looper) {
@@ -167,12 +167,12 @@ function actionsFactory (tequilapi, rendererCommunication, elkCollector) {
   }
 }
 
-function factory (tequilapi, ipc, eventTrackerFactory) {
+function factory (tequilapi, ipc, statsCollector, statsEventsFactory) {
   return {
     state,
     getters,
     mutations,
-    actions: actionsFactory(tequilapi, ipc, eventTrackerFactory)
+    actions: actionsFactory(tequilapi, ipc, statsCollector, statsEventsFactory)
   }
 }
 

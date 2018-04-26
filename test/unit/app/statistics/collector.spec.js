@@ -1,4 +1,4 @@
-import {ElkCollector, newEvent} from '../../../../src/libraries/statistics/collector'
+import {ElkCollector, newEvent} from '../../../../src/app/statistics/collector'
 import MockAdapter from 'axios-mock-adapter'
 
 describe('Elk collector', () => {
@@ -6,8 +6,8 @@ describe('Elk collector', () => {
   let axiosMock = new MockAdapter(elk._axiosApi)
 
   it('sends events to elk', async () => {
-    let event1 = newEvent('event1', {})
-    let event2 = newEvent('event2', {})
+    let event1 = newEvent({}, 'event1', 123, {})
+    let event2 = newEvent({}, 'event2', 123, {})
     axiosMock.onPost('/').reply(({url, data}) => {
       expect(url).to.be.eql('/')
       expect(JSON.parse(data)).to.be.eql([event1, event2])
@@ -16,7 +16,7 @@ describe('Elk collector', () => {
     await elk.collectEvents(event1, event2)
   })
   it('catches ELK service errors', async () => {
-    let event1 = newEvent('event1', {})
+    let event1 = newEvent({}, 'event1', 123, {})
     axiosMock.onPost('/').reply(() => [201, 'not ok'])
     try {
       await elk.collectEvents(event1)
