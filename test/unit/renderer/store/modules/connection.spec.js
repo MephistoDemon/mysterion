@@ -15,7 +15,7 @@ const fakeMessageBus = new FakeMessageBus()
 const rendererCommunication = new RendererCommunication(fakeMessageBus)
 
 const fakeCollector = {
-  sendEvents: () => Promise.resolve()
+  collectEvents: () => Promise.resolve()
 }
 
 async function executeAction (action, state = {}, payload = {}) {

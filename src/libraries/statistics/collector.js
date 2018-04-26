@@ -9,11 +9,11 @@ type Event = {
   context: any
 }
 
-interface Collector {
-  sendEvents (...events: Array<Event>): Promise<any>
+interface EventCollector {
+  collectEvents (...events: Array<Event>): Promise<any>
 }
 
-class ElkCollector implements Collector {
+class ElkCollector implements EventCollector {
   _axiosApi: axios
 
   constructor (url: string) {
@@ -23,7 +23,7 @@ class ElkCollector implements Collector {
     })
   }
 
-  async sendEvents (...events: Array<Event>): Promise<any> {
+  async collectEvents (...events: Array<Event>): Promise<any> {
     const res = await this._axiosApi.post('/', events)
     if ((res.status !== 200) || (res.data.toUpperCase() !== 'OK')) {
       throw new Error('Invalid response from ELK service: ' + res.status + ' : ' + res.data)
@@ -41,5 +41,5 @@ function newEvent (name: string, context: any): Event {
   }
 }
 
-export type {Event, Collector}
+export type {Event, EventCollector}
 export {ElkCollector, newEvent}

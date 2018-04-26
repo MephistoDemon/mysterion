@@ -1,21 +1,21 @@
 // @flow
-import {type Event, Collector} from './collector'
+import {type Event, EventCollector} from './collector'
 
-class AggregatingCollector implements Collector {
+class AggregatingCollector implements EventCollector {
   _events: Array<Event>
-  _delegate: Collector
+  _delegate: EventCollector
   _accumulatorSize: number
   _flushTimeout: number
   _timeoutHandle: TimeoutID
 
-  constructor (delegate: Collector, accumulatorSize: number, flushTimeout: number = 10) {
+  constructor (delegate: EventCollector, accumulatorSize: number, flushTimeoutInSeconds: number = 10) {
     this._events = []
     this._delegate = delegate
     this._accumulatorSize = accumulatorSize
-    this._flushTimeout = flushTimeout
+    this._flushTimeout = flushTimeoutInSeconds
   }
 
-  async sendEvents (...events: Array<Event>): Promise<any> {
+  async collectEvents (...events: Array<Event>): Promise<any> {
     clearTimeout(this._timeoutHandle)
     this._events.push(...events)
     if (this._events.length < this._accumulatorSize) {
@@ -31,7 +31,7 @@ class AggregatingCollector implements Collector {
 
   async _sendEventsToDelegate (): Promise<any> {
     let eventsToSend = this._events.splice(0, this._accumulatorSize)
-    return this._delegate.sendEvents(...eventsToSend)
+    return this._delegate.collectEvents(...eventsToSend)
   }
 }
 

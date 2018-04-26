@@ -13,13 +13,13 @@ describe('Elk collector', () => {
       expect(JSON.parse(data)).to.be.eql([event1, event2])
       return [200, 'ok']
     })
-    await elk.sendEvents(event1, event2)
+    await elk.collectEvents(event1, event2)
   })
   it('catches ELK service errors', async () => {
     let event1 = newEvent('event1', {})
     axiosMock.onPost('/').reply(() => [201, 'not ok'])
     try {
-      await elk.sendEvents(event1)
+      await elk.collectEvents(event1)
     } catch (error) {
       expect(error).to.be.instanceOf(Error).and.to.have.property('message', 'Invalid response from ELK service: 201 : not ok')
     }

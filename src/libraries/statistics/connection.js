@@ -1,5 +1,5 @@
 // @flow
-import {Collector, newEvent} from './collector'
+import {EventCollector, newEvent} from './collector'
 
 type UserTime = {
   localTime: number,
@@ -14,19 +14,19 @@ type ConnectDetails = {
 }
 
 class ConnectEventTracker {
-  _collector: Collector
+  _collector: EventCollector
   _userTimeProvider: UserTimeProvider
   _connectStarted: boolean
-  _context: any
-  constructor (collector: Collector, userTimeProvider: UserTimeProvider) {
+  _eventDetails: any
+  constructor (collector: EventCollector, userTimeProvider: UserTimeProvider) {
     this._collector = collector
     this._userTimeProvider = userTimeProvider
     this._connectStarted = false
-    this._context = {}
+    this._eventDetails = {}
   }
 
   ConnectStarted (connectDetails: ConnectDetails): void {
-    this._context = {
+    this._eventDetails = {
       started_at: this._userTimeProvider(),
       connection_details: connectDetails
     }
@@ -35,18 +35,18 @@ class ConnectEventTracker {
 
   async ConnectEnded (error?: any): Promise<any> {
     this._checkConnectStarted()
-    this._insertEndTimesIntoContext()
+    this._insertEndTimesIntoEventDetails()
     if (error) {
-      this._context['error'] = error
-      return this._collector.sendEvents(newEvent('connect_failed', this._context))
+      this._eventDetails['error'] = error
+      return this._collector.collectEvents(newEvent('connect_failed', this._eventDetails))
     }
-    return this._collector.sendEvents(newEvent('connect_successful', this._context))
+    return this._collector.collectEvents(newEvent('connect_successful', this._eventDetails))
   }
 
   async ConnectCanceled (): Promise<any> {
     this._checkConnectStarted()
-    this._insertEndTimesIntoContext()
-    this._collector.sendEvents(newEvent('connect_canceled', this._context))
+    this._insertEndTimesIntoEventDetails()
+    this._collector.collectEvents(newEvent('connect_canceled', this._eventDetails))
   }
 
   _checkConnectStarted (): void {
@@ -55,11 +55,11 @@ class ConnectEventTracker {
     }
   }
 
-  _insertEndTimesIntoContext (): void {
+  _insertEndTimesIntoEventDetails (): void {
     let endtime = this._userTimeProvider()
-    let delta = endtime.utcTime - this._context['started_at'].utcTime
-    this._context['time_delta'] = delta
-    this._context['ended_at'] = endtime
+    let delta = endtime.utcTime - this._eventDetails['started_at'].utcTime
+    this._eventDetails['time_delta'] = delta
+    this._eventDetails['ended_at'] = endtime
   }
 }
 

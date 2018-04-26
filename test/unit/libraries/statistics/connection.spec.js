@@ -4,7 +4,7 @@ import {remote} from 'electron'
 describe('Connection statistics', () => {
   let mockedCollector = {
     events: [],
-    sendEvents: function (...eventArray) {
+    collectEvents: function (...eventArray) {
       this.events = eventArray
       return Promise.resolve()
     }
