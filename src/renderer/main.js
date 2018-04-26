@@ -1,25 +1,11 @@
 import Vue from 'vue'
-import axios from 'axios'
-
-import App from './App'
-import router from './router'
-import store from './store'
-
+import dependencies from './dependencies'
 import bugReporter from '../app/bugReporting/bug-reporting'
-import RendererCommunication from '../app/communication/renderer-communication'
-import RendererMessageBus from '../app/communication/rendererMessageBus'
+
 bugReporter.renderer.install(Vue)
 
-if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
-Vue.http = Vue.prototype.$http = axios
-Vue.config.productionTip = false
-
-new Vue({
-  components: {App},
-  router,
-  store,
-  template: '<App/>'
-}).$mount('#app')
+const application = dependencies.get('vue-application')
+application.$mount()
 
 window.addEventListener('unhandledrejection', (evt) => {
   bugReporter.renderer.captureException(evt.reason, {
@@ -27,9 +13,7 @@ window.addEventListener('unhandledrejection', (evt) => {
   })
 })
 
-const rendererMessageBus = new RendererMessageBus()
-
-const rendererCommunication = new RendererCommunication(rendererMessageBus)
+const rendererCommunication = dependencies.get('rendererCommunication')
 rendererCommunication.onMysteriumClientLog(({ level, data }) => {
   bugReporter.pushToLogCache(level, data)
 })

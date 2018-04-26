@@ -1,15 +1,10 @@
 import type from '../types'
-import tequilAPI from '../../../libraries/api/tequilapi'
 import {isTimeoutError, hasHttpStatus, httpResponseCodes} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
 import bugReporter from '../../../app/bugReporting/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
-import { buildRendererMessageBus } from '../../../app/communication/rendererMessageBus'
-import RendererCommunication from '../../../app/communication/renderer-communication'
-
-const tequilapi = tequilAPI()
 
 const defaultStatistics = {
 }
@@ -48,124 +43,134 @@ const mutations = {
   }
 }
 
-const actions = {
-  async [type.CONNECTION_IP] ({commit}) {
-    try {
-      const ip = await tequilapi.connection.ip(config.ipUpdateTimeout)
-      commit(type.CONNECTION_IP, ip)
-    } catch (err) {
-      if (isTimeoutError(err) || hasHttpStatus(err, 503)) {
+function actionsFactory (tequilapi, rendererCommunication) {
+  return {
+    async [type.CONNECTION_IP] ({commit}) {
+      try {
+        const ip = await tequilapi.connection.ip(config.ipUpdateTimeout)
+        commit(type.CONNECTION_IP, ip)
+      } catch (err) {
+        if (isTimeoutError(err) || hasHttpStatus(err, 503)) {
+          return
+        }
+        bugReporter.renderer.captureException(err)
+      }
+    },
+    [type.START_ACTION_LOOPING] ({dispatch, commit, state}, {action, threshold}) {
+      const currentLooper = state.actionLoopers[action]
+      if (currentLooper) {
+        console.log('Warning: requested to start looping action which is already looping: ' + action)
+        return currentLooper
+      }
+
+      const func = () => dispatch(action)
+      const looper = new FunctionLooper(func, threshold)
+      looper.start()
+      commit(type.SET_ACTION_LOOPER, {action, looper})
+      return looper
+    },
+    async [type.STOP_ACTION_LOOPING] ({commit, state}, action) {
+      const looper = state.actionLoopers[action]
+      if (looper) {
+        await looper.stop()
+      }
+      commit(type.REMOVE_ACTION_LOOPER, action)
+    },
+    async [type.FETCH_CONNECTION_STATUS] ({commit, dispatch}) {
+      try {
+        const res = await tequilapi.connection.status()
+        await dispatch(type.SET_CONNECTION_STATUS, res.status)
+      } catch (err) {
+        commit(type.SHOW_ERROR, err)
+      }
+    },
+    async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus) {
+      const oldStatus = state.status
+      if (oldStatus === newStatus) {
         return
       }
-      bugReporter.renderer.captureException(err)
-    }
-  },
-  [type.START_ACTION_LOOPING] ({dispatch, commit, state}, {action, threshold}) {
-    const currentLooper = state.actionLoopers[action]
-    if (currentLooper) {
-      console.log('Warning: requested to start looping action which is already looping: ' + action)
-      return currentLooper
-    }
+      commit(type.SET_CONNECTION_STATUS, newStatus)
+      rendererCommunication.sendConnectionStatusChange({oldStatus, newStatus})
 
-    const func = () => dispatch(action)
-    const looper = new FunctionLooper(func, threshold)
-    looper.start()
-    commit(type.SET_ACTION_LOOPER, {action, looper})
-    return looper
-  },
-  async [type.STOP_ACTION_LOOPING] ({commit, state}, action) {
-    const looper = state.actionLoopers[action]
-    if (looper) {
-      await looper.stop()
-    }
-    commit(type.REMOVE_ACTION_LOOPER, action)
-  },
-  async [type.FETCH_CONNECTION_STATUS] ({commit, dispatch}) {
-    try {
-      const res = await tequilapi.connection.status()
-      await dispatch(type.SET_CONNECTION_STATUS, res.status)
-    } catch (err) {
-      commit(type.SHOW_ERROR, err)
-    }
-  },
-  async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus) {
-    const oldStatus = state.status
-    if (oldStatus === newStatus) {
-      return
-    }
-    commit(type.SET_CONNECTION_STATUS, newStatus)
-    const rendererMessageBus = buildRendererMessageBus()
-    const rendererCommunication = new RendererCommunication(rendererMessageBus)
-    rendererCommunication.sendConnectionStatusChange({ oldStatus, newStatus })
-
-    if (newStatus === connectionStatus.CONNECTED) {
-      await dispatch(type.START_ACTION_LOOPING, {
-        action: type.CONNECTION_STATISTICS,
-        threshold: config.statisticsUpdateThreshold
-      })
-    }
-    if (oldStatus === connectionStatus.CONNECTED) {
-      await dispatch(type.STOP_ACTION_LOOPING, type.CONNECTION_STATISTICS)
-    }
-  },
-  async [type.CONNECTION_STATISTICS] ({commit}) {
-    try {
-      const statistics = await tequilapi.connection.statistics()
-      commit(type.CONNECTION_STATISTICS, statistics)
-    } catch (err) {
-      commit(type.SHOW_ERROR, err)
-    }
-  },
-  async [type.CONNECT] ({commit, dispatch, state}, connectionDetails) {
-    const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
-    if (looper) {
-      await looper.stop()
-    }
-    await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.CONNECTING)
-    commit(type.CONNECTION_STATISTICS_RESET)
-    try {
-      await tequilapi.connection.connect(connectionDetails, config.connectTimeout)
-      commit(type.HIDE_ERROR)
-    } catch (err) {
-      const cancelConnectionCode = httpResponseCodes.CLIENT_CLOSED_REQUEST
-      if (hasHttpStatus(err, cancelConnectionCode)) {
-        return
+      if (newStatus === connectionStatus.CONNECTED) {
+        await dispatch(type.START_ACTION_LOOPING, {
+          action: type.CONNECTION_STATISTICS,
+          threshold: config.statisticsUpdateThreshold
+        })
       }
-      commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
-      let error = new Error('Connection to node failed.')
-      error.original = err
-      throw error
-    } finally {
-      if (looper) {
-        looper.start()
+      if (oldStatus === connectionStatus.CONNECTED) {
+        await dispatch(type.STOP_ACTION_LOOPING, type.CONNECTION_STATISTICS)
       }
-    }
-  },
-  async [type.DISCONNECT] ({commit, dispatch}) {
-    const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
-    if (looper) {
-      await looper.stop()
-    }
-    try {
-      await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.DISCONNECTING)
-      let res = await tequilapi.connection.disconnect()
-      dispatch(type.FETCH_CONNECTION_STATUS)
-      dispatch(type.CONNECTION_IP)
-      return res
-    } catch (err) {
-      commit(type.SHOW_ERROR, err)
-      throw (err)
-    } finally {
+    },
+    async [type.CONNECTION_STATISTICS] ({commit}) {
+      try {
+        const statistics = await tequilapi.connection.statistics()
+        commit(type.CONNECTION_STATISTICS, statistics)
+      } catch (err) {
+        commit(type.SHOW_ERROR, err)
+      }
+    },
+    async [type.CONNECT] ({commit, dispatch, state}, connectionDetails) {
+      const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
       if (looper) {
-        looper.start()
+        await looper.stop()
+      }
+      await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.CONNECTING)
+      commit(type.CONNECTION_STATISTICS_RESET)
+      try {
+        await tequilapi.connection.connect(connectionDetails, config.connectTimeout)
+        commit(type.HIDE_ERROR)
+      } catch (err) {
+        const cancelConnectionCode = httpResponseCodes.CLIENT_CLOSED_REQUEST
+        if (hasHttpStatus(err, cancelConnectionCode)) {
+          return
+        }
+        commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
+        let error = new Error('Connection to node failed.')
+        error.original = err
+        throw error
+      } finally {
+        if (looper) {
+          looper.start()
+        }
+      }
+    },
+    async [type.DISCONNECT] ({commit, dispatch}) {
+      const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
+      if (looper) {
+        await looper.stop()
+      }
+      try {
+        await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.DISCONNECTING)
+        let res = await tequilapi.connection.disconnect()
+        dispatch(type.FETCH_CONNECTION_STATUS)
+        dispatch(type.CONNECTION_IP)
+        return res
+      } catch (err) {
+        commit(type.SHOW_ERROR, err)
+        throw (err)
+      } finally {
+        if (looper) {
+          looper.start()
+        }
       }
     }
   }
 }
 
-export default {
+function factory (tequilapi, ipc) {
+  return {
+    state,
+    getters,
+    mutations,
+    actions: actionsFactory(tequilapi, ipc)
+  }
+}
+
+export {
   state,
   mutations,
-  actions,
-  getters
+  getters,
+  actionsFactory
 }
+export default factory

@@ -1,6 +1,7 @@
 export default {
-  connectFailed: 'Connection to node failed. Choose different node',
-  countriesLoadingFailed: 'Failed to load proposals',
+  connectFailed: 'Connection failed. Try another country',
+  countryLoadingFailed: 'Failed to load country list',
+  countryListIsEmpty: 'No countries available',
   locationNotSelected: 'Please select location',
   initializationError: {
     message: 'Failed to load Mysterion'
