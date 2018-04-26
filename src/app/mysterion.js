@@ -189,7 +189,7 @@ class Mysterion {
    */
   startApp () {
     this.messageBus.send(communication.APP_START)
-    this.proposalFetcher.run()
+    this.proposalFetcher.start()
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
