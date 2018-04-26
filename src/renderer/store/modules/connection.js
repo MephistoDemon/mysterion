@@ -114,8 +114,8 @@ function actionsFactory (tequilapi, rendererCommunication, elkCollector) {
     async [type.CONNECT] ({commit, dispatch, state}, connectionDetails) {
       let eventTracker = new ConnectEventTracker(elkCollector, currentUserTime)
       eventTracker.ConnectStarted({
-        consumer_id: connectionDetails,
-        provider_id: connectionDetails
+        consumer_id: connectionDetails.consumerId,
+        provider_id: connectionDetails.providerId
       })
       const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
       if (looper) {
