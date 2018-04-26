@@ -1,16 +1,15 @@
 // @flow
 
-import {app as electron} from 'electron'
 import ProposalDto from '../../libraries/api/client/dto/proposal'
 import connectionStatus from '../../libraries/api/connectionStatus'
-import MainCommunication from '../communication/main-communication'
-import ProposalFetcher from '../data-fetchers/proposal-fetcher'
-import Window from '../window'
-import TrayMenuGenerator, {CONNECTED, CONNECTING, DISCONNECTED, DISCONNECTING} from './item-generator'
+import MainCommunication from '../../app/communication/main-communication'
+import ProposalFetcher from '../../app/data-fetchers/proposal-fetcher'
+import Window from '../../app/window'
+import TrayMenuGenerator, {CONNECTED, CONNECTING, DISCONNECTED, DISCONNECTING} from './menu-generator'
 import Tray, {TrayIcon} from './tray'
 
 class TrayBuilder {
-  _app: electron
+  _appQuitter: Function
   _window: Window
   _communication: MainCommunication
   _proposalFetcher: ProposalFetcher
@@ -26,36 +25,37 @@ class TrayBuilder {
   _tray: Tray
   _menuGenerator: TrayMenuGenerator
 
-  constructor (app: electron, window: Window, communication: MainCommunication, proposalFetcher: ProposalFetcher) {
-    this._app = app
+  constructor (appQuitter: Function, window: Window, communication: MainCommunication, proposalFetcher: ProposalFetcher) {
+    this._appQuitter = appQuitter
     this._window = window
     this._communication = communication
     this._proposalFetcher = proposalFetcher
   }
 
   build () {
-    this._menuGenerator = new TrayMenuGenerator(this._app, this._window, this._communication)
+    this._menuGenerator = new TrayMenuGenerator(this._appQuitter, this._window, this._communication)
     this._tray = (new Tray(this._menuGenerator)).build()
 
     this._communication.onConnectionStatusChange((statuses) => this._updateStatus(statuses))
     this._menuGenerator.onUpdate(() => this._tray.update())
 
-    let trayIsOpen: boolean = false
+    let canUpdateTrayItems: boolean = false
 
     this._tray.onOpen(() => {
-      trayIsOpen = true
+      canUpdateTrayItems = false
     }).onClose(() => {
-      trayIsOpen = false
+      canUpdateTrayItems = true
     })
 
     this._proposalFetcher.subscribe((proposals: Array<ProposalDto>) => {
-      if (!trayIsOpen) {
+      // do not re-render tray when it's open or it will close
+      if (canUpdateTrayItems) {
         this._menuGenerator.updateProposals(proposals)
       }
     })
   }
 
-  _updateStatus (status: {oldStatus: string, newStatus: string}) {
+  _updateStatus (status: { oldStatus: string, newStatus: string }) {
     if (this._connectionStatus === status.newStatus) {
       return
     }

@@ -1,6 +1,6 @@
 // @flow
 
-class FakeApp {
+class ApplicationQuitter {
   didQuit: boolean = false
 
   quit () {
@@ -8,4 +8,4 @@ class FakeApp {
   }
 }
 
-export default FakeApp
+export default ApplicationQuitter

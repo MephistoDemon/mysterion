@@ -8,7 +8,7 @@ class FakeMainCommunication {
     this.sentConnect = true
   }
 
-  sendDisconnectionRequest () {
+  sendConnectionCancelRequest () {
     this.sentDisconnect = true
   }
 }

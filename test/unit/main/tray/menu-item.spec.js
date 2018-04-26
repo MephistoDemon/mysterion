@@ -1,7 +1,7 @@
 import {expect} from 'chai'
-import TrayMenu from '../../../../src/app/tray/menu'
-import TrayMenuItem from '../../../../src/app/tray/menu-item'
-import TrayMenuSeparator from '../../../../src/app/tray/menu-item-separator'
+import TrayMenu from '../../../../src/main/tray/menu'
+import TrayMenuItem from '../../../../src/main/tray/menu-item'
+import TrayMenuSeparator from '../../../../src/main/tray/menu-item-separator'
 
 describe('tray', () => {
   const getItem = () => new TrayMenuItem('first', null, 'cmd+f', null)

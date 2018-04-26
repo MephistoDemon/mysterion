@@ -1,13 +1,13 @@
 import {expect} from 'chai'
-import TrayMenuGenerator, {CONNECTED, CONNECTING, DISCONNECTED, DISCONNECTING} from '../../../../src/app/tray/item-generator'
+import TrayMenuGenerator, {CONNECTED, CONNECTING, DISCONNECTED, DISCONNECTING} from '../../../../src/main/tray/menu-generator'
 import ProposalDto from '../../../../src/libraries/api/client/dto/proposal'
-import FakeApp from '../../../helpers/electron'
+import FakeQuitter from '../../../helpers/app-quitter'
 import FakeMainCommunication from '../../../helpers/main-communication'
 import FakeWindow from '../../../helpers/window'
 
 describe('tray', () => {
   describe('TrayMenuGenerator', () => {
-    let app
+    let appQuitter
     let window
     let communication
     let generator
@@ -15,8 +15,8 @@ describe('tray', () => {
     beforeEach(() => {
       window = new FakeWindow()
       communication = new FakeMainCommunication()
-      app = new FakeApp()
-      generator = new TrayMenuGenerator(app, window, communication)
+      appQuitter = new FakeQuitter()
+      generator = new TrayMenuGenerator(() => appQuitter.quit(), window, communication)
     })
 
     describe('.onUpdate', () => {
@@ -130,9 +130,9 @@ describe('tray', () => {
 
       it('quits app', () => {
         const items = generator.generate()
-        expect(app.didQuit).to.equal(false)
+        expect(appQuitter.didQuit).to.equal(false)
         items[7].click()
-        expect(app.didQuit).to.equal(true)
+        expect(appQuitter.didQuit).to.equal(true)
       })
 
       it('toggles developer tools', () => {

@@ -45,7 +45,7 @@ class MainCommunication {
     this._send(messages.PROPOSALS_UPDATE, proposals)
   }
 
-  sendDisconnectionRequest () {
+  sendConnectionCancelRequest () {
     this._send(messages.CONNECTION_CANCEL)
   }
 

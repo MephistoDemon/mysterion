@@ -1,6 +1,6 @@
 import {expect} from 'chai'
-import TrayMenu from '../../../../src/app/tray/menu'
-import TrayMenuItem from '../../../../src/app/tray/menu-item'
+import TrayMenu from '../../../../src/main/tray/menu'
+import TrayMenuItem from '../../../../src/main/tray/menu-item'
 
 describe('tray', () => {
   describe('TrayMenu', () => {

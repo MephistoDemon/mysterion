@@ -1,5 +1,5 @@
 import Window from './window'
-import TrayBuilder from './tray/builder'
+import TrayBuilder from '../main/tray/builder'
 import communication from './communication/index'
 import {app} from 'electron'
 import {logLevel as processLogLevel} from '../libraries/mysterium-client/index'
@@ -200,7 +200,7 @@ class Mysterion {
   }
 
   buildTray () {
-    const tray = new TrayBuilder(app, this.window, this.communication, this.proposalFetcher)
+    const tray = new TrayBuilder(app.quit, this.window, this.communication, this.proposalFetcher)
     tray.build()
   }
 }
