@@ -1,5 +1,5 @@
 // @flow
-type Callback = () => void
+type Callback = (data: any) => void
 
 /**
  * Subscribes for specific event and resolves when first event is received.

@@ -80,8 +80,8 @@ class Window {
   // TODO: remove once it's not used anymore
   wait (event) {
     const messageBus = new MainMessageBus(this.send)
-    const subscriber = (callback) => messageBus.on(event, callback)
-    return onFirstEvent(subscriber)
+    const subscription = (callback) => messageBus.on(event, callback)
+    return onFirstEvent(subscription)
   }
 
   toggleDevTools () {
