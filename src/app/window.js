@@ -78,10 +78,10 @@ class Window {
    * @returns {Promise<void>}
    */
   // TODO: remove once it's not used anymore
-  async wait (event) {
+  wait (event) {
     const messageBus = new MainMessageBus(this.send)
     const subscriber = (callback) => messageBus.on(event, callback)
-    await onFirstEvent(subscriber)
+    return onFirstEvent(subscriber)
   }
 
   toggleDevTools () {

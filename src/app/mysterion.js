@@ -131,7 +131,7 @@ class Mysterion {
     })
 
     const termsAnswer = await this.window.wait(communication.TERMS_ANSWERED)
-    if (!termsAnswer.value) {
+    if (!termsAnswer) {
       return false
     }
 
