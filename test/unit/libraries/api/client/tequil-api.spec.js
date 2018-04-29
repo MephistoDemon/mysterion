@@ -11,6 +11,22 @@ describe('tequilAPI', () => {
   })
 
   describe('client.findProposals()', () => {
+    // Always succeeds
+    async function wins () {
+      const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+      await timeout(100)
+      return 'Winner'
+    }
+
+    // Always fails with an error
+    async function fails () {
+      const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+      await timeout(100)
+      throw new Error('Contrived Error')
+    }
+
     it('returns proposals instances', async () => {
       const response = {
         proposals: [{
@@ -53,6 +69,36 @@ describe('tequilAPI', () => {
         expect(e).to.equal(errorExpected)
       }
     })
+
+    it('wins (green)', async () => {
+      expect(await wins()).to.be.equal('Winner')
+    })
+
+    it('wins (red)', async () => {
+      await expect(wins()).to.be.rejectedWith(Error)
+    })
+
+    it('fails (green)', async () => {
+      await expect(fails()).to.be.rejectedWith(Error)
+    })
+
+    it('fails (red)', async () => {
+      await expect(fails()).to.be.equal('Winner')
+    })
+
+    // it('wins (green)', async () => {
+    //   let data = await wins()
+    //   expect(data).to.be.equal('Winner')
+    // })
+    //
+    // it('wins (red)', async () => {
+    //   try {
+    //     await wins()
+    //     assert.fail('expected to throw error')
+    //   } catch (e) {
+    //     expect(e).to.be.equal(Error)
+    //   }
+    // })
   })
 
   describe('client.healthcheck()', () => {
