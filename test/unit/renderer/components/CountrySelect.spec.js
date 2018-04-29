@@ -64,11 +64,21 @@ const tequilapiMockThrows = {
   }
 }
 
+const bugReporter = {
+  renderer: {
+    captureException: (error) => {
+      console.log(error)
+    }
+  }
+}
+bugReporter.renderer.captureException.bind(bugReporter)
+
 function mountWith (tequilapi, store) {
   const vue = createLocalVue()
 
   const dependencies = new DIContainer(vue)
   dependencies.constant('tequilapi', tequilapi)
+  dependencies.constant('bugReporter', bugReporter)
 
   return mount(CountrySelect, {
     localVue: vue,

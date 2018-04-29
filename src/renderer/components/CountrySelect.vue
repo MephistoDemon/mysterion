@@ -33,7 +33,6 @@
   import IconWorld from '@/assets/img/icon--world.svg'
   import type from '@/store/types'
   import messages from '@/../app/messages'
-  import bugReporter from '@/../app/bugReporting/bug-reporting'
 
   function proposalToCountry (proposal) {
     let code
@@ -51,7 +50,7 @@
 
   export default {
     name: 'CountrySelect',
-    dependencies: ['tequilapi'],
+    dependencies: ['tequilapi', 'bugReporter'],
     components: {
       Multiselect,
       IconWorld
@@ -95,7 +94,7 @@
           error.original = e
 
           this.$store.commit(type.SHOW_ERROR, error)
-          bugReporter.renderer.captureException(error)
+          this.bugReporter.renderer.captureException(error)
         }
 
         this.countriesAreLoading = false
