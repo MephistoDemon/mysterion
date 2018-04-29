@@ -3,6 +3,6 @@ export default {
   statisticsUpdateThreshold: 300,
   ipUpdateThreshold: 10000,
   ipUpdateTimeout: 5000,
-  connectTimeout: 50000,
+  connectTimeout: 60000,
   loadingScreenDelay: 1900
 }
