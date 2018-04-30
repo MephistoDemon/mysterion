@@ -115,10 +115,4 @@ async function captureAsyncError (func) {
   return capturePromiseError(func())
 }
 
-export default {
-  fakeTequilapiManipulator,
-  nextTick,
-  capturePromiseError,
-  captureAsyncError
-}
 export { fakeTequilapiManipulator, nextTick, capturePromiseError, captureAsyncError }
