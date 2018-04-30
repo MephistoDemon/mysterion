@@ -1,13 +1,16 @@
-import FakeAdapter from '../../../../../src/libraries/api/client/adapters/fake-adapter'
 import ProposalDto from '../../../../../src/libraries/api/client/dto/proposal'
 import TequilApi from '../../../../../src/libraries/api/client/tequil-api'
+import AxiosAdapter from '../../../../../src/libraries/api/client/adapters/axios-adapter'
+import axios from 'axios/index'
+import MockAdapter from 'axios-mock-adapter'
 
 describe('tequilAPI', () => {
   let api
-  let adapter
+  let mock
   beforeEach(() => {
-    adapter = new FakeAdapter()
-    api = new TequilApi(adapter)
+    const axioInstance = axios.create()
+    api = new TequilApi(new AxiosAdapter(axioInstance))
+    mock = new MockAdapter(axioInstance)
   })
 
   describe('client.findProposals()', () => {
@@ -35,7 +38,7 @@ describe('tequilAPI', () => {
           }
         }]
       }
-      adapter.setProposalsResponse(response)
+      mock.onGet('proposals').reply(200, response)
 
       const proposals = await api.findProposals()
       expect(proposals).to.have.lengthOf(2)
@@ -44,13 +47,13 @@ describe('tequilAPI', () => {
     })
 
     it('handles error', async () => {
-      const errorExpected = new Error('Failed request')
-      adapter.setError(errorExpected)
+      mock.onGet('proposals').reply(500)
 
       try {
         await api.findProposals()
       } catch (e) {
-        expect(e).to.equal(errorExpected)
+        expect(e).to.be.an.instanceOf(Error)
+        expect(e.message).to.equal('Request failed with status code 500')
       }
     })
   })
@@ -66,7 +69,7 @@ describe('tequilAPI', () => {
           buildNumber: '001'
         }
       }
-      adapter.setHealthcheckResponse(response)
+      mock.onGet('healthcheck').reply(200, response)
 
       const healthcheck = await api.healthCheck()
       expect(healthcheck).to.deep.equal(response)
