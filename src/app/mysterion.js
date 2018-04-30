@@ -130,7 +130,9 @@ class Mysterion {
       content: this.terms.getContent()
     })
 
-    const termsAnswer = await this.window.wait(communication.TERMS_ANSWERED)
+    const termsAnswer = await onFirstEvent((callback) => {
+      this.messageBus.on(communication.TERMS_ANSWERED, callback)
+    })
     if (!termsAnswer) {
       return false
     }
