@@ -1,4 +1,5 @@
 import {ConnectEventTracker} from '../../../../src/app/statistics/connection'
+import {capturePromiseError} from '../../../helpers/utils'
 
 describe('Connection statistics', () => {
   let mockedCollector = {
@@ -115,10 +116,8 @@ describe('Connection statistics', () => {
   })
   it('returns rejected promise if connect ended is called before connect started', async () => {
     const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider)
-    try {
-      await eventTracker.ConnectEnded('some error')
-    } catch (e) {
-      expect(e).to.be.instanceOf(Error).and.have.property('message', 'connect start not marked')
-    }
+
+    const e = await capturePromiseError(eventTracker.ConnectEnded('some error'))
+    expect(e).to.be.instanceOf(Error).and.have.property('message', 'connect start not marked')
   })
 })
