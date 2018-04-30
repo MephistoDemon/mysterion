@@ -1,7 +1,5 @@
 import {BrowserWindow} from 'electron'
 import bugReporter from './bugReporting/bug-reporting'
-import MainMessageBus from './communication/mainMessageBus'
-import {onFirstEvent} from './communication/utils'
 
 // TODO: find better name - AppWindow?
 class Window {
@@ -69,19 +67,6 @@ class Window {
       return
     }
     this.window.webContents.send(event, data)
-  }
-
-  /**
-   * Waits for IPC communication event
-   *
-   * @param event
-   * @returns {Promise<void>}
-   */
-  // TODO: remove once it's not used anymore
-  async wait (event) {
-    const messageBus = new MainMessageBus(this.send)
-    const subscriber = (callback) => messageBus.on(event, callback)
-    await onFirstEvent(subscriber)
   }
 
   toggleDevTools () {
