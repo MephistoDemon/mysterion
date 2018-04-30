@@ -96,13 +96,29 @@ function nextTick () {
   return new Promise(resolve => process.nextTick(resolve))
 }
 
-const captureAsyncError = async (func) => {
+/**
+ * Resolved promise and returns error of it's execution
+ *
+ * @param {Promise<*>} promise
+ * @return Error|nil
+ */
+async function capturePromiseError (promise) {
   try {
-    await func()
+    await promise
   } catch (e) {
     return e
   }
   return null
 }
 
-export default { fakeTequilapiManipulator, nextTick, captureAsyncError }
+async function captureAsyncError (func) {
+  return capturePromiseError(func())
+}
+
+export default {
+  fakeTequilapiManipulator,
+  nextTick,
+  capturePromiseError,
+  captureAsyncError
+}
+export { fakeTequilapiManipulator, nextTick, capturePromiseError, captureAsyncError }

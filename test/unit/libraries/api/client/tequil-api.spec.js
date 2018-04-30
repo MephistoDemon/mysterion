@@ -3,6 +3,7 @@ import TequilApi from '../../../../../src/libraries/api/client/tequil-api'
 import AxiosAdapter from '../../../../../src/libraries/api/client/adapters/axios-adapter'
 import axios from 'axios/index'
 import MockAdapter from 'axios-mock-adapter'
+import {capturePromiseError} from '../../../../helpers/utils'
 
 describe('tequilAPI', () => {
   let api
@@ -49,12 +50,8 @@ describe('tequilAPI', () => {
     it('handles error', async () => {
       mock.onGet('proposals').reply(500)
 
-      try {
-        await api.findProposals()
-      } catch (e) {
-        expect(e).to.be.an.instanceOf(Error)
-        expect(e.message).to.equal('Request failed with status code 500')
-      }
+      const e = await capturePromiseError(api.findProposals())
+      expect(e.message).to.equal('Request failed with status code 500')
     })
   })
 
