@@ -18,14 +18,12 @@ class ConnectEventTracker {
   _collector: EventCollector
   _userTimeProvider: UserTimeProvider
   _eventFactory: EventFactory
-  _connectStarted: boolean
-  _eventDetails: any
+  _connectStarted: boolean = false
+  _eventDetails: Object = {}
   constructor (collector: EventCollector, userTimeProvider: UserTimeProvider, eventFactory: EventFactory) {
     this._collector = collector
     this._userTimeProvider = userTimeProvider
     this._eventFactory = eventFactory
-    this._connectStarted = false
-    this._eventDetails = {}
   }
 
   connectStarted (connectDetails: ConnectDetails): void {
