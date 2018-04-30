@@ -13,7 +13,7 @@ class TequilApi {
   }
 
   async healthCheck (timeout: number) {
-    return this.http.get('healthcheck', {timeout})
+    return this.http.get('healthcheck', null, timeout)
   }
 
   async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {
