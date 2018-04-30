@@ -118,7 +118,7 @@ function actionsFactory (tequilapi, rendererCommunication) {
       await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.CONNECTING)
       commit(type.CONNECTION_STATISTICS_RESET)
       try {
-        await tequilapi.connection.connect(connectionDetails, config.connectTimeout)
+        await tequilapi.connection.connect(connectionDetails)
         commit(type.HIDE_ERROR)
       } catch (err) {
         const cancelConnectionCode = httpResponseCodes.CLIENT_CLOSED_REQUEST
