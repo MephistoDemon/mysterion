@@ -113,7 +113,7 @@ function actionsFactory (tequilapi, rendererCommunication, statsCollector, stats
     },
     async [type.CONNECT] ({commit, dispatch, state}, connectionDetails) {
       let eventTracker = new ConnectEventTracker(statsCollector, currentUserTime, statsEventsFactory)
-      eventTracker.ConnectStarted({
+      eventTracker.connectStarted({
         consumerId: connectionDetails.consumerId,
         providerId: connectionDetails.providerId
       })
@@ -125,18 +125,18 @@ function actionsFactory (tequilapi, rendererCommunication, statsCollector, stats
       commit(type.CONNECTION_STATISTICS_RESET)
       try {
         await tequilapi.connection.connect(connectionDetails)
-        eventTracker.ConnectEnded()
+        eventTracker.connectEnded()
         commit(type.HIDE_ERROR)
       } catch (err) {
         const cancelConnectionCode = httpResponseCodes.CLIENT_CLOSED_REQUEST
         if (hasHttpStatus(err, cancelConnectionCode)) {
-          eventTracker.ConnectCanceled()
+          eventTracker.connectCanceled()
           return
         }
         commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
         let error = new Error('Connection to node failed.')
         error.original = err
-        eventTracker.ConnectEnded(error.toString())
+        eventTracker.connectEnded(error.toString())
         throw error
       } finally {
         if (looper) {

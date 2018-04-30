@@ -28,7 +28,7 @@ class ConnectEventTracker {
     this._eventDetails = {}
   }
 
-  ConnectStarted (connectDetails: ConnectDetails): void {
+  connectStarted (connectDetails: ConnectDetails): void {
     this._eventDetails = {
       startedAt: this._userTimeProvider(),
       connectDetails: connectDetails
@@ -36,7 +36,7 @@ class ConnectEventTracker {
     this._connectStarted = true
   }
 
-  async ConnectEnded (error?: any): Promise<any> {
+  async connectEnded (error?: any): Promise<any> {
     this._checkConnectStarted()
     this._insertEndTimesIntoEventDetails()
     if (error) {
@@ -46,7 +46,7 @@ class ConnectEventTracker {
     return this._collector.collectEvents(this._eventFactory('connect_successful', this._eventDetails))
   }
 
-  async ConnectCanceled (): Promise<any> {
+  async connectCanceled (): Promise<any> {
     this._checkConnectStarted()
     this._insertEndTimesIntoEventDetails()
     return this._collector.collectEvents(this._eventFactory('connect_canceled', this._eventDetails))
@@ -60,9 +60,8 @@ class ConnectEventTracker {
 
   _insertEndTimesIntoEventDetails (): void {
     let endtime = this._userTimeProvider()
-    let delta = endtime.utcTime - this._eventDetails['startedAt'].utcTime
-    this._eventDetails['timeDelta'] = delta
     this._eventDetails['endedAt'] = endtime
+    this._eventDetails['timeDelta'] = endtime.utcTime - this._eventDetails['startedAt'].utcTime
   }
 }
 

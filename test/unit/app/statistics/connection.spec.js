@@ -37,8 +37,8 @@ describe('Connection statistics', () => {
 
   it('sends connect failed event', async () => {
     const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider, mockedEventFactory)
-    eventTracker.ConnectStarted(connectionDetails)
-    await eventTracker.ConnectEnded('some error')
+    eventTracker.connectStarted(connectionDetails)
+    await eventTracker.connectEnded('some error')
     expect(mockedCollector.events[0]).to.deep.eql(
       {
         scope: 'mocked_event',
@@ -64,8 +64,8 @@ describe('Connection statistics', () => {
   })
   it('sends connect successful event', async () => {
     const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider, mockedEventFactory)
-    eventTracker.ConnectStarted(connectionDetails)
-    await eventTracker.ConnectEnded()
+    eventTracker.connectStarted(connectionDetails)
+    await eventTracker.connectEnded()
     expect(mockedCollector.events[0]).to.deep.eql(
       {
         scope: 'mocked_event',
@@ -90,8 +90,8 @@ describe('Connection statistics', () => {
   })
   it('sends connect canceled event', async () => {
     const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider, mockedEventFactory)
-    eventTracker.ConnectStarted(connectionDetails)
-    await eventTracker.ConnectCanceled()
+    eventTracker.connectStarted(connectionDetails)
+    await eventTracker.connectCanceled()
     expect(mockedCollector.events[0]).to.deep.eql(
       {
         scope: 'mocked_event',
@@ -117,7 +117,7 @@ describe('Connection statistics', () => {
   it('returns rejected promise if connect ended is called before connect started', async () => {
     const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider)
 
-    const e = await capturePromiseError(eventTracker.ConnectEnded('some error'))
+    const e = await capturePromiseError(eventTracker.connectEnded('some error'))
     expect(e).to.be.instanceOf(Error).and.have.property('message', 'connect start not marked')
   })
 })
