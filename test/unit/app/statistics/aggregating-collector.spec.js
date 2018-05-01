@@ -1,5 +1,5 @@
 import {newEvent} from '../../../../src/app/statistics/events'
-import {AggregatingCollector} from '../../../../src/app/statistics/aggregating-collector'
+import AggregatingCollector from '../../../../src/app/statistics/aggregating-collector'
 import lolex from 'lolex'
 import {nextTick} from '../../../helpers/utils'
 

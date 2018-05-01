@@ -36,4 +36,4 @@ class AggregatingCollector implements EventCollector {
   }
 }
 
-export {AggregatingCollector}
+export default AggregatingCollector
