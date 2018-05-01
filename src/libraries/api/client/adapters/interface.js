@@ -1,7 +1,11 @@
 // @flow
 
-export interface HttpInterface {
-  get(path: string, options: ?Object): Promise<?mixed>;
+type HttpQueryParams = {
+  [string]: mixed
+}
+
+interface HttpInterface {
+  get(path: string, query: ?HttpQueryParams, options: ?Object): Promise<?mixed>;
 
   post(path: string, data: mixed, options: ?Object): Promise<?mixed>;
 
@@ -9,3 +13,5 @@ export interface HttpInterface {
 
   put(path: string, options: ?Object): Promise<?mixed>;
 }
+
+export type {HttpInterface, HttpQueryParams}

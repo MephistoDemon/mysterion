@@ -1,7 +1,7 @@
 // @flow
 
 import Axios from 'axios'
-import {HttpInterface} from './interface'
+import type {HttpInterface, HttpQueryParams} from './interface'
 
 class AxiosAdapter implements HttpInterface {
   _axios: Axios
@@ -10,7 +10,12 @@ class AxiosAdapter implements HttpInterface {
     this._axios = axios
   }
 
-  async get (path: string, options: ?Object): Promise<?mixed> {
+  async get (path: string, query: ?HttpQueryParams, options: ?Object): Promise<?mixed> {
+    options = options || {}
+    if (query) {
+      options['params'] = query
+    }
+
     const response = await this._axios.get(path, options)
 
     return response.data
