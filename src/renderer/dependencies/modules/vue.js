@@ -69,7 +69,7 @@ function bootstrap (container: Container) {
   )
   container.service(
     'vue-store.identity',
-    ['tequilapiDepreciated'],
+    ['tequilapi'],
     (tequilapi) => identityFactory(tequilapi)
   )
   container.service(
