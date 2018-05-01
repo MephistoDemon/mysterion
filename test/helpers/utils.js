@@ -1,18 +1,16 @@
+// @flow
+
 /**
  * Returns a promise that is resolved after processing all currently queued events.
- * @returns {Promise<void>}
  */
-function nextTick () {
+function nextTick (): Promise<void> {
   return new Promise(resolve => process.nextTick(resolve))
 }
 
 /**
- * Resolved promise and returns error of it's execution
- *
- * @param {Promise<*>} promise
- * @return Error|nil
+ * Runs async function and captures error of it's execution
  */
-async function capturePromiseError (promise) {
+async function capturePromiseError (promise: Promise<any>): ?Error {
   try {
     await promise
   } catch (e) {
@@ -21,7 +19,10 @@ async function capturePromiseError (promise) {
   return null
 }
 
-async function captureAsyncError (func) {
+/**
+ * Resolves promise and captures error of it's execution
+ */
+async function captureAsyncError (func: () => Promise<any>) {
   return capturePromiseError(func())
 }
 
