@@ -29,6 +29,16 @@ class TequilApi {
     return responseDto.identities
   }
 
+  async identityCreate (passphrase: string): Promise<IdentityDTO> {
+    const response = await this.http.post('identities', {passphrase})
+
+    return new IdentityDTO(response)
+  }
+
+  async identityUnlock (id: string, passphrase: string): Promise<void> {
+    await this.http.put('identities/' + id + '/unlock', {passphrase})
+  }
+
   async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {
     const query = filter ? filter.toQueryParams() : null
     const response = await this.http.get('proposals', query)

@@ -1,10 +1,10 @@
-import ProposalDTO from '../../../../../src/libraries/api/client/dto/proposal'
 import TequilApi from '../../../../../src/libraries/api/client/tequil-api'
+import IdentityDTO from '../../../../../src/libraries/api/client/dto/identity'
+import ProposalDTO from '../../../../../src/libraries/api/client/dto/proposal'
 import AxiosAdapter from '../../../../../src/libraries/api/client/adapters/axios-adapter'
 import axios from 'axios/index'
 import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../../helpers/utils'
-import IdentityDTO from "../../../../../src/libraries/api/client/dto/identity"
 
 describe('tequilAPI', () => {
   let api
@@ -132,6 +132,39 @@ describe('tequilAPI', () => {
       mock.onGet('identities').reply(500)
 
       const e = await capturePromiseError(api.identitiesList())
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
+  describe('client.identityCreate()', () => {
+    it('create identity', async () => {
+      const response = {id: '0x0000bEEF'}
+      mock.onPost('identities', {passphrase: 'test'}).reply(200, response)
+
+      const identity = await api.identityCreate('test')
+      expect(identity).to.deep.equal(new IdentityDTO(response))
+    })
+
+    it('handles error', async () => {
+      mock.onPost('identities').reply(500)
+
+      const e = await capturePromiseError(api.identityCreate('test'))
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
+  describe('client.identityUnlock()', () => {
+    it('create identity', async () => {
+      mock.onPut('identities/0x0000bEEF/unlock', {passphrase: 'test'}).reply(200)
+
+      const identity = await api.identityUnlock('0x0000bEEF', 'test')
+      expect(identity).to.be.undefined
+    })
+
+    it('handles error', async () => {
+      mock.onPut('identities/0x0000bEEF/unlock').reply(500)
+
+      const e = await capturePromiseError(api.identityUnlock('0x0000bEEF', 'test'))
       expect(e.message).to.equal('Request failed with status code 500')
     })
   })
