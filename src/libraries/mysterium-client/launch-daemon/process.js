@@ -12,8 +12,9 @@ const stdFiles = {
 
 /**
  * Spawns mysterium_client daemon on OSX by calling tequilapi.healthcheck
+ *
  * @constructor
- * @param {Object} tequilapi - api to be used
+ * @param {TequilApi} tequilapi - api to be used
  * @param {string} dataDir - directory where it's looking for logs
  */
 class Process {
@@ -39,8 +40,6 @@ class Process {
   }
 }
 
-export default Process
-
 function tailFile (filePath, cb) {
   try {
     const logTail = new Tail(filePath)
@@ -50,3 +49,5 @@ function tailFile (filePath, cb) {
     console.error('log file watching failed. file probably doesn\'t exist: ' + filePath)
   }
 }
+
+export default Process

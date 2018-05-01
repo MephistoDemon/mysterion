@@ -72,4 +72,20 @@ describe('tequilAPI', () => {
       expect(healthcheck).to.deep.equal(response)
     })
   })
+
+  describe('client.stop()', () => {
+    it('success', async () => {
+      mock.onPost('stop').reply(200)
+
+      const response = await api.stop()
+      expect(response).to.be.undefined
+    })
+
+    it('handles error', async () => {
+      mock.onPost('stop').reply(500)
+
+      const e = await capturePromiseError(api.stop())
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
 })
