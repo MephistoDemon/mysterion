@@ -4,6 +4,7 @@ import AxiosAdapter from '../../../../../src/libraries/api/client/adapters/axios
 import axios from 'axios/index'
 import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../../helpers/utils'
+import IdentityDTO from "../../../../../src/libraries/api/client/dto/identity"
 
 describe('tequilAPI', () => {
   let api
@@ -12,47 +13,6 @@ describe('tequilAPI', () => {
     const axioInstance = axios.create()
     api = new TequilApi(new AxiosAdapter(axioInstance))
     mock = new MockAdapter(axioInstance)
-  })
-
-  describe('client.findProposals()', () => {
-    it('returns proposals instances', async () => {
-      const response = {
-        proposals: [{
-          id: 1,
-          providerId: '0x0',
-          serviceType: 'openvpn',
-          serviceDefinition: {
-            locationOriginate: {
-              asn: '',
-              country: 'NL'
-            }
-          }
-        }, {
-          id: 1,
-          providerId: '0x1',
-          serviceType: 'openvpn',
-          serviceDefinition: {
-            locationOriginate: {
-              asn: '',
-              country: 'LT'
-            }
-          }
-        }]
-      }
-      mock.onGet('proposals').reply(200, response)
-
-      const proposals = await api.findProposals()
-      expect(proposals).to.have.lengthOf(2)
-      expect(proposals[0]).to.deep.equal(new ProposalDTO(response.proposals[0]))
-      expect(proposals[1]).to.deep.equal(new ProposalDTO(response.proposals[1]))
-    })
-
-    it('handles error', async () => {
-      mock.onGet('proposals').reply(500)
-
-      const e = await capturePromiseError(api.findProposals())
-      expect(e.message).to.equal('Request failed with status code 500')
-    })
   })
 
   describe('client.healthcheck()', () => {
@@ -112,4 +72,68 @@ describe('tequilAPI', () => {
       expect(e.message).to.equal('Request failed with status code 500')
     })
   })
+
+  describe('client.findProposals()', () => {
+    it('returns proposal DTOs', async () => {
+      const response = {
+        proposals: [{
+          id: 1,
+          providerId: '0x0',
+          serviceType: 'openvpn',
+          serviceDefinition: {
+            locationOriginate: {
+              asn: '',
+              country: 'NL'
+            }
+          }
+        }, {
+          id: 1,
+          providerId: '0x1',
+          serviceType: 'openvpn',
+          serviceDefinition: {
+            locationOriginate: {
+              asn: '',
+              country: 'LT'
+            }
+          }
+        }]
+      }
+      mock.onGet('proposals').reply(200, response)
+
+      const proposals = await api.findProposals()
+      expect(proposals).to.have.lengthOf(2)
+      expect(proposals[0]).to.deep.equal(new ProposalDTO(response.proposals[0]))
+      expect(proposals[1]).to.deep.equal(new ProposalDTO(response.proposals[1]))
+    })
+
+    it('handles error', async () => {
+      mock.onGet('proposals').reply(500)
+
+      const e = await capturePromiseError(api.findProposals())
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
+  describe('client.identitiesList()', () => {
+    it('returns identity DTOs', async () => {
+      const response = [
+        {id: '0x1000FACE'},
+        {id: '0x2000FACE'},
+      ]
+      mock.onGet('identities').reply(200, response)
+
+      const identities = await api.identitiesList()
+      expect(identities).to.have.lengthOf(2)
+      expect(identities[0]).to.deep.equal(new IdentityDTO(response[0]))
+      expect(identities[1]).to.deep.equal(new IdentityDTO(response[1]))
+    })
+
+    it('handles error', async () => {
+      mock.onGet('identities').reply(500)
+
+      const e = await capturePromiseError(api.identitiesList())
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
 })
