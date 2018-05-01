@@ -1,10 +1,10 @@
 import {expect} from 'chai'
-import ServiceDefinitionDto from '../../../../../../src/libraries/api/client/dto/service-definition'
+import ServiceDefinitionDTO from '../../../../../../src/libraries/api/client/dto/service-definition'
 
 describe('TequilApi client DTO', () => {
-  describe('ServiceDefinitionDto', () => {
+  describe('ServiceDefinitionDTO', () => {
     it('sets properties', async () => {
-      const service = new ServiceDefinitionDto({
+      const service = new ServiceDefinitionDTO({
         locationOriginate: {
           country: 'LT'
         }
@@ -14,13 +14,13 @@ describe('TequilApi client DTO', () => {
     })
 
     it('sets empty properties', async () => {
-      const service = new ServiceDefinitionDto({})
+      const service = new ServiceDefinitionDTO({})
 
       expect(service.locationOriginate).to.be.undefined
     })
 
     it('sets wrong properties', async () => {
-      const service = new ServiceDefinitionDto('I am wrong')
+      const service = new ServiceDefinitionDTO('I am wrong')
 
       expect(service.locationOriginate).to.be.undefined
     })

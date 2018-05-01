@@ -1,8 +1,8 @@
 // @flow
 
 import {HttpInterface} from './adapters/interface'
-import ProposalDto from './dto/proposal'
-import ProposalsResponseDto from './dto/proposals-response'
+import ProposalDTO from './dto/proposal'
+import ProposalsResponseDTO from './dto/proposals-response'
 
 class TequilApi {
   http: HttpInterface
@@ -15,14 +15,14 @@ class TequilApi {
     return this.http.get('healthcheck', {timeout})
   }
 
-  async findProposals (filter: ProposalsFilter): Promise<Array<ProposalDto>> {
+  async findProposals (filter: ProposalsFilter): Promise<Array<ProposalDTO>> {
     const options = {}
     if (filter) {
       options['params'] = filterToURLParams(filter)
     }
 
     const response = await this.http.get('proposals', options)
-    const responseDto = new ProposalsResponseDto(response)
+    const responseDto = new ProposalsResponseDTO(response)
 
     return responseDto.proposals
   }

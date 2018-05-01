@@ -1,18 +1,18 @@
 // @flow
-import ProposalDto from './proposal'
+import ProposalDTO from './proposal'
 
 type ResponseMap = {
   proposals: Array<Object>
 }
 
-class ProposalsResponseDto {
-  proposals: Array<ProposalDto>
+class ProposalsResponseDTO {
+  proposals: Array<ProposalDTO>
 
   constructor (responseData: ResponseMap) {
     if (typeof responseData.proposals !== 'undefined') {
-      this.proposals = responseData.proposals.map((proposal) => new ProposalDto(proposal))
+      this.proposals = responseData.proposals.map((proposal) => new ProposalDTO(proposal))
     }
   }
 }
 
-export default ProposalsResponseDto
+export default ProposalsResponseDTO

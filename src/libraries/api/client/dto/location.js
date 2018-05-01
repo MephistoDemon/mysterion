@@ -1,6 +1,6 @@
 // @flow
 
-class LocationDto {
+class LocationDTO {
   country: string
 
   constructor (data: Object) {
@@ -8,4 +8,4 @@ class LocationDto {
   }
 }
 
-export default LocationDto
+export default LocationDTO

@@ -1,10 +1,10 @@
 import {expect} from 'chai'
-import ProposalDto from '../../../../../../src/libraries/api/client/dto/proposal'
+import ProposalDTO from '../../../../../../src/libraries/api/client/dto/proposal'
 
 describe('TequilApi client DTO', () => {
-  describe('ProposalDto', () => {
+  describe('ProposalDTO', () => {
     it('sets properties', async () => {
-      const proposal = new ProposalDto({
+      const proposal = new ProposalDTO({
         id: 1,
         providerId: '0x1',
         serviceType: 'openvpn',
@@ -23,7 +23,7 @@ describe('TequilApi client DTO', () => {
     })
 
     it('sets empty properties', async () => {
-      const proposal = new ProposalDto({})
+      const proposal = new ProposalDTO({})
 
       expect(proposal.id).to.be.undefined
       expect(proposal.providerId).to.be.undefined
@@ -32,7 +32,7 @@ describe('TequilApi client DTO', () => {
     })
 
     it('sets wrong properties', async () => {
-      const proposal = new ProposalDto('I am wrong')
+      const proposal = new ProposalDTO('I am wrong')
 
       expect(proposal.id).to.be.undefined
       expect(proposal.providerId).to.be.undefined

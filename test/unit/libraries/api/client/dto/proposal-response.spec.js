@@ -1,10 +1,10 @@
 import {expect} from 'chai'
-import ProposalsResponseDto from '../../../../../../src/libraries/api/client/dto/proposals-response'
+import ProposalsResponseDTO from '../../../../../../src/libraries/api/client/dto/proposals-response'
 
 describe('TequilApi client DTO', () => {
   describe('ProposalResponseDto', () => {
     it('sets properties', async () => {
-      const response = new ProposalsResponseDto({
+      const response = new ProposalsResponseDTO({
         proposals: [{id: 100}]
       })
 
@@ -13,13 +13,13 @@ describe('TequilApi client DTO', () => {
     })
 
     it('sets empty properties', async () => {
-      const response = new ProposalsResponseDto({})
+      const response = new ProposalsResponseDTO({})
 
       expect(response.proposals).to.be.undefined
     })
 
     it('sets wrong properties', async () => {
-      const response = new ProposalsResponseDto('I am wrong')
+      const response = new ProposalsResponseDTO('I am wrong')
 
       expect(response.proposals).to.be.undefined
     })

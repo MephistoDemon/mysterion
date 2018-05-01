@@ -1,7 +1,7 @@
 // @flow
-import ServiceDefinitionDto from './service-definition'
+import ServiceDefinitionDTO from './service-definition'
 
-class ProposalDto {
+class ProposalDTO {
   id: number
   providerId: string
   serviceType: string
@@ -16,9 +16,9 @@ class ProposalDto {
     this.providerId = data.providerId
     this.serviceType = data.serviceType
     if (data.serviceDefinition) {
-      this.serviceDefinition = new ServiceDefinitionDto(data.serviceDefinition)
+      this.serviceDefinition = new ServiceDefinitionDTO(data.serviceDefinition)
     }
   }
 }
 
-export default ProposalDto
+export default ProposalDTO

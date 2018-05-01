@@ -1,6 +1,6 @@
 // @flow
 import countries from './list'
-import ProposalDto from '../../libraries/api/client/dto/proposal'
+import ProposalDTO from '../../libraries/api/client/dto/proposal'
 
 const COUNTRY_NAME_UNKNOWN = 'N/A'
 
@@ -13,7 +13,7 @@ function getCountryName (countryCode: string): string {
   return countries[countryCode]
 }
 
-function getCountryNameFromProposal (proposal: ProposalDto): string {
+function getCountryNameFromProposal (proposal: ProposalDTO): string {
   const countryCode = getCountryCodeFromProposal(proposal)
   if (!countryCode) {
     return COUNTRY_NAME_UNKNOWN
@@ -22,7 +22,7 @@ function getCountryNameFromProposal (proposal: ProposalDto): string {
   return getCountryName(countryCode)
 }
 
-function getCountryCodeFromProposal (proposal: ProposalDto): ?string {
+function getCountryCodeFromProposal (proposal: ProposalDTO): ?string {
   if (typeof proposal.serviceDefinition === 'undefined') {
     return null
   }

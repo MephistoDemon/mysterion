@@ -1,4 +1,4 @@
-import ProposalDto from '../../../../../src/libraries/api/client/dto/proposal'
+import ProposalDTO from '../../../../../src/libraries/api/client/dto/proposal'
 import TequilApi from '../../../../../src/libraries/api/client/tequil-api'
 import AxiosAdapter from '../../../../../src/libraries/api/client/adapters/axios-adapter'
 import axios from 'axios/index'
@@ -43,8 +43,8 @@ describe('tequilAPI', () => {
 
       const proposals = await api.findProposals()
       expect(proposals).to.have.lengthOf(2)
-      expect(proposals[0]).to.deep.equal(new ProposalDto(response.proposals[0]))
-      expect(proposals[1]).to.deep.equal(new ProposalDto(response.proposals[1]))
+      expect(proposals[0]).to.deep.equal(new ProposalDTO(response.proposals[0]))
+      expect(proposals[1]).to.deep.equal(new ProposalDTO(response.proposals[1]))
     })
 
     it('handles error', async () => {
