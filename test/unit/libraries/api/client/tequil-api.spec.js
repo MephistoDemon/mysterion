@@ -71,6 +71,30 @@ describe('tequilAPI', () => {
       const healthcheck = await api.healthCheck()
       expect(healthcheck).to.deep.equal(response)
     })
+
+    it('throws network error', async () => {
+      mock.onGet('/healthcheck').networkError()
+
+      const err = await capturePromiseError(api.healthCheck())
+      expect(err.message).to.eql('Network Error')
+    })
+
+    it('throws timeout', async () => {
+      mock.reset()
+      mock.onGet('/healthcheck').timeout()
+
+      const err = await capturePromiseError(api.healthCheck())
+      expect(err.message).to.match(/timeout of .*ms exceeded/)
+    })
+
+    it('throws 404', async () => {
+      mock.reset()
+      mock.onGet('/healthcheck').reply(404, {message: 'What is wrong'})
+
+      const err = await capturePromiseError(api.healthCheck())
+      expect(err.message).to.eql('Request failed with status code 404')
+      expect(err.response.data.message).to.eql('What is wrong')
+    })
   })
 
   describe('client.stop()', () => {

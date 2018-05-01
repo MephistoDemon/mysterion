@@ -18,12 +18,11 @@ global.__sentryURL = SENTRY_CONFIG.publicURL
 global.__static = mysterionConfig.staticDirectoryPath
 
 const tequilApi = dependencies.get('tequilapi')
-const tequilapiDepreciated = dependencies.get('tequilapiDepreciated')
 const mysterion = new Mysterion({
   config: mysterionConfig,
   terms: new Terms(path.join(mysterionConfig.staticDirectoryPath, 'terms'), mysterionConfig.userDataDirectory),
   installer: new MysteriumDaemonInstaller(mysterionConfig),
-  monitoring: new ProcessMonitoring(tequilapiDepreciated),
+  monitoring: new ProcessMonitoring(tequilApi),
   process: new MysteriumProcess(tequilApi, mysterionConfig.userDataDirectory),
   proposalFetcher: dependencies.get('proposalFetcher')
 })

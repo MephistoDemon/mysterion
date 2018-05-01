@@ -1,3 +1,4 @@
+// @flow
 /* eslint no-unused-expressions: 0 */
 import {expect} from 'chai'
 
@@ -17,20 +18,22 @@ import {nextTick} from '../../../helpers/utils'
 import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
 import messages from '../../../../src/app/messages'
+import TequilApi from '../../../../src/libraries/api/client/tequil-api'
 
 Vue.use(Vuex)
 Vue.use(Router)
 
 describe('VpnLoader', () => {
-  let tequilapi
+  let tequilapi: TequilApi
+  let tequilapiDeprecated
   let mock
   let clock
 
-  async function mountComponent (tequilapi) {
+  async function mountComponent (tequilapi: TequilApi, tequilapiDeprecated: Object): Vue {
     const router = new Router({routes: []})
     const store = new Vuex.Store({
       modules: {
-        identity: idStoreFactory(tequilapi),
+        identity: idStoreFactory(tequilapiDeprecated),
         main: mainStoreFactory(tequilapi),
         errors: errorStore
       },
@@ -49,14 +52,26 @@ describe('VpnLoader', () => {
     return vm
   }
 
-  async function mountAndPrepareLoadingScreen (tequilapi) {
-    const vm = await mountComponent(tequilapi)
+  async function mountAndPrepareLoadingScreen (tequilapi: TequilApi, tequilapiDeprecated: Object) {
+    const vm = await mountComponent(tequilapi, tequilapiDeprecated)
     await nextTick() // wait for delay inside loader callback
     clock.tick(config.loadingScreenDelay) // skip loader delay
     return vm
   }
 
-  function mockTequilapi () {
+  function tequilapiMockCreate (version: string): TequilApi {
+    const healtcheckResponse = {
+      version: {
+        commit: version
+      }
+    }
+
+    return {
+      healthCheck: () => Promise.resolve(healtcheckResponse)
+    }
+  }
+
+  function mockTequilapi (): [Object, MockAdapter] {
     const axioInstance = axios.create()
     tequilapi = tequilapiFactory(axioInstance)
     mock = new MockAdapter(axioInstance)
@@ -65,8 +80,10 @@ describe('VpnLoader', () => {
   }
 
   before(async () => {
-    [tequilapi, mock] = mockTequilapi()
+    [tequilapiDeprecated, mock] = mockTequilapi()
     mock.onGet('/healthcheck').reply(200, {version: {commit: 'caed3112'}})
+
+    tequilapi = tequilapiMockCreate('caed3112')
 
     clock = lolex.install()
   })
@@ -81,7 +98,7 @@ describe('VpnLoader', () => {
     before(async () => {
       mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
       mock.onPut('/identities/0xC001FACE/unlock').reply(200)
-      vm = await mountAndPrepareLoadingScreen(tequilapi)
+      vm = await mountAndPrepareLoadingScreen(tequilapi, tequilapiDeprecated)
     })
 
     it('loads without errors', async () => {
@@ -102,7 +119,7 @@ describe('VpnLoader', () => {
       mock.onGet('/identities').replyOnce(200, {identities: []})
       mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
       mock.onPut('/identities/0xC001FACE/unlock').reply(200)
-      vm = await mountAndPrepareLoadingScreen(tequilapi)
+      vm = await mountAndPrepareLoadingScreen(tequilapi, tequilapiDeprecated)
     })
 
     it('loads without errors', async () => {
@@ -126,7 +143,7 @@ describe('VpnLoader', () => {
       let vm
       before(async () => {
         mock.onGet('/identities').replyOnce(500)
-        vm = await mountComponent(tequilapi)
+        vm = await mountComponent(tequilapi, tequilapiDeprecated)
       })
 
       it('should notify user with an overlay', () => {
@@ -141,7 +158,7 @@ describe('VpnLoader', () => {
       before(async () => {
         mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
         mock.onPut('/identities/0xC001FACE/unlock').replyOnce(500)
-        vm = await mountComponent(tequilapi)
+        vm = await mountComponent(tequilapi, tequilapiDeprecated)
       })
 
       it('should notify user with an overlay', () => {
