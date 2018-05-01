@@ -1,6 +1,7 @@
-import {ElkCollector, newEvent} from '../../../../src/app/statistics/collector'
+import ElkCollector from '../../../../src/app/statistics/elk-collector'
 import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../helpers/utils'
+import {newEvent} from '../../../../src/app/statistics/events'
 
 describe('Elk collector', () => {
   let elk = new ElkCollector('http://mocked.stuff')

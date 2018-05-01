@@ -1,4 +1,4 @@
-import {ConnectEventTracker} from '../../../../src/app/statistics/connection'
+import {ConnectEventTracker} from '../../../../src/app/statistics/events-connection'
 import {capturePromiseError} from '../../../helpers/utils'
 
 describe('Connection statistics', () => {

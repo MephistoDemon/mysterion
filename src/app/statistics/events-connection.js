@@ -1,5 +1,6 @@
 // @flow
-import {EventCollector, Event} from './collector'
+import {EventCollector} from './events'
+import type {Event} from './events'
 
 type UserTime = {
   localTime: number,

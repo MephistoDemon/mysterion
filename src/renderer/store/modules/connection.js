@@ -5,7 +5,7 @@ import bugReporter from '../../../app/bugReporting/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
-import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/connection'
+import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/events-connection'
 
 const defaultStatistics = {
 }

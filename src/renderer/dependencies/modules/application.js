@@ -2,9 +2,11 @@
 import {Container} from '../../../app/di'
 import RendererCommunication from '../../../app/communication/renderer-communication'
 import RendererMessageBus from '../../../app/communication/rendererMessageBus'
-import {ElkCollector, newEvent} from '../../../app/statistics/collector'
+import ElkCollector from '../../../app/statistics/elk-collector'
 import {AggregatingCollector} from '../../../app/statistics/aggregating-collector'
 import {remote} from 'electron'
+import type {ApplicationInfo} from '../../../app/statistics/events'
+import {createEventFactory} from '../../../app/statistics/events'
 
 function bootstrap (container: Container) {
   container.service(
@@ -14,20 +16,26 @@ function bootstrap (container: Container) {
       return new RendererCommunication(new RendererMessageBus())
     }
   )
-  container.service('statsEventFactory', [], () => {
-    const appVersion = `${remote.getGlobal('__version')}(${remote.getGlobal('__buildNumber')})`
-    const appInfo = {
+
+  container.constant(
+    'statsApplicationInfo',
+    {
       name: 'mysterion_application',
-      version: appVersion
+      version: `${remote.getGlobal('__version')}(${remote.getGlobal('__buildNumber')})`
     }
-    const currentTime = () => new Date().getTime()
-    return (name: string, context: Object) => newEvent(appInfo, name, currentTime, context)
-  })
+  )
+  container.service(
+    'statsEventFactory',
+    ['statsApplicationInfo'],
+    (applicationInfo: ApplicationInfo) => {
+      return createEventFactory(applicationInfo)
+    }
+  )
   container.service(
     'statsCollector',
     [],
     () => {
-      let elkCollector = new ElkCollector('http://metrics.mysterium.network:8091')
+      const elkCollector = new ElkCollector('http://metrics.mysterium.network:8091')
       return new AggregatingCollector(elkCollector, 10)
     }
   )

@@ -1,5 +1,6 @@
 // @flow
-import {type Event, EventCollector} from './collector'
+import {EventCollector} from './events'
+import type {Event} from './events'
 
 class AggregatingCollector implements EventCollector {
   _events: Array<Event>
@@ -15,7 +16,7 @@ class AggregatingCollector implements EventCollector {
     this._flushTimeout = flushTimeoutInSeconds
   }
 
-  async collectEvents (...events: Array<Event>): Promise<any> {
+  async collectEvents (...events: Array<Event>): Promise<void> {
     clearTimeout(this._timeoutHandle)
     this._events.push(...events)
     if (this._events.length < this._accumulatorSize) {
