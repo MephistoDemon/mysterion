@@ -2,9 +2,8 @@
 import {describe, it, expect} from '../../../helpers/dependencies'
 import lolex from 'lolex'
 import ProposalFetcher from '../../../../src/app/data-fetchers/proposal-fetcher'
-import FakeAdapter from '../../../../src/libraries/api/client/adapters/fake-adapter'
-import TequilApi from '../../../../src/libraries/api/client/tequil-api'
-import utils from '../../../helpers/utils'
+import {nextTick} from '../../../helpers/utils'
+import ProposalDTO from '../../../../src/libraries/api/client/dto/proposal'
 
 describe('DataFetchers', () => {
   describe('ProposalFetcher', () => {
@@ -20,21 +19,23 @@ describe('DataFetchers', () => {
 
     async function tickWithDelay (duration) {
       clock.tick(duration)
-      await utils.nextTick()
+      await nextTick()
     }
 
-    const adapter = new FakeAdapter()
-    adapter.setProposalsResponse({
-      proposals: [{
-        id: '0x1'
-      }, {
-        id: '0x2'
-      }]
-    })
+    function mockTequilapi (proposals: Array<ProposalDTO>) {
+      return {
+        findProposals: () => Promise.resolve(proposals)
+      }
+    }
+
+    const tequilapi = mockTequilapi([
+      {id: '0x1'},
+      {id: '0x2'}
+    ])
 
     describe('.run', () => {
       it('triggers subscriber callbacks', async () => {
-        const fetcher = new ProposalFetcher(new TequilApi(adapter))
+        const fetcher = new ProposalFetcher(tequilapi)
         let counter = 0
 
         fetcher.subscribe(() => counter++)
@@ -48,7 +49,7 @@ describe('DataFetchers', () => {
       })
 
       it('triggers subscriber callbacks with proposals', async () => {
-        const fetcher = new ProposalFetcher(new TequilApi(adapter))
+        const fetcher = new ProposalFetcher(tequilapi)
         let proposals = []
 
         fetcher.subscribe((fetchedProposals) => {
@@ -65,7 +66,7 @@ describe('DataFetchers', () => {
       })
 
       it('stops', async () => {
-        const fetcher = new ProposalFetcher(new TequilApi(adapter))
+        const fetcher = new ProposalFetcher(tequilapi)
         let counter = 0
 
         fetcher.subscribe(() => counter++)

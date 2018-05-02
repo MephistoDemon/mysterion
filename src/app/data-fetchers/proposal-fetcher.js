@@ -17,7 +17,7 @@ class ProposalFetcher {
   // on demand fetch
   run (interval: number = 5000): this {
     this.loop = new FunctionLooper(async () => {
-      const proposals = await this.api.getProposals()
+      const proposals = await this.api.findProposals()
       this._notifySubscribers(proposals)
     }, interval)
 
