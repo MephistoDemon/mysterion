@@ -3,7 +3,7 @@ import ProposalsResponseDTO from '../../../../../../src/libraries/api/client/dto
 
 describe('TequilApi client DTO', () => {
   describe('ProposalResponseDto', () => {
-    it('sets properties', async () => {
+    it('sets properties with full structure', async () => {
       const response = new ProposalsResponseDTO({
         proposals: [{id: 100}]
       })
@@ -12,13 +12,13 @@ describe('TequilApi client DTO', () => {
       expect(response.proposals[0].id).to.equal(100)
     })
 
-    it('sets empty properties', async () => {
+    it('sets empty properties structure', async () => {
       const response = new ProposalsResponseDTO({})
 
       expect(response.proposals).to.be.undefined
     })
 
-    it('sets wrong properties', async () => {
+    it('sets wrong properties structure', async () => {
       const response = new ProposalsResponseDTO('I am wrong')
 
       expect(response.proposals).to.be.undefined

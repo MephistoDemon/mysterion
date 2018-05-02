@@ -1,14 +1,14 @@
 // @flow
 import ProposalDTO from './proposal'
 
-type ResponseMap = {
+type ResponseMapped = {
   proposals: Array<Object>
 }
 
 class ProposalsResponseDTO {
   proposals: Array<ProposalDTO>
 
-  constructor (responseData: ResponseMap) {
+  constructor (responseData: ResponseMapped) {
     if (typeof responseData.proposals !== 'undefined') {
       this.proposals = responseData.proposals.map((proposal) => new ProposalDTO(proposal))
     }

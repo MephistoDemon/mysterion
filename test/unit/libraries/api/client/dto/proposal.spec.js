@@ -3,7 +3,7 @@ import ProposalDTO from '../../../../../../src/libraries/api/client/dto/proposal
 
 describe('TequilApi client DTO', () => {
   describe('ProposalDTO', () => {
-    it('sets properties', async () => {
+    it('sets properties with full structure', async () => {
       const proposal = new ProposalDTO({
         id: 1,
         providerId: '0x1',
@@ -22,7 +22,7 @@ describe('TequilApi client DTO', () => {
       expect(proposal.serviceDefinition.locationOriginate.country).to.equal('LT')
     })
 
-    it('sets empty properties', async () => {
+    it('sets empty properties structure', async () => {
       const proposal = new ProposalDTO({})
 
       expect(proposal.id).to.be.undefined
@@ -31,7 +31,7 @@ describe('TequilApi client DTO', () => {
       expect(proposal.serviceDefinition).to.be.undefined
     })
 
-    it('sets wrong properties', async () => {
+    it('sets wrong properties structure', async () => {
       const proposal = new ProposalDTO('I am wrong')
 
       expect(proposal.id).to.be.undefined

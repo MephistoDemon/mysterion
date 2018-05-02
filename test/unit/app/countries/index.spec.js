@@ -2,18 +2,18 @@ import {getCountryName, getCountryNameFromProposal, getCountryCodeFromProposal} 
 
 describe('Countries', () => {
   describe('getCountryName()', () => {
-    it('existing country', () => {
+    it('returns name for existing country', () => {
       expect(getCountryName('LT')).to.be.eql('Lithuania')
       expect(getCountryName('US')).to.be.eql('United States')
     })
 
-    it('unknown country', () => {
+    it('returns not-found name for unknown country', () => {
       expect(getCountryName('XX')).to.be.eql('N/A')
     })
   })
 
   describe('getCountryNameFromProposal()', () => {
-    it('found country code', () => {
+    it('returns country name from location', () => {
       const proposal = {
         serviceDefinition: {
           locationOriginate: {
@@ -24,14 +24,14 @@ describe('Countries', () => {
       expect(getCountryNameFromProposal(proposal)).to.be.eql('Lithuania')
     })
 
-    it('not-found country code', () => {
+    it('returns not-found name without location', () => {
       const proposal = {}
       expect(getCountryNameFromProposal(proposal)).to.be.eql('N/A')
     })
   })
 
   describe('getCountryCodeFromProposal()', () => {
-    it('set country', () => {
+    it('returns country code from location', () => {
       const proposal = {
         serviceDefinition: {
           locationOriginate: {
@@ -42,7 +42,7 @@ describe('Countries', () => {
       expect(getCountryCodeFromProposal(proposal)).to.be.eql('LT')
     })
 
-    it('unset country', () => {
+    it('returns no country code without location', () => {
       const proposalsWithUnsetCountries = [
         {
           serviceDefinition: {
