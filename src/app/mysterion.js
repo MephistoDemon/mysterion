@@ -1,5 +1,5 @@
 import Window from './window'
-import MysterionTray, { TrayIcon } from './mysterionTray'
+import MysterionTray, {TrayIcon} from './mysterionTray'
 import connectionStatus from '../libraries/api/connectionStatus'
 import communication from './communication/index'
 import {app} from 'electron'
@@ -10,11 +10,11 @@ import bugReporter from './bugReporting/bug-reporting'
 import messages from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
-import { onFirstEvent } from './communication/utils'
+import {onFirstEvent} from './communication/utils'
 
 class Mysterion {
-  constructor ({config, terms, installer, monitoring, process}) {
-    Object.assign(this, {config, terms, installer, monitoring, process})
+  constructor ({config, terms, installer, monitoring, process, proposalFetcher}) {
+    Object.assign(this, {config, terms, installer, monitoring, process, proposalFetcher})
   }
 
   run () {
@@ -117,6 +117,8 @@ class Mysterion {
 
   async onWillQuit () {
     this.monitoring.stop()
+    this.proposalFetcher.stop()
+
     try {
       await this.process.stop()
     } catch (e) {
@@ -165,7 +167,7 @@ class Mysterion {
       setTimeout(() => updateRendererWithHealth(), 1500)
     }
     const cacheLogs = (level, data) => {
-      this.communication.sendMysteriumClientLog({ level, data })
+      this.communication.sendMysteriumClientLog({level, data})
       bugReporter.pushToLogCache(level, data)
     }
 
@@ -187,6 +189,7 @@ class Mysterion {
    */
   startApp () {
     this.messageBus.send(communication.APP_START)
+    this.proposalFetcher.start()
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
@@ -194,11 +197,15 @@ class Mysterion {
   }
 
   buildTray () {
-    const activateWindow = () => { this.window.show() }
-    const toggleDevTools = this.config.inDevMode ? () => { this.window.toggleDevTools() } : null
+    const activateWindow = () => {
+      this.window.show()
+    }
+    const toggleDevTools = this.config.inDevMode ? () => {
+      this.window.toggleDevTools()
+    } : null
     const tray = new MysterionTray(activateWindow, toggleDevTools)
     tray.build()
-    this.communication.onConnectionStatusChange(({ oldStatus, newStatus }) => {
+    this.communication.onConnectionStatusChange(({oldStatus, newStatus}) => {
       if (newStatus === connectionStatus.CONNECTED) {
         tray.setIcon(TrayIcon.active)
       }
