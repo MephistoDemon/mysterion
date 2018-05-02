@@ -6,7 +6,6 @@ import {FunctionLooper} from '../../libraries/functionLooper'
 
 class ProposalFetcher {
   _api: TequilApi
-  _proposals: Array<ProposalDto> = []
   _loop: FunctionLooper
   _subscribers: Array<Function> = []
   _interval: number
@@ -26,10 +25,8 @@ class ProposalFetcher {
     return this
   }
 
-  async fetch (): Promise<Array<ProposalDto>> {
-    const proposals = await this._api.findProposals()
-
-    return proposals
+  fetch (): Promise<Array<ProposalDto>> {
+    return this._api.findProposals()
   }
 
   stop () {
