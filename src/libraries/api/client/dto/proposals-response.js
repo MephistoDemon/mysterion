@@ -6,7 +6,7 @@ type ResponseMapped = {
 }
 
 class ProposalsResponseDTO {
-  proposals: Array<ProposalDTO>
+  proposals: ?Array<ProposalDTO>
 
   constructor (responseData: ResponseMapped) {
     if (typeof responseData.proposals !== 'undefined') {

@@ -5,11 +5,7 @@ class ProposalDTO {
   id: number
   providerId: string
   serviceType: string
-  serviceDefinition: {
-    locationOriginate: {
-      country: ?string
-    }
-  }
+  serviceDefinition: ?ServiceDefinitionDTO
 
   constructor (data: Object) {
     this.id = data.id

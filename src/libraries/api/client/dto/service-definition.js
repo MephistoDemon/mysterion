@@ -2,7 +2,7 @@
 import LocationDTO from './location'
 
 class ServiceDefinitionDTO {
-  locationOriginate: LocationDTO
+  locationOriginate: ?LocationDTO
 
   constructor (data: Object) {
     if (data.locationOriginate) {
