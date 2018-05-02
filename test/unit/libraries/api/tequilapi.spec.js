@@ -3,6 +3,7 @@ import {expect} from 'chai'
 import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
 import {tequilapiFactory} from '@/../libraries/api/tequilapi'
+import {capturePromiseError} from '../../../helpers/utils'
 
 const axioInstance = axios.create()
 const tequilApi = tequilapiFactory(axioInstance)
@@ -31,34 +32,25 @@ describe('tequilAPI', () => {
 describe('tequilAPI error handling', () => {
   it('throws network error', async () => {
     mock.onGet('/healthcheck').networkError()
-    try {
-      const a = await tequilApi.healthCheck()
-      expect(a).to.be.undefined
-    } catch (err) {
-      expect(err.message).to.eql('Network Error')
-    }
+
+    const err = await capturePromiseError(tequilApi.healthCheck())
+    expect(err.message).to.eql('Network Error')
   })
 
   it('throws timeout', async () => {
     mock.reset()
     mock.onGet('/healthcheck').timeout()
-    try {
-      const a = await tequilApi.healthCheck()
-      expect(a).to.be.undefined
-    } catch (err) {
-      expect(err.message).to.match(/timeout of .*ms exceeded/)
-    }
+
+    const err = await capturePromiseError(tequilApi.healthCheck())
+    expect(err.message).to.match(/timeout of .*ms exceeded/)
   })
 
   it('throws 404', async () => {
     mock.reset()
     mock.onGet('/healthcheck').reply(404, {message: 'What is wrong'})
-    try {
-      const health = await tequilApi.healthCheck()
-      expect(health).to.not.exist
-    } catch (err) {
-      expect(err.message).to.eql('Request failed with status code 404')
-      expect(err.response.data.message).to.eql('What is wrong')
-    }
+
+    const err = await capturePromiseError(tequilApi.healthCheck())
+    expect(err.message).to.eql('Request failed with status code 404')
+    expect(err.response.data.message).to.eql('What is wrong')
   })
 })

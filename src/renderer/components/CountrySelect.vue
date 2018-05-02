@@ -28,7 +28,7 @@
 
 <script>
   import path from 'path'
-  import countryList from '@/plugins/countries'
+  import {getCountryCodeFromProposal, getCountryNameFromProposal} from '@/../app/countries'
   import Multiselect from 'vue-multiselect'
   import IconWorld from '@/assets/img/icon--world.svg'
   import type from '@/store/types'
@@ -36,16 +36,10 @@
   import bugReporter from '@/../app/bugReporting/bug-reporting'
 
   function proposalToCountry (proposal) {
-    let code
-    if (typeof proposal.serviceDefinition !== 'undefined' &&
-      typeof proposal.serviceDefinition.locationOriginate !== 'undefined' &&
-      typeof proposal.serviceDefinition.locationOriginate.country !== 'undefined') {
-      code = proposal.serviceDefinition.locationOriginate.country.toLowerCase()
-    }
     return {
-      label: code ? countryList.GetName(code) : proposal.providerId,
+      label: getCountryNameFromProposal(proposal),
       id: proposal.providerId,
-      code: code
+      code: getCountryCodeFromProposal(proposal)
     }
   }
 
