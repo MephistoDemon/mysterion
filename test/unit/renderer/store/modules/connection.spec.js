@@ -14,6 +14,10 @@ const fakeTequilapi = factoryTequilapiManipulator()
 const fakeMessageBus = new FakeMessageBus()
 const rendererCommunication = new RendererCommunication(fakeMessageBus)
 
+const fakeCollector = {
+  collectEvents: () => Promise.resolve()
+}
+
 async function executeAction (action, state = {}, payload = {}) {
   const mutations = []
   const commit = (key, value) => {
@@ -22,7 +26,7 @@ async function executeAction (action, state = {}, payload = {}) {
 
   const dispatch = (action, payload = {}) => {
     const context = {commit, dispatch, state}
-    const actions = actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication)
+    const actions = actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector)
 
     return actions[action](context, payload)
   }

@@ -29,9 +29,9 @@ function bootstrap (container: Container) {
 
   container.service(
     'vue-store',
-    ['tequilapi', 'rendererCommunication'],
-    (tequilapi, rendererCommunication) => {
-      return storeFactory(tequilapi, rendererCommunication)
+    ['tequilapi', 'rendererCommunication', 'statsCollector', 'statsEventFactory'],
+    (tequilapi, rendererCommunication, statsCollector, statsEventFactory) => {
+      return storeFactory(tequilapi, rendererCommunication, statsCollector, statsEventFactory)
     }
   )
 
