@@ -1,5 +1,5 @@
 import {newEvent} from '../../../../src/app/statistics/events'
-import NullCollector from "../../../../src/app/statistics/null-collector"
+import NullCollector from '../../../../src/app/statistics/null-collector'
 
 describe('Null collector', () => {
   let collector = new NullCollector()

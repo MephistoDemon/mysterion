@@ -1,6 +1,6 @@
 // @flow
 
-import ProposalDto from '../../libraries/api/client/dto/proposal'
+import ProposalDTO from '../../libraries/api/client/dto/proposal'
 import TequilApi from '../../libraries/api/client/tequil-api'
 import {FunctionLooper} from '../../libraries/functionLooper'
 
@@ -25,7 +25,7 @@ class ProposalFetcher {
     return this
   }
 
-  fetch (): Promise<Array<ProposalDto>> {
+  fetch (): Promise<Array<ProposalDTO>> {
     return this._api.findProposals()
   }
 
@@ -39,7 +39,7 @@ class ProposalFetcher {
     return this
   }
 
-  _notifySubscribers (proposals: Array<ProposalDto>) {
+  _notifySubscribers (proposals: Array<ProposalDTO>) {
     this._subscribers.forEach((callback) => {
       callback(proposals)
     })
