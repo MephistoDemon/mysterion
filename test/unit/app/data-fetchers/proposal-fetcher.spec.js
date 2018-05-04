@@ -1,4 +1,4 @@
-/* eslint no-unused-expressions: 0 */
+// @flow
 import {describe, it, expect} from '../../../helpers/dependencies'
 import lolex from 'lolex'
 import ProposalFetcher from '../../../../src/app/data-fetchers/proposal-fetcher'
