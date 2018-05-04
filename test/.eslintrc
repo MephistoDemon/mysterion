@@ -8,5 +8,8 @@
     "should": true,
     "step": true,
     "__static": true
+  },
+  "rules": {
+    "no-unused-expressions": 0
   }
 }

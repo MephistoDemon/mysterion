@@ -1,4 +1,3 @@
-/* eslint no-unused-expressions: 0 */
 
 import lolex from 'lolex'
 import { FunctionLooper, ThresholdExecutor } from '@/../libraries/functionLooper'

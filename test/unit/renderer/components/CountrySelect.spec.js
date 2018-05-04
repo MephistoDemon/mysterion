@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 import {createLocalVue, mount} from '@vue/test-utils'
 import CountrySelect from '@/components/CountrySelect'
 import DIContainer from '../../../../src/app/di/vue-container'
