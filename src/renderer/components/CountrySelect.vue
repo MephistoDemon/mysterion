@@ -71,7 +71,7 @@
           code = 'world'
         }
 
-        return path.join('static', 'flags', code + '.svg')
+        return path.join('static', 'flags', code.toLowerCase() + '.svg')
       },
       async fetchCountries () {
         this.countriesAreLoading = true
