@@ -2,9 +2,8 @@
   "name": "mysterion",
   "version": "0.0.1",
   "author": "Andrej Novikov <jazzaiman@gmail.com>",
-  "description": "mysterium client desktop interface application",
-  "license": null,
-  "private": true,
+  "description": "Mysterion is desktop application to access Mysterion Network - decentralized VPN built on blockchain.",
+  "license": "GPL-3.0",
   "main": "./dist/electron/main.js",
   "scripts": {
     "download:bins": "util_scripts/download-binaries.sh",
@@ -16,7 +15,7 @@
     "dev": "node .electron-vue/dev-runner.js",
     "lint": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter src",
     "lint:fix": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter --fix src",
-    "pack": "npm run pack:main && npm run pack:renderer",
+    "pack:all": "yarn run pack:main && yarn run pack:renderer",
     "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
     "unit": "karma start test/unit/karma.conf.js --single-run=true",
@@ -24,7 +23,6 @@
     "test:integration:start-server": "karma start test/integration/karma.conf.js",
     "unit:start-server": "karma start test/unit/karma.conf.js",
     "unit:run": "karma run test/unit/karma.conf.js",
-    "postinstall": "npm run && npm run lint:fix",
     "ci": "yarn lint && yarn flow && yarn unit"
   },
   "build": {

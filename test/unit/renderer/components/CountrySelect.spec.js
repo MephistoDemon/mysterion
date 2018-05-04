@@ -133,7 +133,7 @@ describe('CountrySelect', () => {
       expect(wrapper.findAll('.multiselect__option-title')).to.have.lengthOf(4)
       expect(wrapper.text()).to.contain('Lithuania')
       expect(wrapper.text()).to.contain('United Kingdom')
-      expect(wrapper.text()).to.contain('0x3')
+      expect(wrapper.text()).to.contain('N/A')
       expect(wrapper.text()).to.contain('N/A')
     })
 

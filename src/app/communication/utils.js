@@ -1,5 +1,5 @@
 // @flow
-type Callback = () => void
+type Callback = (data: any) => void
 
 /**
  * Subscribes for specific event and resolves when first event is received.
@@ -9,8 +9,8 @@ type Callback = () => void
  */
 function onFirstEvent (subscriber: (Callback) => void): Promise<void> {
   return new Promise((resolve) => {
-    subscriber(() => {
-      resolve()
+    subscriber((data) => {
+      resolve(data)
     })
   })
 }

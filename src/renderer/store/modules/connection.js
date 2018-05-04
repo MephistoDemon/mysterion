@@ -5,6 +5,7 @@ import bugReporter from '../../../app/bugReporting/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
+import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/events-connection'
 
 const defaultStatistics = {
 }
@@ -43,7 +44,7 @@ const mutations = {
   }
 }
 
-function actionsFactory (tequilapi, rendererCommunication) {
+function actionsFactory (tequilapi, rendererCommunication, statsCollector, statsEventsFactory) {
   return {
     async [type.CONNECTION_IP] ({commit}) {
       try {
@@ -111,6 +112,11 @@ function actionsFactory (tequilapi, rendererCommunication) {
       }
     },
     async [type.CONNECT] ({commit, dispatch, state}, connectionDetails) {
+      let eventTracker = new ConnectEventTracker(statsCollector, currentUserTime, statsEventsFactory)
+      eventTracker.connectStarted({
+        consumerId: connectionDetails.consumerId,
+        providerId: connectionDetails.providerId
+      })
       const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
       if (looper) {
         await looper.stop()
@@ -118,16 +124,19 @@ function actionsFactory (tequilapi, rendererCommunication) {
       await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.CONNECTING)
       commit(type.CONNECTION_STATISTICS_RESET)
       try {
-        await tequilapi.connection.connect(connectionDetails, config.connectTimeout)
+        await tequilapi.connection.connect(connectionDetails)
+        eventTracker.connectEnded()
         commit(type.HIDE_ERROR)
       } catch (err) {
         const cancelConnectionCode = httpResponseCodes.CLIENT_CLOSED_REQUEST
         if (hasHttpStatus(err, cancelConnectionCode)) {
+          eventTracker.connectCanceled()
           return
         }
         commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
         let error = new Error('Connection to node failed.')
         error.original = err
+        eventTracker.connectEnded(error.toString())
         throw error
       } finally {
         if (looper) {
@@ -158,12 +167,12 @@ function actionsFactory (tequilapi, rendererCommunication) {
   }
 }
 
-function factory (tequilapi, ipc) {
+function factory (tequilapi, ipc, statsCollector, statsEventsFactory) {
   return {
     state,
     getters,
     mutations,
-    actions: actionsFactory(tequilapi, ipc)
+    actions: actionsFactory(tequilapi, ipc, statsCollector, statsEventsFactory)
   }
 }
 

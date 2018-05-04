@@ -34,11 +34,11 @@ function tequilapiFactory (axioInstance) {
       list: async () => axioAdapter.get(propPath)
     },
     connection: {
-      connect: async ({consumerId, providerId}, timeout) => {
+      connect: async ({consumerId, providerId}, timeout = 0) => {
         return axioAdapter.put(conPath, {
           consumerId: consumerId,
           providerId: providerId
-        }, null, timeout ? {timeout} : undefined)
+        }, {timeout})
       },
       disconnect: async () => axioAdapter.delete(conPath),
       status: async () => axioAdapter.get(conPath),
@@ -66,7 +66,7 @@ function adapterFactory (teqAxio) {
       return res.data
     },
     async put (path, data, params) {
-      const res = await teqAxio.put(path, data, {params})
+      const res = await teqAxio.put(path, data, params)
       return res.data
     },
     async delete (path) {
