@@ -7,6 +7,7 @@ import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../../helpers/utils'
 import NodeHealthcheckDTO from '../../../../../src/libraries/api/client/dto/node-healthcheck'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
+import ConnectionIPDTO from '../../../../../src/libraries/api/client/dto/connection-ip'
 
 describe('tequilAPI', () => {
   let api
@@ -167,6 +168,23 @@ describe('tequilAPI', () => {
       mock.onPut('identities/0x0000bEEF/unlock').reply(500)
 
       const e = await capturePromiseError(api.identityUnlock('0x0000bEEF', 'test'))
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
+  describe('client.connectionIP()', () => {
+    it('returns response', async () => {
+      const response = {ip: 'mock ip'}
+      mock.onGet('connection/ip').reply(200, response)
+
+      const stats = await api.connectionIP()
+      expect(stats).to.deep.equal(new ConnectionIPDTO(response))
+    })
+
+    it('handles error', async () => {
+      mock.onGet('connection/ip').reply(500)
+
+      const e = await capturePromiseError(api.connectionIP())
       expect(e.message).to.equal('Request failed with status code 500')
     })
   })

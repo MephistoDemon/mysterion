@@ -8,6 +8,7 @@ import IdentityDTO from './dto/identity'
 import IdentitiesResponseDTO from './dto/identities-response'
 import NodeHealthcheckDTO from './dto/node-healthcheck'
 import ConnectionStatisticsDTO from './dto/connection-statistics'
+import ConnectionIPDTO from './dto/connection-ip'
 
 class TequilApi {
   http: HttpInterface
@@ -49,6 +50,12 @@ class TequilApi {
     const responseDto = new ProposalsResponseDTO(response)
 
     return responseDto.proposals
+  }
+
+  async connectionIP (timeout: ?number): Promise<ConnectionIPDTO> {
+    const response = await this.http.get('connection/ip', null, timeout)
+
+    return new ConnectionIPDTO(response)
   }
 
   async connectionStatistics (): Promise<ConnectionStatisticsDTO> {
