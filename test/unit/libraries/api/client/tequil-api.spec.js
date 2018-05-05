@@ -6,6 +6,7 @@ import axios from 'axios/index'
 import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../../helpers/utils'
 import NodeHealthcheckDTO from '../../../../../src/libraries/api/client/dto/node-healthcheck'
+import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
 
 describe('tequilAPI', () => {
   let api
@@ -166,6 +167,27 @@ describe('tequilAPI', () => {
       mock.onPut('identities/0x0000bEEF/unlock').reply(500)
 
       const e = await capturePromiseError(api.identityUnlock('0x0000bEEF', 'test'))
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
+  describe('client.connectionStatistics()', () => {
+    it('returns response', async () => {
+      const response = {
+        duration: 13325,
+        bytesReceived: 1232133, // 1.17505 MB
+        bytesSent: 123321 // 0.117608 MB
+      }
+      mock.onGet('connection/statistics').reply(200, response)
+
+      const stats = await api.connectionStatistics()
+      expect(stats).to.deep.equal(new ConnectionStatisticsDTO(response))
+    })
+
+    it('handles error', async () => {
+      mock.onGet('connection/statistics').reply(500)
+
+      const e = await capturePromiseError(api.connectionStatistics())
       expect(e.message).to.equal('Request failed with status code 500')
     })
   })

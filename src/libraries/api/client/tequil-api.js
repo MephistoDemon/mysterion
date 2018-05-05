@@ -7,6 +7,7 @@ import ProposalsFilter from './dto/proposals-filter'
 import IdentityDTO from './dto/identity'
 import IdentitiesResponseDTO from './dto/identities-response'
 import NodeHealthcheckDTO from './dto/node-healthcheck'
+import ConnectionStatisticsDTO from './dto/connection-statistics'
 
 class TequilApi {
   http: HttpInterface
@@ -48,6 +49,12 @@ class TequilApi {
     const responseDto = new ProposalsResponseDTO(response)
 
     return responseDto.proposals
+  }
+
+  async connectionStatistics (): Promise<ConnectionStatisticsDTO> {
+    const response = await this.http.get('connection/statistics')
+
+    return new ConnectionStatisticsDTO(response)
   }
 }
 
