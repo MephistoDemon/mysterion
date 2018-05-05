@@ -5,6 +5,7 @@ import AxiosAdapter from '../../../../../src/libraries/api/client/adapters/axios
 import axios from 'axios/index'
 import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../../helpers/utils'
+import NodeHealthcheckDTO from '../../../../../src/libraries/api/client/dto/node-healthcheck'
 
 describe('tequilAPI', () => {
   let api
@@ -29,7 +30,7 @@ describe('tequilAPI', () => {
       mock.onGet('healthcheck').reply(200, response)
 
       const healthcheck = await api.healthCheck()
-      expect(healthcheck).to.deep.equal(response)
+      expect(healthcheck).to.deep.equal(new NodeHealthcheckDTO(response))
     })
 
     it('throws network error', async () => {
@@ -118,7 +119,7 @@ describe('tequilAPI', () => {
     it('returns identity DTOs', async () => {
       const response = [
         {id: '0x1000FACE'},
-        {id: '0x2000FACE'},
+        {id: '0x2000FACE'}
       ]
       mock.onGet('identities').reply(200, response)
 

@@ -6,6 +6,7 @@ import ProposalsResponseDTO from './dto/proposals-response'
 import ProposalsFilter from './dto/proposals-filter'
 import IdentityDTO from './dto/identity'
 import IdentitiesResponseDTO from './dto/identities-response'
+import NodeHealthcheckDTO from './dto/node-healthcheck'
 
 class TequilApi {
   http: HttpInterface
@@ -15,7 +16,9 @@ class TequilApi {
   }
 
   async healthCheck (timeout: ?number) {
-    return this.http.get('healthcheck', null, timeout)
+    const response = await this.http.get('healthcheck', null, timeout)
+
+    return new NodeHealthcheckDTO(response)
   }
 
   async stop () {
