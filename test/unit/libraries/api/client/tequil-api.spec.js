@@ -8,6 +8,7 @@ import {capturePromiseError} from '../../../../helpers/utils'
 import NodeHealthcheckDTO from '../../../../../src/libraries/api/client/dto/node-healthcheck'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
 import ConnectionIPDTO from '../../../../../src/libraries/api/client/dto/connection-ip'
+import ConnectionStatusDTO from '../../../../../src/libraries/api/client/dto/connection-status'
 
 describe('tequilAPI', () => {
   let api
@@ -168,6 +169,26 @@ describe('tequilAPI', () => {
       mock.onPut('identities/0x0000bEEF/unlock').reply(500)
 
       const e = await capturePromiseError(api.identityUnlock('0x0000bEEF', 'test'))
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
+  describe('client.connectionStatus()', () => {
+    it('returns response', async () => {
+      const response = {
+        status : 'Connected',
+        sessionId : 'My-super-session'
+      }
+      mock.onGet('connection').reply(200, response)
+
+      const connection = await api.connectionStatus()
+      expect(connection).to.deep.equal(new ConnectionStatusDTO(response))
+    })
+
+    it('handles error', async () => {
+      mock.onGet('connection').reply(500)
+
+      const e = await capturePromiseError(api.connectionStatus())
       expect(e.message).to.equal('Request failed with status code 500')
     })
   })
