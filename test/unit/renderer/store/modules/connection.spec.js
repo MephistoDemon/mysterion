@@ -6,7 +6,7 @@ import {mutations, actionsFactory} from '@/store/modules/connection'
 import {capturePromiseError} from '../../../../helpers/utils'
 import factoryTequilapiManipulator from './tequilapi-manipulator'
 import {FunctionLooper} from '@/../libraries/functionLooper'
-import connectionStatus from '@/../libraries/api/connectionStatus'
+import ConnectionStatusEnum from '../../../../../src/libraries/api/client/dto/connection-status-enum'
 import communication from '@/../app/communication'
 import RendererCommunication from '@/../app/communication/renderer-communication'
 import FakeMessageBus from '../../../../helpers/fakeMessageBus'
@@ -242,30 +242,30 @@ describe('actions', () => {
     })
 
     it('commits new status', async () => {
-      const committed = await executeAction(type.SET_CONNECTION_STATUS, {}, connectionStatus.CONNECTING)
+      const committed = await executeAction(type.SET_CONNECTION_STATUS, {}, ConnectionStatusEnum.CONNECTING)
       expect(committed).to.eql([{
         key: type.SET_CONNECTION_STATUS,
-        value: connectionStatus.CONNECTING
+        value: ConnectionStatusEnum.CONNECTING
       }])
     })
 
     it('sends new status to IPC', async () => {
       const state = {
-        status: connectionStatus.NOT_CONNECTED
+        status: ConnectionStatusEnum.NOT_CONNECTED
       }
-      await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.CONNECTING)
+      await executeAction(type.SET_CONNECTION_STATUS, state, ConnectionStatusEnum.CONNECTING)
       expect(fakeMessageBus.lastChannel).to.eql(communication.CONNECTION_STATUS_CHANGED)
       expect(fakeMessageBus.lastData).to.eql({
-        oldStatus: connectionStatus.NOT_CONNECTED,
-        newStatus: connectionStatus.CONNECTING
+        oldStatus: ConnectionStatusEnum.NOT_CONNECTED,
+        newStatus: ConnectionStatusEnum.CONNECTING
       })
     })
 
     it('does not send new status to IPC when status does not change', async () => {
       const state = {
-        status: connectionStatus.NOT_CONNECTED
+        status: ConnectionStatusEnum.NOT_CONNECTED
       }
-      await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.NOT_CONNECTED)
+      await executeAction(type.SET_CONNECTION_STATUS, state, ConnectionStatusEnum.NOT_CONNECTED)
       expect(fakeMessageBus.lastChannel).to.eql(null)
     })
 
@@ -273,11 +273,11 @@ describe('actions', () => {
       const state = {
         actionLoopers: {}
       }
-      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.CONNECTED)
+      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, ConnectionStatusEnum.CONNECTED)
       expect(committed.length).to.eql(3)
       expect(committed[0]).to.eql({
         key: type.SET_CONNECTION_STATUS,
-        value: connectionStatus.CONNECTED
+        value: ConnectionStatusEnum.CONNECTED
       })
       expect(committed[1].key).to.eql(type.SET_ACTION_LOOPER)
       expect(committed[1].value.action).to.eql(type.CONNECTION_STATISTICS)
@@ -295,17 +295,17 @@ describe('actions', () => {
       const looper = new FunctionLooper(noop, 1000)
       looper.start()
       const state = {
-        status: connectionStatus.CONNECTED,
+        status: ConnectionStatusEnum.CONNECTED,
         actionLoopers: {
           [type.CONNECTION_STATISTICS]: looper
         }
       }
-      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.DISCONNECTING)
+      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, ConnectionStatusEnum.DISCONNECTING)
 
       expect(committed).to.eql([
         {
           key: type.SET_CONNECTION_STATUS,
-          value: connectionStatus.DISCONNECTING
+          value: ConnectionStatusEnum.DISCONNECTING
         },
         {
           key: type.REMOVE_ACTION_LOOPER,
@@ -319,13 +319,13 @@ describe('actions', () => {
       const noop = () => {}
       const looper = new FunctionLooper(noop, 1000)
       const state = {
-        status: connectionStatus.CONNECTED,
+        status: ConnectionStatusEnum.CONNECTED,
         actionLoopers: {
           [type.CONNECTION_STATISTICS]: looper
         }
       }
 
-      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, connectionStatus.CONNECTED)
+      const committed = await executeAction(type.SET_CONNECTION_STATUS, state, ConnectionStatusEnum.CONNECTED)
       expect(committed).to.eql([])
     })
   })
@@ -358,7 +358,7 @@ describe('actions', () => {
       expect(committed).to.eql([
         {
           key: type.SET_CONNECTION_STATUS,
-          value: connectionStatus.CONNECTING
+          value: ConnectionStatusEnum.CONNECTING
         },
         {
           key: type.CONNECTION_STATISTICS_RESET,
@@ -412,7 +412,7 @@ describe('actions', () => {
       const committed = await executeAction(type.DISCONNECT, state)
       expect(committed[0]).to.eql({
         key: type.SET_CONNECTION_STATUS,
-        value: connectionStatus.DISCONNECTING
+        value: ConnectionStatusEnum.DISCONNECTING
       })
     })
   })

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import ConnectionButton from '../../../../src/renderer/components/ConnectionButton'
 import type from '../../../../src/renderer/store/types'
+import ConnectionStatusEnum from '../../../../src/libraries/api/client/dto/connection-status-enum'
 import {state, mutations, getters} from '@/store/modules/connection'
 
 const mountWithStore = function () {
@@ -25,10 +26,10 @@ const mountWithStore = function () {
         getters,
         actions: {
           [type.CONNECT] ({dispatch, commit}) {
-            commit(type.SET_CONNECTION_STATUS, type.tequilapi.CONNECTED)
+            commit(type.SET_CONNECTION_STATUS, ConnectionStatusEnum.CONNECTED)
           },
           [type.DISCONNECT] ({dispatch, commit}) {
-            commit(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
+            commit(type.SET_CONNECTION_STATUS, ConnectionStatusEnum.NOT_CONNECTED)
           }
         }
       }
@@ -60,7 +61,7 @@ describe('ConnectionButton', () => {
       expect(vm.$el.textContent).to.eql(rules[index][1])
     }
     // reset store
-    vm.$store.commit(type.SET_CONNECTION_STATUS, type.tequilapi.NOT_CONNECTED)
+    vm.$store.commit(type.SET_CONNECTION_STATUS, ConnectionStatusEnum.NOT_CONNECTED)
   })
 
   it('clicks change state', () => {

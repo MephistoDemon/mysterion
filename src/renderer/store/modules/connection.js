@@ -4,7 +4,6 @@ import {isTimeoutError, hasHttpStatus, httpResponseCodes} from '../../../librari
 import messages from '../../../app/messages'
 import bugReporter from '../../../app/bugReporting/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
-import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
 import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/events-connection'
 import RendererCommunication from '../../../app/communication/renderer-communication'
@@ -12,6 +11,7 @@ import {EventCollector as StatsCollector} from '../../../app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../app/statistics/events'
 import TequilApi from '../../../libraries/api/client/tequil-api'
 import type {ConnectionStatus} from '../../../libraries/api/client/dto/connection-status-enum'
+import ConnectionStatusEnum from '../../../libraries/api/client/dto/connection-status-enum'
 import ConnectionStatisticsDTO from '../../../libraries/api/client/dto/connection-statistics'
 import ConnectionRequestDTO from '../../../libraries/api/client/dto/connection-request'
 
@@ -47,7 +47,7 @@ const defaultStatistics = {
 
 const state: ConnectionStore = {
   ip: null,
-  status: connectionStatus.NOT_CONNECTED,
+  status: ConnectionStatusEnum.NOT_CONNECTED,
   statistics: defaultStatistics,
   actionLoopers: {}
 }
@@ -139,10 +139,10 @@ function actionsFactory (
       commit(type.SET_CONNECTION_STATUS, newStatus)
       rendererCommunication.sendConnectionStatusChange({oldStatus, newStatus})
 
-      if (newStatus === connectionStatus.CONNECTED) {
+      if (newStatus === ConnectionStatusEnum.CONNECTED) {
         await dispatch(type.START_ACTION_LOOPING, new ActionLooperStart(type.CONNECTION_STATISTICS, config.statisticsUpdateThreshold))
       }
-      if (oldStatus === connectionStatus.CONNECTED) {
+      if (oldStatus === ConnectionStatusEnum.CONNECTED) {
         await dispatch(type.STOP_ACTION_LOOPING, type.CONNECTION_STATISTICS)
       }
     },
@@ -166,7 +166,7 @@ function actionsFactory (
         await looper.stop()
       }
 
-      await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.CONNECTING)
+      await dispatch(type.SET_CONNECTION_STATUS, ConnectionStatusEnum.CONNECTING)
       commit(type.CONNECTION_STATISTICS_RESET)
 
       try {
@@ -198,7 +198,7 @@ function actionsFactory (
       }
 
       try {
-        await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.DISCONNECTING)
+        await dispatch(type.SET_CONNECTION_STATUS, ConnectionStatusEnum.DISCONNECTING)
 
         await tequilapi.connectionCancel()
         dispatch(type.FETCH_CONNECTION_STATUS)
