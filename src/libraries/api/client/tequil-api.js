@@ -10,6 +10,7 @@ import NodeHealthcheckDTO from './dto/node-healthcheck'
 import ConnectionStatisticsDTO from './dto/connection-statistics'
 import ConnectionIPDTO from './dto/connection-ip'
 import ConnectionStatusDTO from './dto/connection-status'
+import ConnectionRequestDTO from './dto/connection-request'
 
 class TequilApi {
   http: HttpInterface
@@ -51,6 +52,19 @@ class TequilApi {
     const responseDto = new ProposalsResponseDTO(response)
 
     return responseDto.proposals
+  }
+
+  async connectionCreate (request: ConnectionRequestDTO, timeout: ?number): Promise<ConnectionStatusDTO> {
+    const response = await this.http.put(
+      'connection',
+      {
+        consumerId: request.consumerId,
+        providerId: request.providerId
+      },
+      timeout
+    )
+
+    return new ConnectionStatusDTO(response)
   }
 
   async connectionStatus (): Promise<ConnectionStatusDTO> {
