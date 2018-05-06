@@ -12,6 +12,7 @@ import RendererCommunication from '@/../app/communication/renderer-communication
 import FakeMessageBus from '../../../../helpers/fakeMessageBus'
 import {createEventFactory} from '../../../../../src/app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../../../src/app/statistics/events'
+import {ActionLooper, ActionLooperStart} from '../../../../../src/renderer/store/modules/connection'
 
 const fakeTequilapi = factoryTequilapiManipulator()
 const fakeMessageBus = new FakeMessageBus()
@@ -86,19 +87,13 @@ describe('mutations', () => {
       const state = {
         actionLoopers: {}
       }
-      const actionLooper1 = {
-        action: type.CONNECTION_IP,
-        looper: new FunctionLooper()
-      }
+      const actionLooper1 = new ActionLooper(type.CONNECTION_IP, new FunctionLooper())
       mutations[type.SET_ACTION_LOOPER](state, actionLooper1)
       expect(state.actionLoopers).to.eql({
         [actionLooper1.action]: actionLooper1.looper
       })
 
-      const actionLooper2 = {
-        action: type.FETCH_CONNECTION_STATUS,
-        looper: new FunctionLooper()
-      }
+      const actionLooper2 = new ActionLooper(type.FETCH_CONNECTION_STATUS, new FunctionLooper())
       mutations[type.SET_ACTION_LOOPER](state, actionLooper2)
       expect(state.actionLoopers).to.eql({
         [actionLooper1.action]: actionLooper1.looper,
@@ -136,10 +131,11 @@ describe('actions', () => {
       const state = {
         actionLoopers: {}
       }
-      const committed = await executeAction(type.START_ACTION_LOOPING, state, {
-        action: type.CONNECTION_STATISTICS,
-        threshold: 1000
-      })
+      const committed = await executeAction(
+        type.START_ACTION_LOOPING,
+        state,
+        new ActionLooperStart(type.CONNECTION_STATISTICS, 1000)
+      )
 
       expect(committed.length).to.eql(2)
 
@@ -163,10 +159,11 @@ describe('actions', () => {
           [type.CONNECTION_STATISTICS]: looper
         }
       }
-      const committed = await executeAction(type.START_ACTION_LOOPING, state, {
-        action: type.CONNECTION_STATISTICS,
-        threshold: 1000
-      })
+      const committed = await executeAction(
+        type.START_ACTION_LOOPING,
+        state,
+        new ActionLooperStart(type.CONNECTION_STATISTICS, 1000)
+      )
 
       expect(committed).to.eql([])
     })

@@ -11,10 +11,37 @@ import RendererCommunication from '../../../app/communication/renderer-communica
 import {EventCollector as StatsCollector} from '../../../app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../app/statistics/events'
 
+type ConnectionStore = {
+  ip: ?string,
+  status: string,
+  statistics: Object,
+  actionLoopers: Map<string,FunctionLooper>
+}
+
+class ActionLooper {
+  action: string
+  looper: FunctionLooper
+
+  constructor (action: string, looper: FunctionLooper) {
+    this.action = action
+    this.looper = looper
+  }
+}
+
+class ActionLooperStart {
+  action: string
+  threshold: number
+
+  constructor (action: string, threshold: number) {
+    this.action = action
+    this.threshold = threshold
+  }
+}
+
 const defaultStatistics = {
 }
 
-const state = {
+const state: ConnectionStore = {
   ip: null,
   status: connectionStatus.NOT_CONNECTED,
   statistics: defaultStatistics,
@@ -28,22 +55,22 @@ const getters = {
 }
 
 const mutations = {
-  [type.SET_CONNECTION_STATUS] (state, status) {
+  [type.SET_CONNECTION_STATUS] (state: ConnectionStore, status: string) {
     state.status = status
   },
-  [type.CONNECTION_STATISTICS] (state, statistics) {
+  [type.CONNECTION_STATISTICS] (state: ConnectionStore, statistics: Object) {
     state.statistics = statistics
   },
-  [type.CONNECTION_IP] (state, ip) {
+  [type.CONNECTION_IP] (state: ConnectionStore, ip: string) {
     state.ip = ip
   },
-  [type.CONNECTION_STATISTICS_RESET] (state) {
+  [type.CONNECTION_STATISTICS_RESET] (state: ConnectionStore) {
     state.statistics = defaultStatistics
   },
-  [type.SET_ACTION_LOOPER] (state, {action, looper}) {
-    state.actionLoopers[action] = looper
+  [type.SET_ACTION_LOOPER] (state: ConnectionStore, looper: ActionLooper) {
+    state.actionLoopers[looper.action] = looper.looper
   },
-  [type.REMOVE_ACTION_LOOPER] (state, action) {
+  [type.REMOVE_ACTION_LOOPER] (state: ConnectionStore, action: string) {
     delete state.actionLoopers[action]
   }
 }
@@ -66,20 +93,20 @@ function actionsFactory (
         bugReporter.renderer.captureException(err)
       }
     },
-    [type.START_ACTION_LOOPING] ({dispatch, commit, state}, {action, threshold}) {
-      const currentLooper = state.actionLoopers[action]
+    [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperStart) {
+      const currentLooper = state.actionLoopers[event.action]
       if (currentLooper) {
-        console.log('Warning: requested to start looping action which is already looping: ' + action)
+        console.log('Warning: requested to start looping action which is already looping: ' + event.action)
         return currentLooper
       }
 
-      const func = () => dispatch(action)
-      const looper = new FunctionLooper(func, threshold)
+      const looper = new FunctionLooper(() => dispatch(event.action), event.threshold)
       looper.start()
-      commit(type.SET_ACTION_LOOPER, {action, looper})
+
+      commit(type.SET_ACTION_LOOPER, new ActionLooper(event.action, looper))
       return looper
     },
-    async [type.STOP_ACTION_LOOPING] ({commit, state}, action) {
+    async [type.STOP_ACTION_LOOPING] ({commit, state}, action: string) {
       const looper = state.actionLoopers[action]
       if (looper) {
         await looper.stop()
@@ -103,10 +130,7 @@ function actionsFactory (
       rendererCommunication.sendConnectionStatusChange({oldStatus, newStatus})
 
       if (newStatus === connectionStatus.CONNECTED) {
-        await dispatch(type.START_ACTION_LOOPING, {
-          action: type.CONNECTION_STATISTICS,
-          threshold: config.statisticsUpdateThreshold
-        })
+        await dispatch(type.START_ACTION_LOOPING, new ActionLooperStart(type.CONNECTION_STATISTICS, config.statisticsUpdateThreshold))
       }
       if (oldStatus === connectionStatus.CONNECTED) {
         await dispatch(type.STOP_ACTION_LOOPING, type.CONNECTION_STATISTICS)
@@ -186,6 +210,8 @@ function factory (actions: Object) {
 }
 
 export {
+  ActionLooper,
+  ActionLooperStart,
   state,
   mutations,
   getters,
