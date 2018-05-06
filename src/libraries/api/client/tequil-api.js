@@ -73,6 +73,12 @@ class TequilApi {
     return new ConnectionStatusDTO(response)
   }
 
+  async connectionCancel (): Promise<ConnectionStatusDTO> {
+    const response = await this.http.delete('connection')
+
+    return new ConnectionStatusDTO(response)
+  }
+
   async connectionIP (timeout: ?number): Promise<ConnectionIPDTO> {
     const response = await this.http.get('connection/ip', null, timeout)
 

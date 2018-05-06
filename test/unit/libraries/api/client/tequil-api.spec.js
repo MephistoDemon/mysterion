@@ -64,7 +64,8 @@ describe('tequilAPI', () => {
 
   describe('client.stop()', () => {
     it('success', async () => {
-      mock.onPost('stop').reply(200)
+      const expectedRequest = undefined
+      mock.onPost('stop', expectedRequest).reply(200)
 
       const response = await api.stop()
       expect(response).to.be.undefined
@@ -218,6 +219,27 @@ describe('tequilAPI', () => {
     })
   })
 
+  describe('client.connectionCancel()', () => {
+    it('returns response', async () => {
+      const expectedRequest = undefined
+      const response = {
+        status : 'NotConnected',
+        sessionId : ''
+      }
+      mock.onDelete('connection', expectedRequest).reply(200, response)
+
+      const connection = await api.connectionCancel()
+      expect(connection).to.deep.equal(new ConnectionStatusDTO(response))
+    })
+
+    it('handles error', async () => {
+      mock.onDelete('connection').reply(500)
+
+      const e = await capturePromiseError(api.connectionCancel())
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
   describe('client.connectionIP()', () => {
     it('returns response', async () => {
       const response = {ip: 'mock ip'}
@@ -255,5 +277,4 @@ describe('tequilAPI', () => {
       expect(e.message).to.equal('Request failed with status code 500')
     })
   })
-
 })
