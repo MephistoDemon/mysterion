@@ -1,3 +1,4 @@
+// @flow
 import type from '../types'
 import {isTimeoutError, hasHttpStatus, httpResponseCodes} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
@@ -6,6 +7,9 @@ import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
 import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/events-connection'
+import RendererCommunication from '../../../app/communication/renderer-communication'
+import {EventCollector as StatsCollector} from '../../../app/statistics/events'
+import type {EventFactory as StatsEventsFactory} from '../../../app/statistics/events'
 
 const defaultStatistics = {
 }
@@ -44,7 +48,12 @@ const mutations = {
   }
 }
 
-function actionsFactory (tequilapi, rendererCommunication, statsCollector, statsEventsFactory) {
+function actionsFactory (
+  tequilapi: Object,
+  rendererCommunication: RendererCommunication,
+  statsCollector: StatsCollector,
+  statsEventsFactory: StatsEventsFactory
+) {
   return {
     async [type.CONNECTION_IP] ({commit}) {
       try {
@@ -167,12 +176,12 @@ function actionsFactory (tequilapi, rendererCommunication, statsCollector, stats
   }
 }
 
-function factory (tequilapi, ipc, statsCollector, statsEventsFactory) {
+function factory (actions: Object) {
   return {
     state,
     getters,
     mutations,
-    actions: actionsFactory(tequilapi, ipc, statsCollector, statsEventsFactory)
+    actions,
   }
 }
 

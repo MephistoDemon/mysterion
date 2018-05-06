@@ -1,6 +1,6 @@
 // @flow
 import {EventCollector} from './events'
-import type {Event} from './events'
+import type {EventFactory} from './events'
 
 type UserTime = {
   localTime: number,
@@ -8,7 +8,6 @@ type UserTime = {
 }
 
 type UserTimeProvider = () => UserTime
-type EventFactory = (name: string, details: Object) => Event
 
 type ConnectDetails = {
   consumerId: string,

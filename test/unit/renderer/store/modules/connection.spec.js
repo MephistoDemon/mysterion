@@ -1,3 +1,4 @@
+// @flow
 import {expect} from 'chai'
 
 import type from '@/store/types'
@@ -9,6 +10,8 @@ import connectionStatus from '@/../libraries/api/connectionStatus'
 import communication from '@/../app/communication'
 import RendererCommunication from '@/../app/communication/renderer-communication'
 import FakeMessageBus from '../../../../helpers/fakeMessageBus'
+import {createEventFactory} from '../../../../../src/app/statistics/events'
+import type {EventFactory as StatsEventsFactory} from '../../../../../src/app/statistics/events'
 
 const fakeTequilapi = factoryTequilapiManipulator()
 const fakeMessageBus = new FakeMessageBus()
@@ -16,6 +19,10 @@ const rendererCommunication = new RendererCommunication(fakeMessageBus)
 
 const fakeCollector = {
   collectEvents: () => Promise.resolve()
+}
+
+function statsEventsFactory (): StatsEventsFactory {
+  return createEventFactory({name: 'Test'})
 }
 
 async function executeAction (action, state = {}, payload = {}) {
@@ -26,7 +33,7 @@ async function executeAction (action, state = {}, payload = {}) {
 
   const dispatch = (action, payload = {}) => {
     const context = {commit, dispatch, state}
-    const actions = actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector)
+    const actions = actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector, statsEventsFactory)
 
     return actions[action](context, payload)
   }
