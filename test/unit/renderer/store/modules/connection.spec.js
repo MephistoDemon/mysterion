@@ -13,6 +13,7 @@ import FakeMessageBus from '../../../../helpers/fakeMessageBus'
 import {createEventFactory} from '../../../../../src/app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../../../src/app/statistics/events'
 import {ActionLooper, ActionLooperStart} from '../../../../../src/renderer/store/modules/connection'
+import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
 
 const fakeTequilapi = factoryTequilapiManipulator()
 const fakeMessageBus = new FakeMessageBus()
@@ -59,8 +60,10 @@ describe('mutations', () => {
 
     it('updates statistics', () => {
       const state = {}
-      connectionStatistics(state, {some_stat: 'some value'})
-      expect(state).to.eql({ statistics: {some_stat: 'some value'} })
+      const stats = new ConnectionStatisticsDTO({duration: 13320})
+
+      connectionStatistics(state, stats)
+      expect(state).to.eql({statistics: stats})
     })
   })
 
@@ -147,7 +150,7 @@ describe('actions', () => {
 
       expect(committed[1]).to.eql({
         key: type.CONNECTION_STATISTICS,
-        value: 'mock statistics'
+        value: new ConnectionStatisticsDTO({duration: 1})
       })
     })
 
@@ -283,7 +286,7 @@ describe('actions', () => {
       expect(looper.isRunning()).to.eql(true)
       expect(committed[2]).to.eql({
         key: type.CONNECTION_STATISTICS,
-        value: 'mock statistics'
+        value: new ConnectionStatisticsDTO({duration: 1})
       })
     })
 
@@ -332,7 +335,7 @@ describe('actions', () => {
       const committed = await executeAction(type.CONNECTION_STATISTICS)
       expect(committed).to.eql([{
         key: type.CONNECTION_STATISTICS,
-        value: 'mock statistics'
+        value: new ConnectionStatisticsDTO({duration: 1})
       }])
     })
 

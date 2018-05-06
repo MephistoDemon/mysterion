@@ -79,7 +79,7 @@ function bootstrap (container: Container) {
   )
   container.service(
     'vue-store.connection.actions',
-    ['tequilapiDepreciated', 'rendererCommunication', 'statsCollector', 'statsEventFactory'],
+    ['tequilapi', 'rendererCommunication', 'statsCollector', 'statsEventFactory'],
     (tequilapi, rendererCommunication, statsCollector, statsEventFactory) => {
       return actionsFactory(tequilapi, rendererCommunication, statsCollector, statsEventFactory)
     }

@@ -10,12 +10,16 @@ import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/even
 import RendererCommunication from '../../../app/communication/renderer-communication'
 import {EventCollector as StatsCollector} from '../../../app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../app/statistics/events'
+import TequilApi from '../../../libraries/api/client/tequil-api'
+import type {ConnectionStatus} from '../../../libraries/api/client/dto/connection-status-enum'
+import ConnectionStatisticsDTO from '../../../libraries/api/client/dto/connection-statistics'
+import ConnectionRequestDTO from '../../../libraries/api/client/dto/connection-request'
 
 type ConnectionStore = {
   ip: ?string,
-  status: string,
+  status: ConnectionStatus,
   statistics: Object,
-  actionLoopers: Map<string,FunctionLooper>
+  actionLoopers: Map<string, FunctionLooper>
 }
 
 class ActionLooper {
@@ -49,16 +53,22 @@ const state: ConnectionStore = {
 }
 
 const getters = {
-  status: state => state.status,
-  connection: state => state,
-  ip: state => state.ip
+  status (state: ConnectionStore): ConnectionStatus {
+    return state.status
+  },
+  connection (state: ConnectionStore): ConnectionStore {
+    return state
+  },
+  ip (state: ConnectionStore): string {
+    return state.ip
+  }
 }
 
 const mutations = {
-  [type.SET_CONNECTION_STATUS] (state: ConnectionStore, status: string) {
+  [type.SET_CONNECTION_STATUS] (state: ConnectionStore, status: ConnectionStatus) {
     state.status = status
   },
-  [type.CONNECTION_STATISTICS] (state: ConnectionStore, statistics: Object) {
+  [type.CONNECTION_STATISTICS] (state: ConnectionStore, statistics: ConnectionStatisticsDTO) {
     state.statistics = statistics
   },
   [type.CONNECTION_IP] (state: ConnectionStore, ip: string) {
@@ -76,7 +86,7 @@ const mutations = {
 }
 
 function actionsFactory (
-  tequilapi: Object,
+  tequilapi: TequilApi,
   rendererCommunication: RendererCommunication,
   statsCollector: StatsCollector,
   statsEventsFactory: StatsEventsFactory
@@ -84,8 +94,8 @@ function actionsFactory (
   return {
     async [type.CONNECTION_IP] ({commit}) {
       try {
-        const ip = await tequilapi.connection.ip(config.ipUpdateTimeout)
-        commit(type.CONNECTION_IP, ip)
+        const ipModel = await tequilapi.connectionIP(config.ipUpdateTimeout)
+        commit(type.CONNECTION_IP, ipModel.ip)
       } catch (err) {
         if (isTimeoutError(err) || hasHttpStatus(err, 503)) {
           return
@@ -93,7 +103,7 @@ function actionsFactory (
         bugReporter.renderer.captureException(err)
       }
     },
-    [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperStart) {
+    [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperStart): FunctionLooper {
       const currentLooper = state.actionLoopers[event.action]
       if (currentLooper) {
         console.log('Warning: requested to start looping action which is already looping: ' + event.action)
@@ -115,13 +125,13 @@ function actionsFactory (
     },
     async [type.FETCH_CONNECTION_STATUS] ({commit, dispatch}) {
       try {
-        const res = await tequilapi.connection.status()
-        await dispatch(type.SET_CONNECTION_STATUS, res.status)
+        const statusModel = await tequilapi.connectionStatus()
+        await dispatch(type.SET_CONNECTION_STATUS, statusModel.status)
       } catch (err) {
         commit(type.SHOW_ERROR, err)
       }
     },
-    async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus) {
+    async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus: ConnectionStatus) {
       const oldStatus = state.status
       if (oldStatus === newStatus) {
         return
@@ -138,26 +148,29 @@ function actionsFactory (
     },
     async [type.CONNECTION_STATISTICS] ({commit}) {
       try {
-        const statistics = await tequilapi.connection.statistics()
+        const statistics = await tequilapi.connectionStatistics()
         commit(type.CONNECTION_STATISTICS, statistics)
       } catch (err) {
         commit(type.SHOW_ERROR, err)
       }
     },
-    async [type.CONNECT] ({commit, dispatch, state}, connectionDetails) {
+    async [type.CONNECT] ({commit, dispatch, state}, connectionRequest: ConnectionRequestDTO) {
       let eventTracker = new ConnectEventTracker(statsCollector, currentUserTime, statsEventsFactory)
       eventTracker.connectStarted({
-        consumerId: connectionDetails.consumerId,
-        providerId: connectionDetails.providerId
+        consumerId: connectionRequest.consumerId,
+        providerId: connectionRequest.providerId
       })
+
       const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
       if (looper) {
         await looper.stop()
       }
+
       await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.CONNECTING)
       commit(type.CONNECTION_STATISTICS_RESET)
+
       try {
-        await tequilapi.connection.connect(connectionDetails)
+        await tequilapi.connectionCreate(connectionRequest)
         eventTracker.connectEnded()
         commit(type.HIDE_ERROR)
       } catch (err) {
@@ -166,6 +179,7 @@ function actionsFactory (
           eventTracker.connectCanceled()
           return
         }
+
         commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
         let error = new Error('Connection to node failed.')
         error.original = err
@@ -182,12 +196,13 @@ function actionsFactory (
       if (looper) {
         await looper.stop()
       }
+
       try {
         await dispatch(type.SET_CONNECTION_STATUS, connectionStatus.DISCONNECTING)
-        let res = await tequilapi.connection.disconnect()
+
+        await tequilapi.connectionCancel()
         dispatch(type.FETCH_CONNECTION_STATUS)
         dispatch(type.CONNECTION_IP)
-        return res
       } catch (err) {
         commit(type.SHOW_ERROR, err)
         throw (err)
@@ -205,7 +220,7 @@ function factory (actions: Object) {
     state,
     getters,
     mutations,
-    actions,
+    actions
   }
 }
 

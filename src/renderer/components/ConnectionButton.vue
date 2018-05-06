@@ -12,6 +12,7 @@
   import {mapGetters} from 'vuex'
   import type from '../store/types'
   import messages from '../../app/messages'
+  import ConnectionRequestDTO from '../../libraries/api/client/dto/connection-request'
 
   export default {
     name: 'connection-button',
@@ -74,10 +75,7 @@
         }
 
         if (canConnect) {
-          this.$store.dispatch(type.CONNECT, {
-            consumerId: this.consumerId,
-            providerId: this.providerId
-          })
+          this.$store.dispatch(type.CONNECT, new ConnectionRequestDTO(this.consumerId, this.providerId))
         }
       }
     }
