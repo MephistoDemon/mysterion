@@ -223,8 +223,8 @@ describe('tequilAPI', () => {
     it('returns response', async () => {
       const expectedRequest = undefined
       const response = {
-        status : 'NotConnected',
-        sessionId : ''
+        status: 'NotConnected',
+        sessionId: ''
       }
       mock.onDelete('connection', expectedRequest).reply(200, response)
 
