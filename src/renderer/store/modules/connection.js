@@ -8,7 +8,7 @@ import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/even
 import RendererCommunication from '../../../app/communication/renderer-communication'
 import {EventCollector as StatsCollector} from '../../../app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../app/statistics/events'
-import Tequilapi from '../../../libraries/mysterium-tequilapi/tequilapi'
+import TequilapiClient from '../../../libraries/mysterium-tequilapi/client'
 import type {ConnectionStatus} from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatusEnum from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatisticsDTO from '../../../libraries/mysterium-tequilapi/dto/connection-statistics'
@@ -85,7 +85,7 @@ const mutations = {
 }
 
 function actionsFactory (
-  tequilapi: Tequilapi,
+  tequilapi: TequilapiClient,
   rendererCommunication: RendererCommunication,
   statsCollector: StatsCollector,
   statsEventsFactory: StatsEventsFactory

@@ -4,7 +4,7 @@ import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../../helpers/utils'
 import TequilapiError from '../../../../../src/libraries/mysterium-tequilapi/tequilapi-error'
 
-describe('Tequilapi AxiosAdapter', () => {
+describe('TequilapiClient AxiosAdapter', () => {
   let adapter
   let mock
   beforeEach(() => {

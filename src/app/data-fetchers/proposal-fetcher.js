@@ -1,16 +1,16 @@
 // @flow
 
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
-import Tequilapi from '../../libraries/mysterium-tequilapi/tequilapi'
+import TequilapiClient from '../../libraries/mysterium-tequilapi/client'
 import {FunctionLooper} from '../../libraries/functionLooper'
 
 class ProposalFetcher {
-  _api: Tequilapi
+  _api: TequilapiClient
   _loop: FunctionLooper
   _subscribers: Array<Function> = []
   _interval: number
 
-  constructor (api: Tequilapi, interval: number = 5000) {
+  constructor (api: TequilapiClient, interval: number = 5000) {
     this._api = api
     this._interval = interval
   }

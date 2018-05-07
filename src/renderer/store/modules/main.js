@@ -1,7 +1,7 @@
 // @flow
 // TODO: rename to `vpn.js` to be consistent with `Vpn.vue`
 import type from '../types'
-import Tequilapi from '../../../libraries/mysterium-tequilapi/tequilapi'
+import TequilapiClient from '../../../libraries/mysterium-tequilapi/client'
 
 const state = {
   init: '',
@@ -71,7 +71,7 @@ const mutations = {
   }
 }
 
-function actionsFactory (tequilapi: Tequilapi) {
+function actionsFactory (tequilapi: TequilapiClient) {
   return {
     switchNav ({commit}, open: boolean) {
       commit(type.SET_NAV_OPEN, open)
@@ -89,7 +89,7 @@ function actionsFactory (tequilapi: Tequilapi) {
   }
 }
 
-function factory (tequilapi: Tequilapi) {
+function factory (tequilapi: TequilapiClient) {
   return {
     state,
     mutations,

@@ -12,7 +12,7 @@ import ConnectionStatusDTO from './dto/connection-status'
 import ConnectionRequestDTO from './dto/connection-request'
 import {TIMEOUT_DISABLED} from './timeouts'
 
-class Tequilapi {
+class TequilapiClient {
   http: HttpInterface
 
   constructor (http: HttpInterface) {
@@ -92,4 +92,4 @@ class Tequilapi {
   }
 }
 
-export default Tequilapi
+export default TequilapiClient

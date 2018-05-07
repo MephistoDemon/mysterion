@@ -15,7 +15,7 @@ import {nextTick} from '../../../helpers/utils'
 import config from '@/config'
 import messages from '../../../../src/app/messages'
 import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
-import Tequilapi from '../../../../src/libraries/mysterium-tequilapi/tequilapi'
+import TequilapiClient from '../../../../src/libraries/mysterium-tequilapi/client'
 
 Vue.use(Vuex)
 Vue.use(Router)
@@ -23,7 +23,7 @@ Vue.use(Router)
 describe('VpnLoader', () => {
   let clock
 
-  async function mountComponent (tequilapi: Tequilapi): Vue {
+  async function mountComponent (tequilapi: TequilapiClient): Vue {
     const router = new Router({routes: []})
     const store = new Vuex.Store({
       modules: {
@@ -46,14 +46,14 @@ describe('VpnLoader', () => {
     return vm
   }
 
-  async function mountAndPrepareLoadingScreen (tequilapi: Tequilapi) {
+  async function mountAndPrepareLoadingScreen (tequilapi: TequilapiClient) {
     const vm = await mountComponent(tequilapi)
     await nextTick() // wait for delay inside loader callback
     clock.tick(config.loadingScreenDelay) // skip loader delay
     return vm
   }
 
-  function tequilapiMockCreate (version: string): Tequilapi {
+  function tequilapiMockCreate (version: string): TequilapiClient {
     const healtcheckResponse = {
       version: {
         commit: version
@@ -65,23 +65,23 @@ describe('VpnLoader', () => {
     }
   }
 
-  function tequilapiMockIdentitiesList (tequilapi: Tequilapi, identities: Array<IdentityDTO>) {
+  function tequilapiMockIdentitiesList (tequilapi: TequilapiClient, identities: Array<IdentityDTO>) {
     tequilapi.identitiesList = () => Promise.resolve(identities)
   }
 
-  function tequilapiMockIdentitiesListError (tequilapi: Tequilapi, error: Error) {
+  function tequilapiMockIdentitiesListError (tequilapi: TequilapiClient, error: Error) {
     tequilapi.identitiesList = () => Promise.reject(error)
   }
 
-  function tequilapiMockIdentityCreate (tequilapi: Tequilapi, identity: IdentityDTO) {
+  function tequilapiMockIdentityCreate (tequilapi: TequilapiClient, identity: IdentityDTO) {
     tequilapi.identityCreate = () => Promise.resolve(identity)
   }
 
-  function tequilapiMockIdentityUnlock (tequilapi: Tequilapi) {
+  function tequilapiMockIdentityUnlock (tequilapi: TequilapiClient) {
     tequilapi.identityUnlock = () => Promise.resolve()
   }
 
-  function tequilapiMockIdentityUnlockError (tequilapi: Tequilapi, error: Error) {
+  function tequilapiMockIdentityUnlockError (tequilapi: TequilapiClient, error: Error) {
     tequilapi.identityUnlock = () => Promise.reject(error)
   }
 

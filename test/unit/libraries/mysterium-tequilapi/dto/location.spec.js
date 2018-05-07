@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import LocationDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/location'
 
-describe('Tequilapi DTO', () => {
+describe('TequilapiClient DTO', () => {
   describe('LocationDTO', () => {
     it('sets properties with full structure', async () => {
       const location = new LocationDTO({

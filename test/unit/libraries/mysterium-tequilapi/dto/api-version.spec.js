@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import NodeVersionDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-version'
 
-describe('Tequilapi DTO', () => {
+describe('TequilapiClient DTO', () => {
   describe('NodeVersionDTO', () => {
     it('sets properties', async () => {
       const version = new NodeVersionDTO({
