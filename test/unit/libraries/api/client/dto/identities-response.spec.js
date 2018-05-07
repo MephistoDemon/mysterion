@@ -7,7 +7,7 @@ describe('TequilApi client DTO', () => {
     it('sets properties', async () => {
       const response = new IdentitiesResponseDTO([
         {id: '0x1000FACE'},
-        {id: '0x2000FACE'},
+        {id: '0x2000FACE'}
       ])
 
       expect(response.identities).to.have.lengthOf(2)

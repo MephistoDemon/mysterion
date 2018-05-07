@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 import Terms, {termsFileName} from '../../../../src/app/terms/index'
 import fs from 'fs'
 import path from 'path'

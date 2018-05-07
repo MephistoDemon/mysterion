@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 import Process, {logLevel} from '../../../../../src/libraries/mysterium-client/standalone/process'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import configInjector from 'inject-loader!../../../../../src/app/mysterion-config'
