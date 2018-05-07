@@ -24,19 +24,18 @@ describe('tray', () => {
         'on': on
       }
 
-      const factory = {}
+      let electronTray = {}
       for (let method in methods) {
         if (typeof methods[method] !== 'function') {
-          factory[method] = () => {
-          }
+          electronTray[method] = () => null
 
           continue
         }
 
-        factory[method] = methods[method]
+        electronTray[method] = methods[method]
       }
 
-      return () => factory
+      return () => electronTray
     }
 
     describe('.build', () => {
