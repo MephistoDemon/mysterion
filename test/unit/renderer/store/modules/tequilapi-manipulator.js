@@ -1,8 +1,24 @@
 // @flow
-import {CONNECTION_ABORTED_ERROR_CODE, httpResponseCodes} from '../../../../../src/libraries/api/errors'
 import ConnectionIPDTO from '../../../../../src/libraries/api/client/dto/connection-ip'
 import ConnectionStatusDTO from '../../../../../src/libraries/api/client/dto/connection-status'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
+import TequilapiError from '../../../../../src/libraries/api/client/tequilapi-error'
+
+class TimeoutError extends Error {
+  isTimeoutError (): boolean {
+    return true
+  }
+}
+
+class RequestClosedError extends Error {
+  isTimeoutError (): boolean {
+    return false
+  }
+
+  isRequestClosedError (): boolean {
+    return true
+  }
+}
 
 function factoryTequilapiManipulator () {
   let statusFail = false
@@ -12,13 +28,9 @@ function factoryTequilapiManipulator () {
   let connectFail = false
   let connectFailClosedRequest = false
 
-  const fakeError = new Error('Mock error')
-
-  const fakeTimeoutError = new Error('Mock timeout error')
-  fakeTimeoutError.code = CONNECTION_ABORTED_ERROR_CODE
-
-  const fakeClosedRequestError = new Error('Mock closed request error')
-  fakeClosedRequestError.response = { status: httpResponseCodes.CLIENT_CLOSED_REQUEST }
+  const fakeError = new TequilapiError('Mock error')
+  const fakeTimeoutError = new TimeoutError('Mock timeout error')
+  const fakeClosedRequestError = new RequestClosedError('Mock closed request error')
 
   return {
     getFakeApi: function () {
