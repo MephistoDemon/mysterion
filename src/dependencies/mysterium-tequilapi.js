@@ -4,15 +4,15 @@ import tequilapiClientFactory from '../libraries/mysterium-tequilapi/client-fact
 
 function bootstrap (container: Container) {
   container.constant(
-    'tequilapi.config',
+    'tequilapiClient.config',
     {
       'baseURL': 'http://127.0.0.1:4050'
     }
   )
   container.service(
-    'tequilapi',
-    ['tequilapi.config'],
-    (config: any) => {
+    'tequilapiClient',
+    ['tequilapiClient.config'],
+    (config: Object) => {
       return tequilapiClientFactory(config.baseURL)
     }
   )
