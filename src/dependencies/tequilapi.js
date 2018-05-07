@@ -1,6 +1,6 @@
 // @flow
 import type {Container} from '../app/di'
-import tequilapiFactory from '../libraries/mysterium-tequilapi/factory'
+import tequilapiClientFactory from '../libraries/mysterium-tequilapi/client-factory'
 
 function bootstrap (container: Container) {
   container.constant(
@@ -13,7 +13,7 @@ function bootstrap (container: Container) {
     'tequilapi',
     ['tequilapi.config'],
     (config: any) => {
-      return tequilapiFactory(config.baseURL)
+      return tequilapiClientFactory(config.baseURL)
     }
   )
 }
