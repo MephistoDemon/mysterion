@@ -1,12 +1,12 @@
 // @flow
-import TequilapiError from '../../../../src/libraries/mysterium-tequilapi/tequilapi-error'
+import TequilapiClientError from '../../../../src/libraries/mysterium-tequilapi/client-error'
 
-describe('TequilapiError', () => {
+describe('TequilapiClientError', () => {
   it('construct with parent exception', () => {
     const original = new Error('Failure message text')
 
-    const error = new TequilapiError(original)
-    expect(error.name).to.eql('TequilapiError')
+    const error = new TequilapiClientError(original)
+    expect(error.name).to.eql('TequilapiClientError')
     expect(error.message).to.eql(original.message)
     expect(error.trace).to.eql(original.trace)
   })
@@ -15,10 +15,10 @@ describe('TequilapiError', () => {
     let original
 
     original = new Error('Network Error')
-    expect(new TequilapiError(original).isNetworkError()).to.be.true
+    expect(new TequilapiClientError(original).isNetworkError()).to.be.true
 
     original = new Error('Slow Network Error')
-    expect(new TequilapiError(original).isNetworkError()).to.be.false
+    expect(new TequilapiClientError(original).isNetworkError()).to.be.false
   })
 
   it('isTimeoutError()', () => {
@@ -26,10 +26,10 @@ describe('TequilapiError', () => {
 
     original = new Error()
     original.code = 'ECONNABORTED'
-    expect(new TequilapiError(original).isTimeoutError()).to.be.true
+    expect(new TequilapiClientError(original).isTimeoutError()).to.be.true
 
     original = new Error()
-    expect(new TequilapiError(original).isTimeoutError()).to.be.false
+    expect(new TequilapiClientError(original).isTimeoutError()).to.be.false
   })
 
   it('isRequestClosedError()', () => {
@@ -37,10 +37,10 @@ describe('TequilapiError', () => {
 
     original = new Error()
     original.response = {status: 499}
-    expect(new TequilapiError(original).isRequestClosedError()).to.be.true
+    expect(new TequilapiClientError(original).isRequestClosedError()).to.be.true
 
     original = new Error()
-    expect(new TequilapiError(original).isRequestClosedError()).to.be.false
+    expect(new TequilapiClientError(original).isRequestClosedError()).to.be.false
   })
 
   it('isServiceUnavailableError()', () => {
@@ -48,9 +48,9 @@ describe('TequilapiError', () => {
 
     original = new Error()
     original.response = {status: 503}
-    expect(new TequilapiError(original).isServiceUnavailableError()).to.be.true
+    expect(new TequilapiClientError(original).isServiceUnavailableError()).to.be.true
 
     original = new Error()
-    expect(new TequilapiError(original).isServiceUnavailableError()).to.be.false
+    expect(new TequilapiClientError(original).isServiceUnavailableError()).to.be.false
   })
 })
