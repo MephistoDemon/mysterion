@@ -4,7 +4,7 @@ import Process, {logLevel} from '../../../../../src/libraries/mysterium-client/s
 import configInjector from 'inject-loader!../../../../../src/app/mysterion-config'
 import {ChildProcess} from 'child_process'
 import sleep from '../../../../../src/libraries/sleep'
-import tequilAPI from '../../../../../src/libraries/api/tequilapi'
+import tequilapiFactory from '../../../../../src/libraries/api/client/factory'
 
 const config = configInjector({
   'electron': {
@@ -24,7 +24,7 @@ describe('Standalone Process', () => {
   const logs = []
   const port = 4055
   before(async () => {
-    tequilapi = tequilAPI(`http://127.0.0.1:${port}`)
+    tequilapi = tequilapiFactory(`http://127.0.0.1:${port}`)
     process = new Process(config)
     process.start(port)
     process.onLog(logLevel.LOG, data => logs.push(data))

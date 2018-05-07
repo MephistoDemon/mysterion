@@ -1,16 +1,15 @@
 import {expect} from 'chai'
 import ServiceDefinitionDTO from '../../../../../../src/libraries/api/client/dto/service-definition'
+import LocationDTO from '../../../../../../src/libraries/api/client/dto/location'
 
 describe('TequilApi client DTO', () => {
   describe('ServiceDefinitionDTO', () => {
     it('sets properties with full structure', async () => {
       const service = new ServiceDefinitionDTO({
-        locationOriginate: {
-          country: 'LT'
-        }
+        locationOriginate: {}
       })
 
-      expect(service.locationOriginate.country).to.equal('LT')
+      expect(service.locationOriginate).to.deep.equal(new LocationDTO({}))
     })
 
     it('sets empty properties structure', async () => {
