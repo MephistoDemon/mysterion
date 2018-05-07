@@ -1,5 +1,7 @@
+// @flow
 // TODO: rename to `vpn.js` to be consistent with `Vpn.vue`
 import type from '../types'
+import TequilApi from '../../../libraries/api/client/tequil-api'
 
 const state = {
   init: '',
@@ -22,16 +24,16 @@ const getters = {
 }
 
 const mutations = {
-  [type.CLIENT_BUILD_INFO] (state, buildInfo) {
+  [type.CLIENT_BUILD_INFO] (state, buildInfo: string) {
     state.clientBuildInfo = buildInfo
   },
   [type.SET_NAV_OPEN] (state, open) {
     state.navOpen = open
   },
-  [type.SET_NAV_VISIBLE] (state, visible) {
+  [type.SET_NAV_VISIBLE] (state, visible: boolean) {
     state.navVisible = visible
   },
-  [type.SET_VISUAL] (state, visual) {
+  [type.SET_VISUAL] (state, visual: boolean) {
     state.visual = visual
   },
   [type.INIT_SUCCESS] (state) {
@@ -40,7 +42,7 @@ const mutations = {
   [type.INIT_PENDING] (state) {
     state.init = type.INIT_PENDING
   },
-  [type.INIT_FAIL] (state, err) {
+  [type.INIT_FAIL] (state, err: ?Error) {
     state.init = type.INIT_FAIL
     state.error = err
   },
@@ -60,7 +62,7 @@ const mutations = {
     }
     state.errorMessage = 'Unknown error'
   },
-  [type.SHOW_ERROR_MESSAGE] (state, errorMessage) {
+  [type.SHOW_ERROR_MESSAGE] (state, errorMessage: string) {
     state.errorMessage = errorMessage
     state.showError = true
   },
@@ -69,25 +71,25 @@ const mutations = {
   }
 }
 
-function actionsFactory (tequilapi) {
+function actionsFactory (tequilapi: TequilApi) {
   return {
-    switchNav ({commit}, open) {
+    switchNav ({commit}, open: boolean) {
       commit(type.SET_NAV_OPEN, open)
     },
-    setVisual ({commit}, visual) {
+    setVisual ({commit}, visual: boolean) {
       commit(type.SET_VISUAL, visual)
     },
     async [type.CLIENT_BUILD_INFO] ({commit}) {
       const res = await tequilapi.healthCheck()
       commit(type.CLIENT_BUILD_INFO, res.version)
     },
-    setNavVisibility ({commit}, visible) {
+    setNavVisibility ({commit}, visible: boolean) {
       commit(type.SET_NAV_VISIBLE, visible)
     }
   }
 }
 
-function factory (tequilapi) {
+function factory (tequilapi: TequilApi) {
   return {
     state,
     mutations,

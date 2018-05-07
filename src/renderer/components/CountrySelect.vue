@@ -45,7 +45,7 @@
 
   export default {
     name: 'CountrySelect',
-    dependencies: ['tequilapi'],
+    dependencies: ['tequilapiDepreciated'],
     components: {
       Multiselect,
       IconWorld
@@ -71,13 +71,13 @@
           code = 'world'
         }
 
-        return path.join('static', 'flags', code + '.svg')
+        return path.join('static', 'flags', code.toLowerCase() + '.svg')
       },
       async fetchCountries () {
         this.countriesAreLoading = true
 
         try {
-          const response = await this.tequilapi.proposal.list()
+          const response = await this.tequilapiDepreciated.proposal.list()
           if (response.proposals.length < 1) {
             this.$store.commit(type.SHOW_ERROR, {message: messages.countryListIsEmpty})
           }

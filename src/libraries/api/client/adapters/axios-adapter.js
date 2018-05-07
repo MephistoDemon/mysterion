@@ -10,31 +10,30 @@ class AxiosAdapter implements HttpInterface {
     this._axios = axios
   }
 
-  async get (path: string, query: ?HttpQueryParams, options: ?Object): Promise<?mixed> {
-    options = options || {}
-    if (query) {
-      options['params'] = query
+  async get (path: string, query: ?HttpQueryParams, timeout: ?number): Promise<?mixed> {
+    const options = {
+      params: query,
+      timeout
     }
-
     const response = await this._axios.get(path, options)
 
     return response.data
   }
 
-  async post (path: string, data: mixed, options: ?Object): Promise<?mixed> {
-    const response = await this._axios.post(path, data, options)
+  async post (path: string, data: mixed, timeout: ?number): Promise<?mixed> {
+    const response = await this._axios.post(path, data, {timeout})
 
     return response.data
   }
 
-  async delete (path: string, options: ?Object): Promise<?mixed> {
-    const response = await this._axios.delete(path, options)
+  async delete (path: string, timeout: ?number): Promise<?mixed> {
+    const response = await this._axios.delete(path, {timeout})
 
     return response.data
   }
 
-  async put (path: string, data: mixed, options: ?Object): Promise<?mixed> {
-    const response = await this._axios.put(path, data, options)
+  async put (path: string, data: mixed, timeout: ?number): Promise<?mixed> {
+    const response = await this._axios.put(path, data, {timeout})
 
     return response.data
   }

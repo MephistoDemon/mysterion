@@ -1,3 +1,4 @@
+// @flow
 import {expect} from 'chai'
 
 import Vue from 'vue'
@@ -9,23 +10,21 @@ import idStoreFactory from '@/store/modules/identity'
 import mainStoreFactory from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
 import {tequilapiFactory} from '@/../libraries/api/tequilapi'
-import axios from 'axios'
 import VpnLoader from '@/pages/VpnLoader'
 
 import {nextTick} from '../../../helpers/utils'
-import MockAdapter from 'axios-mock-adapter'
 import config from '@/config'
 import messages from '../../../../src/app/messages'
+import IdentityDTO from '../../../../src/libraries/api/client/dto/identity'
+import TequilApi from '../../../../src/libraries/api/client/tequil-api'
 
 Vue.use(Vuex)
 Vue.use(Router)
 
 describe('VpnLoader', () => {
-  let tequilapi
-  let mock
   let clock
 
-  async function mountComponent (tequilapi) {
+  async function mountComponent (tequilapi: TequilApi): Vue {
     const router = new Router({routes: []})
     const store = new Vuex.Store({
       modules: {
@@ -48,38 +47,60 @@ describe('VpnLoader', () => {
     return vm
   }
 
-  async function mountAndPrepareLoadingScreen (tequilapi) {
+  async function mountAndPrepareLoadingScreen (tequilapi: TequilApi) {
     const vm = await mountComponent(tequilapi)
     await nextTick() // wait for delay inside loader callback
     clock.tick(config.loadingScreenDelay) // skip loader delay
     return vm
   }
 
-  function mockTequilapi () {
-    const axioInstance = axios.create()
-    tequilapi = tequilapiFactory(axioInstance)
-    mock = new MockAdapter(axioInstance)
+  function tequilapiMockCreate (version: string): TequilApi {
+    const healtcheckResponse = {
+      version: {
+        commit: version
+      }
+    }
 
-    return [tequilapi, mock]
+    return {
+      healthCheck: () => Promise.resolve(healtcheckResponse)
+    }
+  }
+
+  function tequilapiMockIdentitiesList (tequilapi: TequilApi, identities: Array<IdentityDTO>) {
+    tequilapi.identitiesList = () => Promise.resolve(identities)
+  }
+
+  function tequilapiMockIdentitiesListError (tequilapi: TequilApi, error: Error) {
+    tequilapi.identitiesList = () => Promise.reject(error)
+  }
+
+  function tequilapiMockIdentityCreate (tequilapi: TequilApi, identity: IdentityDTO) {
+    tequilapi.identityCreate = () => Promise.resolve(identity)
+  }
+
+  function tequilapiMockIdentityUnlock (tequilapi: TequilApi) {
+    tequilapi.identityUnlock = () => Promise.resolve()
+  }
+
+  function tequilapiMockIdentityUnlockError (tequilapi: TequilApi, error: Error) {
+    tequilapi.identityUnlock = () => Promise.reject(error)
   }
 
   before(async () => {
-    [tequilapi, mock] = mockTequilapi()
-    mock.onGet('/healthcheck').reply(200, {version: {commit: 'caed3112'}})
-
     clock = lolex.install()
   })
 
   after(() => {
     clock.uninstall()
-    mock.reset()
   })
 
   describe('has some identities', () => {
     let vm
     before(async () => {
-      mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
-      mock.onPut('/identities/0xC001FACE/unlock').reply(200)
+      const tequilapi = tequilapiMockCreate('caed3112')
+      tequilapiMockIdentitiesList(tequilapi, [{id: '0xC001FACE'}])
+      tequilapiMockIdentityUnlock(tequilapi)
+
       vm = await mountAndPrepareLoadingScreen(tequilapi)
     })
 
@@ -98,9 +119,11 @@ describe('VpnLoader', () => {
   describe('has not found preset identities', () => {
     let vm
     before(async () => {
-      mock.onGet('/identities').replyOnce(200, {identities: []})
-      mock.onPost('/identities').replyOnce(200, {id: '0xC001FACY'})
-      mock.onPut('/identities/0xC001FACE/unlock').reply(200)
+      const tequilapi = tequilapiMockCreate('caed3112')
+      tequilapiMockIdentitiesList(tequilapi, [])
+      tequilapiMockIdentityCreate(tequilapi, {id: '0xC001FACY'})
+      tequilapiMockIdentityUnlock(tequilapi)
+
       vm = await mountAndPrepareLoadingScreen(tequilapi)
     })
 
@@ -124,7 +147,9 @@ describe('VpnLoader', () => {
     describe('identity listing failed', () => {
       let vm
       before(async () => {
-        mock.onGet('/identities').replyOnce(500)
+        const tequilapi = tequilapiMockCreate('caed3112')
+        tequilapiMockIdentitiesListError(tequilapi, new Error('Failed'))
+
         vm = await mountComponent(tequilapi)
       })
 
@@ -138,8 +163,10 @@ describe('VpnLoader', () => {
     describe('identity unlocking failed', () => {
       let vm
       before(async () => {
-        mock.onGet('/identities').replyOnce(200, {identities: [{id: '0xC001FACE'}]})
-        mock.onPut('/identities/0xC001FACE/unlock').replyOnce(500)
+        const tequilapi = tequilapiMockCreate('caed3112')
+        tequilapiMockIdentitiesList(tequilapi, [{id: '0xC001FACE'}])
+        tequilapiMockIdentityUnlockError(tequilapi, new Error('Failed'))
+
         vm = await mountComponent(tequilapi)
       })
 
