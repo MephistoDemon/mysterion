@@ -1,13 +1,13 @@
-import {ProposalUpdateDto} from './dto'
-
 // @flow
+
 import messages from './index'
 import type {MessageBus} from './messageBus'
 import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
   MysteriumClientLogDTO,
-  RequestConnectionDto
+  RequestConnectionDto,
+  ProposalUpdateDto
 } from './dto'
 
 /**

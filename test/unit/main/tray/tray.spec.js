@@ -1,15 +1,15 @@
-import TrayMenuGenerator from '../../../../src/main/tray/menu-generator'
 import translations from '../../../../src/main/tray/translations'
 import Tray from '../../../../src/main/tray/tray'
 import {expect} from '../../../helpers/dependencies'
 
 describe('tray', () => {
   describe('Tray', () => {
-    const generator = {
-      generate () {
+    const menuItemBuilder = {
+      build () {
       }
     }
-    const menuBuilder = () => {
+
+    const menuTemplateBuilder = () => {
     }
 
     const fakeTrayFactory = (init = null, tooltip = null, menu = null, image = null, on = null) => {
@@ -47,7 +47,7 @@ describe('tray', () => {
           called = true
         })
 
-        const tray = new Tray(factory, menuBuilder, generator)
+        const tray = new Tray(factory, menuTemplateBuilder, menuItemBuilder)
         tray.build()
 
         expect(called).to.equal(true)
@@ -59,7 +59,7 @@ describe('tray', () => {
           tooltipText = text
         })
 
-        const tray = new Tray(factory, menuBuilder, generator)
+        const tray = new Tray(factory, menuTemplateBuilder, menuItemBuilder)
         tray.build()
 
         expect(tooltipText).to.equal(translations.name)
@@ -74,7 +74,7 @@ describe('tray', () => {
 
         const items = ['item1', 'item2']
         const menuBuilder = () => items
-        const tray = new Tray(factory, menuBuilder, generator)
+        const tray = new Tray(factory, menuBuilder, menuItemBuilder)
         tray.build()
 
         expect(contextMenu).to.deep.equal(items)
@@ -90,7 +90,7 @@ describe('tray', () => {
           calledSetContextMenu = true
         })
         const generator = {
-          generate () {
+          build () {
 
           },
           updateConnectionStatus () {
@@ -117,7 +117,7 @@ describe('tray', () => {
           calledSetContextMenu = true
         })
         const generator = {
-          generate () {
+          build () {
 
           },
           updateProposals () {
@@ -139,7 +139,7 @@ describe('tray', () => {
 
         const factory = fakeTrayFactory()
         const generator = {
-          generate () {
+          build () {
 
           },
           updateProposals () {

@@ -3,7 +3,7 @@ import path from 'path'
 import {Tray as ElectronTray} from 'electron'
 import ProposalDTO from '../../libraries/api/client/dto/proposal'
 import connectionStatus from '../../libraries/api/connectionStatus'
-import TrayMenuGenerator, {CONNECTED, CONNECTING, DISCONNECTED, DISCONNECTING} from './menu-generator'
+import TrayMenuBuilder, {CONNECTED, CONNECTING, DISCONNECTED, DISCONNECTING} from './menu-builder'
 import translations from './translations'
 
 const TrayIcon = {
@@ -23,7 +23,7 @@ type electronTrayFactory = (iconPath: string) => ElectronTray
 class Tray {
   _electronTrayFactory: electronTrayFactory
   _electronTray: ElectronTray
-  _generator: TrayMenuGenerator
+  _menuBuilder: TrayMenuBuilder
   _templateBuilder: Function
   _statusMap: Object = {
     [connectionStatus.CONNECTED]: CONNECTED,
@@ -34,23 +34,23 @@ class Tray {
   _canUpdateItems: boolean = true
   _connectionStatus: string
 
-  constructor (trayFactory: electronTrayFactory, templateBuilder: Function, generator: TrayMenuGenerator) {
+  constructor (trayFactory: electronTrayFactory, templateBuilder: Function, menuBuilder: TrayMenuBuilder) {
     this._electronTrayFactory = trayFactory
     this._templateBuilder = templateBuilder
-    this._generator = generator
+    this._menuBuilder = menuBuilder
   }
 
   build (): this {
     this._electronTray = this._electronTrayFactory(this._getIconPath(TrayIcon.passive))
     this._electronTray.setToolTip(translations.name)
-    this._electronTray.setContextMenu(this._templateBuilder(this._generator.generate()))
+    this._electronTray.setContextMenu(this._templateBuilder(this._menuBuilder.build()))
     this._setupOpeningEvents()
 
     return this
   }
 
   _update (): this {
-    this._electronTray.setContextMenu(this._templateBuilder(this._generator.generate()))
+    this._electronTray.setContextMenu(this._templateBuilder(this._menuBuilder.build()))
 
     return this
   }
@@ -60,7 +60,7 @@ class Tray {
       return
     }
 
-    this._generator.updateProposals(proposals)
+    this._menuBuilder.updateProposals(proposals)
     this._update()
   }
 
@@ -86,7 +86,7 @@ class Tray {
         break
     }
 
-    this._generator.updateConnectionStatus(trayStatus)
+    this._menuBuilder.updateConnectionStatus(trayStatus)
     this._update()
   }
 

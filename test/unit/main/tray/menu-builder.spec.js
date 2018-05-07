@@ -1,11 +1,11 @@
 // @flow
 
-import TrayMenuGenerator, {
+import TrayMenuBuilder, {
   CONNECTED,
   CONNECTING,
   DISCONNECTED,
   DISCONNECTING
-} from '../../../../src/main/tray/menu-generator'
+} from '../../../../src/main/tray/menu-builder'
 
 import ProposalDTO from '../../../../src/libraries/api/client/dto/proposal'
 import translations from '../../../../src/main/tray/translations'
@@ -35,7 +35,7 @@ describe('tray', () => {
   describe('TrayMenuGenerator', () => {
     let appQuitter
     let communication
-    let generator
+    let builder
     let windowIsVisible = false
 
     const showWindow = () => {
@@ -54,12 +54,12 @@ describe('tray', () => {
       devToolsToggled = false
       communication = new FakeMainCommunication()
       appQuitter = new FakeApplicationQuitter()
-      generator = new TrayMenuGenerator(() => appQuitter.quit(), showWindow, toggleDevTools, communication)
+      builder = new TrayMenuBuilder(() => appQuitter.quit(), showWindow, toggleDevTools, communication)
     })
 
     describe('.render', () => {
       it('renders menu items without disconnect when not connected', () => {
-        const items = generator.updateConnectionStatus(DISCONNECTED).generate()
+        const items = builder.updateConnectionStatus(DISCONNECTED).build()
         expect(items[1].type).to.equal(separator)
         expect(items[2].label).to.equal(translations.connect)
         expect(items[3].type).to.equal(separator)
@@ -70,7 +70,7 @@ describe('tray', () => {
       })
 
       it('renders menu items with disconnect when connected', () => {
-        const items = generator.updateConnectionStatus(CONNECTED).generate()
+        const items = builder.updateConnectionStatus(CONNECTED).build()
         expect(items[1].type).to.equal(separator)
         expect(items[2].label).to.equal(translations.disconnect)
         expect(items[3].type).to.equal(separator)
@@ -81,27 +81,27 @@ describe('tray', () => {
       })
 
       it('sets status to connected', () => {
-        const items = generator.updateConnectionStatus(CONNECTED).generate()
+        const items = builder.updateConnectionStatus(CONNECTED).build()
         expect(items[0].label).to.equal(translations.statusConnected)
       })
 
       it('sets status to disconnected', () => {
-        const items = generator.updateConnectionStatus(DISCONNECTED).generate()
+        const items = builder.updateConnectionStatus(DISCONNECTED).build()
         expect(items[0].label).to.equal(translations.statusDisconnected)
       })
 
       it('sets status to connecting', () => {
-        const items = generator.updateConnectionStatus(CONNECTING).generate()
+        const items = builder.updateConnectionStatus(CONNECTING).build()
         expect(items[0].label).to.equal(translations.statusConnecting)
       })
 
       it('sets status to disconnecting', () => {
-        const items = generator.updateConnectionStatus(DISCONNECTING).generate()
+        const items = builder.updateConnectionStatus(DISCONNECTING).build()
         expect(items[0].label).to.equal(translations.statusDisconnecting)
       })
 
       it('connects', () => {
-        generator.updateProposals([
+        builder.updateProposals([
           new ProposalDTO({
             id: 1,
             providerId: '0x0',
@@ -114,35 +114,35 @@ describe('tray', () => {
           })
         ])
 
-        const items = generator.generate()
+        const items = builder.build()
         expect(communication.sentConnect).to.equal(false)
         items[2].submenu[0].click()
         expect(communication.sentConnect).to.equal(true)
       })
 
       it('disconnects', () => {
-        const items = generator.updateConnectionStatus(CONNECTED).generate()
+        const items = builder.updateConnectionStatus(CONNECTED).build()
         expect(communication.sentDisconnect).to.equal(false)
         items[2].click()
         expect(communication.sentDisconnect).to.equal(true)
       })
 
       it('shows window', () => {
-        const items = generator.generate()
+        const items = builder.build()
         expect(windowIsVisible).to.equal(false)
         items[4].click()
         expect(windowIsVisible).to.equal(true)
       })
 
       it('quits app', () => {
-        const items = generator.generate()
+        const items = builder.build()
         expect(appQuitter.didQuit).to.equal(false)
         items[7].click()
         expect(appQuitter.didQuit).to.equal(true)
       })
 
       it('toggles developer tools', () => {
-        const items = generator.generate()
+        const items = builder.build()
         expect(devToolsToggled).to.equal(false)
         items[5].click()
         expect(devToolsToggled).to.equal(true)

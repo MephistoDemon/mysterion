@@ -1,4 +1,4 @@
-import TrayMenuGenerator from '../main/tray/menu-generator'
+import TrayMenuBuilder from '../main/tray/menu-builder'
 import Tray from '../main/tray/tray'
 import Window from './window'
 import communication from './communication/index'
@@ -202,8 +202,8 @@ class Mysterion {
   }
 
   buildTray () {
-    const menuGenerator = new TrayMenuGenerator(
-      () => app.quit,
+    const menuGenerator = new TrayMenuBuilder(
+      () => app.quit(),
       () => this.window.show(),
       () => this.window.toggleDevTools(),
       this.communication

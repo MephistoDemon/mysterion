@@ -15,8 +15,8 @@ const DISCONNECTING = 'DISCONNECTING'
 
 type Status = typeof CONNECTED | typeof CONNECTING | typeof DISCONNECTED | typeof DISCONNECTING
 
-function GenerateMenuItems (
-  applicationQuitter: Function,
+function GetMenuItems (
+  appQuit: Function,
   showWindow: Function,
   toggleDevTools: Function,
   communication: MainCommunication,
@@ -52,7 +52,7 @@ function GenerateMenuItems (
   items.add(translations.showWindow, () => showWindow())
   items.add(translations.toggleDeveloperTools, () => toggleDevTools(), 'Alt+Command+I')
   items.addItem(new TrayMenuSeparator())
-  items.add(translations.quit, () => applicationQuitter(), 'Command+Q')
+  items.add(translations.quit, () => appQuit(), 'Command+Q')
 
   switch (connectionStatus) {
     case DISCONNECTED:
@@ -83,16 +83,16 @@ function GenerateMenuItems (
   return items.getItems()
 }
 
-class TrayMenuGenerator {
-  _applicationQuitter: Function
+class TrayMenuBuilder {
+  _appQuit: Function
   _showWindow: Function
   _toggleDevTools: Function
   _communication: MainCommunication
   _proposals: Array<ProposalDTO> = []
   _connectionStatus: Status
 
-  constructor (applicationQuitter: Function, showWindow: Function, toggleDevTools: Function, communication: MainCommunication) {
-    this._applicationQuitter = applicationQuitter
+  constructor (appQuit: Function, showWindow: Function, toggleDevTools: Function, communication: MainCommunication) {
+    this._appQuit = appQuit
     this._showWindow = showWindow
     this._toggleDevTools = toggleDevTools
     this._communication = communication
@@ -110,9 +110,9 @@ class TrayMenuGenerator {
     return this
   }
 
-  generate (): Array<Object> {
-    return GenerateMenuItems(
-      this._applicationQuitter,
+  build (): Array<Object> {
+    return GetMenuItems(
+      this._appQuit,
       this._showWindow,
       this._toggleDevTools,
       this._communication,
@@ -122,7 +122,7 @@ class TrayMenuGenerator {
   }
 }
 
-export default TrayMenuGenerator
+export default TrayMenuBuilder
 export {
   CONNECTED,
   DISCONNECTED,

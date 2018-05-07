@@ -1,7 +1,6 @@
 // @flow
 import DIContainer from '../../app/di/jpex-container'
 import tequilapiBootstrap from '../../dependencies/tequilapi'
-import tequilapiFlowBootstrap from '../../dependencies/tequilapi-flow'
 import applicationBootstrap from './modules/application'
 import proposalFetcherBootstrap from './modules/proposal-fetcher'
 
@@ -11,7 +10,6 @@ import proposalFetcherBootstrap from './modules/proposal-fetcher'
 function bootstrap (): DIContainer {
   const container = new DIContainer()
   tequilapiBootstrap(container)
-  tequilapiFlowBootstrap(container)
   proposalFetcherBootstrap(container)
   applicationBootstrap(container)
 
