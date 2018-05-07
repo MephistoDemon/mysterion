@@ -1,20 +1,19 @@
 // @flow
 import type {Container} from '../../../app/di'
-import mysterionConfig from '../../../app/mysterion-config'
 import {Installer, Process, Monitoring} from '../../../libraries/mysterium-client'
 
 function bootstrap (container: Container) {
   container.service(
     'mysteriumClientInstaller',
-    [],
-    () => {
+    ['mysterionApplication.config'],
+    (mysterionConfig) => {
       return new Installer(mysterionConfig)
     }
   )
   container.service(
     'mysteriumClientProcess',
-    ['tequilapiClient'],
-    (tequilapiClient) => {
+    ['tequilapiClient', 'mysterionApplication.config'],
+    (tequilapiClient, mysterionConfig) => {
       return new Process(tequilapiClient, mysterionConfig.userDataDirectory)
     }
   )

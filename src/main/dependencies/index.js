@@ -1,6 +1,6 @@
 // @flow
 import DIContainer from '../../app/di/jpex-container'
-import applicationBootstrap from './modules/application'
+import mysterionBootstrap from './modules/application'
 import bugReportingConfigBootstrap from '../../dependencies/bug-reporting'
 import bugReportingBootstrap from './modules/bug-reporting'
 import mysteriumClientBootstrap from './modules/mysterium-client'
@@ -12,7 +12,7 @@ import proposalFetcherBootstrap from './modules/proposal-fetcher'
  */
 function bootstrap (): DIContainer {
   const container = new DIContainer()
-  applicationBootstrap(container)
+  mysterionBootstrap(container)
   bugReportingConfigBootstrap(container)
   bugReportingBootstrap(container)
   mysteriumClientBootstrap(container)
