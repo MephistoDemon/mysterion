@@ -1,7 +1,6 @@
 // @flow
 
-import ProposalDto from '../../libraries/api/client/dto/proposal'
-import Window from '../../app/window'
+import ProposalDTO from '../../libraries/api/client/dto/proposal'
 import MainCommunication from '../../app/communication/main-communication'
 import {getCountryNameFromProposal} from '../../app/countries/index'
 import TrayMenu from './menu'
@@ -18,19 +17,18 @@ type Status = typeof CONNECTED | typeof CONNECTING | typeof DISCONNECTED | typeo
 
 function GenerateMenuItems (
   applicationQuitter: Function,
-  window: Window,
+  showWindow: Function,
+  toggleDevTools: Function,
   communication: MainCommunication,
-  proposals: Array<ProposalDto>,
+  proposals: Array<ProposalDTO>,
   connectionStatus: Status) {
   const disconnect = new TrayMenuItem(
     translations.disconnect,
-    () => {
-      communication.sendConnectionCancelRequest()
-    }
+    () => communication.sendConnectionCancelRequest()
   )
 
   const connectSubmenu = new TrayMenu()
-  proposals.forEach((proposal: ProposalDto) => {
+  proposals.forEach((proposal: ProposalDTO) => {
     connectSubmenu.add(getCountryNameFromProposal(proposal), () => {
       communication.sendConnectionRequest({providerId: proposal.providerId})
     })
@@ -51,8 +49,8 @@ function GenerateMenuItems (
   items.addItem(connect)
   items.addItem(disconnect.hide())
   items.addItem(new TrayMenuSeparator())
-  items.add(translations.showWindow, () => window.show())
-  items.add(translations.toggleDeveloperTools, () => window.toggleDevTools(), 'Alt+Command+I')
+  items.add(translations.showWindow, () => showWindow())
+  items.add(translations.toggleDeveloperTools, () => toggleDevTools(), 'Alt+Command+I')
   items.addItem(new TrayMenuSeparator())
   items.add(translations.quit, () => applicationQuitter(), 'Command+Q')
 
@@ -87,34 +85,27 @@ function GenerateMenuItems (
 
 class TrayMenuGenerator {
   _applicationQuitter: Function
-  _window: Window
+  _showWindow: Function
+  _toggleDevTools: Function
   _communication: MainCommunication
-  _proposals: Array<ProposalDto> = []
-  _listeners: Array<Function> = []
+  _proposals: Array<ProposalDTO> = []
   _connectionStatus: Status
 
-  constructor (applicationQuitter: Function, window: Window, communication: MainCommunication) {
+  constructor (applicationQuitter: Function, showWindow: Function, toggleDevTools: Function, communication: MainCommunication) {
     this._applicationQuitter = applicationQuitter
-    this._window = window
+    this._showWindow = showWindow
+    this._toggleDevTools = toggleDevTools
     this._communication = communication
   }
 
-  updateProposals (proposals: Array<ProposalDto>): this {
+  updateProposals (proposals: Array<ProposalDTO>): this {
     this._proposals = proposals
-    this._runListeners()
 
     return this
   }
 
   updateConnectionStatus (status: Status): this {
     this._connectionStatus = status
-    this._runListeners()
-
-    return this
-  }
-
-  onUpdate (callback: Function): this {
-    this._listeners.push(callback)
 
     return this
   }
@@ -122,17 +113,12 @@ class TrayMenuGenerator {
   generate (): Array<Object> {
     return GenerateMenuItems(
       this._applicationQuitter,
-      this._window,
+      this._showWindow,
+      this._toggleDevTools,
       this._communication,
       this._proposals,
       this._connectionStatus
     )
-  }
-
-  _runListeners (): void {
-    this._listeners.forEach((callback: Function) => {
-      callback()
-    })
   }
 }
 

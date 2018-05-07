@@ -1,7 +1,8 @@
+import TrayMenuGenerator from '../main/tray/menu-generator'
+import Tray from '../main/tray/tray'
 import Window from './window'
-import TrayBuilder from '../main/tray/builder'
 import communication from './communication/index'
-import {app} from 'electron'
+import {app, Tray as ElectronTray, Menu} from 'electron'
 import {logLevel as processLogLevel} from '../libraries/mysterium-client/index'
 import bugReporter from './bugReporting/bug-reporting'
 import messages from './messages'
@@ -176,6 +177,7 @@ class Mysterion {
       updateRendererWithHealth()
       this.startApp()
     })
+
     this.communication.onCurrentIdentityChange((identity) => {
       bugReporter.setUser(identity)
     })
@@ -200,8 +202,26 @@ class Mysterion {
   }
 
   buildTray () {
-    const tray = new TrayBuilder(app.quit, this.window, this.communication, this.proposalFetcher)
+    const menuGenerator = new TrayMenuGenerator(
+      () => app.quit,
+      () => this.window.show(),
+      () => this.window.toggleDevTools(),
+      this.communication
+    )
+
+    const trayFactory = (icon) => {
+      return new ElectronTray(icon)
+    }
+
+    const templateBuilder = (items) => {
+      return Menu.buildFromTemplate(items)
+    }
+
+    const tray = new Tray(trayFactory, templateBuilder, menuGenerator)
     tray.build()
+
+    this.communication.onConnectionStatusChange(({newStatus}) => tray.setStatus(newStatus))
+    this.proposalFetcher.subscribe((proposals) => tray.setProposals(proposals))
   }
 }
 

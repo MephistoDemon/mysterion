@@ -1,6 +1,6 @@
 // @flow
 
-import ProposalDto from '../../libraries/api/client/dto/proposal'
+import ProposalDTO from '../../libraries/api/client/dto/proposal'
 
 export type ConnectionStatusChangeDTO = {
   oldStatus: string,
@@ -16,7 +16,7 @@ export type CurrentIdentityChangeDTO = {
   id: string
 }
 
-export type ProposalUpdateDto = Array<ProposalDto>
+export type ProposalUpdateDto = Array<ProposalDTO>
 
 export type RequestConnectionDto = {
   providerId: string

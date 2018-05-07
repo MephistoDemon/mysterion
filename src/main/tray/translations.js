@@ -1,4 +1,5 @@
 const translations = {
+  name: 'Mysterion',
   connect: 'Connect',
   disconnect: 'Disconnect',
   showWindow: 'Show window',
