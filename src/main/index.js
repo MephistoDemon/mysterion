@@ -2,8 +2,8 @@
 'use strict'
 
 import dependencies from './dependencies'
-import mysterionConfig from '../app/mysterion-config'
 
+const mysterionConfig = dependencies.get('mysterionApplication.config')
 global.__mysterionReleaseID = dependencies.get('mysterionReleaseID')
 global.__static = mysterionConfig.staticDirectoryPath
 

@@ -1,31 +1,15 @@
 import Process, {logLevel} from '../../../../../src/libraries/mysterium-client/standalone/process'
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import configInjector from 'inject-loader!../../../../../src/app/mysterion-config'
 import {ChildProcess} from 'child_process'
 import sleep from '../../../../../src/libraries/sleep'
 import tequilapiClientFactory from '../../../../../src/libraries/mysterium-tequilapi/client-factory'
 
-const config = configInjector({
-  'electron': {
-    app: {
-      getPath () {
-        return './test/mocks'
-      },
-      getAppPath () {
-        return './src/main/'
-      }
-    }
-  }
-}).default
-
-// TODO: re-enable once mysterium client is fixed
 xdescribe('Standalone Process', () => {
   let process, tequilapi
   const logs = []
   const port = 4055
   before(async () => {
     tequilapi = tequilapiClientFactory(`http://127.0.0.1:${port}`)
-    process = new Process(config)
+    process = new Process({})
     process.start(port)
     process.onLog(logLevel.LOG, data => logs.push(data))
     await sleep(100)
