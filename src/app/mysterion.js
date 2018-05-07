@@ -6,12 +6,14 @@ import {app, session as browserSession} from 'electron'
 import {
   logLevel as processLogLevel
 } from '../libraries/mysterium-client/index'
-import bugReporter from './bugReporting/bug-reporting'
 import {install as installFeedbackForm} from './bugReporting/feedback-form'
 import messages from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
 import {onFirstEvent} from './communication/utils'
+
+import dependencies from '../main/dependencies'
+const bugReporter = dependencies.get('bugReporter')
 
 class Mysterion {
   constructor ({config, terms, installer, monitoring, process, proposalFetcher}) {
@@ -47,7 +49,7 @@ class Mysterion {
       termsAccepted = this.terms.isAccepted()
     } catch (e) {
       termsAccepted = false
-      bugReporter.main.captureException(e)
+      bugReporter.captureException(e)
     }
 
     this.window = new Window(
@@ -61,7 +63,7 @@ class Mysterion {
       this.window.open()
     } catch (e) {
       console.error(e)
-      bugReporter.main.captureException(e)
+      bugReporter.captureException(e)
       throw new Error('Failed to open window.')
     }
 
@@ -76,7 +78,7 @@ class Mysterion {
       await onFirstEvent(this.communication.onRendererLoaded.bind(this.communication))
     } catch (e) {
       console.error(e)
-      bugReporter.main.captureException(e)
+      bugReporter.captureException(e)
       // TODO: add an error wrapper method
       throw new Error('Failed to load app.')
     }
@@ -92,7 +94,7 @@ class Mysterion {
           return
         }
       } catch (e) {
-        bugReporter.main.captureException(e)
+        bugReporter.captureException(e)
         return this.sendErrorToRenderer(e.message)
       }
     }
@@ -103,7 +105,7 @@ class Mysterion {
       try {
         await this.installer.install()
       } catch (e) {
-        bugReporter.main.captureException(e)
+        bugReporter.captureException(e)
         console.error(e)
         return this.sendErrorToRenderer(messages.daemonInstallationError)
       }
@@ -127,7 +129,7 @@ class Mysterion {
       await this.process.stop()
     } catch (e) {
       console.error('Failed to stop mysterium_client process')
-      bugReporter.main.captureException(e)
+      bugReporter.captureException(e)
     }
   }
 
@@ -164,7 +166,7 @@ class Mysterion {
       try {
         this.messageBus.send(communication.HEALTHCHECK, this.monitoring.isRunning())
       } catch (e) {
-        bugReporter.main.captureException(e)
+        bugReporter.captureException(e)
         return
       }
 
@@ -227,7 +229,7 @@ function setupSentryFeedbackForm () {
     const error = new Error('Failed to install Feedback form')
     error.original = err
     console.error(error)
-    bugReporter.main.captureException(error)
+    bugReporter.captureException(error)
   }
 }
 

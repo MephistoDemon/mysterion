@@ -41,11 +41,11 @@
   import IconIssue from '@/assets/img/icon--issue.svg'
   import IconEye from '@/assets/img/icon--eye.svg'
   import IconQuit from '@/assets/img/icon--quit.svg'
-  import bugReporter from '../../app/bugReporting/bug-reporting'
   import {showReportDialog} from '../../app/bugReporting/feedback-form'
 
   export default {
     name: 'AppNav',
+    dependencies: ['bugReporter'],
     components: {
       IconEye,
       IconIssue,
@@ -64,7 +64,7 @@
         shell.openExternal(url)
       },
       reportIssue () {
-        showReportDialog(bugReporter.renderer.getRavenInstance())
+        showReportDialog(this.bugReporter.getRavenInstance())
       }
     }
   }

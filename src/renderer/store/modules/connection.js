@@ -1,7 +1,7 @@
 import type from '../types'
 import {isTimeoutError, hasHttpStatus, httpResponseCodes} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
-import bugReporter from '../../../app/bugReporting/bug-reporting'
+import {captureException} from '../../../app/bugReporting/bug-reporter-renderer'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import connectionStatus from '../../../libraries/api/connectionStatus'
 import config from '@/config'
@@ -54,7 +54,7 @@ function actionsFactory (tequilapi, rendererCommunication, statsCollector, stats
         if (isTimeoutError(err) || hasHttpStatus(err, 503)) {
           return
         }
-        bugReporter.renderer.captureException(err)
+        captureException(err)
       }
     },
     [type.START_ACTION_LOOPING] ({dispatch, commit, state}, {action, threshold}) {

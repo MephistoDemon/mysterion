@@ -4,7 +4,6 @@ process.env.BABEL_ENV = 'main'
 const path = require('path')
 const {dependencies, version} = require('../package.json')
 const {buildNumber} = require('../build-number.json')
-const {sentry} = require('../services_conf.json')
 const webpack = require('webpack')
 
 const BabiliWebpackPlugin = require('babili-webpack-plugin')
@@ -53,8 +52,7 @@ let mainConfig = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.BUILD_NUMBER': JSON.stringify(buildNumber),
-      'process.env.MYSTERION_VERSION': JSON.stringify(version),
-      'SENTRY_CONFIG': JSON.stringify(sentry)
+      'process.env.MYSTERION_VERSION': JSON.stringify(version)
     }),
     new webpack.NoEmitOnErrorsPlugin()
   ],

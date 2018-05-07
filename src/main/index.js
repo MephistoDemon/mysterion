@@ -5,16 +5,16 @@ import dependencies from './dependencies'
 import path from 'path'
 import Mysterion from '../app/mysterion'
 import mysterionConfig from '../app/mysterion-config'
-import bugReporter from '../app/bugReporting/bug-reporting'
 import Terms from '../app/terms'
 import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 
-declare var SENTRY_CONFIG: Object
+const releaseID = `${process.env.MYSTERION_VERSION}(${process.env.BUILD_NUMBER})`
+dependencies.get('bugReporter').install(dependencies.get('sentryURL'), releaseID)
 
+global.__releaseID = releaseID
 global.__version = process.env.MYSTERION_VERSION
 global.__buildNumber = process.env.BUILD_NUMBER
-global.__sentryURL = SENTRY_CONFIG.publicURL
 global.__static = mysterionConfig.staticDirectoryPath
 
 const tequilApi = dependencies.get('tequilapi')
@@ -28,5 +28,3 @@ const mysterion = new Mysterion({
 })
 
 mysterion.run()
-
-bugReporter.main.install()

@@ -1,5 +1,6 @@
 import {BrowserWindow} from 'electron'
-import bugReporter from './bugReporting/bug-reporting'
+import dependencies from '../main/dependencies'
+const bugReporter = dependencies.get('bugReporter')
 
 // TODO: find better name - AppWindow?
 class Window {
@@ -63,7 +64,7 @@ class Window {
     if (!this.window) {
       const message = `Failed to send message ${event} to renderer, because window is already closed`
       // TODO: use captureMessage instead
-      bugReporter.main.captureException(new Error(message))
+      bugReporter.captureException(new Error(message))
       return
     }
     this.window.webContents.send(event, data)

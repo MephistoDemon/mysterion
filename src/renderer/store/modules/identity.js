@@ -1,5 +1,5 @@
 import type from '../types'
-import reporter from '../../../app/bugReporting/bug-reporting'
+import {setUser as bugReporterSetUser} from '../../../app/bugReporting/bug-reporter-renderer'
 import RendererMessageBus from '../../../app/communication/rendererMessageBus'
 import RendererCommunication from '../../../app/communication/renderer-communication'
 
@@ -11,7 +11,7 @@ const state = {
 const mutations = {
   [type.IDENTITY_GET_SUCCESS] (state, identity) {
     state.current = identity // { id: '0xC001FACE00000123' }
-    reporter.setUser(identity)
+    bugReporterSetUser(identity)
     const messageBus = new RendererMessageBus()
     const communication = new RendererCommunication(messageBus)
     communication.sendCurrentIdentityChange(identity)

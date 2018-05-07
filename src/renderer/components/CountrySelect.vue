@@ -88,7 +88,7 @@
           error.original = e
 
           this.$store.commit(type.SHOW_ERROR, error)
-          this.bugReporter.renderer.captureException(error)
+          this.bugReporter.captureException(error)
         }
 
         this.countriesAreLoading = false

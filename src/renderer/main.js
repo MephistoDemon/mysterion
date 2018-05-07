@@ -1,14 +1,16 @@
-import Vue from 'vue'
 import dependencies from './dependencies'
-import bugReporter from '../app/bugReporting/bug-reporting'
+import Vue from 'vue'
 
-bugReporter.renderer.install(Vue)
+const bugReporter = dependencies.get('bugReporter')
+const sentryURL = dependencies.get('sentryURL')
+const releaseID = dependencies.get('releaseID')
+bugReporter.install(sentryURL, Vue, releaseID)
 
 const application = dependencies.get('vue-application')
 application.$mount()
 
 window.addEventListener('unhandledrejection', (evt) => {
-  bugReporter.renderer.captureException(evt.reason, {
+  bugReporter.captureException(evt.reason, {
     extra: evt.reason.response ? evt.reason.response.data : evt.reason
   })
 })

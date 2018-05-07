@@ -41,9 +41,7 @@
     computed: {
       ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
       version () {
-        const mysterionSemanticVersion = remote.getGlobal('__version')
-        const mysterionBuildNumber = remote.getGlobal('__buildNumber')
-        const mysterionVisibleVersion = `${mysterionSemanticVersion}(${mysterionBuildNumber})`
+        const mysterionVisibleVersion = remote.getGlobal('__releaseID')
         const clientVisibleVersion = this.clientBuildInfo.buildNumber ? this.clientBuildInfo.buildNumber : ''
         return `v${mysterionVisibleVersion}.${clientVisibleVersion}`
       }
