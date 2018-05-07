@@ -14,8 +14,8 @@ import VpnLoader from '@/pages/VpnLoader'
 import {nextTick} from '../../../helpers/utils'
 import config from '@/config'
 import messages from '../../../../src/app/messages'
-import IdentityDTO from '../../../../src/libraries/api/client/dto/identity'
-import TequilApi from '../../../../src/libraries/api/client/tequil-api'
+import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
+import TequilApi from '../../../../src/libraries/mysterium-tequilapi/tequil-api'
 
 Vue.use(Vuex)
 Vue.use(Router)

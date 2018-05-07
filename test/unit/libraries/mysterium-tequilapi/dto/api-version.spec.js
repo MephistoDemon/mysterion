@@ -1,5 +1,5 @@
 import {expect} from 'chai'
-import NodeVersionDTO from '../../../../../../src/libraries/api/client/dto/node-version'
+import NodeVersionDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-version'
 
 describe('TequilApi client DTO', () => {
   describe('NodeVersionDTO', () => {

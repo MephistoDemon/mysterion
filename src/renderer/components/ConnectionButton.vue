@@ -11,9 +11,9 @@
 <script>
   import {mapGetters} from 'vuex'
   import type from '../store/types'
-  import ConnectionStatusEnum from '../../libraries/api/client/dto/connection-status-enum'
+  import ConnectionStatusEnum from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
   import messages from '../../app/messages'
-  import ConnectionRequestDTO from '../../libraries/api/client/dto/connection-request'
+  import ConnectionRequestDTO from '../../libraries/mysterium-tequilapi/dto/connection-request'
 
   export default {
     name: 'connection-button',

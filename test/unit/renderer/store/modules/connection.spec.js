@@ -6,14 +6,14 @@ import {mutations, actionsFactory} from '@/store/modules/connection'
 import {capturePromiseError} from '../../../../helpers/utils'
 import factoryTequilapiManipulator from './tequilapi-manipulator'
 import {FunctionLooper} from '@/../libraries/functionLooper'
-import ConnectionStatusEnum from '../../../../../src/libraries/api/client/dto/connection-status-enum'
+import ConnectionStatusEnum from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
 import communication from '@/../app/communication'
 import RendererCommunication from '@/../app/communication/renderer-communication'
 import FakeMessageBus from '../../../../helpers/fakeMessageBus'
 import {createEventFactory} from '../../../../../src/app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../../../src/app/statistics/events'
 import {ActionLooper, ActionLooperConfig} from '../../../../../src/renderer/store/modules/connection'
-import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
+import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
 
 const fakeTequilapi = factoryTequilapiManipulator()
 const fakeMessageBus = new FakeMessageBus()

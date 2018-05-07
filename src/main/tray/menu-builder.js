@@ -1,9 +1,9 @@
 // @flow
-import ProposalDTO from '../../libraries/api/client/dto/proposal'
+import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 import MainCommunication from '../../app/communication/main-communication'
 import {getCountryNameFromProposal} from '../../app/countries/index'
-import ConnectionStatusEnum from '../../libraries/api/client/dto/connection-status-enum'
-import type {ConnectionStatus} from '../../libraries/api/client/dto/connection-status-enum'
+import ConnectionStatusEnum from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
+import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import TrayMenu from './menu'
 import TrayMenuItem from './menu-item'
 import TrayMenuSeparator from './menu-item-separator'

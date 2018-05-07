@@ -1,5 +1,5 @@
 import {expect} from 'chai'
-import ConnectionIPDTO from '../../../../../../src/libraries/api/client/dto/connection-ip'
+import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 
 describe('TequilApi client DTO', () => {
   describe('ConnectionIPDTO', () => {

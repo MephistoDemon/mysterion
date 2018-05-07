@@ -3,8 +3,8 @@ import type from '../types'
 import reporter from '../../../app/bugReporting/bug-reporting'
 import RendererMessageBus from '../../../app/communication/rendererMessageBus'
 import RendererCommunication from '../../../app/communication/renderer-communication'
-import TequilApi from '../../../libraries/api/client/tequil-api'
-import IdentityDTO from '../../../libraries/api/client/dto/identity'
+import TequilApi from '../../../libraries/mysterium-tequilapi/tequil-api'
+import IdentityDTO from '../../../libraries/mysterium-tequilapi/dto/identity'
 
 const state = {
   current: null,

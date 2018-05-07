@@ -1,5 +1,5 @@
 // @flow
-import TequilapiError from '../../../../../src/libraries/api/client/tequilapi-error'
+import TequilapiError from '../../../../src/libraries/mysterium-tequilapi/tequilapi-error'
 
 describe('tequilAPI', () => {
   describe('TequilapiError', () => {

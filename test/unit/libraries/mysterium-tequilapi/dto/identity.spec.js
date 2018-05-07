@@ -1,5 +1,5 @@
 import {expect} from 'chai'
-import IdentityDTO from '../../../../../../src/libraries/api/client/dto/identity'
+import IdentityDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/identity'
 
 describe('TequilApi client DTO', () => {
   describe('IdentityDTO', () => {

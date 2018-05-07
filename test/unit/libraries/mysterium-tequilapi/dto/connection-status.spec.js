@@ -1,6 +1,6 @@
 import {expect} from 'chai'
-import ConnectionStatusDTO from '../../../../../../src/libraries/api/client/dto/connection-status'
-import ConnectionStatusEnum from '../../../../../../src/libraries/api/client/dto/connection-status-enum'
+import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
+import ConnectionStatusEnum from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
 
 describe('TequilApi client DTO', () => {
   describe('ConnectionStatusDTO', () => {

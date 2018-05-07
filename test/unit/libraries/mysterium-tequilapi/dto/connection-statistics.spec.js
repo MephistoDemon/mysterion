@@ -1,5 +1,5 @@
 import {expect} from 'chai'
-import ConnectionStatisticsDTO from '../../../../../../src/libraries/api/client/dto/connection-statistics'
+import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
 
 describe('TequilApi client DTO', () => {
   describe('ConnectionStatisticsDTO', () => {

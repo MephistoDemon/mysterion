@@ -1,6 +1,6 @@
 // @flow
 import type {Container} from '../app/di'
-import tequilapiFactory from '../libraries/api/client/factory'
+import tequilapiFactory from '../libraries/mysterium-tequilapi/factory'
 
 function bootstrap (container: Container) {
   container.constant(

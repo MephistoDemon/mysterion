@@ -1,6 +1,6 @@
 // @flow
 import countries from './list'
-import ProposalDTO from '../../libraries/api/client/dto/proposal'
+import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 
 const COUNTRY_NAME_UNKNOWN = 'N/A'
 

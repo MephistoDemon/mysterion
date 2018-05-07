@@ -1,8 +1,8 @@
 // @flow
-import ConnectionIPDTO from '../../../../../src/libraries/api/client/dto/connection-ip'
-import ConnectionStatusDTO from '../../../../../src/libraries/api/client/dto/connection-status'
-import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
-import TequilapiError from '../../../../../src/libraries/api/client/tequilapi-error'
+import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
+import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
+import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
+import TequilapiError from '../../../../../src/libraries/mysterium-tequilapi/tequilapi-error'
 
 class TimeoutError extends Error {
   isTimeoutError (): boolean {

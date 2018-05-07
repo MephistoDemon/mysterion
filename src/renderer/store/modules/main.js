@@ -1,7 +1,7 @@
 // @flow
 // TODO: rename to `vpn.js` to be consistent with `Vpn.vue`
 import type from '../types'
-import TequilApi from '../../../libraries/api/client/tequil-api'
+import TequilApi from '../../../libraries/mysterium-tequilapi/tequil-api'
 
 const state = {
   init: '',

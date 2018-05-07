@@ -1,6 +1,6 @@
 // @flow
-import type {ConnectionStatus} from '../../libraries/api/client/dto/connection-status-enum'
-import ProposalDTO from '../../libraries/api/client/dto/proposal'
+import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
+import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 
 export type ConnectionStatusChangeDTO = {
   oldStatus: ConnectionStatus,

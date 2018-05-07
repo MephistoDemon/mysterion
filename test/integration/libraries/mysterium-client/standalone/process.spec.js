@@ -3,7 +3,7 @@ import Process, {logLevel} from '../../../../../src/libraries/mysterium-client/s
 import configInjector from 'inject-loader!../../../../../src/app/mysterion-config'
 import {ChildProcess} from 'child_process'
 import sleep from '../../../../../src/libraries/sleep'
-import tequilapiFactory from '../../../../../src/libraries/api/client/factory'
+import tequilapiFactory from '../../../../../src/libraries/mysterium-tequilapi/factory'
 
 const config = configInjector({
   'electron': {
