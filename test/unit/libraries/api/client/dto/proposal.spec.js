@@ -1,5 +1,6 @@
 import {expect} from 'chai'
 import ProposalDTO from '../../../../../../src/libraries/api/client/dto/proposal'
+import ServiceDefinitionDTO from '../../../../../../src/libraries/api/client/dto/service-definition'
 
 describe('TequilApi client DTO', () => {
   describe('ProposalDTO', () => {
@@ -8,18 +9,13 @@ describe('TequilApi client DTO', () => {
         id: 1,
         providerId: '0x1',
         serviceType: 'openvpn',
-        serviceDefinition: {
-          locationOriginate: {
-            asn: '',
-            country: 'LT'
-          }
-        }
+        serviceDefinition: {}
       })
 
       expect(proposal.id).to.equal(1)
       expect(proposal.providerId).to.equal('0x1')
       expect(proposal.serviceType).to.equal('openvpn')
-      expect(proposal.serviceDefinition.locationOriginate.country).to.equal('LT')
+      expect(proposal.serviceDefinition).to.deep.equal(new ServiceDefinitionDTO({}))
     })
 
     it('sets empty properties structure', async () => {

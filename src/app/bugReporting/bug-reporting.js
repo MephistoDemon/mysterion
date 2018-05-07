@@ -5,10 +5,11 @@ import {remote} from 'electron'
 import RavenVue from 'raven-js/plugins/vue'
 import {pushToLogCache} from './logsCache'
 import config from './config'
+import IdentityDTO from '../../libraries/api/client/dto/identity'
 
 declare var SENTRY_CONFIG: Object
 
-const setUser = (userData: any) => {
+const setUser = (userData: IdentityDTO) => {
   RavenJs.setUserContext(userData)
   Raven.setContext({
     user: userData

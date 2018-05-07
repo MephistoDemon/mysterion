@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import ProposalsResponseDTO from '../../../../../../src/libraries/api/client/dto/proposals-response'
 
 describe('TequilApi client DTO', () => {
-  describe('ProposalResponseDto', () => {
+  describe('ProposalsResponseDTO', () => {
     it('sets properties with full structure', async () => {
       const response = new ProposalsResponseDTO({
         proposals: [{id: 100}]

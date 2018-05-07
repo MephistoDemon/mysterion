@@ -2,6 +2,9 @@ const healthCheckInterval = 1500
 const healthCheckTimeout = 500
 
 class ProcessMonitoring {
+  /**
+   * @param {TequilApi} tequilApi
+   */
   constructor (tequilApi) {
     this.api = tequilApi
     this.clientIsRunning = false

@@ -74,7 +74,7 @@ function mountWith (tequilapi, store) {
   const vue = createLocalVue()
 
   const dependencies = new DIContainer(vue)
-  dependencies.constant('tequilapi', tequilapi)
+  dependencies.constant('tequilapiDepreciated', tequilapi)
   dependencies.constant('bugReporter', bugReporter)
 
   return mount(CountrySelect, {
