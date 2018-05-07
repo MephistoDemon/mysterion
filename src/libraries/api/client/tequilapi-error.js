@@ -5,7 +5,8 @@ const errorCodes = {
 }
 
 const httpResponseCodes = {
-  CLIENT_CLOSED_REQUEST: 499
+  CLIENT_CLOSED_REQUEST: 499,
+  SERVICE_UNAVAILABLE: 503
 }
 
 class TequilapiError extends Error {
@@ -35,7 +36,7 @@ class TequilapiError extends Error {
     return hasHttpStatus(this.original, httpResponseCodes.CLIENT_CLOSED_REQUEST)
   }
 
-  isServiceUnavailable (): boolean {
+  isServiceUnavailableError (): boolean {
     return hasHttpStatus(this.original, httpResponseCodes.SERVICE_UNAVAILABLE)
   }
 }

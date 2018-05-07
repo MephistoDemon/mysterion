@@ -44,15 +44,15 @@ describe('tequilAPI', () => {
       expect(new TequilapiError(original).isRequestClosedError()).to.be.false
     })
 
-    it('isRequestClosedError()', () => {
+    it('isServiceUnavailableError()', () => {
       let original
 
       original = new Error()
       original.response = {status: 503}
-      expect(new TequilapiError(original).isServiceUnavailable()).to.be.true
+      expect(new TequilapiError(original).isServiceUnavailableError()).to.be.true
 
       original = new Error()
-      expect(new TequilapiError(original).isServiceUnavailable()).to.be.false
+      expect(new TequilapiError(original).isServiceUnavailableError()).to.be.false
     })
   })
 })
