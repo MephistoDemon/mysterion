@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import ConnectionRequestDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-request'
 
-describe('TequilApi client DTO', () => {
+describe('Tequilapi DTO', () => {
   describe('ConnectionRequestDTO', () => {
     it('sets properties', async () => {
       const request = new ConnectionRequestDTO('0x1000FACE', '0x2000FACE')

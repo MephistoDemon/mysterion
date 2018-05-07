@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import IdentitiesResponseDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/identities-response'
 import IdentityDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/identity'
 
-describe('TequilApi client DTO', () => {
+describe('Tequilapi DTO', () => {
   describe('IdentitiesResponseDTO', () => {
     it('sets properties', async () => {
       const response = new IdentitiesResponseDTO([

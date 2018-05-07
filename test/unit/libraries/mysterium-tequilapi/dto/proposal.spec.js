@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import ProposalDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import ServiceDefinitionDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/service-definition'
 
-describe('TequilApi client DTO', () => {
+describe('Tequilapi DTO', () => {
   describe('ProposalDTO', () => {
     it('sets properties with full structure', async () => {
       const proposal = new ProposalDTO({

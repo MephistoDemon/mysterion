@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
 import ConnectionStatusEnum from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
 
-describe('TequilApi client DTO', () => {
+describe('Tequilapi DTO', () => {
   describe('ConnectionStatusDTO', () => {
     it('sets properties', async () => {
       const connection = new ConnectionStatusDTO({

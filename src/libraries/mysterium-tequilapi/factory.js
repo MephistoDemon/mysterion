@@ -2,7 +2,7 @@
 
 import axios from 'axios'
 import AxiosAdapter from './adapters/axios-adapter'
-import TequilApi from './tequil-api'
+import Tequilapi from './tequilapi'
 import {TIMEOUT_DEFAULT} from './timeouts'
 
 function factory (baseUrl: string, defaultTimeout: number = TIMEOUT_DEFAULT) {
@@ -14,7 +14,7 @@ function factory (baseUrl: string, defaultTimeout: number = TIMEOUT_DEFAULT) {
   })
   const axiosAdapter = new AxiosAdapter(axioInstance, defaultTimeout)
 
-  return new TequilApi(axiosAdapter)
+  return new Tequilapi(axiosAdapter)
 }
 
 export default factory

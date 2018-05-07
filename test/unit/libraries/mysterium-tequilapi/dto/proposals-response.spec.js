@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import ProposalsResponseDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/proposals-response'
 
-describe('TequilApi client DTO', () => {
+describe('Tequilapi DTO', () => {
   describe('ProposalsResponseDTO', () => {
     it('sets properties with full structure', async () => {
       const response = new ProposalsResponseDTO({

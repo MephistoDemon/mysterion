@@ -1,4 +1,4 @@
-import TequilApi from '../../../../src/libraries/mysterium-tequilapi/tequil-api'
+import Tequilapi from '../../../../src/libraries/mysterium-tequilapi/tequilapi'
 import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import AxiosAdapter from '../../../../src/libraries/mysterium-tequilapi/adapters/axios-adapter'
@@ -11,12 +11,12 @@ import ConnectionIPDTO from '../../../../src/libraries/mysterium-tequilapi/dto/c
 import ConnectionStatusDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
 import ConnectionRequestDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-request'
 
-describe('tequilAPI', () => {
+describe('Tequilapi', () => {
   let api
   let mock
   beforeEach(() => {
     const axioInstance = axios.create()
-    api = new TequilApi(new AxiosAdapter(axioInstance), 1)
+    api = new Tequilapi(new AxiosAdapter(axioInstance), 1)
     mock = new MockAdapter(axioInstance)
   })
 

@@ -3,7 +3,7 @@ import type from '../types'
 import reporter from '../../../app/bugReporting/bug-reporting'
 import RendererMessageBus from '../../../app/communication/rendererMessageBus'
 import RendererCommunication from '../../../app/communication/renderer-communication'
-import TequilApi from '../../../libraries/mysterium-tequilapi/tequil-api'
+import Tequilapi from '../../../libraries/mysterium-tequilapi/tequilapi'
 import IdentityDTO from '../../../libraries/mysterium-tequilapi/dto/identity'
 
 const state = {
@@ -43,7 +43,7 @@ async function getPassword (): Promise<string> {
   return ''
 }
 
-function actionsFactory (tequilapi: TequilApi) {
+function actionsFactory (tequilapi: Tequilapi) {
   return {
     async [type.IDENTITY_CREATE] ({commit}) {
       try {
@@ -74,7 +74,7 @@ function actionsFactory (tequilapi: TequilApi) {
   }
 }
 
-function factory (tequilapi: TequilApi) {
+function factory (tequilapi: Tequilapi) {
   return {
     state,
     getters,
