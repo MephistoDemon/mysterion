@@ -7,12 +7,7 @@ const ConnectionStatusEnum = {
   CONNECTING: 'Connecting'
 }
 
-type ConnectionStatus = (
-  typeof ConnectionStatusEnum.CONNECTED
-  | typeof ConnectionStatusEnum.CONNECTING
-  | typeof ConnectionStatusEnum.NOT_CONNECTED
-  | typeof ConnectionStatusEnum.DISCONNECTING
-)
+type ConnectionStatus = 'Connected' | 'Connecting' | 'NotConnected' | 'Connecting'
 
-export type {ConnectionStatus}
 export default ConnectionStatusEnum
+export type {ConnectionStatus}
