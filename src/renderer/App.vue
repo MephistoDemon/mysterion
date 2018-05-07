@@ -24,7 +24,6 @@
   import AppNav from '@/partials/AppNav'
   import messages from '../app/communication'
 
-  import {remote} from 'electron'
   import AppError from '@/partials/AppError'
   import AppModal from '@/partials/AppModal'
   import RendererMessageBus from '../app/communication/rendererMessageBus'
@@ -38,12 +37,12 @@
       AppError,
       AppModal
     },
+    dependencies: ['releaseID'],
     computed: {
       ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
       version () {
-        const mysterionVisibleVersion = remote.getGlobal('__releaseID')
         const clientVisibleVersion = this.clientBuildInfo.buildNumber ? this.clientBuildInfo.buildNumber : ''
-        return `v${mysterionVisibleVersion}.${clientVisibleVersion}`
+        return `v${this.releaseID}.${clientVisibleVersion}`
       }
     },
     async mounted () {

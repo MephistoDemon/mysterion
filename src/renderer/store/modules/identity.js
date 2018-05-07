@@ -14,8 +14,7 @@ const state = {
 const mutations = {
   [type.IDENTITY_GET_SUCCESS] (state, identity: IdentityDTO) {
     state.current = identity
-    reporter.setUser(identity)
-    bugReporterSetUser(identity
+    bugReporterSetUser(identity)
     const messageBus = new RendererMessageBus()
     const communication = new RendererCommunication(messageBus)
     communication.sendCurrentIdentityChange(identity)

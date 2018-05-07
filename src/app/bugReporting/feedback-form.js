@@ -1,6 +1,6 @@
 // @flow
-import registerHeaderRules from '../rendererRequestHeaders'
-import type {HeaderRule} from '../rendererRequestHeaders'
+import registerHeaderRules from '../window/requestHeaders'
+import type {HeaderRule} from '../window/requestHeaders'
 
 const requestHeaderRewriteRule: HeaderRule = {
   urls: ['https://sentry.io/api/embed/error-page/*'],

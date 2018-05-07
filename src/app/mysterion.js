@@ -1,4 +1,4 @@
-import Window from './window'
+import Window from './window/index'
 import MysterionTray, {TrayIcon} from './mysterionTray'
 import connectionStatus from '../libraries/api/connectionStatus'
 import communication from './communication/index'
@@ -226,10 +226,8 @@ function setupSentryFeedbackForm () {
   try {
     installFeedbackForm(browserSession.defaultSession)
   } catch (err) {
-    const error = new Error('Failed to install Feedback form')
-    error.original = err
-    console.error(error)
-    bugReporter.captureException(error)
+    console.error(err)
+    bugReporter.captureException(err)
   }
 }
 

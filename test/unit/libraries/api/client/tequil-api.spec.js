@@ -169,5 +169,4 @@ describe('tequilAPI', () => {
       expect(e.message).to.equal('Request failed with status code 500')
     })
   })
-
 })

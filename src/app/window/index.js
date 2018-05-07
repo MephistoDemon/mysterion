@@ -1,5 +1,5 @@
 import {BrowserWindow} from 'electron'
-import dependencies from '../main/dependencies'
+import dependencies from '../../main/dependencies/index'
 const bugReporter = dependencies.get('bugReporter')
 
 // TODO: find better name - AppWindow?
