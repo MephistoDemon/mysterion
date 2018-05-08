@@ -9,12 +9,10 @@ import Terms from '../app/terms'
 import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 
-const releaseID = `${process.env.MYSTERION_VERSION}(${process.env.BUILD_NUMBER})`
-dependencies.get('bugReporter').install(dependencies.get('sentryURL'), releaseID)
+dependencies.get('bugReporter')
+  .install(dependencies.get('sentryURL'), dependencies.get('mysterionReleaseID'))
 
-global.__releaseID = releaseID
-global.__version = process.env.MYSTERION_VERSION
-global.__buildNumber = process.env.BUILD_NUMBER
+global.__mysterionReleaseID = dependencies.get('mysterionReleaseID')
 global.__static = mysterionConfig.staticDirectoryPath
 
 const tequilApi = dependencies.get('tequilapi')

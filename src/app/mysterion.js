@@ -1,4 +1,4 @@
-import Window from './window/index'
+import Window from './window'
 import MysterionTray, {TrayIcon} from './mysterionTray'
 import connectionStatus from '../libraries/api/connectionStatus'
 import communication from './communication/index'
@@ -70,7 +70,7 @@ class Mysterion {
     setupSentryFeedbackForm()
 
     const send = this.window.send.bind(this.window)
-    this.messageBus = new MainMessageBus(send)
+    this.messageBus = new MainMessageBus(send, bugReporter.captureException)
 
     this.communication = new MainCommunication(this.messageBus)
 
@@ -226,7 +226,7 @@ function setupSentryFeedbackForm () {
   try {
     installFeedbackForm(browserSession.defaultSession)
   } catch (err) {
-    console.error(err)
+    console.error('Sentry feedback form installation failed ', err.stack)
     bugReporter.captureException(err)
   }
 }

@@ -37,12 +37,12 @@
       AppError,
       AppModal
     },
-    dependencies: ['releaseID'],
+    dependencies: ['mysterionReleaseID'],
     computed: {
       ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
       version () {
         const clientVisibleVersion = this.clientBuildInfo.buildNumber ? this.clientBuildInfo.buildNumber : ''
-        return `v${this.releaseID}.${clientVisibleVersion}`
+        return `v${this.mysterionReleaseID}.${clientVisibleVersion}`
       }
     },
     async mounted () {

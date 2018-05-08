@@ -4,8 +4,7 @@ import config from './config'
 import {pushToLogCache} from './logsCache'
 
 function install (url: string, releaseId: string) {
-  config.release = releaseId
-  Raven.config(url, config).install()
+  Raven.config(url, {...config, release: releaseId}).install()
 }
 
 function setUser (userData: any) {
