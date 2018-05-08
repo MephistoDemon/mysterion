@@ -73,8 +73,8 @@ describe('tray', () => {
         })
 
         const items = ['item1', 'item2']
-        const menuBuilder = () => items
-        const tray = new Tray(factory, menuBuilder, menuItemBuilder, iconPath)
+        const menuTemplateBuilder = () => items
+        const tray = new Tray(factory, menuTemplateBuilder, menuItemBuilder, iconPath)
         tray.build()
 
         expect(contextMenu).to.deep.equal(items)
@@ -89,7 +89,7 @@ describe('tray', () => {
         const factory = fakeTrayFactoryBuilder(null, null, () => {
           calledSetContextMenu = true
         })
-        const generator = {
+        const menuItemBuilder = {
           build () {
 
           },
@@ -98,7 +98,7 @@ describe('tray', () => {
           }
         }
 
-        const tray = new Tray(factory, (items) => items, generator, iconPath)
+        const tray = new Tray(factory, (items) => items, menuItemBuilder, iconPath)
 
         tray.build()
         tray.setStatus('CONNECTED')
@@ -116,7 +116,7 @@ describe('tray', () => {
         const factory = fakeTrayFactoryBuilder(null, null, () => {
           calledSetContextMenu = true
         })
-        const generator = {
+        const menuItemBuilder = {
           build () {
 
           },
@@ -125,7 +125,7 @@ describe('tray', () => {
           }
         }
 
-        const tray = new Tray(factory, (items) => items, generator, iconPath)
+        const tray = new Tray(factory, (items) => items, menuItemBuilder, iconPath)
 
         tray.build()
         tray.setProposals([])
@@ -138,7 +138,7 @@ describe('tray', () => {
         let calledUpdateProposals = false
 
         const factory = fakeTrayFactoryBuilder()
-        const generator = {
+        const menuItemBuilder = {
           build () {
 
           },
@@ -147,7 +147,7 @@ describe('tray', () => {
           }
         }
 
-        const tray = new Tray(factory, (items) => items, generator, iconPath)
+        const tray = new Tray(factory, (items) => items, menuItemBuilder, iconPath)
         tray._canUpdateItems = false
         tray.build()
         tray.setProposals([])

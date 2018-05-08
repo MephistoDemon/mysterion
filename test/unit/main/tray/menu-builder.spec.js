@@ -27,7 +27,7 @@ class FakeApplicationQuitter {
 }
 
 describe('tray', () => {
-  describe('TrayMenuGenerator', () => {
+  describe('TrayMenuBuilder', () => {
     let appQuitter
     let communication
     let builder

@@ -10,7 +10,7 @@ import TrayMenuItem from './menu-item'
 import TrayMenuSeparator from './menu-item-separator'
 import translations from './translations'
 
-function GetMenuItems (
+function getMenuItems (
   appQuit: Function,
   showWindow: Function,
   toggleDevTools: Function,
@@ -106,7 +106,7 @@ class TrayMenuBuilder {
   }
 
   build (): Array<Object> {
-    return GetMenuItems(
+    return getMenuItems(
       this._appQuit,
       this._showWindow,
       this._toggleDevTools,
