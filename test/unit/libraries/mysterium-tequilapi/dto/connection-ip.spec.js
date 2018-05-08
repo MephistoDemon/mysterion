@@ -1,7 +1,7 @@
 import {expect} from 'chai'
-import ConnectionIPDTO from '../../../../../../src/libraries/api/client/dto/connection-ip'
+import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 
-describe('TequilApi client DTO', () => {
+describe('TequilapiClient DTO', () => {
   describe('ConnectionIPDTO', () => {
     it('sets properties', async () => {
       const model = new ConnectionIPDTO({ip: 'mock ip'})

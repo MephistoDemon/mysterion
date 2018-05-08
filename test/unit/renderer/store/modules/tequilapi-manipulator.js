@@ -1,8 +1,24 @@
 // @flow
-import {CONNECTION_ABORTED_ERROR_CODE, httpResponseCodes} from '../../../../../src/libraries/api/errors'
-import ConnectionIPDTO from '../../../../../src/libraries/api/client/dto/connection-ip'
-import ConnectionStatusDTO from '../../../../../src/libraries/api/client/dto/connection-status'
-import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
+import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
+import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
+import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
+import TequilapiClientError from '../../../../../src/libraries/mysterium-tequilapi/client-error'
+
+class TimeoutError extends Error {
+  isTimeoutError (): boolean {
+    return true
+  }
+}
+
+class RequestClosedError extends Error {
+  isTimeoutError (): boolean {
+    return false
+  }
+
+  isRequestClosedError (): boolean {
+    return true
+  }
+}
 
 function factoryTequilapiManipulator () {
   let statusFail = false
@@ -12,23 +28,19 @@ function factoryTequilapiManipulator () {
   let connectFail = false
   let connectFailClosedRequest = false
 
-  const fakeError = new Error('Mock error')
-
-  const fakeTimeoutError = new Error('Mock timeout error')
-  fakeTimeoutError.code = CONNECTION_ABORTED_ERROR_CODE
-
-  const fakeClosedRequestError = new Error('Mock closed request error')
-  fakeClosedRequestError.response = { status: httpResponseCodes.CLIENT_CLOSED_REQUEST }
+  const errorMock = new TequilapiClientError('Mock error')
+  const timeoutErrorMock = new TimeoutError('Mock timeout error')
+  const closedRequestErrorMock = new RequestClosedError('Mock closed request error')
 
   return {
     getFakeApi: function () {
       return {
         connectionIP: async function (): Promise<ConnectionIPDTO> {
           if (ipTimeout) {
-            throw fakeTimeoutError
+            throw timeoutErrorMock
           }
           if (ipFail) {
-            throw fakeError
+            throw errorMock
           }
           return new ConnectionIPDTO({
             ip: 'mock ip'
@@ -37,7 +49,7 @@ function factoryTequilapiManipulator () {
 
         connectionStatus: async function (): Promise<ConnectionStatusDTO> {
           if (statusFail) {
-            throw fakeError
+            throw errorMock
           }
           return new ConnectionStatusDTO({
             status: 'mock status'
@@ -46,17 +58,17 @@ function factoryTequilapiManipulator () {
 
         connectionStatistics: async function (): Promise<ConnectionStatisticsDTO> {
           if (statisticsFail) {
-            throw fakeError
+            throw errorMock
           }
           return new ConnectionStatisticsDTO({duration: 1})
         },
 
         connectionCreate: async function (): Promise<ConnectionStatusDTO> {
           if (connectFailClosedRequest) {
-            throw fakeClosedRequestError
+            throw closedRequestErrorMock
           }
           if (connectFail) {
-            throw fakeError
+            throw errorMock
           }
           return new ConnectionStatusDTO({})
         },
@@ -93,10 +105,10 @@ function factoryTequilapiManipulator () {
       connectFailClosedRequest = error
     },
     getFakeError: function (): Error {
-      return fakeError
+      return errorMock
     },
     getFakeTimeoutError: function (): Error {
-      return fakeTimeoutError
+      return timeoutErrorMock
     }
   }
 }

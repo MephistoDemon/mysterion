@@ -1,11 +1,11 @@
 // @flow
 import path from 'path'
 import {Tray as ElectronTray} from 'electron'
-import ProposalDTO from '../../libraries/api/client/dto/proposal'
+import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 import TrayMenuBuilder from './menu-builder'
 import translations from './translations'
-import ConnectionStatusEnum from '../../libraries/api/client/dto/connection-status-enum'
-import type {ConnectionStatus} from '../../libraries/api/client/dto/connection-status-enum'
+import ConnectionStatusEnum from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
+import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 
 const TrayIcon = {
   active: 'active',

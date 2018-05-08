@@ -15,7 +15,7 @@ dependencies.get('bugReporter')
 global.__mysterionReleaseID = dependencies.get('mysterionReleaseID')
 global.__static = mysterionConfig.staticDirectoryPath
 
-const tequilApi = dependencies.get('tequilapi')
+const tequilApi = dependencies.get('tequilapiClient')
 const mysterion = new Mysterion({
   config: mysterionConfig,
   terms: new Terms(path.join(mysterionConfig.staticDirectoryPath, 'terms'), mysterionConfig.userDataDirectory),

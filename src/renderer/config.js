@@ -3,5 +3,5 @@ export default {
   statisticsUpdateThreshold: 300,
   ipUpdateThreshold: 10000,
   ipUpdateTimeout: 5000,
-  loadingScreenDelay: 1900
+  loadingScreenDelay: 300
 }

@@ -1,8 +1,8 @@
 import {expect} from 'chai'
-import NodeHealthcheckDTO from '../../../../../../src/libraries/api/client/dto/node-healthcheck'
-import NodeVersionDTO from '../../../../../../src/libraries/api/client/dto/node-version'
+import NodeHealthcheckDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
+import NodeVersionDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-version'
 
-describe('TequilApi client DTO', () => {
+describe('TequilapiClient DTO', () => {
   describe('NodeHealthcheckDTO', () => {
     it('sets properties', async () => {
       const status = new NodeHealthcheckDTO({

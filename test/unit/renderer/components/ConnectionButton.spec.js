@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import ConnectionButton from '../../../../src/renderer/components/ConnectionButton'
 import type from '../../../../src/renderer/store/types'
-import ConnectionStatusEnum from '../../../../src/libraries/api/client/dto/connection-status-enum'
+import ConnectionStatusEnum from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
 import {state, mutations, getters} from '@/store/modules/connection'
 
 const mountWithStore = function () {

@@ -1,7 +1,7 @@
 // @flow
 import TrayMenuBuilder from '../../../../src/main/tray/menu-builder'
-import ConnectionStatusEnum from '../../../../src/libraries/api/client/dto/connection-status-enum'
-import ProposalDTO from '../../../../src/libraries/api/client/dto/proposal'
+import ConnectionStatusEnum from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
+import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import translations from '../../../../src/main/tray/translations'
 
 class FakeMainCommunication {
