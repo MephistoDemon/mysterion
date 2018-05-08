@@ -16,6 +16,10 @@ function processInstalled () {
 }
 
 class Installer {
+  /**
+   * @constructor
+   * @param {ClientConfig} config
+   */
   constructor (config) {
     this.config = config
   }

@@ -1,4 +1,4 @@
-class Config {
+class ClientConfig {
   constructor (clientBin, configDir, openVPNBin, dataDir, runtimeDir, logDir) {
     this.clientBin = clientBin
     this.configDir = configDir
@@ -9,4 +9,4 @@ class Config {
   }
 }
 
-export default Config
+export default ClientConfig

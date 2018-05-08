@@ -4,11 +4,13 @@ import {spawn} from 'child_process'
 // child.stdout and child.stderr
 export const logLevel = {LOG: 'stdout', ERROR: 'stderr'}
 
+/**
+ * 'mysterium_client' process handler
+ */
 class Process {
   /**
-   * Creates mysterium_client process handler
    * @constructor
-   * @param {{clientBinaryPath,openVPNBinary,clientConfigPath,runtimeDirectory: string}} config
+   * @param {ClientConfig} config
    */
   constructor (config) {
     this.config = config

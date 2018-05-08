@@ -12,12 +12,13 @@ const stdFiles = {
 
 /**
  * Spawns 'mysterium_client' daemon on OSX by calling TequilapiClient.healthcheck()
- *
- * @constructor
- * @param {TequilapiClient} tequilapi - api to be used
- * @param {string} dataDir - directory where it's looking for logs
  */
 class Process {
+  /**
+   * @constructor
+   * @param {TequilapiClient} tequilapi - api to be used
+   * @param {string} dataDir - directory where it's looking for logs
+   */
   constructor (tequilapi, dataDir) {
     this.tequilapi = tequilapi
     this.dataDir = dataDir
