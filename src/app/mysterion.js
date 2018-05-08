@@ -211,7 +211,7 @@ class Mysterion {
       this.communication,
       this.proposalFetcher,
       this.window,
-      path.join(this.config.staticDirectoryPath, 'icons')
+      path.join(this.config.staticDirectory, 'icons')
     )
   }
 }

@@ -17,10 +17,10 @@ class Process {
   }
 
   start (port = 4050) {
-    this.child = spawn(this.config.clientBinaryPath, [
-      '--config-dir', this.config.clientConfigPath,
-      '--runtime-dir', this.config.runtimeDirectory,
-      '--openvpn.binary', this.config.openVPNBinary,
+    this.child = spawn(this.config.clientBin, [
+      '--config-dir', this.config.configDir,
+      '--runtime-dir', this.config.runtimeDir,
+      '--openvpn.binary', this.config.openVPNBin,
       '--tequilapi.port', port
     ])
   }

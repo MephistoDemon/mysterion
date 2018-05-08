@@ -1,20 +1,37 @@
 // @flow
 import type {Container} from '../../../app/di'
+import ClientConfig from '../../../libraries/mysterium-client/config'
+import type {MysterionConfig} from '../../../app/mysterionConfig'
 import {Installer, Process, Monitoring} from '../../../libraries/mysterium-client'
+import path from 'path'
 
 function bootstrap (container: Container) {
   container.service(
-    'mysteriumClientInstaller',
+    'mysteriumClient.config',
     ['mysterionApplication.config'],
-    (mysterionConfig) => {
-      return new Installer(mysterionConfig)
+    (mysterionConfig: MysterionConfig) => {
+      return new ClientConfig(
+        path.join(mysterionConfig.contentsDirectory, 'bin', 'mysterium_client'),
+        path.join(mysterionConfig.contentsDirectory, 'bin', 'config'),
+        path.join(mysterionConfig.contentsDirectory, 'bin', 'openvpn'),
+        mysterionConfig.userDataDirectory,
+        mysterionConfig.runtimeDirectory,
+        mysterionConfig.userDataDirectory
+      )
+    }
+  )
+  container.service(
+    'mysteriumClientInstaller',
+    ['mysteriumClient.config'],
+    (config) => {
+      return new Installer(config)
     }
   )
   container.service(
     'mysteriumClientProcess',
-    ['tequilapiClient', 'mysterionApplication.config'],
-    (tequilapiClient, mysterionConfig) => {
-      return new Process(tequilapiClient, mysterionConfig.userDataDirectory)
+    ['tequilapiClient', 'mysteriumClient.config'],
+    (tequilapiClient, mysteriumClientConfig) => {
+      return new Process(tequilapiClient, mysteriumClientConfig.dataDir)
     }
   )
   container.service(

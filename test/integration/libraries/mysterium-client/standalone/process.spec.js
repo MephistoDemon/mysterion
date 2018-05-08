@@ -1,17 +1,34 @@
-import Process, {logLevel} from '../../../../../src/libraries/mysterium-client/standalone/process'
+// @flow
 import {ChildProcess} from 'child_process'
 import sleep from '../../../../../src/libraries/sleep'
+import Process, {logLevel} from '../../../../../src/libraries/mysterium-client/standalone/process'
+import ClientConfig from '../../../../../src/libraries/mysterium-client/config'
 import tequilapiClientFactory from '../../../../../src/libraries/mysterium-tequilapi/client-factory'
+import path from 'path'
+import os from 'os'
 
 xdescribe('Standalone Process', () => {
   let process, tequilapi
   const logs = []
-  const port = 4055
+  const tequilapiPort = 4055
+  const clientBinDirectory = path.resolve(__dirname, '../../../../../bin')
+  const tmpDirectory = os.tmpdir()
+
   before(async () => {
-    tequilapi = tequilapiClientFactory(`http://127.0.0.1:${port}`)
-    process = new Process({})
-    process.start(port)
+    process = new Process(new ClientConfig(
+      path.join(clientBinDirectory, 'mysterium_client'),
+      path.join(clientBinDirectory, 'config'),
+      path.join(clientBinDirectory, 'openvpn'),
+      tmpDirectory,
+      tmpDirectory,
+      tmpDirectory,
+      tequilapiPort
+    ))
+    process.start()
     process.onLog(logLevel.LOG, data => logs.push(data))
+
+    tequilapi = tequilapiClientFactory(`http://127.0.0.1:${tequilapiPort}`)
+
     await sleep(100)
   })
 
@@ -24,7 +41,7 @@ xdescribe('Standalone Process', () => {
   })
 
   it('sends log data to callback on()', () => {
-    expect(logs.pop()).to.include('Api started on: ' + port)
+    expect(logs.pop()).to.include('Api started on: ' + tequilapiPort)
   })
 
   it('responds to healthcheck with uptime', async () => {

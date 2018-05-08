@@ -2,9 +2,10 @@
 import {app, BrowserWindow} from 'electron'
 import type {Container} from '../../../app/di'
 import Mysterion from '../../../app/mysterion'
-import Terms from '../../../app/terms'
+import type {MysterionConfig} from '../../../app/mysterionConfig'
 import path from 'path'
 import Window from '../../../app/window'
+import Terms from '../../../app/terms'
 
 function bootstrap (container: Container) {
   container.constant('mysterionReleaseID', `${process.env.MYSTERION_VERSION}(${process.env.BUILD_NUMBER})`)
@@ -27,54 +28,18 @@ function bootstrap (container: Container) {
       }
 
       return {
-        /**
-         * mysterium_client binary path
-         */
-        clientBinaryPath: path.join(contentsDirectory, 'bin', 'mysterium_client'),
-
-        /**
-         * openvpn binary path
-         */
-        openVPNBinary: path.join(contentsDirectory, 'bin', 'openvpn'),
-
-        /**
-         * mysterium_client configuration files directory
-         *
-         * e.g. openvpn DNS resolver script
-         */
-        clientConfigPath: path.join(contentsDirectory, 'bin', 'config'),
-
-        /**
-         * user data directory
-         *
-         * This should store logs, terms and conditions file, mysterium_client data, etc
-         */
+        // Application root directory
+        contentsDirectory: contentsDirectory,
+        // User data directory. This should store logs, terms and conditions file, etc.
         userDataDirectory: app.getPath('userData'),
-
-        /**
-         * runtime/working directory
-         *
-         * used for storing temp files
-         */
+        // Runtime/working directory, used for storing temp files
         runtimeDirectory: app.getPath('temp'),
-
-        /**
-         * static file directory
-         */
-        staticDirectoryPath: staticDirectory.replace(/\\/g, '\\\\'),
-
-        /**
-         * window configuration
-         */
+        // Static file directory
+        staticDirectory: staticDirectory.replace(/\\/g, '\\\\'),
+        // Window configuration
         windows: {
-          terms: {
-            width: 800,
-            height: 650
-          },
-          app: {
-            width: 650,
-            height: 650
-          }
+          terms: {width: 800, height: 650},
+          app: {width: 650, height: 650}
         }
       }
     }
@@ -91,7 +56,7 @@ function bootstrap (container: Container) {
       'bugReporter'
     ],
     (
-      mysterionConfig,
+      mysterionConfig: MysterionConfig,
       mysteriumClientInstaller,
       mysteriumClientProcess,
       mysteriumClientMonitoring,
@@ -102,7 +67,7 @@ function bootstrap (container: Container) {
         config: mysterionConfig,
         browserWindowFactory: () => container.get('mysterionBrowserWindow'),
         windowFactory: () => container.get('mysterionWindow'),
-        terms: new Terms(path.join(mysterionConfig.staticDirectoryPath, 'terms'), mysterionConfig.userDataDirectory),
+        terms: new Terms(path.join(mysterionConfig.staticDirectory, 'terms'), mysterionConfig.userDataDirectory),
         installer: mysteriumClientInstaller,
         process: mysteriumClientProcess,
         monitoring: mysteriumClientMonitoring,
