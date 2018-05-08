@@ -9,7 +9,6 @@ import lolex from 'lolex'
 import idStoreFactory from '@/store/modules/identity'
 import mainStoreFactory from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
-import {tequilapiFactory} from '@/../libraries/api/tequilapi'
 import VpnLoader from '@/pages/VpnLoader'
 
 import {nextTick} from '../../../helpers/utils'

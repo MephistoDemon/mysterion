@@ -1,7 +1,6 @@
 // @flow
-
-import ConnectionStatusEnum from '../../../../src/main/tray/connection-status-enum'
 import TrayMenuBuilder from '../../../../src/main/tray/menu-builder'
+import ConnectionStatusEnum from '../../../../src/libraries/api/client/dto/connection-status-enum'
 import ProposalDTO from '../../../../src/libraries/api/client/dto/proposal'
 import translations from '../../../../src/main/tray/translations'
 

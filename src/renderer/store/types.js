@@ -1,7 +1,4 @@
-import connectionStatus from '@/../libraries/api/connectionStatus'
-
 export default {
-  tequilapi: connectionStatus,
   // Mutations
   SHOW_ERROR: 'SHOW_ERROR',
   SHOW_ERROR_MESSAGE: 'SHOW_ERROR_MESSAGE',

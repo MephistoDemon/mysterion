@@ -11,7 +11,9 @@
 <script>
   import {mapGetters} from 'vuex'
   import type from '../store/types'
+  import ConnectionStatusEnum from '../../libraries/api/client/dto/connection-status-enum'
   import messages from '../../app/messages'
+  import ConnectionRequestDTO from '../../libraries/api/client/dto/connection-request'
 
   export default {
     name: 'connection-button',
@@ -28,16 +30,16 @@
       buttonText: (vm) => {
         let text = 'Connect'
         switch (vm.$store.getters.status) {
-          case type.tequilapi.CONNECTED:
+          case ConnectionStatusEnum.CONNECTED:
             text = 'Disconnect'
             break
-          case type.tequilapi.CONNECTING:
+          case ConnectionStatusEnum.CONNECTING:
             text = 'Cancel'
             break
-          case type.tequilapi.NOT_CONNECTED:
+          case ConnectionStatusEnum.NOT_CONNECTED:
             text = 'Connect'
             break
-          case type.tequilapi.DISCONNECTING:
+          case ConnectionStatusEnum.DISCONNECTING:
             text = 'Disconnecting'
             break
         }
@@ -46,9 +48,9 @@
       buttonTransparent: (comp) => {
         const status = comp.$store.getters.status
         const isTransparent = (
-          status === type.tequilapi.CONNECTING ||
-          status === type.tequilapi.DISCONNECTING ||
-          status === type.tequilapi.CONNECTED
+          status === ConnectionStatusEnum.CONNECTING ||
+          status === ConnectionStatusEnum.DISCONNECTING ||
+          status === ConnectionStatusEnum.CONNECTED
         )
 
         return isTransparent
@@ -57,10 +59,10 @@
     methods: {
       buttonPressed: function () {
         const status = this.$store.getters.status
-        const canConnect = status === type.tequilapi.NOT_CONNECTED
+        const canConnect = status === ConnectionStatusEnum.NOT_CONNECTED
         const canDisconnect = (
-          status === type.tequilapi.CONNECTED ||
-          status === type.tequilapi.CONNECTING
+          status === ConnectionStatusEnum.CONNECTED ||
+          status === ConnectionStatusEnum.CONNECTING
         )
 
         if (canDisconnect) {
@@ -74,10 +76,7 @@
         }
 
         if (canConnect) {
-          this.$store.dispatch(type.CONNECT, {
-            consumerId: this.consumerId,
-            providerId: this.providerId
-          })
+          this.$store.dispatch(type.CONNECT, new ConnectionRequestDTO(this.consumerId, this.providerId))
         }
       }
     }

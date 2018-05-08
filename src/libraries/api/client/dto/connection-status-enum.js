@@ -9,6 +9,5 @@ const ConnectionStatusEnum = {
 
 type ConnectionStatus = 'Connected' | 'Connecting' | 'NotConnected' | 'Connecting'
 
-export type {ConnectionStatus}
-
 export default ConnectionStatusEnum
+export type {ConnectionStatus}

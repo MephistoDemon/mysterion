@@ -1,11 +1,11 @@
 // @flow
-
 import {app, Tray as ElectronTray, Menu} from 'electron'
 import MainCommunication from '../../app/communication/main-communication'
 import ProposalFetcher from '../../app/data-fetchers/proposal-fetcher'
 import Window from '../../app/window'
 import TrayMenuBuilder from './menu-builder'
 import Tray from './tray'
+import type {ConnectionStatusChangeDTO} from '../../app/communication/dto'
 
 const trayFactory = (
   communication: MainCommunication,
@@ -31,7 +31,7 @@ const trayFactory = (
   const tray = new Tray(trayFactory, templateBuilder, menuBuilder, iconPath)
   tray.build()
 
-  communication.onConnectionStatusChange(({newStatus}) => tray.setStatus(newStatus))
+  communication.onConnectionStatusChange((change: ConnectionStatusChangeDTO) => tray.setStatus(change.newStatus))
   proposalFetcher.subscribe((proposals) => tray.setProposals(proposals))
 }
 

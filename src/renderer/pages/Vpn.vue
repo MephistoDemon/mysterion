@@ -34,6 +34,7 @@
   import ConnectionButton from '@/components/ConnectionButton'
   import AppError from '@/partials/AppError'
   import config from '../config'
+  import {ActionLooperConfig} from '../store/modules/connection'
 
   export default {
     name: 'Main',
@@ -72,14 +73,8 @@
       setCountry (data) { this.country = data }
     },
     async mounted () {
-      this.$store.dispatch(type.START_ACTION_LOOPING, {
-        action: type.CONNECTION_IP,
-        threshold: config.ipUpdateThreshold
-      })
-      this.$store.dispatch(type.START_ACTION_LOOPING, {
-        action: type.FETCH_CONNECTION_STATUS,
-        threshold: config.statusUpdateThreshold
-      })
+      this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.CONNECTION_IP, config.ipUpdateThreshold))
+      this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.FETCH_CONNECTION_STATUS, config.statusUpdateThreshold))
     }
   }
 </script>

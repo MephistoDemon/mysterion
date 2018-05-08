@@ -23,7 +23,7 @@
 
 <script>
   import {mapGetters} from 'vuex'
-  import type from '@/store/types'
+  import ConnectionStatusEnum from '../../libraries/api/client/dto/connection-status-enum'
 
   import headVisual from '@/assets/img/visual--head.svg'
 
@@ -44,16 +44,16 @@
           classes = ['is-loading', 'is-pulsing']
         } else if (this.$route.name === 'vpn') {
           switch (this.status) {
-            case type.tequilapi.CONNECTED:
+            case ConnectionStatusEnum.CONNECTED:
               classes = []
               break
-            case type.tequilapi.CONNECTING:
+            case ConnectionStatusEnum.CONNECTING:
               classes = ['is-pulsing', 'is-disabled']
               break
-            case type.tequilapi.NOT_CONNECTED:
+            case ConnectionStatusEnum.NOT_CONNECTED:
               classes = ['not-connected', 'is-disabled']
               break
-            case type.tequilapi.DISCONNECTING:
+            case ConnectionStatusEnum.DISCONNECTING:
               classes = ['is-pulsing', 'not-connected', 'is-disabled']
               break
             default:

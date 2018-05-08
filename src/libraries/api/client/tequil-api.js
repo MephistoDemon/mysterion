@@ -7,6 +7,10 @@ import ProposalsFilter from './dto/proposals-filter'
 import IdentityDTO from './dto/identity'
 import IdentitiesResponseDTO from './dto/identities-response'
 import NodeHealthcheckDTO from './dto/node-healthcheck'
+import ConnectionStatisticsDTO from './dto/connection-statistics'
+import ConnectionIPDTO from './dto/connection-ip'
+import ConnectionStatusDTO from './dto/connection-status'
+import ConnectionRequestDTO from './dto/connection-request'
 
 class TequilApi {
   http: HttpInterface
@@ -48,6 +52,43 @@ class TequilApi {
     const responseDto = new ProposalsResponseDTO(response)
 
     return responseDto.proposals
+  }
+
+  async connectionCreate (request: ConnectionRequestDTO, timeout: ?number): Promise<ConnectionStatusDTO> {
+    const response = await this.http.put(
+      'connection',
+      {
+        consumerId: request.consumerId,
+        providerId: request.providerId
+      },
+      timeout
+    )
+
+    return new ConnectionStatusDTO(response)
+  }
+
+  async connectionStatus (): Promise<ConnectionStatusDTO> {
+    const response = await this.http.get('connection')
+
+    return new ConnectionStatusDTO(response)
+  }
+
+  async connectionCancel (): Promise<ConnectionStatusDTO> {
+    const response = await this.http.delete('connection')
+
+    return new ConnectionStatusDTO(response)
+  }
+
+  async connectionIP (timeout: ?number): Promise<ConnectionIPDTO> {
+    const response = await this.http.get('connection/ip', null, timeout)
+
+    return new ConnectionIPDTO(response)
+  }
+
+  async connectionStatistics (): Promise<ConnectionStatisticsDTO> {
+    const response = await this.http.get('connection/statistics')
+
+    return new ConnectionStatisticsDTO(response)
   }
 }
 

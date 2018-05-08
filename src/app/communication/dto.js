@@ -1,10 +1,10 @@
 // @flow
-
+import type {ConnectionStatus} from '../../libraries/api/client/dto/connection-status-enum'
 import ProposalDTO from '../../libraries/api/client/dto/proposal'
 
 export type ConnectionStatusChangeDTO = {
-  oldStatus: string,
-  newStatus: string
+  oldStatus: ConnectionStatus,
+  newStatus: ConnectionStatus
 }
 
 export type MysteriumClientLogDTO = {
