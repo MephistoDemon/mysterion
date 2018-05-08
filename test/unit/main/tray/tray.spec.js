@@ -1,6 +1,7 @@
 import translations from '../../../../src/main/tray/translations'
 import Tray from '../../../../src/main/tray/tray'
 import {expect} from '../../../helpers/dependencies'
+import ConnectionStatusEnum from '../../../../src/libraries/api/client/dto/connection-status-enum'
 
 describe('tray', () => {
   describe('Tray', () => {
@@ -101,7 +102,7 @@ describe('tray', () => {
         const tray = new Tray(factory, (items) => items, menuItemBuilder, iconPath)
 
         tray.build()
-        tray.setStatus('CONNECTED')
+        tray.setStatus(ConnectionStatusEnum.CONNECTED)
 
         expect(calledSetContextMenu).to.equal(true)
         expect(calledUpdateConnectionStatus).to.equal(true)

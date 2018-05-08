@@ -1,10 +1,9 @@
 // @flow
-
 import ProposalDTO from '../../libraries/api/client/dto/proposal'
 import MainCommunication from '../../app/communication/main-communication'
 import {getCountryNameFromProposal} from '../../app/countries/index'
-import ConnectionStatusEnum from './connection-status-enum'
-import type {ConnectionStatus} from './connection-status-enum'
+import ConnectionStatusEnum from '../../libraries/api/client/dto/connection-status-enum'
+import type {ConnectionStatus} from '../../libraries/api/client/dto/connection-status-enum'
 import TrayMenu from './menu'
 import TrayMenuItem from './menu-item'
 import TrayMenuSeparator from './menu-item-separator'
@@ -16,7 +15,8 @@ function getMenuItems (
   toggleDevTools: Function,
   communication: MainCommunication,
   proposals: Array<ProposalDTO>,
-  connectionStatus: ConnectionStatus) {
+  connectionStatus: ConnectionStatus
+) {
   const disconnect = new TrayMenuItem(
     translations.disconnect,
     () => communication.sendConnectionCancelRequest()
@@ -90,7 +90,7 @@ class TrayMenuBuilder {
   _toggleDevTools: Function
   _communication: MainCommunication
   _proposals: Array<ProposalDTO> = []
-  _connectionStatus: Status
+  _connectionStatus: ConnectionStatus
 
   constructor (appQuit: Function, showWindow: Function, toggleDevTools: Function, communication: MainCommunication) {
     this._appQuit = appQuit
@@ -105,7 +105,7 @@ class TrayMenuBuilder {
     return this
   }
 
-  updateConnectionStatus (status: Status): this {
+  updateConnectionStatus (status: ConnectionStatus): this {
     this._connectionStatus = status
 
     return this

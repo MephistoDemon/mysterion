@@ -1,11 +1,11 @@
 // @flow
-
 import path from 'path'
 import {Tray as ElectronTray} from 'electron'
 import ProposalDTO from '../../libraries/api/client/dto/proposal'
-import ConnectionStatusEnum from './connection-status-enum'
 import TrayMenuBuilder from './menu-builder'
 import translations from './translations'
+import ConnectionStatusEnum from '../../libraries/api/client/dto/connection-status-enum'
+import type {ConnectionStatus} from '../../libraries/api/client/dto/connection-status-enum'
 
 const TrayIcon = {
   active: 'active',
@@ -27,7 +27,7 @@ class Tray {
   _menuBuilder: TrayMenuBuilder
   _templateBuilder: Function
   _canUpdateItems: boolean = true
-  _connectionStatus: string
+  _connectionStatus: ConnectionStatus
   _iconPath: string
 
   constructor (trayFactory: electronTrayFactory, templateBuilder: Function, menuBuilder: TrayMenuBuilder, imagePath: string) {
@@ -61,7 +61,7 @@ class Tray {
     this._update()
   }
 
-  setStatus (status: string) {
+  setStatus (status: ConnectionStatus) {
     if (this._connectionStatus === status) {
       return
     }
@@ -104,10 +104,8 @@ class Tray {
     return this
   }
 
-  _getIconPath (state: IconState): this {
-    const iconPath = path.join(this._iconPath, iconFilenames[state])
-
-    return iconPath
+  _getIconPath (state: IconState): string {
+    return path.join(this._iconPath, iconFilenames[state])
   }
 }
 
