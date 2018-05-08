@@ -16,7 +16,7 @@ describe('tequilAPI', () => {
   let mock
   beforeEach(() => {
     const axioInstance = axios.create()
-    api = new TequilApi(new AxiosAdapter(axioInstance))
+    api = new TequilApi(new AxiosAdapter(axioInstance), 1)
     mock = new MockAdapter(axioInstance)
   })
 
@@ -37,28 +37,11 @@ describe('tequilAPI', () => {
       expect(healthcheck).to.deep.equal(new NodeHealthcheckDTO(response))
     })
 
-    it('throws network error', async () => {
-      mock.onGet('/healthcheck').networkError()
+    it('handles error', async () => {
+      mock.onGet('/healthcheck').reply(500)
 
-      const err = await capturePromiseError(api.healthCheck())
-      expect(err.message).to.eql('Network Error')
-    })
-
-    it('throws timeout', async () => {
-      mock.reset()
-      mock.onGet('/healthcheck').timeout()
-
-      const err = await capturePromiseError(api.healthCheck())
-      expect(err.message).to.match(/timeout of .*ms exceeded/)
-    })
-
-    it('throws 404', async () => {
-      mock.reset()
-      mock.onGet('/healthcheck').reply(404, {message: 'What is wrong'})
-
-      const err = await capturePromiseError(api.healthCheck())
-      expect(err.message).to.eql('Request failed with status code 404')
-      expect(err.response.data.message).to.eql('What is wrong')
+      const e = await capturePromiseError(api.healthCheck())
+      expect(e.message).to.equal('Request failed with status code 500')
     })
   })
 

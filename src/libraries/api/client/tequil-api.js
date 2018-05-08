@@ -1,5 +1,4 @@
 // @flow
-
 import type {HttpInterface} from './adapters/interface'
 import ProposalDTO from './dto/proposal'
 import ProposalsResponseDTO from './dto/proposals-response'
@@ -11,6 +10,7 @@ import ConnectionStatisticsDTO from './dto/connection-statistics'
 import ConnectionIPDTO from './dto/connection-ip'
 import ConnectionStatusDTO from './dto/connection-status'
 import ConnectionRequestDTO from './dto/connection-request'
+import {TIMEOUT_DISABLED} from './timeouts'
 
 class TequilApi {
   http: HttpInterface
@@ -54,7 +54,7 @@ class TequilApi {
     return responseDto.proposals
   }
 
-  async connectionCreate (request: ConnectionRequestDTO, timeout: ?number): Promise<ConnectionStatusDTO> {
+  async connectionCreate (request: ConnectionRequestDTO, timeout: ?number = TIMEOUT_DISABLED): Promise<ConnectionStatusDTO> {
     const response = await this.http.put(
       'connection',
       {

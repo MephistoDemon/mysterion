@@ -1,6 +1,5 @@
 // @flow
 import type from '../types'
-import {isTimeoutError, hasHttpStatus, httpResponseCodes} from '../../../libraries/api/errors'
 import messages from '../../../app/messages'
 import bugReporter from '../../../app/bugReporting/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
@@ -97,7 +96,7 @@ function actionsFactory (
         const ipModel = await tequilapi.connectionIP(config.ipUpdateTimeout)
         commit(type.CONNECTION_IP, ipModel.ip)
       } catch (err) {
-        if (isTimeoutError(err) || hasHttpStatus(err, 503)) {
+        if (err.isTimeoutError() || err.isServiceUnavailableError()) {
           return
         }
         bugReporter.renderer.captureException(err)
@@ -174,8 +173,7 @@ function actionsFactory (
         eventTracker.connectEnded()
         commit(type.HIDE_ERROR)
       } catch (err) {
-        const cancelConnectionCode = httpResponseCodes.CLIENT_CLOSED_REQUEST
-        if (hasHttpStatus(err, cancelConnectionCode)) {
+        if (err.isRequestClosedError()) {
           eventTracker.connectCanceled()
           return
         }

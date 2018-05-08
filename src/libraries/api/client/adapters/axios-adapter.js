@@ -2,41 +2,59 @@
 
 import Axios from 'axios'
 import type {HttpInterface, HttpQueryParams} from './interface'
+import TequilapiError from '../tequilapi-error'
+import {TIMEOUT_DEFAULT} from '../timeouts'
 
 class AxiosAdapter implements HttpInterface {
   _axios: Axios
+  _timeout: number
 
-  constructor (axios: Axios) {
+  constructor (axios: Axios, defaultTimeout: number = TIMEOUT_DEFAULT) {
     this._axios = axios
+    this._timeout = defaultTimeout
   }
 
-  async get (path: string, query: ?HttpQueryParams, timeout: ?number): Promise<?mixed> {
-    const options = {
-      params: query,
-      timeout
+  get (path: string, query: ?HttpQueryParams, timeout: ?number): Promise<?mixed> {
+    const options = this._decorateOptions(timeout)
+    options.params = query
+
+    return decorateResponse(
+      this._axios.get(path, options)
+    )
+  }
+
+  post (path: string, data: mixed, timeout: ?number): Promise<?mixed> {
+    return decorateResponse(
+      this._axios.post(path, data, this._decorateOptions(timeout))
+    )
+  }
+
+  delete (path: string, timeout: ?number): Promise<?mixed> {
+    return decorateResponse(
+      this._axios.delete(path, this._decorateOptions(timeout))
+    )
+  }
+
+  put (path: string, data: mixed, timeout: ?number): Promise<?mixed> {
+    return decorateResponse(
+      this._axios.put(path, data, this._decorateOptions(timeout))
+    )
+  }
+
+  _decorateOptions (timeout: ?number): Object {
+    return {
+      timeout: timeout !== undefined ? timeout : this._timeout
     }
-    const response = await this._axios.get(path, options)
-
-    return response.data
   }
+}
 
-  async post (path: string, data: mixed, timeout: ?number): Promise<?mixed> {
-    const response = await this._axios.post(path, data, {timeout})
-
-    return response.data
-  }
-
-  async delete (path: string, timeout: ?number): Promise<?mixed> {
-    const response = await this._axios.delete(path, {timeout})
-
-    return response.data
-  }
-
-  async put (path: string, data: mixed, timeout: ?number): Promise<?mixed> {
-    const response = await this._axios.put(path, data, {timeout})
-
-    return response.data
-  }
+function decorateResponse (promise: Promise<Object>): Promise<Object> {
+  return promise
+    .then((response: Object) => {
+      return Promise.resolve(response.data)
+    }).catch((error: Error) => {
+      return Promise.reject(new TequilapiError(error))
+    })
 }
 
 export default AxiosAdapter
