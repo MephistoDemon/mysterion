@@ -3,17 +3,12 @@
 import ProposalDTO from '../../libraries/api/client/dto/proposal'
 import MainCommunication from '../../app/communication/main-communication'
 import {getCountryNameFromProposal} from '../../app/countries/index'
+import ConnectionStatusEnum from './connection-status-enum'
+import type {ConnectionStatus} from './connection-status-enum'
 import TrayMenu from './menu'
 import TrayMenuItem from './menu-item'
 import TrayMenuSeparator from './menu-item-separator'
 import translations from './translations'
-
-const CONNECTED = 'CONNECTED'
-const DISCONNECTED = 'DISCONNECTED'
-const CONNECTING = 'CONNECTING'
-const DISCONNECTING = 'DISCONNECTING'
-
-type Status = typeof CONNECTED | typeof CONNECTING | typeof DISCONNECTED | typeof DISCONNECTING
 
 function GetMenuItems (
   appQuit: Function,
@@ -21,7 +16,7 @@ function GetMenuItems (
   toggleDevTools: Function,
   communication: MainCommunication,
   proposals: Array<ProposalDTO>,
-  connectionStatus: Status) {
+  connectionStatus: ConnectionStatus) {
   const disconnect = new TrayMenuItem(
     translations.disconnect,
     () => communication.sendConnectionCancelRequest()
@@ -55,25 +50,25 @@ function GetMenuItems (
   items.add(translations.quit, () => appQuit(), 'Command+Q')
 
   switch (connectionStatus) {
-    case DISCONNECTED:
+    case ConnectionStatusEnum.NOT_CONNECTED:
       connect.show()
       disconnect.hide()
       statusItem.setLabel(translations.statusDisconnected)
       break
 
-    case CONNECTED:
+    case ConnectionStatusEnum.CONNECTED:
       connect.hide()
       disconnect.show()
       statusItem.setLabel(translations.statusConnected)
       break
 
-    case CONNECTING:
+    case ConnectionStatusEnum.CONNECTING:
       connect.hide()
       disconnect.hide()
       statusItem.setLabel(translations.statusConnecting)
       break
 
-    case DISCONNECTING:
+    case ConnectionStatusEnum.DISCONNECTING:
       connect.hide()
       disconnect.hide()
       statusItem.setLabel(translations.statusDisconnecting)
@@ -123,9 +118,3 @@ class TrayMenuBuilder {
 }
 
 export default TrayMenuBuilder
-export {
-  CONNECTED,
-  DISCONNECTED,
-  CONNECTING,
-  DISCONNECTING
-}

@@ -4,6 +4,7 @@ import {expect} from '../../../helpers/dependencies'
 
 describe('tray', () => {
   describe('Tray', () => {
+    const iconPath = ''
     const menuItemBuilder = {
       build () {
       }
@@ -46,7 +47,7 @@ describe('tray', () => {
           called = true
         })
 
-        const tray = new Tray(factory, menuTemplateBuilder, menuItemBuilder)
+        const tray = new Tray(factory, menuTemplateBuilder, menuItemBuilder, iconPath)
         tray.build()
 
         expect(called).to.equal(true)
@@ -58,7 +59,7 @@ describe('tray', () => {
           tooltipText = text
         })
 
-        const tray = new Tray(factory, menuTemplateBuilder, menuItemBuilder)
+        const tray = new Tray(factory, menuTemplateBuilder, menuItemBuilder, iconPath)
         tray.build()
 
         expect(tooltipText).to.equal(translations.name)
@@ -73,7 +74,7 @@ describe('tray', () => {
 
         const items = ['item1', 'item2']
         const menuBuilder = () => items
-        const tray = new Tray(factory, menuBuilder, menuItemBuilder)
+        const tray = new Tray(factory, menuBuilder, menuItemBuilder, iconPath)
         tray.build()
 
         expect(contextMenu).to.deep.equal(items)
@@ -97,7 +98,7 @@ describe('tray', () => {
           }
         }
 
-        const tray = new Tray(factory, (items) => items, generator)
+        const tray = new Tray(factory, (items) => items, generator, iconPath)
 
         tray.build()
         tray.setStatus('CONNECTED')
@@ -124,7 +125,7 @@ describe('tray', () => {
           }
         }
 
-        const tray = new Tray(factory, (items) => items, generator)
+        const tray = new Tray(factory, (items) => items, generator, iconPath)
 
         tray.build()
         tray.setProposals([])
@@ -146,7 +147,7 @@ describe('tray', () => {
           }
         }
 
-        const tray = new Tray(factory, (items) => items, generator)
+        const tray = new Tray(factory, (items) => items, generator, iconPath)
         tray._canUpdateItems = false
         tray.build()
         tray.setProposals([])

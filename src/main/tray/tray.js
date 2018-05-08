@@ -1,9 +1,10 @@
 // @flow
+
 import path from 'path'
 import {Tray as ElectronTray} from 'electron'
 import ProposalDTO from '../../libraries/api/client/dto/proposal'
-import connectionStatus from '../../libraries/api/connectionStatus'
-import TrayMenuBuilder, {CONNECTED, CONNECTING, DISCONNECTED, DISCONNECTING} from './menu-builder'
+import ConnectionStatusEnum from './connection-status-enum'
+import TrayMenuBuilder from './menu-builder'
 import translations from './translations'
 
 const TrayIcon = {
@@ -25,19 +26,15 @@ class Tray {
   _electronTray: ElectronTray
   _menuBuilder: TrayMenuBuilder
   _templateBuilder: Function
-  _statusMap: Object = {
-    [connectionStatus.CONNECTED]: CONNECTED,
-    [connectionStatus.NOT_CONNECTED]: DISCONNECTED,
-    [connectionStatus.CONNECTING]: CONNECTING,
-    [connectionStatus.DISCONNECTING]: DISCONNECTING
-  }
   _canUpdateItems: boolean = true
   _connectionStatus: string
+  _iconPath: string
 
-  constructor (trayFactory: electronTrayFactory, templateBuilder: Function, menuBuilder: TrayMenuBuilder) {
+  constructor (trayFactory: electronTrayFactory, templateBuilder: Function, menuBuilder: TrayMenuBuilder, imagePath: string) {
     this._electronTrayFactory = trayFactory
     this._templateBuilder = templateBuilder
     this._menuBuilder = menuBuilder
+    this._iconPath = imagePath
   }
 
   build (): this {
@@ -71,22 +68,21 @@ class Tray {
 
     this._connectionStatus = status
 
-    let trayStatus = this._statusMap[status]
-      ? this._statusMap[status]
-      : DISCONNECTED
-
-    switch (trayStatus) {
-      case CONNECTED:
+    switch (status) {
+      case ConnectionStatusEnum.CONNECTED:
         this._setIcon(TrayIcon.active)
         break
-      case DISCONNECTED:
-      case CONNECTING:
-      case DISCONNECTING:
+      case ConnectionStatusEnum.NOT_CONNECTED:
+      case ConnectionStatusEnum.CONNECTING:
+      case ConnectionStatusEnum.DISCONNECTING:
+        this._setIcon(TrayIcon.passive)
+        break
+      default:
         this._setIcon(TrayIcon.passive)
         break
     }
 
-    this._menuBuilder.updateConnectionStatus(trayStatus)
+    this._menuBuilder.updateConnectionStatus(status)
     this._update()
   }
 
@@ -103,17 +99,15 @@ class Tray {
   }
 
   _setIcon (state: IconState): this {
-    const path = this._getIconPath(state)
-
-    this._electronTray.setImage(path)
+    this._electronTray.setImage(this._getIconPath(state))
 
     return this
   }
 
-  _getIconPath (state: IconState): string {
-    const filename = iconFilenames[state]
+  _getIconPath (state: IconState): this {
+    const iconPath = path.join(this._iconPath, iconFilenames[state])
 
-    return path.join(__static, 'icons', filename)
+    return iconPath
   }
 }
 

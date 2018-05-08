@@ -1,12 +1,7 @@
 // @flow
 
-import TrayMenuBuilder, {
-  CONNECTED,
-  CONNECTING,
-  DISCONNECTED,
-  DISCONNECTING
-} from '../../../../src/main/tray/menu-builder'
-
+import ConnectionStatusEnum from '../../../../src/main/tray/connection-status-enum'
+import TrayMenuBuilder from '../../../../src/main/tray/menu-builder'
 import ProposalDTO from '../../../../src/libraries/api/client/dto/proposal'
 import translations from '../../../../src/main/tray/translations'
 
@@ -59,7 +54,7 @@ describe('tray', () => {
 
     describe('.render', () => {
       it('renders menu items without disconnect when not connected', () => {
-        const items = builder.updateConnectionStatus(DISCONNECTED).build()
+        const items = builder.updateConnectionStatus(ConnectionStatusEnum.NOT_CONNECTED).build()
         expect(items[1].type).to.equal(separator)
         expect(items[2].label).to.equal(translations.connect)
         expect(items[3].type).to.equal(separator)
@@ -70,7 +65,7 @@ describe('tray', () => {
       })
 
       it('renders menu items with disconnect when connected', () => {
-        const items = builder.updateConnectionStatus(CONNECTED).build()
+        const items = builder.updateConnectionStatus(ConnectionStatusEnum.CONNECTED).build()
         expect(items[1].type).to.equal(separator)
         expect(items[2].label).to.equal(translations.disconnect)
         expect(items[3].type).to.equal(separator)
@@ -81,22 +76,22 @@ describe('tray', () => {
       })
 
       it('sets status to connected', () => {
-        const items = builder.updateConnectionStatus(CONNECTED).build()
+        const items = builder.updateConnectionStatus(ConnectionStatusEnum.CONNECTED).build()
         expect(items[0].label).to.equal(translations.statusConnected)
       })
 
       it('sets status to disconnected', () => {
-        const items = builder.updateConnectionStatus(DISCONNECTED).build()
+        const items = builder.updateConnectionStatus(ConnectionStatusEnum.NOT_CONNECTED).build()
         expect(items[0].label).to.equal(translations.statusDisconnected)
       })
 
       it('sets status to connecting', () => {
-        const items = builder.updateConnectionStatus(CONNECTING).build()
+        const items = builder.updateConnectionStatus(ConnectionStatusEnum.CONNECTING).build()
         expect(items[0].label).to.equal(translations.statusConnecting)
       })
 
       it('sets status to disconnecting', () => {
-        const items = builder.updateConnectionStatus(DISCONNECTING).build()
+        const items = builder.updateConnectionStatus(ConnectionStatusEnum.DISCONNECTING).build()
         expect(items[0].label).to.equal(translations.statusDisconnecting)
       })
 
@@ -121,7 +116,7 @@ describe('tray', () => {
       })
 
       it('disconnects', () => {
-        const items = builder.updateConnectionStatus(CONNECTED).build()
+        const items = builder.updateConnectionStatus(ConnectionStatusEnum.CONNECTED).build()
         expect(communication.sentDisconnect).to.equal(false)
         items[2].click()
         expect(communication.sentDisconnect).to.equal(true)

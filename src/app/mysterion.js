@@ -1,14 +1,14 @@
-import TrayMenuBuilder from '../main/tray/menu-builder'
-import Tray from '../main/tray/tray'
+import {app} from 'electron'
 import Window from './window'
 import communication from './communication/index'
-import {app, Tray as ElectronTray, Menu} from 'electron'
+import trayFactory from '../main/tray/factory'
 import {logLevel as processLogLevel} from '../libraries/mysterium-client/index'
 import bugReporter from './bugReporting/bug-reporting'
 import messages from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
 import {onFirstEvent} from './communication/utils'
+import path from 'path'
 
 class Mysterion {
   constructor ({config, terms, installer, monitoring, process, proposalFetcher}) {
@@ -202,26 +202,12 @@ class Mysterion {
   }
 
   buildTray () {
-    const menuGenerator = new TrayMenuBuilder(
-      () => app.quit(),
-      () => this.window.show(),
-      () => this.window.toggleDevTools(),
-      this.communication
+    trayFactory(
+      this.communication,
+      this.proposalFetcher,
+      this.window,
+      path.join(this.config.staticDirectoryPath, 'icons')
     )
-
-    const trayFactory = (icon) => {
-      return new ElectronTray(icon)
-    }
-
-    const templateBuilder = (items) => {
-      return Menu.buildFromTemplate(items)
-    }
-
-    const tray = new Tray(trayFactory, templateBuilder, menuGenerator)
-    tray.build()
-
-    this.communication.onConnectionStatusChange(({newStatus}) => tray.setStatus(newStatus))
-    this.proposalFetcher.subscribe((proposals) => tray.setProposals(proposals))
   }
 }
 
