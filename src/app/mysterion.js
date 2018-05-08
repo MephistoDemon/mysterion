@@ -7,15 +7,13 @@ import messages from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
 import {onFirstEvent} from './communication/utils'
-import {install as installFeedbackForm} from './bugReporting/feedback-form'
 import path from 'path'
 
 import dependencies from '../main/dependencies'
-const bugReporter = dependencies.get('bugReporter')
 
 class Mysterion {
-  constructor ({config, terms, installer, monitoring, process, proposalFetcher}) {
-    Object.assign(this, {config, terms, installer, monitoring, process, proposalFetcher})
+  constructor ({config, terms, installer, monitoring, process, proposalFetcher, bugReporter}) {
+    Object.assign(this, {config, terms, installer, monitoring, process, proposalFetcher, bugReporter})
   }
 
   run () {
@@ -47,7 +45,7 @@ class Mysterion {
       termsAccepted = this.terms.isAccepted()
     } catch (e) {
       termsAccepted = false
-      bugReporter.captureException(e)
+      this.bugReporter.captureException(e)
     }
 
     this.window = new Window(
@@ -61,14 +59,14 @@ class Mysterion {
       this.window.open()
     } catch (e) {
       console.error(e)
-      bugReporter.captureException(e)
+      this.bugReporter.captureException(e)
       throw new Error('Failed to open window.')
     }
 
-    setupSentryFeedbackForm()
+    setupSentryFeedbackForm(browserSession.defaultSession, this.bugReporter.captureException)
 
     const send = this.window.send.bind(this.window)
-    this.messageBus = new MainMessageBus(send, bugReporter.captureException)
+    this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
 
     this.communication = new MainCommunication(this.messageBus)
 
@@ -76,7 +74,7 @@ class Mysterion {
       await onFirstEvent(this.communication.onRendererLoaded.bind(this.communication))
     } catch (e) {
       console.error(e)
-      bugReporter.captureException(e)
+      this.bugReporter.captureException(e)
       // TODO: add an error wrapper method
       throw new Error('Failed to load app.')
     }
@@ -92,7 +90,7 @@ class Mysterion {
           return
         }
       } catch (e) {
-        bugReporter.captureException(e)
+        this.bugReporter.captureException(e)
         return this.sendErrorToRenderer(e.message)
       }
     }
@@ -103,7 +101,7 @@ class Mysterion {
       try {
         await this.installer.install()
       } catch (e) {
-        bugReporter.captureException(e)
+        this.bugReporter.captureException(e)
         console.error(e)
         return this.sendErrorToRenderer(messages.daemonInstallationError)
       }
@@ -127,7 +125,7 @@ class Mysterion {
       await this.process.stop()
     } catch (e) {
       console.error('Failed to stop mysterium_client process')
-      bugReporter.captureException(e)
+      this.bugReporter.captureException(e)
     }
   }
 
@@ -164,7 +162,7 @@ class Mysterion {
       try {
         this.messageBus.send(communication.HEALTHCHECK, this.monitoring.isRunning())
       } catch (e) {
-        bugReporter.captureException(e)
+        this.bugReporter.captureException(e)
         return
       }
 
@@ -172,7 +170,7 @@ class Mysterion {
     }
     const cacheLogs = (level, data) => {
       this.communication.sendMysteriumClientLog({level, data})
-      bugReporter.pushToLogCache(level, data)
+      this.bugReporter.pushToLogCache(level, data)
     }
 
     this.process.start()
@@ -185,7 +183,7 @@ class Mysterion {
     })
 
     this.communication.onCurrentIdentityChange((identity) => {
-      bugReporter.setUser(identity)
+      this.bugReporter.setUser(identity)
     })
   }
 
@@ -217,12 +215,12 @@ class Mysterion {
   }
 }
 
-function setupSentryFeedbackForm () {
+function setupSentryFeedbackForm (session, captureException) {
   try {
-    installFeedbackForm(browserSession.defaultSession)
+    dependencies.get('feedbackFormInstall')(session)
   } catch (err) {
     console.error('Sentry feedback form installation failed ', err.stack)
-    bugReporter.captureException(err)
+    captureException(err)
   }
 }
 

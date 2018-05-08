@@ -1,5 +1,6 @@
 // @flow
 import * as bugReporter from '../../../app/bugReporting/bug-reporter-main'
+import {install as feedbackFormInstall} from '../../../app/bugReporting/feedback-form'
 import type {Container} from '../../../app/di/index'
 
 function bootstrap (container: Container) {
@@ -9,6 +10,7 @@ function bootstrap (container: Container) {
   )
 
   container.constant('bugReporter', bugReporter)
+  container.constant('feedbackFormInstall', feedbackFormInstall)
 }
 
 export default bootstrap

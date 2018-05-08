@@ -14,9 +14,9 @@ function install (session: Object): void {
   registerHeaderRules(session, requestHeaderRewriteRule)
 }
 
-function showReportDialog (raven: Object): void {
+function show (raven: Object): void {
   raven.captureMessage('User opened issue report form.')
   raven.showReportDialog()
 }
 
-export {install, showReportDialog}
+export {install, show}

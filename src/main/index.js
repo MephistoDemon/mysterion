@@ -22,7 +22,8 @@ const mysterion = new Mysterion({
   installer: new MysteriumDaemonInstaller(mysterionConfig),
   monitoring: new ProcessMonitoring(tequilApi),
   process: new MysteriumProcess(tequilApi, mysterionConfig.userDataDirectory),
-  proposalFetcher: dependencies.get('proposalFetcher')
+  proposalFetcher: dependencies.get('proposalFetcher'),
+  bugReporter: dependencies.get('bugReporter')
 })
 
 mysterion.run()
