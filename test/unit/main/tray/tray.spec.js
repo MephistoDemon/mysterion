@@ -13,16 +13,16 @@ describe('tray', () => {
     const menuTemplateBuilder = () => {
     }
 
-    const fakeTrayFactory = (init = null, tooltip = null, menu = null, image = null, on = null) => {
+    const fakeTrayFactoryBuilder = (init = null, tooltip = null, menu = null, image = null, on = null) => {
       if (typeof init === 'function') {
         init()
       }
 
       const methods = {
-        'setToolTip': tooltip,
-        'setContextMenu': menu,
-        'setImage': image,
-        'on': on
+        setToolTip: tooltip,
+        setContextMenu: menu,
+        setImage: image,
+        on: on
       }
 
       let electronTray = {}
@@ -43,7 +43,7 @@ describe('tray', () => {
       it('calls electron tray factory', () => {
         let called = false
 
-        const factory = fakeTrayFactory(() => {
+        const factory = fakeTrayFactoryBuilder(() => {
           called = true
         })
 
@@ -55,7 +55,7 @@ describe('tray', () => {
 
       it('sets tooltip text', () => {
         let tooltipText
-        const factory = fakeTrayFactory(null, (text) => {
+        const factory = fakeTrayFactoryBuilder(null, (text) => {
           tooltipText = text
         })
 
@@ -68,7 +68,7 @@ describe('tray', () => {
       it('sets context menu', () => {
         let contextMenu
 
-        const factory = fakeTrayFactory(null, null, (menu) => {
+        const factory = fakeTrayFactoryBuilder(null, null, (menu) => {
           contextMenu = menu
         })
 
@@ -86,7 +86,7 @@ describe('tray', () => {
         let calledUpdateConnectionStatus = false
         let calledSetContextMenu = false
 
-        const factory = fakeTrayFactory(null, null, () => {
+        const factory = fakeTrayFactoryBuilder(null, null, () => {
           calledSetContextMenu = true
         })
         const generator = {
@@ -113,7 +113,7 @@ describe('tray', () => {
         let calledUpdateProposals = false
         let calledSetContextMenu = false
 
-        const factory = fakeTrayFactory(null, null, () => {
+        const factory = fakeTrayFactoryBuilder(null, null, () => {
           calledSetContextMenu = true
         })
         const generator = {
@@ -137,7 +137,7 @@ describe('tray', () => {
       it('doesn\'t update proposals when tray is open', () => {
         let calledUpdateProposals = false
 
-        const factory = fakeTrayFactory()
+        const factory = fakeTrayFactoryBuilder()
         const generator = {
           build () {
 
