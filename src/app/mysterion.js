@@ -1,16 +1,14 @@
-import Window from './window'
-import MysterionTray, {TrayIcon} from './mysterionTray'
-import connectionStatus from '../libraries/api/connectionStatus'
-import communication from './communication/index'
 import {app, session as browserSession} from 'electron'
-import {
-  logLevel as processLogLevel
-} from '../libraries/mysterium-client/index'
-import {install as installFeedbackForm} from './bugReporting/feedback-form'
+import Window from './window'
+import communication from './communication/index'
+import trayFactory from '../main/tray/factory'
+import {logLevel as processLogLevel} from '../libraries/mysterium-client/index'
 import messages from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
 import {onFirstEvent} from './communication/utils'
+import {install as installFeedbackForm} from './bugReporting/feedback-form'
+import path from 'path'
 
 import dependencies from '../main/dependencies'
 const bugReporter = dependencies.get('bugReporter')
@@ -185,6 +183,7 @@ class Mysterion {
       updateRendererWithHealth()
       this.startApp()
     })
+
     this.communication.onCurrentIdentityChange((identity) => {
       bugReporter.setUser(identity)
     })
@@ -194,8 +193,14 @@ class Mysterion {
    * notifies the renderer that we're good to go and sets up the system tray
    */
   startApp () {
-    this.messageBus.send(communication.APP_START)
+    this.proposalFetcher.subscribe((proposals) => this.communication.sendProposals(proposals))
     this.proposalFetcher.start()
+
+    this.communication.onProposalUpdateRequest(async () => {
+      this.communication.sendProposals(await this.proposalFetcher.fetch())
+    })
+
+    this.messageBus.send(communication.APP_START)
   }
 
   sendErrorToRenderer (error, hint = '', fatal = true) {
@@ -203,22 +208,12 @@ class Mysterion {
   }
 
   buildTray () {
-    const activateWindow = () => {
-      this.window.show()
-    }
-    const toggleDevTools = this.config.inDevMode ? () => {
-      this.window.toggleDevTools()
-    } : null
-    const tray = new MysterionTray(activateWindow, toggleDevTools)
-    tray.build()
-    this.communication.onConnectionStatusChange(({oldStatus, newStatus}) => {
-      if (newStatus === connectionStatus.CONNECTED) {
-        tray.setIcon(TrayIcon.active)
-      }
-      if (newStatus === connectionStatus.NOT_CONNECTED) {
-        tray.setIcon(TrayIcon.passive)
-      }
-    })
+    trayFactory(
+      this.communication,
+      this.proposalFetcher,
+      this.window,
+      path.join(this.config.staticDirectoryPath, 'icons')
+    )
   }
 }
 

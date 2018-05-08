@@ -51,6 +51,17 @@
 
       // we need to notify the main process that we're up
       communication.sendRendererLoaded()
+      communication.onConnectionRequest((proposal) => {
+        this.$store.dispatch(type.CONNECT, {
+          consumerId: this.$store.getters.currentIdentity,
+          providerId: proposal.providerId
+        })
+      })
+
+      communication.onDisconnectionRequest(() => {
+        this.$store.dispatch(type.DISCONNECT)
+      })
+
       messageBus.on(messages.TERMS_REQUESTED, (terms) => {
         this.$store.dispatch(type.TERMS, terms)
         this.$router.push('/terms')

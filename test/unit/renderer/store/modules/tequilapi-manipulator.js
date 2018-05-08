@@ -1,4 +1,8 @@
+// @flow
 import {CONNECTION_ABORTED_ERROR_CODE, httpResponseCodes} from '../../../../../src/libraries/api/errors'
+import ConnectionIPDTO from '../../../../../src/libraries/api/client/dto/connection-ip'
+import ConnectionStatusDTO from '../../../../../src/libraries/api/client/dto/connection-status'
+import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
 
 function factoryTequilapiManipulator () {
   let statusFail = false
@@ -7,49 +11,58 @@ function factoryTequilapiManipulator () {
   let ipTimeout = false
   let connectFail = false
   let connectFailClosedRequest = false
+
   const fakeError = new Error('Mock error')
+
   const fakeTimeoutError = new Error('Mock timeout error')
   fakeTimeoutError.code = CONNECTION_ABORTED_ERROR_CODE
+
   const fakeClosedRequestError = new Error('Mock closed request error')
   fakeClosedRequestError.response = { status: httpResponseCodes.CLIENT_CLOSED_REQUEST }
 
   return {
     getFakeApi: function () {
       return {
-        connection: {
-          ip: async function () {
-            if (ipTimeout) {
-              throw fakeTimeoutError
-            }
-            if (ipFail) {
-              throw fakeError
-            }
-            return 'mock ip'
-          },
-          status: async function () {
-            if (statusFail) {
-              throw fakeError
-            }
-            return {
-              status: 'mock status'
-            }
-          },
-          statistics: async function () {
-            if (statisticsFail) {
-              throw fakeError
-            }
-            return 'mock statistics'
-          },
-          connect: async function ({consumerId, providerId}) {
-            if (connectFailClosedRequest) {
-              throw fakeClosedRequestError
-            }
-            if (connectFail) {
-              throw fakeError
-            }
-            return null
-          },
-          disconnect: async () => null
+        connectionIP: async function (): Promise<ConnectionIPDTO> {
+          if (ipTimeout) {
+            throw fakeTimeoutError
+          }
+          if (ipFail) {
+            throw fakeError
+          }
+          return new ConnectionIPDTO({
+            ip: 'mock ip'
+          })
+        },
+
+        connectionStatus: async function (): Promise<ConnectionStatusDTO> {
+          if (statusFail) {
+            throw fakeError
+          }
+          return new ConnectionStatusDTO({
+            status: 'mock status'
+          })
+        },
+
+        connectionStatistics: async function (): Promise<ConnectionStatisticsDTO> {
+          if (statisticsFail) {
+            throw fakeError
+          }
+          return new ConnectionStatisticsDTO({duration: 1})
+        },
+
+        connectionCreate: async function (): Promise<ConnectionStatusDTO> {
+          if (connectFailClosedRequest) {
+            throw fakeClosedRequestError
+          }
+          if (connectFail) {
+            throw fakeError
+          }
+          return new ConnectionStatusDTO({})
+        },
+
+        connectionCancel: async function (): Promise<ConnectionStatusDTO> {
+          return new ConnectionStatusDTO({})
         }
       }
     },
@@ -61,28 +74,28 @@ function factoryTequilapiManipulator () {
       this.setConnectFail(false)
       this.setConnectFailClosedRequest(false)
     },
-    setStatusFail: function (value) {
-      statusFail = value
+    setStatusFail: function (error: Error) {
+      statusFail = error
     },
-    setStatisticsFail: function (value) {
-      statisticsFail = value
+    setStatisticsFail: function (error: Error) {
+      statisticsFail = error
     },
-    setIpTimeout: function (value) {
-      ipTimeout = value
+    setIpTimeout: function (error: Error) {
+      ipTimeout = error
     },
-    setIpFail: function (value) {
-      ipFail = value
+    setIpFail: function (error: Error) {
+      ipFail = error
     },
-    setConnectFail: function (value) {
-      connectFail = value
+    setConnectFail: function (error: Error) {
+      connectFail = error
     },
-    setConnectFailClosedRequest: function (value) {
-      connectFailClosedRequest = value
+    setConnectFailClosedRequest: function (error: Error) {
+      connectFailClosedRequest = error
     },
-    getFakeError: function () {
+    getFakeError: function (): Error {
       return fakeError
     },
-    getFakeTimeoutError: function () {
+    getFakeTimeoutError: function (): Error {
       return fakeTimeoutError
     }
   }

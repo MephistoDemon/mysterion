@@ -12,6 +12,8 @@ type Event = {
   context: any
 }
 
+type EventFactory = (name: string, details: Object) => Event
+
 interface EventCollector {
   collectEvents (...events: Array<Event>): Promise<void>
 }
@@ -35,5 +37,5 @@ function createEventFactory (applicationInfo: ApplicationInfo): EventFactory {
   }
 }
 
-export type {Event, ApplicationInfo, EventCollector}
+export type {Event, ApplicationInfo, EventFactory, EventCollector}
 export {newEvent, createEventFactory}

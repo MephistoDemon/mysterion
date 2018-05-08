@@ -6,6 +6,10 @@ import axios from 'axios/index'
 import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../../helpers/utils'
 import NodeHealthcheckDTO from '../../../../../src/libraries/api/client/dto/node-healthcheck'
+import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
+import ConnectionIPDTO from '../../../../../src/libraries/api/client/dto/connection-ip'
+import ConnectionStatusDTO from '../../../../../src/libraries/api/client/dto/connection-status'
+import ConnectionRequestDTO from '../../../../../src/libraries/api/client/dto/connection-request'
 
 describe('tequilAPI', () => {
   let api
@@ -60,7 +64,8 @@ describe('tequilAPI', () => {
 
   describe('client.stop()', () => {
     it('success', async () => {
-      mock.onPost('stop').reply(200)
+      const expectedRequest = undefined
+      mock.onPost('stop', expectedRequest).reply(200)
 
       const response = await api.stop()
       expect(response).to.be.undefined
@@ -166,6 +171,109 @@ describe('tequilAPI', () => {
       mock.onPut('identities/0x0000bEEF/unlock').reply(500)
 
       const e = await capturePromiseError(api.identityUnlock('0x0000bEEF', 'test'))
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
+  describe('client.connectionCreate()', () => {
+    it('returns response', async () => {
+      const expectedRequest = {
+        consumerId: '0x1000FACE',
+        providerId: '0x2000FACE'
+      }
+      const response = {
+        status: 'Connected',
+        sessionId: 'My-super-session'
+      }
+      mock.onPut('connection', expectedRequest).reply(200, response)
+
+      const stats = await api.connectionCreate(new ConnectionRequestDTO('0x1000FACE', '0x2000FACE'))
+      expect(stats).to.deep.equal(new ConnectionStatusDTO(response))
+    })
+
+    it('handles error', async () => {
+      mock.onPut('connection').reply(500)
+
+      const e = await capturePromiseError(api.connectionCreate(new ConnectionRequestDTO()))
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
+  describe('client.connectionStatus()', () => {
+    it('returns response', async () => {
+      const response = {
+        status: 'Connected',
+        sessionId: 'My-super-session'
+      }
+      mock.onGet('connection').reply(200, response)
+
+      const connection = await api.connectionStatus()
+      expect(connection).to.deep.equal(new ConnectionStatusDTO(response))
+    })
+
+    it('handles error', async () => {
+      mock.onGet('connection').reply(500)
+
+      const e = await capturePromiseError(api.connectionStatus())
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
+  describe('client.connectionCancel()', () => {
+    it('returns response', async () => {
+      const expectedRequest = undefined
+      const response = {
+        status: 'NotConnected',
+        sessionId: ''
+      }
+      mock.onDelete('connection', expectedRequest).reply(200, response)
+
+      const connection = await api.connectionCancel()
+      expect(connection).to.deep.equal(new ConnectionStatusDTO(response))
+    })
+
+    it('handles error', async () => {
+      mock.onDelete('connection').reply(500)
+
+      const e = await capturePromiseError(api.connectionCancel())
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
+  describe('client.connectionIP()', () => {
+    it('returns response', async () => {
+      const response = {ip: 'mock ip'}
+      mock.onGet('connection/ip').reply(200, response)
+
+      const stats = await api.connectionIP()
+      expect(stats).to.deep.equal(new ConnectionIPDTO(response))
+    })
+
+    it('handles error', async () => {
+      mock.onGet('connection/ip').reply(500)
+
+      const e = await capturePromiseError(api.connectionIP())
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
+  describe('client.connectionStatistics()', () => {
+    it('returns response', async () => {
+      const response = {
+        duration: 13325,
+        bytesReceived: 1232133, // 1.17505 MB
+        bytesSent: 123321 // 0.117608 MB
+      }
+      mock.onGet('connection/statistics').reply(200, response)
+
+      const stats = await api.connectionStatistics()
+      expect(stats).to.deep.equal(new ConnectionStatisticsDTO(response))
+    })
+
+    it('handles error', async () => {
+      mock.onGet('connection/statistics').reply(500)
+
+      const e = await capturePromiseError(api.connectionStatistics())
       expect(e.message).to.equal('Request failed with status code 500')
     })
   })

@@ -7,7 +7,7 @@ import routerFactory from '../../router/factory'
 import storeFactory from '../../store/factory'
 import mainFactory from '../../store/modules/main'
 import identityFactory from '../../store/modules/identity'
-import connectionFactory from '../../store/modules/connection'
+import connectionFactory, {actionsFactory} from '../../store/modules/connection'
 import errors from '../../store/modules/errors'
 import terms from '../../store/modules/terms'
 import clientProcess from '../../store/modules/clientProcess'
@@ -74,9 +74,14 @@ function bootstrap (container: Container) {
   )
   container.service(
     'vue-store.connection',
-    ['tequilapiDepreciated', 'rendererCommunication', 'statsCollector', 'statsEventFactory'],
+    ['vue-store.connection.actions'],
+    (actions) => connectionFactory(actions)
+  )
+  container.service(
+    'vue-store.connection.actions',
+    ['tequilapi', 'rendererCommunication', 'statsCollector', 'statsEventFactory'],
     (tequilapi, rendererCommunication, statsCollector, statsEventFactory) => {
-      return connectionFactory(tequilapi, rendererCommunication, statsCollector, statsEventFactory)
+      return actionsFactory(tequilapi, rendererCommunication, statsCollector, statsEventFactory)
     }
   )
   container.constant('vue-store.errors', errors)

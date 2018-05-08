@@ -28,11 +28,11 @@
 
 <script>
   import path from 'path'
+  import type from '@/store/types'
+  import messages from '@/../app/messages'
   import {getCountryCodeFromProposal, getCountryNameFromProposal} from '@/../app/countries'
   import Multiselect from 'vue-multiselect'
   import IconWorld from '@/assets/img/icon--world.svg'
-  import type from '@/store/types'
-  import messages from '@/../app/messages'
 
   function proposalToCountry (proposal) {
     return {
@@ -44,7 +44,7 @@
 
   export default {
     name: 'CountrySelect',
-    dependencies: ['tequilapiDepreciated', 'bugReporter'],
+    dependencies: ['rendererCommunication', 'bugReporter'],
     components: {
       Multiselect,
       IconWorld
@@ -74,25 +74,23 @@
       },
       async fetchCountries () {
         this.countriesAreLoading = true
+        this.rendererCommunication.sendProposalUpdateRequest()
+      }
+    },
+    mounted () {
+      this.rendererCommunication.onProposalUpdate((proposals) => {
+        this.countriesAreLoading = false
 
-        try {
-          const response = await this.tequilapiDepreciated.proposal.list()
-          if (response.proposals.length < 1) {
-            this.$store.commit(type.SHOW_ERROR, {message: messages.countryListIsEmpty})
-          }
-          this.countriesList = response.proposals.map(proposalToCountry)
-        } catch (e) {
-          console.log('Countries loading failed', e)
-
-          const error = new Error(messages.countryLoadingFailed)
-          error.original = e
+        if (proposals.length < 1) {
+          const error = new Error(messages.countriesLoadingFailed)
 
           this.$store.commit(type.SHOW_ERROR, error)
           this.bugReporter.captureException(error)
+          return
         }
 
-        this.countriesAreLoading = false
-      }
+        this.countriesList = proposals.map(proposalToCountry)
+      })
     }
   }
 </script>

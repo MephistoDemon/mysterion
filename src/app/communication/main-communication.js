@@ -1,7 +1,14 @@
 // @flow
+
 import messages from './index'
 import type {MessageBus} from './messageBus'
-import type {ConnectionStatusChangeDTO, CurrentIdentityChangeDTO, MysteriumClientLogDTO} from './dto'
+import type {
+  RequestConnectionDto,
+  ConnectionStatusChangeDTO,
+  CurrentIdentityChangeDTO,
+  MysteriumClientLogDTO,
+  ProposalUpdateDto
+} from './dto'
 
 /**
  * This allows main process communicating with renderer process.
@@ -14,7 +21,6 @@ class MainCommunication {
   }
 
   // TODO: remaining other messages
-
   sendMysteriumClientLog (dto: MysteriumClientLogDTO): void {
     this._send(messages.MYSTERIUM_CLIENT_LOG, dto)
   }
@@ -29,6 +35,22 @@ class MainCommunication {
 
   onRendererLoaded (callback: () => void) {
     this._on(messages.RENDERER_LOADED, callback)
+  }
+
+  onProposalUpdateRequest (callback: () => void) {
+    this._on(messages.PROPOSALS_UPDATE, callback)
+  }
+
+  sendProposals (proposals: ProposalUpdateDto) {
+    this._send(messages.PROPOSALS_UPDATE, proposals)
+  }
+
+  sendConnectionCancelRequest () {
+    this._send(messages.CONNECTION_CANCEL)
+  }
+
+  sendConnectionRequest (data: RequestConnectionDto) {
+    this._send(messages.CONNECTION_REQUEST, data)
   }
 
   _send (channel: string, dto: mixed): void {
