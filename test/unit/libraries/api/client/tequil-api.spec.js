@@ -16,7 +16,7 @@ describe('tequilAPI', () => {
   let mock
   beforeEach(() => {
     const axioInstance = axios.create()
-    api = new TequilApi(new AxiosAdapter(axioInstance))
+    api = new TequilApi(new AxiosAdapter(axioInstance), 1)
     mock = new MockAdapter(axioInstance)
   })
 

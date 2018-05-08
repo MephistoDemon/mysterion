@@ -9,7 +9,7 @@ describe('AxiosAdapter', () => {
   let mock
   beforeEach(() => {
     const axioInstance = axios.create()
-    adapter = new AxiosAdapter(axioInstance)
+    adapter = new AxiosAdapter(axioInstance, 1)
     mock = new MockAdapter(axioInstance)
   })
 

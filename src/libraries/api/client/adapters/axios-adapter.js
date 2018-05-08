@@ -3,19 +3,20 @@
 import Axios from 'axios'
 import type {HttpInterface, HttpQueryParams} from './interface'
 import TequilapiError from '../tequilapi-error'
+import {TIMEOUT_DEFAULT} from '../timeouts'
 
 class AxiosAdapter implements HttpInterface {
   _axios: Axios
+  _timeout: number
 
-  constructor (axios: Axios) {
+  constructor (axios: Axios, defaultTimeout: number = TIMEOUT_DEFAULT) {
     this._axios = axios
+    this._timeout = defaultTimeout
   }
 
   get (path: string, query: ?HttpQueryParams, timeout: ?number): Promise<?mixed> {
-    const options = {
-      params: query,
-      timeout
-    }
+    const options = this._decorateOptions(timeout)
+    options.params = query
 
     return decorateResponse(
       this._axios.get(path, options)
@@ -24,20 +25,26 @@ class AxiosAdapter implements HttpInterface {
 
   post (path: string, data: mixed, timeout: ?number): Promise<?mixed> {
     return decorateResponse(
-      this._axios.post(path, data, {timeout})
+      this._axios.post(path, data, this._decorateOptions(timeout))
     )
   }
 
   delete (path: string, timeout: ?number): Promise<?mixed> {
     return decorateResponse(
-      this._axios.delete(path, {timeout})
+      this._axios.delete(path, this._decorateOptions(timeout))
     )
   }
 
   put (path: string, data: mixed, timeout: ?number): Promise<?mixed> {
     return decorateResponse(
-      this._axios.put(path, data, {timeout})
+      this._axios.put(path, data, this._decorateOptions(timeout))
     )
+  }
+
+  _decorateOptions (timeout: ?number): Object {
+    return {
+      timeout: timeout !== undefined ? timeout : this._timeout
+    }
   }
 }
 
