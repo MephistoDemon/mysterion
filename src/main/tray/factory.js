@@ -13,7 +13,7 @@ const trayFactory = (
   window: Window,
   iconPath: string
 ) => {
-  const menuGenerator = new TrayMenuBuilder(
+  const menuBuilder = new TrayMenuBuilder(
     () => app.quit(),
     () => window.show(),
     () => window.toggleDevTools(),
@@ -28,7 +28,7 @@ const trayFactory = (
     return Menu.buildFromTemplate(items)
   }
 
-  const tray = new Tray(trayFactory, templateBuilder, menuGenerator, iconPath)
+  const tray = new Tray(trayFactory, templateBuilder, menuBuilder, iconPath)
   tray.build()
 
   communication.onConnectionStatusChange(({newStatus}) => tray.setStatus(newStatus))
