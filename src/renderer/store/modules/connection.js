@@ -8,11 +8,11 @@ import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/even
 import RendererCommunication from '../../../app/communication/renderer-communication'
 import {EventCollector as StatsCollector} from '../../../app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../app/statistics/events'
-import TequilApi from '../../../libraries/api/client/tequil-api'
-import type {ConnectionStatus} from '../../../libraries/api/client/dto/connection-status-enum'
-import ConnectionStatusEnum from '../../../libraries/api/client/dto/connection-status-enum'
-import ConnectionStatisticsDTO from '../../../libraries/api/client/dto/connection-statistics'
-import ConnectionRequestDTO from '../../../libraries/api/client/dto/connection-request'
+import TequilapiClient from '../../../libraries/mysterium-tequilapi/client'
+import type {ConnectionStatus} from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
+import ConnectionStatusEnum from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
+import ConnectionStatisticsDTO from '../../../libraries/mysterium-tequilapi/dto/connection-statistics'
+import ConnectionRequestDTO from '../../../libraries/mysterium-tequilapi/dto/connection-request'
 
 type ConnectionStore = {
   ip: ?string,
@@ -85,7 +85,7 @@ const mutations = {
 }
 
 function actionsFactory (
-  tequilapi: TequilApi,
+  tequilapi: TequilapiClient,
   rendererCommunication: RendererCommunication,
   statsCollector: StatsCollector,
   statsEventsFactory: StatsEventsFactory

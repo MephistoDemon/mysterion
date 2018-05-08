@@ -1,8 +1,8 @@
 // @flow
-import ConnectionIPDTO from '../../../../../src/libraries/api/client/dto/connection-ip'
-import ConnectionStatusDTO from '../../../../../src/libraries/api/client/dto/connection-status'
-import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
-import TequilapiError from '../../../../../src/libraries/api/client/tequilapi-error'
+import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
+import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
+import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
+import TequilapiClientError from '../../../../../src/libraries/mysterium-tequilapi/client-error'
 
 class TimeoutError extends Error {
   isTimeoutError (): boolean {
@@ -28,7 +28,7 @@ function factoryTequilapiManipulator () {
   let connectFail = false
   let connectFailClosedRequest = false
 
-  const errorMock = new TequilapiError('Mock error')
+  const errorMock = new TequilapiClientError('Mock error')
   const timeoutErrorMock = new TimeoutError('Mock timeout error')
   const closedRequestErrorMock = new RequestClosedError('Mock closed request error')
 

@@ -2,6 +2,7 @@
 import {describe, it, expect} from '../../../helpers/dependencies'
 import lolex from 'lolex'
 import ProposalFetcher from '../../../../src/app/data-fetchers/proposal-fetcher'
+import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import {nextTick} from '../../../helpers/utils'
 
 describe('DataFetchers', () => {
@@ -22,13 +23,13 @@ describe('DataFetchers', () => {
       await nextTick()
     }
 
-    function mockTequilapi (proposals) {
+    function mockTequilapiClient (proposals: Array<ProposalDTO>) {
       return {
         findProposals: () => Promise.resolve(proposals)
       }
     }
 
-    const tequilapi = mockTequilapi([
+    const tequilapi = mockTequilapiClient([
       {id: '0x1'},
       {id: '0x2'}
     ])

@@ -9,7 +9,7 @@ const httpResponseCodes = {
   SERVICE_UNAVAILABLE: 503
 }
 
-class TequilapiError extends Error {
+class TequilapiClientError extends Error {
   original: Error
 
   constructor (original: Error) {
@@ -49,4 +49,4 @@ function hasHttpStatus (error: Error, expectedStatus: number): boolean {
   return error.response.status === expectedStatus
 }
 
-export default TequilapiError
+export default TequilapiClientError

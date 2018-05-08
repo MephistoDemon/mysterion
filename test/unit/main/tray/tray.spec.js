@@ -1,7 +1,7 @@
 import translations from '../../../../src/main/tray/translations'
 import Tray from '../../../../src/main/tray/tray'
 import {expect} from '../../../helpers/dependencies'
-import ConnectionStatusEnum from '../../../../src/libraries/api/client/dto/connection-status-enum'
+import ConnectionStatusEnum from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
 
 describe('tray', () => {
   describe('Tray', () => {
@@ -41,7 +41,7 @@ describe('tray', () => {
     }
 
     describe('.build', () => {
-      it('calls electron tray factory', () => {
+      it('calls electron tray tequilapiClientFactory', () => {
         let called = false
 
         const factory = fakeTrayFactoryBuilder(() => {

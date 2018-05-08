@@ -64,13 +64,13 @@ function bootstrap (container: Container) {
   )
   container.service(
     'vue-store.main',
-    ['tequilapi'],
-    (tequilapi) => mainFactory(tequilapi)
+    ['tequilapiClient'],
+    (tequilapiClient) => mainFactory(tequilapiClient)
   )
   container.service(
     'vue-store.identity',
-    ['tequilapi'],
-    (tequilapi) => identityFactory(tequilapi)
+    ['tequilapiClient'],
+    (tequilapiClient) => identityFactory(tequilapiClient)
   )
   container.service(
     'vue-store.connection',
@@ -79,9 +79,9 @@ function bootstrap (container: Container) {
   )
   container.service(
     'vue-store.connection.actions',
-    ['tequilapi', 'rendererCommunication', 'statsCollector', 'statsEventFactory'],
-    (tequilapi, rendererCommunication, statsCollector, statsEventFactory) => {
-      return actionsFactory(tequilapi, rendererCommunication, statsCollector, statsEventFactory)
+    ['tequilapiClient', 'rendererCommunication', 'statsCollector', 'statsEventFactory'],
+    (tequilapiClient, rendererCommunication, statsCollector, statsEventFactory) => {
+      return actionsFactory(tequilapiClient, rendererCommunication, statsCollector, statsEventFactory)
     }
   )
   container.constant('vue-store.errors', errors)

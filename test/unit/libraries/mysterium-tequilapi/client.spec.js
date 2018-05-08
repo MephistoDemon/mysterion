@@ -1,26 +1,26 @@
-import TequilApi from '../../../../../src/libraries/api/client/tequil-api'
-import IdentityDTO from '../../../../../src/libraries/api/client/dto/identity'
-import ProposalDTO from '../../../../../src/libraries/api/client/dto/proposal'
-import AxiosAdapter from '../../../../../src/libraries/api/client/adapters/axios-adapter'
+import TequilapiClient from '../../../../src/libraries/mysterium-tequilapi/client'
+import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
+import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
+import AxiosAdapter from '../../../../src/libraries/mysterium-tequilapi/adapters/axios-adapter'
 import axios from 'axios/index'
 import MockAdapter from 'axios-mock-adapter'
-import {capturePromiseError} from '../../../../helpers/utils'
-import NodeHealthcheckDTO from '../../../../../src/libraries/api/client/dto/node-healthcheck'
-import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
-import ConnectionIPDTO from '../../../../../src/libraries/api/client/dto/connection-ip'
-import ConnectionStatusDTO from '../../../../../src/libraries/api/client/dto/connection-status'
-import ConnectionRequestDTO from '../../../../../src/libraries/api/client/dto/connection-request'
+import {capturePromiseError} from '../../../helpers/utils'
+import NodeHealthcheckDTO from '../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
+import ConnectionStatisticsDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
+import ConnectionIPDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
+import ConnectionStatusDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
+import ConnectionRequestDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-request'
 
-describe('tequilAPI', () => {
+describe('TequilapiClient', () => {
   let api
   let mock
   beforeEach(() => {
     const axioInstance = axios.create()
-    api = new TequilApi(new AxiosAdapter(axioInstance), 1)
+    api = new TequilapiClient(new AxiosAdapter(axioInstance), 1)
     mock = new MockAdapter(axioInstance)
   })
 
-  describe('client.healthcheck()', () => {
+  describe('healthcheck()', () => {
     it('returns response', async () => {
       const response = {
         uptime: '1h10m',
@@ -45,7 +45,7 @@ describe('tequilAPI', () => {
     })
   })
 
-  describe('client.stop()', () => {
+  describe('stop()', () => {
     it('success', async () => {
       const expectedRequest = undefined
       mock.onPost('stop', expectedRequest).reply(200)
@@ -62,7 +62,7 @@ describe('tequilAPI', () => {
     })
   })
 
-  describe('client.findProposals()', () => {
+  describe('findProposals()', () => {
     it('returns proposal DTOs', async () => {
       const response = {
         proposals: [{
@@ -103,7 +103,7 @@ describe('tequilAPI', () => {
     })
   })
 
-  describe('client.identitiesList()', () => {
+  describe('identitiesList()', () => {
     it('returns identity DTOs', async () => {
       const response = [
         {id: '0x1000FACE'},
@@ -125,7 +125,7 @@ describe('tequilAPI', () => {
     })
   })
 
-  describe('client.identityCreate()', () => {
+  describe('identityCreate()', () => {
     it('create identity', async () => {
       const response = {id: '0x0000bEEF'}
       mock.onPost('identities', {passphrase: 'test'}).reply(200, response)
@@ -142,7 +142,7 @@ describe('tequilAPI', () => {
     })
   })
 
-  describe('client.identityUnlock()', () => {
+  describe('identityUnlock()', () => {
     it('create identity', async () => {
       mock.onPut('identities/0x0000bEEF/unlock', {passphrase: 'test'}).reply(200)
 
@@ -158,7 +158,7 @@ describe('tequilAPI', () => {
     })
   })
 
-  describe('client.connectionCreate()', () => {
+  describe('connectionCreate()', () => {
     it('returns response', async () => {
       const expectedRequest = {
         consumerId: '0x1000FACE',
@@ -182,7 +182,7 @@ describe('tequilAPI', () => {
     })
   })
 
-  describe('client.connectionStatus()', () => {
+  describe('connectionStatus()', () => {
     it('returns response', async () => {
       const response = {
         status: 'Connected',
@@ -202,7 +202,7 @@ describe('tequilAPI', () => {
     })
   })
 
-  describe('client.connectionCancel()', () => {
+  describe('connectionCancel()', () => {
     it('returns response', async () => {
       const expectedRequest = undefined
       const response = {
@@ -223,7 +223,7 @@ describe('tequilAPI', () => {
     })
   })
 
-  describe('client.connectionIP()', () => {
+  describe('connectionIP()', () => {
     it('returns response', async () => {
       const response = {ip: 'mock ip'}
       mock.onGet('connection/ip').reply(200, response)
@@ -240,7 +240,7 @@ describe('tequilAPI', () => {
     })
   })
 
-  describe('client.connectionStatistics()', () => {
+  describe('connectionStatistics()', () => {
     it('returns response', async () => {
       const response = {
         duration: 13325,

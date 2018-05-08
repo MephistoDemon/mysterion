@@ -23,7 +23,7 @@
 
 <script>
   import {mapGetters} from 'vuex'
-  import ConnectionStatusEnum from '../../libraries/api/client/dto/connection-status-enum'
+  import ConnectionStatusEnum from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 
   import headVisual from '@/assets/img/visual--head.svg'
 
