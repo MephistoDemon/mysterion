@@ -28,19 +28,19 @@ function factoryTequilapiManipulator () {
   let connectFail = false
   let connectFailClosedRequest = false
 
-  const fakeError = new TequilapiError('Mock error')
-  const fakeTimeoutError = new TimeoutError('Mock timeout error')
-  const fakeClosedRequestError = new RequestClosedError('Mock closed request error')
+  const errorMock = new TequilapiError('Mock error')
+  const timeoutErrorMock = new TimeoutError('Mock timeout error')
+  const closedRequestErrorMock = new RequestClosedError('Mock closed request error')
 
   return {
     getFakeApi: function () {
       return {
         connectionIP: async function (): Promise<ConnectionIPDTO> {
           if (ipTimeout) {
-            throw fakeTimeoutError
+            throw timeoutErrorMock
           }
           if (ipFail) {
-            throw fakeError
+            throw errorMock
           }
           return new ConnectionIPDTO({
             ip: 'mock ip'
@@ -49,7 +49,7 @@ function factoryTequilapiManipulator () {
 
         connectionStatus: async function (): Promise<ConnectionStatusDTO> {
           if (statusFail) {
-            throw fakeError
+            throw errorMock
           }
           return new ConnectionStatusDTO({
             status: 'mock status'
@@ -58,17 +58,17 @@ function factoryTequilapiManipulator () {
 
         connectionStatistics: async function (): Promise<ConnectionStatisticsDTO> {
           if (statisticsFail) {
-            throw fakeError
+            throw errorMock
           }
           return new ConnectionStatisticsDTO({duration: 1})
         },
 
         connectionCreate: async function (): Promise<ConnectionStatusDTO> {
           if (connectFailClosedRequest) {
-            throw fakeClosedRequestError
+            throw closedRequestErrorMock
           }
           if (connectFail) {
-            throw fakeError
+            throw errorMock
           }
           return new ConnectionStatusDTO({})
         },
@@ -105,10 +105,10 @@ function factoryTequilapiManipulator () {
       connectFailClosedRequest = error
     },
     getFakeError: function (): Error {
-      return fakeError
+      return errorMock
     },
     getFakeTimeoutError: function (): Error {
-      return fakeTimeoutError
+      return timeoutErrorMock
     }
   }
 }
