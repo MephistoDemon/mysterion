@@ -32,7 +32,7 @@ class ActionLooper {
   }
 }
 
-class ActionLooperStart {
+class ActionLooperConfig {
   action: string
   threshold: number
 
@@ -103,7 +103,7 @@ function actionsFactory (
         bugReporter.renderer.captureException(err)
       }
     },
-    [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperStart): FunctionLooper {
+    [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperConfig): FunctionLooper {
       const currentLooper = state.actionLoopers[event.action]
       if (currentLooper) {
         console.log('Warning: requested to start looping action which is already looping: ' + event.action)
@@ -140,7 +140,7 @@ function actionsFactory (
       rendererCommunication.sendConnectionStatusChange({oldStatus, newStatus})
 
       if (newStatus === ConnectionStatusEnum.CONNECTED) {
-        await dispatch(type.START_ACTION_LOOPING, new ActionLooperStart(type.CONNECTION_STATISTICS, config.statisticsUpdateThreshold))
+        await dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.CONNECTION_STATISTICS, config.statisticsUpdateThreshold))
       }
       if (oldStatus === ConnectionStatusEnum.CONNECTED) {
         await dispatch(type.STOP_ACTION_LOOPING, type.CONNECTION_STATISTICS)
@@ -226,7 +226,7 @@ function factory (actions: Object) {
 
 export {
   ActionLooper,
-  ActionLooperStart,
+  ActionLooperConfig,
   state,
   mutations,
   getters,

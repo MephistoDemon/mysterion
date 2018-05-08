@@ -12,7 +12,7 @@ import RendererCommunication from '@/../app/communication/renderer-communication
 import FakeMessageBus from '../../../../helpers/fakeMessageBus'
 import {createEventFactory} from '../../../../../src/app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../../../src/app/statistics/events'
-import {ActionLooper, ActionLooperStart} from '../../../../../src/renderer/store/modules/connection'
+import {ActionLooper, ActionLooperConfig} from '../../../../../src/renderer/store/modules/connection'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/api/client/dto/connection-statistics'
 
 const fakeTequilapi = factoryTequilapiManipulator()
@@ -137,7 +137,7 @@ describe('actions', () => {
       const committed = await executeAction(
         type.START_ACTION_LOOPING,
         state,
-        new ActionLooperStart(type.CONNECTION_STATISTICS, 1000)
+        new ActionLooperConfig(type.CONNECTION_STATISTICS, 1000)
       )
 
       expect(committed.length).to.eql(2)
@@ -165,7 +165,7 @@ describe('actions', () => {
       const committed = await executeAction(
         type.START_ACTION_LOOPING,
         state,
-        new ActionLooperStart(type.CONNECTION_STATISTICS, 1000)
+        new ActionLooperConfig(type.CONNECTION_STATISTICS, 1000)
       )
 
       expect(committed).to.eql([])
