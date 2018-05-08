@@ -50,12 +50,6 @@ function getMenuItems (
   items.add(translations.quit, () => appQuit(), 'Command+Q')
 
   switch (connectionStatus) {
-    case ConnectionStatusEnum.NOT_CONNECTED:
-      connect.show()
-      disconnect.hide()
-      statusItem.setLabel(translations.statusDisconnected)
-      break
-
     case ConnectionStatusEnum.CONNECTED:
       connect.hide()
       disconnect.show()
@@ -72,6 +66,18 @@ function getMenuItems (
       connect.hide()
       disconnect.hide()
       statusItem.setLabel(translations.statusDisconnecting)
+      break
+
+    case ConnectionStatusEnum.NOT_CONNECTED:
+      connect.show()
+      disconnect.hide()
+      statusItem.setLabel(translations.statusDisconnected)
+      break
+
+    default:
+      connect.show()
+      disconnect.hide()
+      statusItem.setLabel(translations.statusDisconnected)
       break
   }
 
