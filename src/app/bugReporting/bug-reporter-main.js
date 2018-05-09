@@ -1,12 +1,10 @@
 // @flow
 import Raven from 'raven'
-import config from './config'
 import {pushToLogCache} from './logsCache'
-
 import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
 
-function install (url: string, releaseId: string) {
-  Raven.config(url, {...config, release: releaseId}).install()
+function install (url: string, config: Object) {
+  Raven.config(url, config).install()
 }
 
 function setUser (userData: IdentityDTO) {
@@ -16,7 +14,7 @@ function setUser (userData: IdentityDTO) {
 }
 const captureException = Raven.captureException.bind(Raven)
 
-export {
+export default {
   install,
   setUser,
   pushToLogCache,
