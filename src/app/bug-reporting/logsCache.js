@@ -1,9 +1,9 @@
 import LimitedLinkedList from '../../libraries/limited-linked-list'
-import {logLevel} from '../../libraries/mysterium-client/index'
+import {logLevels} from '../../libraries/mysterium-client'
 
 const logsBuffer = {
-  [logLevel.LOG]: new LimitedLinkedList(300),
-  [logLevel.ERROR]: new LimitedLinkedList(300)
+  [logLevels.LOG]: new LimitedLinkedList(300),
+  [logLevels.ERROR]: new LimitedLinkedList(300)
 }
 
 const pushToLogCache = (level, data) => {

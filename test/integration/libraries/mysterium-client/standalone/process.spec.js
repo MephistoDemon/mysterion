@@ -1,7 +1,8 @@
 // @flow
 import {ChildProcess} from 'child_process'
 import sleep from '../../../../../src/libraries/sleep'
-import Process, {logLevel} from '../../../../../src/libraries/mysterium-client/standalone/process'
+import Process from '../../../../../src/libraries/mysterium-client/standalone/process'
+import processLogLevels from '../../../../../src/libraries/mysterium-client/log-levels'
 import ClientConfig from '../../../../../src/libraries/mysterium-client/config'
 import tequilapiClientFactory from '../../../../../src/libraries/mysterium-tequilapi/client-factory'
 import path from 'path'
@@ -25,7 +26,7 @@ xdescribe('Standalone Process', () => {
       tequilapiPort
     ))
     process.start()
-    process.onLog(logLevel.LOG, data => logs.push(data))
+    process.onLog(processLogLevels.LOG, data => logs.push(data))
 
     tequilapi = tequilapiClientFactory(`http://127.0.0.1:${tequilapiPort}`)
 

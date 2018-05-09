@@ -1,8 +1,5 @@
 import {spawn} from 'child_process'
-
-// these constants correspond to child process members
-// child.stdout and child.stderr
-export const logLevel = {LOG: 'stdout', ERROR: 'stderr'}
+import logLevels from '../log-levels'
 
 /**
  * 'mysterium_client' process handler
@@ -31,16 +28,32 @@ class Process {
 
   /**
    * Registers a callback for a specific process log/error message
+   *
    * @param {string} level
    * @param {LogCallback} cb
    */
   onLog (level, cb) {
-    if (!Object.values(logLevel).includes(level) || !this.child[level]) {
-      throw new Error(`Unknown logging level: ${level}`)
-    }
-    this.child[level].on('data', (data) => {
+    this._getStreamForLevel(level).on('data', (data) => {
       cb(data.toString())
     })
+  }
+
+  /**
+   * Converts log level to child process members 'child.stdout' and 'child.stderr'
+   *
+   * @param {string} level
+   * @return {Readable}
+   * @private
+   */
+  _getStreamForLevel (level) {
+    switch (level) {
+      case logLevels.LOG:
+        return this.child.stdout
+      case logLevels.ERROR:
+        return this.child.stderr
+      default:
+        throw new Error(`Unknown logging level: ${level}`)
+    }
   }
 }
 

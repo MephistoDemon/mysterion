@@ -2,7 +2,7 @@
 import RavenJs from 'raven-js'
 import RavenVue from 'raven-js/plugins/vue'
 import {pushToLogCache} from './logsCache'
-import {logLevel} from '../../libraries/mysterium-client'
+import {logLevels} from '../../libraries/mysterium-client'
 import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
 import type {BugReporter} from './interface'
 
@@ -22,7 +22,7 @@ class BugReporterRenderer implements BugReporter {
     RavenJs.captureException(err)
   }
 
-  pushToLogCache (level: logLevel.LOG | logLevel.ERROR, data: string) {
+  pushToLogCache (level: logLevels.LOG | logLevels.ERROR, data: string) {
     pushToLogCache(level, data)
   }
 }

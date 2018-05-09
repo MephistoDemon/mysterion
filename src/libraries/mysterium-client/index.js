@@ -4,8 +4,7 @@ import LaunchDaemonProcess from './launch-daemon/process'
 import StandaloneInstaller from './standalone/installer'
 import StandaloneProcess from './standalone/process'
 import Monitoring from './monitoring'
-
-const logLevel = { LOG: 'stdout', ERROR: 'stderr' }
+import logLevels from './log-levels'
 
 let Installer, Process
 
@@ -22,4 +21,4 @@ switch (platform) {
     break
 }
 
-export {Installer, Process, Monitoring, logLevel}
+export {Installer, Process, Monitoring, logLevels}

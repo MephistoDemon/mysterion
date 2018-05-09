@@ -1,14 +1,6 @@
 import {Tail} from 'tail'
-
-export const logLevel = {
-  LOG: 'stdout',
-  ERROR: 'stderr'
-}
-
-const stdFiles = {
-  [logLevel.LOG]: 'stdout.log',
-  [logLevel.ERROR]: 'stderr.log'
-}
+import path from 'path'
+import logLevels from '../log-levels'
 
 /**
  * Spawns 'mysterium_client' daemon on OSX by calling TequilapiClient.healthcheck()
@@ -31,13 +23,30 @@ class Process {
   }
 
   onLog (level, cb) {
-    if (!stdFiles[level]) throw new Error(`Unknown daemon logging level: ${level}`)
-    tailFile(this.dataDir + '/' + stdFiles[level], cb)
+    tailFile(this._getFileForLevel(level), cb)
   }
 
   async stop () {
     await this.tequilapi.stop()
     console.log('Client Quit was successful')
+  }
+
+  /**
+   * Converts log level to log files 'stdout.log' or 'stderr.log'
+   *
+   * @param {string} level
+   * @return {string}
+   * @private
+   */
+  _getFileForLevel (level) {
+    switch (level) {
+      case logLevels.LOG:
+        return path.join(this.dataDir, 'stdout.log')
+      case logLevels.ERROR:
+        return path.join(this.dataDir, 'stderr.log')
+      default:
+        throw new Error(`Unknown daemon logging level: ${level}`)
+    }
   }
 }
 
