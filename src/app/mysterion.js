@@ -217,7 +217,7 @@ class Mysterion {
 
 function setupSentryFeedbackForm (session, captureException) {
   try {
-    dependencies.get('feedbackFormInstall')(session)
+    dependencies.get('feedbackForm.install')(session)
   } catch (err) {
     console.error('Sentry feedback form installation failed ', err.stack)
     captureException(err)

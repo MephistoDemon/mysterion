@@ -41,10 +41,8 @@ const communicationProposalsResponse = [
   }
 ]
 
-const bugReporter = {
-  captureException: (error) => {
-    console.log(error)
-  }
+const bugReporterMock = {
+  captureException: () => {}
 }
 
 function mountWith (rendererCommunication, store) {
@@ -52,7 +50,7 @@ function mountWith (rendererCommunication, store) {
 
   const dependencies = new DIContainer(vue)
   dependencies.constant('rendererCommunication', rendererCommunication)
-  dependencies.constant('bugReporter', bugReporter)
+  dependencies.constant('bugReporter', bugReporterMock)
 
   return mount(CountrySelect, {
     localVue: vue,

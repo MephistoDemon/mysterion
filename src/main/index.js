@@ -9,9 +9,6 @@ import Terms from '../app/terms'
 import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 
-dependencies.get('bugReporter')
-  .install(dependencies.get('sentryURL'), dependencies.get('mysterionReleaseID'))
-
 global.__mysterionReleaseID = dependencies.get('mysterionReleaseID')
 global.__static = mysterionConfig.staticDirectoryPath
 

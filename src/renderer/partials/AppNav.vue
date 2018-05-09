@@ -44,7 +44,7 @@
 
   export default {
     name: 'AppNav',
-    dependencies: ['bugReporter', 'showFeedbackForm'],
+    dependencies: ['bugReporter', 'feedbackForm'],
     components: {
       IconEye,
       IconIssue,
@@ -63,7 +63,7 @@
         shell.openExternal(url)
       },
       reportIssue () {
-        this.showFeedbackForm(this.bugReporter.getRavenInstance())
+        this.feedbackForm.show()
       }
     }
   }

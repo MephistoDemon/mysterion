@@ -2,21 +2,23 @@
 import registerHeaderRules from '../window/requestHeaders'
 import type {HeaderRule} from '../window/requestHeaders'
 
-const requestHeaderRewriteRule: HeaderRule = {
-  urls: ['https://sentry.io/api/embed/error-page/*'],
-  write: function (headers: Object): Object {
-    headers['Referer'] = '*'
-    return headers
+function configInstallerWithRules (requestHeaderRewriteRule: HeaderRule) {
+  return function install (session: Object): void {
+    registerHeaderRules(session, requestHeaderRewriteRule)
   }
 }
 
-function install (session: Object): void {
-  registerHeaderRules(session, requestHeaderRewriteRule)
+class FeedbackForm {
+  raven: Object
+
+  constructor (raven: Object) {
+    this.raven = raven
+  }
+
+  show () {
+    this.raven.captureMessage('User opened issue report form.')
+    this.raven.showReportDialog()
+  }
 }
 
-function show (raven: Object): void {
-  raven.captureMessage('User opened issue report form.')
-  raven.showReportDialog()
-}
-
-export {install, show}
+export {configInstallerWithRules, FeedbackForm}
