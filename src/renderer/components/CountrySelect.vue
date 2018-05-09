@@ -7,7 +7,7 @@
                      placeholder="Choose country"
                      :options="countriesList"
                      :loading="countriesAreLoading"
-                     :searchable="false"
+                     :searchable="true"
                      :show-labels="false"
                      @open="fetchCountries"
                      @input="onChange">
