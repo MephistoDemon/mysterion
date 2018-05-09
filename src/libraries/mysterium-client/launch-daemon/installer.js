@@ -44,6 +44,8 @@ class Installer {
             <string>${this.config.runtimeDir}</string>
             <string>--openvpn.binary</string>
             <string>${this.config.openVPNBin}</string>
+            <string>--tequilapi.port</string>
+            <string>${this.config.tequilapiPort}</string>
           </array>
           <key>Sockets</key>
             <dict>

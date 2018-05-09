@@ -16,12 +16,12 @@ class Process {
     this.config = config
   }
 
-  start (port = 4050) {
+  start () {
     this.child = spawn(this.config.clientBin, [
       '--config-dir', this.config.configDir,
       '--runtime-dir', this.config.runtimeDir,
       '--openvpn.binary', this.config.openVPNBin,
-      '--tequilapi.port', port
+      '--tequilapi.port', this.config.tequilapiPort
     ])
   }
 
