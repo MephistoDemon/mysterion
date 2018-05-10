@@ -1,7 +1,7 @@
 // @flow
 import type from '../types'
 import messages from '../../../app/messages'
-import bugReporter from '../../../app/bugReporting/bug-reporter-renderer'
+import bugReporter from '../../../app/bug-reporting/bug-reporter-renderer'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import config from '@/config'
 import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/events-connection'

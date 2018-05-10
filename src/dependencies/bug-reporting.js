@@ -1,7 +1,7 @@
 // @flow
 import os from 'os'
 import {logLevel} from '../libraries/mysterium-client/index'
-import {getLogCache} from '../app/bugReporting/logsCache'
+import {getLogCache} from '../app/bug-reporting/logsCache'
 
 import type {Container} from '../app/di'
 

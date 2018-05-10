@@ -1,9 +1,8 @@
 // @flow
 import DIContainer from '../../app/di/jpex-container'
 import applicationBootstrap from './modules/application'
-import bugReporterConfigBootstrap from '../../dependencies/bugReporterConfig'
-import bugReporterBootstrap from './modules/bugReporter'
-import feedbackFormBootstrap from './modules/feedback-form'
+import bugReportingConfigBootstrap from '../../dependencies/bug-reporting'
+import bugReportingBootstrap from './modules/bug-reporting'
 import mysteriumTequilapiBootstrap from '../../dependencies/mysterium-tequilapi'
 import proposalFetcherBootstrap from './modules/proposal-fetcher'
 
@@ -13,9 +12,8 @@ import proposalFetcherBootstrap from './modules/proposal-fetcher'
 function bootstrap (): DIContainer {
   const container = new DIContainer()
   applicationBootstrap(container)
-  bugReporterConfigBootstrap(container)
-  bugReporterBootstrap(container)
-  feedbackFormBootstrap(container)
+  bugReportingConfigBootstrap(container)
+  bugReportingBootstrap(container)
   mysteriumTequilapiBootstrap(container)
   proposalFetcherBootstrap(container)
 

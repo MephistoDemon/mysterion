@@ -1,6 +1,6 @@
 // @flow
 import type from '../types'
-import bugReporter from '../../../app/bugReporting/bug-reporter-renderer'
+import bugReporter from '../../../app/bug-reporting/bug-reporter-renderer'
 import RendererMessageBus from '../../../app/communication/rendererMessageBus'
 import RendererCommunication from '../../../app/communication/renderer-communication'
 import TequilapiClient from '../../../libraries/mysterium-tequilapi/client'

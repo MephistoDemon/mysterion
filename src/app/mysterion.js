@@ -67,8 +67,8 @@ class Mysterion {
       console.error('Sentry feedback form installation failed. ', err.stack)
       this.bugReporter.captureException(err)
     }
-
-    this.messageBus = new MainMessageBus(browserWindow.webContents.send, this.bugReporter.captureException)
+    const send = browserWindow.webContents.send.bind(browserWindow.webContents)
+    this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
     this.communication = new MainCommunication(this.messageBus)
 
     try {

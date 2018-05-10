@@ -6,14 +6,17 @@ import Window from '../../../app/window'
 function bootstrap (container: Container) {
   container.constant('mysterionReleaseID', `${process.env.MYSTERION_VERSION}(${process.env.BUILD_NUMBER})`)
 
+  let browserWindow
   container.service(
     'mysterionBrowserWindow',
     [],
     () => {
-      return new BrowserWindow({
+      if (browserWindow) return browserWindow
+      browserWindow = new BrowserWindow({
         resizable: false,
         show: false
       })
+      return browserWindow
     }
   )
   container.service(

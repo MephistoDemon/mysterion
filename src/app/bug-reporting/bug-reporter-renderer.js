@@ -5,7 +5,10 @@ import {pushToLogCache} from './logsCache'
 import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
 
 function install (url: string, vue: Object, config: Object) {
-  RavenJs.config(url, config).install().addPlugin(RavenVue, vue)
+  RavenJs
+    .config(url, config)
+    .install()
+    .addPlugin(RavenVue, vue)
 }
 
 function getRavenInstance (): Object {

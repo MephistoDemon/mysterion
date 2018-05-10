@@ -1,8 +1,8 @@
 // @flow
 import Vue from 'vue'
 import DIContainer from '../../app/di/vue-container'
-import bugReporterConfigBootstrap from '../../dependencies/bugReporterConfig'
-import bugReporterBootstrap from './modules/bugReporter'
+import bugReportingConfigBootstrap from '../../dependencies/bug-reporting'
+import bugReportingBootstrap from './modules/bug-reporting'
 import vueBootstrap from './modules/vue'
 import applicationBootstrap from './modules/application'
 import mysteriumTequilapiBootstrap from '../../dependencies/mysterium-tequilapi'
@@ -12,8 +12,8 @@ import mysteriumTequilapiBootstrap from '../../dependencies/mysterium-tequilapi'
  */
 function bootstrap (): DIContainer {
   const container = new DIContainer(Vue)
-  bugReporterConfigBootstrap(container)
-  bugReporterBootstrap(container)
+  bugReportingConfigBootstrap(container)
+  bugReportingBootstrap(container)
   vueBootstrap(container)
   applicationBootstrap(container)
   mysteriumTequilapiBootstrap(container)

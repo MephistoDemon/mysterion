@@ -2,7 +2,7 @@ import dependencies from './dependencies'
 import Vue from 'vue'
 
 const bugReporter = dependencies.get('bugReporter')
-const sentryURL = dependencies.get('sentryURL')
+const sentryURL = dependencies.get('bugReporter.sentryURL')
 const releaseID = dependencies.get('mysterionReleaseID')
 bugReporter.install(sentryURL, Vue, releaseID)
 
