@@ -1,4 +1,4 @@
-import {app, session as browserSession} from 'electron'
+import {app} from 'electron'
 import Window from './window'
 import communication from './communication/index'
 import trayFactory from '../main/tray/factory'
@@ -9,11 +9,9 @@ import MainMessageBus from './communication/mainMessageBus'
 import {onFirstEvent} from './communication/utils'
 import path from 'path'
 
-import dependencies from '../main/dependencies'
-
 class Mysterion {
-  constructor ({config, terms, installer, monitoring, process, proposalFetcher, bugReporter}) {
-    Object.assign(this, {config, terms, installer, monitoring, process, proposalFetcher, bugReporter})
+  constructor ({config, terms, installer, monitoring, process, proposalFetcher, bugReporter, plugins}) {
+    Object.assign(this, {config, terms, installer, monitoring, process, proposalFetcher, bugReporter, plugins})
   }
 
   run () {
@@ -63,7 +61,12 @@ class Mysterion {
       throw new Error('Failed to open window.')
     }
 
-    setupSentryFeedbackForm(browserSession.defaultSession, this.bugReporter.captureException)
+    try {
+      this.plugins.get('feedbackForm').install(this.window.window)
+    } catch (err) {
+      console.error('Sentry feedback form installation failed. ', err.stack)
+      this.bugReporter.captureException(err)
+    }
 
     const send = this.window.send.bind(this.window)
     this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
@@ -212,15 +215,6 @@ class Mysterion {
       this.window,
       path.join(this.config.staticDirectoryPath, 'icons')
     )
-  }
-}
-
-function setupSentryFeedbackForm (session, captureException) {
-  try {
-    dependencies.get('feedbackForm.install')(session)
-  } catch (err) {
-    console.error('Sentry feedback form installation failed ', err.stack)
-    captureException(err)
   }
 }
 

@@ -17,7 +17,7 @@ function setUser (userData: IdentityDTO) {
 }
 const captureException = RavenJs.captureException.bind(RavenJs)
 
-export {
+export default {
   install,
   setUser,
   pushToLogCache,

@@ -1,6 +1,5 @@
 // @flow
 import type {Container} from '../../../app/di'
-import {configInstallerWithRules} from '../../../app/bugReporting/feedback-form'
 
 function bootstrap (container: Container) {
   container.constant(
@@ -11,13 +10,6 @@ function bootstrap (container: Container) {
         headers['Referer'] = '*'
         return headers
       }
-    })
-
-  container.service(
-    'feedbackForm.install',
-    ['feedbackForm.headerRule'],
-    (headerRule) => {
-      return configInstallerWithRules(headerRule)
     }
   )
 }

@@ -1,6 +1,6 @@
 // @flow
 import type {Container} from '../../../app/di'
-import * as bugReporter from '../../../app/bugReporting/bug-reporter-renderer'
+import bugReporter from '../../../app/bugReporting/bug-reporter-renderer'
 import {FeedbackForm} from '../../../app/bugReporting/feedback-form'
 
 function bootstrap (container: Container) {

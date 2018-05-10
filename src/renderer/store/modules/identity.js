@@ -1,6 +1,6 @@
 // @flow
 import type from '../types'
-import {setUser as bugReporterSetUser} from '../../../app/bugReporting/bug-reporter-renderer'
+import bugReporter from '../../../app/bugReporting/bug-reporter-renderer'
 import RendererMessageBus from '../../../app/communication/rendererMessageBus'
 import RendererCommunication from '../../../app/communication/renderer-communication'
 import TequilapiClient from '../../../libraries/mysterium-tequilapi/client'
@@ -14,7 +14,7 @@ const state = {
 const mutations = {
   [type.IDENTITY_GET_SUCCESS] (state, identity: IdentityDTO) {
     state.current = identity
-    bugReporterSetUser(identity)
+    bugReporter.setUser(identity)
     const messageBus = new RendererMessageBus()
     const communication = new RendererCommunication(messageBus)
     communication.sendCurrentIdentityChange(identity)

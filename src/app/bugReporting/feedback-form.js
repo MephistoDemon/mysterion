@@ -1,12 +1,4 @@
 // @flow
-import registerHeaderRules from '../window/requestHeaders'
-import type {HeaderRule} from '../window/requestHeaders'
-
-function configInstallerWithRules (requestHeaderRewriteRule: HeaderRule) {
-  return function install (session: Object): void {
-    registerHeaderRules(session, requestHeaderRewriteRule)
-  }
-}
 
 class FeedbackForm {
   raven: Object
@@ -21,4 +13,4 @@ class FeedbackForm {
   }
 }
 
-export {configInstallerWithRules, FeedbackForm}
+export {FeedbackForm}

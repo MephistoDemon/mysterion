@@ -1,7 +1,7 @@
 // @flow
 import type from '../types'
 import messages from '../../../app/messages'
-import {captureException} from '../../../app/bugReporting/bug-reporter-renderer'
+import bugReporter from '../../../app/bugReporting/bug-reporter-renderer'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import config from '@/config'
 import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/events-connection'
@@ -99,7 +99,7 @@ function actionsFactory (
         if (err.isTimeoutError() || err.isServiceUnavailableError()) {
           return
         }
-        captureException(err)
+        bugReporter.captureException(err)
       }
     },
     [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperConfig): FunctionLooper {
