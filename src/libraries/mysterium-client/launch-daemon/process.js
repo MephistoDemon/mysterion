@@ -35,9 +35,13 @@ class Process {
   }
 
   start () {
-    this.tequilapi.healthCheck().catch(() => {
-      logger.info('touched the daemon, now it should be up')
-    })
+    this.tequilapi.healthCheck()
+      .then(() => {
+        logger.info('Touched the daemon with error, anyway it should be up')
+      })
+      .catch(() => {
+        logger.info('Touched the daemon, now it must be up')
+      })
   }
 
   onLog (level, cb) {

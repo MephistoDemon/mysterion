@@ -105,6 +105,7 @@ class Mysterion {
       if (!accepted) {
         return
       }
+      this.window.resize(this._getWindowSize(false))
     }
 
     await this._ensureDaemonInstallation()
@@ -122,6 +123,7 @@ class Mysterion {
   }
 
   _areTermsAccepted () {
+    logInfo('Checking terms cache')
     try {
       this.terms.load()
       return this.terms.isAccepted()
@@ -145,6 +147,7 @@ class Mysterion {
   }
 
   _createWindow (size) {
+    logInfo('Opening window')
     try {
       const window = this.windowFactory()
       window.resize(size)
@@ -157,6 +160,7 @@ class Mysterion {
   }
 
   async _onRendererLoaded () {
+    logInfo('Waiting for window to be rendered')
     try {
       await onFirstEvent(this.communication.onRendererBooted.bind(this.communication))
     } catch (e) {
@@ -169,6 +173,7 @@ class Mysterion {
   // if the installation fails, it sends a message to the renderer window
   async _ensureDaemonInstallation () {
     if (this.installer.needsInstallation()) {
+      logInfo("Installing 'mysterium_client' process")
       try {
         await this.installer.install()
       } catch (e) {
@@ -207,6 +212,7 @@ class Mysterion {
   // make sure terms are up to date and accepted
   // declining terms will quit the app
   async _acceptTermsOrQuit () {
+    logInfo('Accepting terms')
     try {
       const accepted = await this._acceptTerms()
       if (!accepted) {
@@ -243,9 +249,6 @@ class Mysterion {
       error.original = e
       throw error
     }
-
-    this.window.resize(this.config.windows.app)
-
     return true
   }
 
@@ -265,13 +268,16 @@ class Mysterion {
       this.bugReporter.pushToLogCache(level, data)
     }
 
+    logInfo("Starting 'mysterium_client' process")
     this.process.start()
     this.process.onLog(processLogLevels.LOG, (data) => cacheLogs(processLogLevels.LOG, data))
     this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
 
+    logInfo("Starting 'mysterium_client' monitoring")
     this.monitoring.start()
     this.monitoring.onProcessReady(() => {
-      updateRendererWithHealth()
+      this.updateHealthcheckLoop()
+      this.updateProposalsLoop()
       this.startApp()
     })
 
@@ -283,18 +289,34 @@ class Mysterion {
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
   }
 
-  /**
-   * notifies the renderer that we're good to go and sets up the system tray
-   */
-  startApp () {
+  updateHealthcheckLoop () {
+    logInfo("Checking 'mysterium_client' health")
+    try {
+      this.communication.sendHealthCheck({ isRunning: this.monitoring.isRunning() })
+    } catch (e) {
+      logException("Checking 'mysterium_client' health failed", e)
+      bugReporter.main.captureException(e)
+      return
+    }
+
+    setTimeout(() => this.updateHealthcheckLoop(), 1500)
+  }
+
+  updateProposalsLoop () {
+    logInfo("Subscribing 'mysterium_client' proposals")
     this.proposalFetcher.subscribe((proposals) => this.communication.sendProposals(proposals))
     this.proposalFetcher.start()
 
     this.communication.onProposalUpdateRequest(async () => {
       this.communication.sendProposals(await this.proposalFetcher.fetch())
     })
+  }
 
-    logger.info(`Notify that 'mysterium_client' process is ready`)
+  /**
+   * notifies the renderer that we're good to go and sets up the system tray
+   */
+  startApp () {
+    console.log(`Notify that 'mysterium_client' process is ready`)
     this.communication.sendMysteriumClientIsReady()
   }
 
