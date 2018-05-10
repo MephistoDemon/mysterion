@@ -68,9 +68,8 @@ class Mysterion {
       this.bugReporter.captureException(err)
     }
 
-    const send = this.window.send.bind(this.window)
+    const send = this.window.window.webContents.send
     this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
-
     this.communication = new MainCommunication(this.messageBus)
 
     try {
@@ -94,7 +93,7 @@ class Mysterion {
         }
       } catch (e) {
         this.bugReporter.captureException(e)
-        return this.sendErrorToRenderer(e.message)
+        return communication.sendErrorToRenderer(e.message)
       }
     }
 
@@ -106,7 +105,7 @@ class Mysterion {
       } catch (e) {
         this.bugReporter.captureException(e)
         console.error(e)
-        return this.sendErrorToRenderer(messages.daemonInstallationError)
+        return communication.sendErrorToRenderer(messages.daemonInstallationError)
       }
     }
     // if all is good, let's boot up the client
@@ -202,10 +201,6 @@ class Mysterion {
     })
 
     this.messageBus.send(communication.APP_START)
-  }
-
-  sendErrorToRenderer (error, hint = '', fatal = true) {
-    this.window.send(communication.APP_ERROR, {message: error, hint: hint, fatal: fatal})
   }
 
   buildTray () {

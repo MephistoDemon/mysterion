@@ -52,16 +52,6 @@ class Window {
     this.window.setSize(width, height)
   }
 
-  /**
-   * Sends message to the renderer
-   *
-   * @param event
-   * @param data
-   */
-  send (event, data) {
-    this.window.webContents.send(event, data)
-  }
-
   toggleDevTools () {
     this.window.show()
     this.window.toggleDevTools()
