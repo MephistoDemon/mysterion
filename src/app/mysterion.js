@@ -26,6 +26,8 @@ import path from 'path'
 import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import logger from './logger'
 
+const LOG_PREFIX = '[Mysterion] '
+
 class Mysterion {
   constructor ({ browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, userSettingsStore, disconnectNotification }) {
     Object.assign(this, {
@@ -48,8 +50,14 @@ class Mysterion {
 
     // fired when app has been launched
     app.on('ready', async () => {
-      await this.bootstrap()
-      this.buildTray()
+      try {
+        logInfo('Application launch')
+        await this.bootstrap()
+        this.buildTray()
+      } catch (e) {
+        logException('Application launch failed', e)
+        this.bugReporter.captureException(e)
+      }
     })
     // fired when all windows are closed
     app.on('window-all-closed', () => this.onWindowsClosed())
@@ -57,10 +65,17 @@ class Mysterion {
     app.on('will-quit', () => this.onWillQuit())
     // fired when app activated
     app.on('activate', () => {
-      if (!this.window.exists()) {
-        return this.bootstrap()
+      try {
+        logInfo('Application activate')
+        if (!this.window.exists()) {
+          this.bootstrap()
+          return
+        }
+        this.window.show()
+      } catch (e) {
+        logException('Application activate failed', e)
+        this.bugReporter.captureException(e)
       }
-      this.window.show()
     })
     app.on('before-quit', () => {
       this.window.willQuitApp = true
@@ -124,9 +139,8 @@ class Mysterion {
     try {
       return this.browserWindowFactory()
     } catch (e) {
-      logger.error(e)
-      this.bugReporter.captureException(e)
-      throw new Error('Failed to open window.')
+      // TODO: add an error wrapper method
+      throw new Error('Failed to open browser window. ' + e)
     }
   }
 
@@ -137,9 +151,8 @@ class Mysterion {
       window.open()
       return window
     } catch (e) {
-      logger.error(e)
-      this.bugReporter.captureException(e)
-      throw new Error('Failed to open window.')
+      // TODO: add an error wrapper method
+      throw new Error('Failed to open window. ' + e)
     }
   }
 
@@ -147,10 +160,8 @@ class Mysterion {
     try {
       await onFirstEvent(this.communication.onRendererBooted.bind(this.communication))
     } catch (e) {
-      logger.error(e)
-      this.bugReporter.captureException(e)
       // TODO: add an error wrapper method
-      throw new Error('Failed to load app.')
+      throw new Error('Failed to load app. ' + e)
     }
   }
 
@@ -161,9 +172,8 @@ class Mysterion {
       try {
         await this.installer.install()
       } catch (e) {
-        this.bugReporter.captureInfoException(e)
-        logger.error(e)
-        return this.communication.sendRendererShowErrorMessage(translations.daemonInstallationError)
+        this.communication.sendRendererShowErrorMessage(translations.daemonInstallationError)
+        throw new Error("Failed to install 'mysterium_client' process. " + e)
       }
     }
   }
@@ -189,7 +199,7 @@ class Mysterion {
     try {
       await this.process.stop()
     } catch (e) {
-      logger.error('Failed to stop mysterium_client process')
+      logException("Failed to stop 'mysterium_client' process", e)
       this.bugReporter.captureException(e)
     }
   }
@@ -200,14 +210,13 @@ class Mysterion {
     try {
       const accepted = await this._acceptTerms()
       if (!accepted) {
-        logger.info('Terms were refused. Quitting.')
+        logInfo('Terms were refused. Quitting.')
         app.quit()
         return false
       }
     } catch (e) {
-      this.bugReporter.captureException(e)
       this.communication.sendRendererShowErrorMessage(e.message)
-      return false
+      throw new Error('Failed to accept terms. ' + e)
     }
     return true
   }
@@ -232,7 +241,6 @@ class Mysterion {
     } catch (e) {
       const error = new Error(translations.termsAcceptError)
       error.original = e
-      logger.error(error)
       throw error
     }
 
@@ -241,7 +249,7 @@ class Mysterion {
     return true
   }
 
-  async _startProcessAndMonitoring () {
+  _startProcessAndMonitoring () {
     const updateRendererWithHealth = () => {
       try {
         this.communication.sendHealthCheck({ isRunning: this.monitoring.isRunning() })
@@ -322,6 +330,14 @@ function synchronizeUserSettings (userSettingsStore, communication) {
     userSettingsStore.set(userSettings)
     userSettingsStore.save()
   })
+}
+
+function logInfo (message) {
+  logger.info(LOG_PREFIX + message)
+}
+
+function logException (message, err) {
+  logger.error(LOG_PREFIX + message, err)
 }
 
 export default Mysterion
