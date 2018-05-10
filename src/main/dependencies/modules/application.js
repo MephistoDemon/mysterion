@@ -2,12 +2,13 @@
 import type {Container} from '../../../app/di'
 import {BrowserWindow} from 'electron'
 import Window from '../../../app/window'
+import FeedbackFormPlugin from '../../../app/bug-reporting/feedback-form-plugin'
 
 function bootstrap (container: Container) {
   container.constant('mysterionReleaseID', `${process.env.MYSTERION_VERSION}(${process.env.BUILD_NUMBER})`)
 
   let browserWindow
-  container.service(
+  container.factory(
     'mysterionBrowserWindow',
     [],
     () => {
@@ -21,11 +22,13 @@ function bootstrap (container: Container) {
   )
   container.service(
     'mysterionWindow',
-    ['mysterionBrowserWindow'],
-    (browserWindow) => {
+    ['mysterionBrowserWindow', 'feedbackForm.headerRule'],
+    (browserWindow, rule) => {
       const url = process.env.NODE_ENV === 'development' ? `http://localhost:9080/` : `file://${__dirname}/index.html`
 
-      return new Window(browserWindow, url)
+      const window = new Window(browserWindow, url)
+      window.registerPlugin(new FeedbackFormPlugin(rule))
+      return window
     }
   )
 }

@@ -9,8 +9,18 @@ import {onFirstEvent} from './communication/utils'
 import path from 'path'
 
 class Mysterion {
-  constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, plugins}) {
-    Object.assign(this, {browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, plugins})
+  constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter}) {
+    Object.assign(this, {
+      browserWindowFactory,
+      windowFactory,
+      config,
+      terms,
+      installer,
+      monitoring,
+      process,
+      proposalFetcher,
+      bugReporter
+    })
   }
 
   run () {
@@ -61,12 +71,6 @@ class Mysterion {
       throw new Error('Failed to open window.')
     }
 
-    try {
-      this.plugins.get('feedbackForm').install(browserWindow)
-    } catch (err) {
-      console.error('Sentry feedback form installation failed. ', err.stack)
-      this.bugReporter.captureException(err)
-    }
     const send = browserWindow.webContents.send.bind(browserWindow.webContents)
     this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
     this.communication = new MainCommunication(this.messageBus)

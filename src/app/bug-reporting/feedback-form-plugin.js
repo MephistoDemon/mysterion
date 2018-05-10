@@ -1,9 +1,9 @@
 // @flow
 import {session as browserSession, BrowserWindow} from 'electron'
-import type {Plugin} from '../index'
+import type {Plugin} from '../../plugins'
 
-import registerHeaderRules from '../../app/window/requestHeaders'
-import type {HeaderRule} from '../../app/window/requestHeaders'
+import registerHeaderRules from '../window/requestHeaders'
+import type {HeaderRule} from '../window/requestHeaders'
 
 class FeedbackFormPlugin implements Plugin {
   _rule: HeaderRule
