@@ -1,16 +1,15 @@
-import {BrowserWindow} from 'electron'
+// @flow
 
 // TODO: find better name - AppWindow?
+import {BrowserWindow} from 'electron'
+
 class Window {
-  constructor ({width, height}, url) {
-    let options = {
-      height: height,
-      width: width,
-      resizable: false,
-      show: false
-    }
+  window: BrowserWindow
+  url: string
+
+  constructor (browserWindow: BrowserWindow, url: string) {
     this.url = url
-    this.window = new BrowserWindow(options)
+    this.window = browserWindow
   }
 
   exists () {
@@ -25,9 +24,6 @@ class Window {
     this.window.hide()
   }
 
-  /**
-   * @returns {Window}
-   */
   open () {
     this.window.loadURL(this.url)
     this.window.once('ready-to-show', () => {
@@ -48,14 +44,19 @@ class Window {
     })
   }
 
-  resize ({width, height}) {
-    this.window.setSize(width, height)
+  resize (size: Size) {
+    this.window.setSize(size.width, size.height)
   }
 
   toggleDevTools () {
     this.window.show()
     this.window.toggleDevTools()
   }
+}
+
+type Size = {
+  width: number,
+  height: number
 }
 
 export default Window

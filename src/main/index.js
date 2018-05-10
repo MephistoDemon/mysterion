@@ -16,6 +16,8 @@ global.__static = mysterionConfig.staticDirectoryPath
 
 const tequilApi = dependencies.get('tequilapiClient')
 const mysterion = new Mysterion({
+  browserWindowFactory: () => dependencies.get('mysterionBrowserWindow'),
+  windowFactory: () => dependencies.get('mysterionWindow'),
   config: mysterionConfig,
   terms: new Terms(path.join(mysterionConfig.staticDirectoryPath, 'terms'), mysterionConfig.userDataDirectory),
   installer: new MysteriumDaemonInstaller(mysterionConfig),

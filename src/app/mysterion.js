@@ -1,5 +1,4 @@
 import {app} from 'electron'
-import Window from './window'
 import communication from './communication/index'
 import trayFactory from '../main/tray/factory'
 import {logLevel as processLogLevel} from '../libraries/mysterium-client/index'
@@ -10,8 +9,8 @@ import {onFirstEvent} from './communication/utils'
 import path from 'path'
 
 class Mysterion {
-  constructor ({config, terms, installer, monitoring, process, proposalFetcher, bugReporter, plugins}) {
-    Object.assign(this, {config, terms, installer, monitoring, process, proposalFetcher, bugReporter, plugins})
+  constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, plugins}) {
+    Object.assign(this, {browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, plugins})
   }
 
   run () {
@@ -46,14 +45,15 @@ class Mysterion {
       this.bugReporter.captureException(e)
     }
 
-    this.window = new Window(
-      termsAccepted
-        ? this.config.windows.app
-        : this.config.windows.terms,
-      this.config.windows.url
-    )
-
+    let browserWindow
     try {
+      browserWindow = this.browserWindowFactory()
+      this.window = this.windowFactory()
+      if (termsAccepted) {
+        this.window.resize(this.config.windows.app)
+      } else {
+        this.window.resize(this.config.windows.terms)
+      }
       this.window.open()
     } catch (e) {
       console.error(e)
@@ -62,14 +62,13 @@ class Mysterion {
     }
 
     try {
-      this.plugins.get('feedbackForm').install(this.window.window)
+      this.plugins.get('feedbackForm').install(browserWindow)
     } catch (err) {
       console.error('Sentry feedback form installation failed. ', err.stack)
       this.bugReporter.captureException(err)
     }
 
-    const send = this.window.window.webContents.send
-    this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
+    this.messageBus = new MainMessageBus(browserWindow.webContents.send, this.bugReporter.captureException)
     this.communication = new MainCommunication(this.messageBus)
 
     try {
