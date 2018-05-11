@@ -8,7 +8,8 @@ import type {
   MysteriumClientLogDTO,
   RequestConnectionDto,
   ProposalUpdateDto,
-  RequestTermsDto
+  RequestTermsDto,
+  TermsAnsweredDTO
 } from './dto'
 
 /**
@@ -37,6 +38,10 @@ class RendererCommunication {
 
   sendRendererLoaded (): void {
     return this._send(messages.RENDERER_LOADED)
+  }
+
+  sendTermsAnswered (dto: TermsAnsweredDTO): void {
+    return this._send(messages.TERMS_ANSWERED)
   }
 
   onConnectionRequest (callback: (RequestConnectionDto) => void) {

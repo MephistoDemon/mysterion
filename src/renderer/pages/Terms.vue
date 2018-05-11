@@ -14,19 +14,23 @@
 </template>
 <script>
   import {mapGetters} from 'vuex'
-  import communication from '../../app/communication/messages'
   import RendererMessageBus from '../../app/communication/rendererMessageBus'
+  import RendererCommunication from '../../app/communication/renderer-communication'
+
+  function answerTerms (answer) {
+    const messageBus = new RendererMessageBus()
+    const communication = new RendererCommunication(messageBus)
+    communication.sendTermsAnswered({ answer })
+  }
 
   export default {
     name: 'terms',
     methods: {
       accept () {
-        const messageBus = new RendererMessageBus()
-        messageBus.send(communication.TERMS_ANSWERED, true)
+        answerTerms(true)
       },
       decline () {
-        const messageBus = new RendererMessageBus()
-        messageBus.send(communication.TERMS_ANSWERED, false)
+        answerTerms(false)
       }
     },
     computed: {

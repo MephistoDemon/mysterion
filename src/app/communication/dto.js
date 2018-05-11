@@ -25,3 +25,7 @@ export type RequestConnectionDto = {
 export type RequestTermsDTO = {
   content: string
 }
+
+export type TermsAnsweredDTO = {
+  answer: boolean
+}
