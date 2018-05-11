@@ -23,6 +23,11 @@ class JpexContainer implements Container {
   service (name: string, dependencies: Array<string>, factory: ServiceFactory): void {
     this.jpex.register.service(name, dependencies, factory)
   }
+
+  factory (name: string, dependencies: Array<string>, factory: ServiceFactory, cache: ?boolean): void {
+    const factoryWrapper = this.jpex.register.factory(name, dependencies, factory)
+    if (cache) factoryWrapper.lifecycle.application()
+  }
 }
 
 export default JpexContainer

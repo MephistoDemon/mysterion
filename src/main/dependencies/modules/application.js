@@ -7,19 +7,20 @@ import FeedbackFormPlugin from '../../../app/bug-reporting/feedback-form-plugin'
 function bootstrap (container: Container) {
   container.constant('mysterionReleaseID', `${process.env.MYSTERION_VERSION}(${process.env.BUILD_NUMBER})`)
 
+  const singleton = true
+
   let browserWindow
   container.factory(
     'mysterionBrowserWindow',
     [],
     () => {
-      if (browserWindow) return browserWindow
       browserWindow = new BrowserWindow({
         resizable: false,
         show: false
       })
       return browserWindow
-    }
-  )
+    }, singleton)
+
   container.service(
     'mysterionWindow',
     ['mysterionBrowserWindow', 'feedbackForm.headerRule'],
