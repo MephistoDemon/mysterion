@@ -7,9 +7,9 @@ export default {
   MYSTERIUM_CLIENT_LOG: 'mysterium.client.log',
   CURRENT_IDENTITY_CHANGED: 'current.identity.changed',
   RENDERER_LOADED: 'renderer.loaded',
+  TERMS_REQUESTED: 'terms.requested',
 
   // TODO: refactor these message to be used in communication
-  TERMS_REQUESTED: 'terms.requested',
   TERMS_ANSWERED: 'terms.answered',
   TERMS_ACCEPTED: 'terms.accepted',
   APP_START: 'app.start',

@@ -7,7 +7,8 @@ import type {
   CurrentIdentityChangeDTO,
   MysteriumClientLogDTO,
   RequestConnectionDto,
-  ProposalUpdateDto
+  ProposalUpdateDto,
+  RequestTermsDto
 } from './dto'
 
 /**
@@ -52,6 +53,10 @@ class RendererCommunication {
 
   onMysteriumClientLog (callback: (MysteriumClientLogDTO) => void): void {
     this._on(messages.MYSTERIUM_CLIENT_LOG, callback)
+  }
+
+  onTermsRequest (callback: (RequestTermsDto) => void): void {
+    this._on(messages.TERMS_REQUESTED, callback)
   }
 
   _send (channel: string, dto: mixed): void {

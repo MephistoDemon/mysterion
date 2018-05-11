@@ -62,7 +62,7 @@
         this.$store.dispatch(type.DISCONNECT)
       })
 
-      messageBus.on(messages.TERMS_REQUESTED, (terms) => {
+      communication.onTermsRequest((terms) => {
         this.$store.dispatch(type.TERMS, terms)
         this.$router.push('/terms')
       })
