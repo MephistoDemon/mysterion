@@ -71,6 +71,10 @@ class MainCommunication {
     this._send(messages.TERMS_ACCEPTED)
   }
 
+  sendAppStart () {
+    this._send(messages.APP_START)
+  }
+
   _send (channel: string, dto: mixed): void {
     this._messageBus.send(channel, dto)
   }

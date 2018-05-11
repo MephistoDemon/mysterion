@@ -204,7 +204,7 @@ class Mysterion {
       this.communication.sendProposals(await this.proposalFetcher.fetch())
     })
 
-    this.messageBus.send(busMessages.APP_START)
+    this.communication.sendAppStart()
   }
 
   buildTray () {
