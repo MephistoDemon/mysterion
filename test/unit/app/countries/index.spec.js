@@ -1,69 +1,90 @@
-import {getCountryName, getCountryNameFromProposal, getCountryCodeFromProposal} from '../../../../src/app/countries'
+import {
+  getSortedCountryListFromProposals,
+  getCountryLabel
+} from '../../../../src/app/countries'
 
 describe('Countries', () => {
-  describe('getCountryName()', () => {
-    it('returns name for existing country', () => {
-      expect(getCountryName('LT')).to.be.eql('Lithuania')
-      expect(getCountryName('US')).to.be.eql('United States')
-    })
-
-    it('returns not-found name for unknown country', () => {
-      expect(getCountryName('XX')).to.be.eql('N/A')
-    })
-  })
-
-  describe('getCountryNameFromProposal()', () => {
-    it('returns country name from location', () => {
-      const proposal = {
+  describe('getSortedCountryListFromProposals()', () => {
+    const proposals = [
+      {
+        providerId: '0x1234567890',
         serviceDefinition: {
           locationOriginate: {
             country: 'LT'
           }
         }
+      },
+      {
+        providerId: '0x0987654321',
+        serviceDefinition: {
+          locationOriginate: {
+            country: 'AU'
+          }
+        }
+      },
+      {
+        providerId: '0x0987654321',
+        serviceDefinition: {
+          locationOriginate: {
+            country: 'CD'
+          }
+        }
       }
-      expect(getCountryNameFromProposal(proposal)).to.be.eql('Lithuania')
-    })
+    ]
 
-    it('returns not-found name without location', () => {
-      const proposal = {}
-      expect(getCountryNameFromProposal(proposal)).to.be.eql('N/A')
+    it('returns sorted list', () => {
+      const list = getSortedCountryListFromProposals(proposals)
+      expect(list[0].id).to.be.eql('0x0987654321')
+      expect(list[0].name).to.be.eql('Australia')
+      expect(list[0].code).to.be.eql('AU')
+
+      expect(list[1].id).to.be.eql('0x0987654321')
+      expect(list[1].name).to.be.eql('Congo, The Democratic Republic of the')
+      expect(list[1].code).to.be.eql('CD')
+
+      expect(list[2].id).to.be.eql('0x1234567890')
+      expect(list[2].name).to.be.eql('Lithuania')
+      expect(list[2].code).to.be.eql('LT')
     })
   })
 
-  describe('getCountryCodeFromProposal()', () => {
-    it('returns country code from location', () => {
-      const proposal = {
+  describe('getCountryLabel', () => {
+    const proposals = [
+      {
+        providerId: '0x1234567890',
         serviceDefinition: {
           locationOriginate: {
             country: 'LT'
           }
         }
+      },
+      {
+        providerId: '0x0987654321',
+        serviceDefinition: {
+          locationOriginate: {
+            country: 'AU'
+          }
+        }
+      },
+      {
+        providerId: '0x0987654321',
+        serviceDefinition: {
+          locationOriginate: {
+            country: 'CD'
+          }
+        }
       }
-      expect(getCountryCodeFromProposal(proposal)).to.be.eql('LT')
-    })
+    ]
 
-    it('returns no country code without location', () => {
-      const proposalsWithUnsetCountries = [
-        {
-          serviceDefinition: {
-            locationOriginate: {
-              country: ''
-            }
-          }
-        },
-        {
-          serviceDefinition: {
-            locationOriginate: {}
-          }
-        },
-        {
-          serviceDefinition: {}
-        },
-        {}
-      ]
-      for (let proposal in proposalsWithUnsetCountries) {
-        expect(getCountryCodeFromProposal(proposal)).to.be.eql(null)
-      }
+    it('truncates provider IDs', () => {
+      const list = getSortedCountryListFromProposals(proposals)
+      expect(getCountryLabel(list[0])).to.be.eql('Australia (0x0987654..)')
+      expect(getCountryLabel(list[1])).to.be.eql('Congo, The Democratic Republic of the (0x0987654..)')
+      expect(getCountryLabel(list[2])).to.be.eql('Lithuania (0x1234567..)')
+
+      expect(getCountryLabel(list[0], 9, 10)).to.be.eql('Australia (0x0987654..)')
+      expect(getCountryLabel(list[1], 9, 10)).to.be.eql('Congo, The.. (0x0987654..)')
+      expect(getCountryLabel(list[2], 9, 10)).to.be.eql('Lithuania (0x1234567..)')
     })
   })
 })

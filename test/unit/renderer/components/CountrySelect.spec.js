@@ -100,19 +100,19 @@ describe('CountrySelect', () => {
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
-      expect(wrapper.vm.countriesList).to.have.lengthOf(4)
+      expect(wrapper.vm.countryList).to.have.lengthOf(4)
       expect(wrapper.findAll('.multiselect__option-title')).to.have.lengthOf(4)
-      expect(wrapper.text()).to.contain('Lithuania')
-      expect(wrapper.text()).to.contain('United Kingdom')
-      expect(wrapper.text()).to.contain('N/A')
-      expect(wrapper.text()).to.contain('N/A')
+      expect(wrapper.text()).to.contain('Lithuania (0x1)')
+      expect(wrapper.text()).to.contain('United Kingdom (0x2)')
+      expect(wrapper.text()).to.contain('N/A (0x3)')
+      expect(wrapper.text()).to.contain('N/A (0x4)')
     })
 
     it('clicking an item changes v-model', async () => {
       const countryExpected = {
-        label: 'Lithuania',
         id: '0x1',
-        code: 'lt'
+        code: 'lt',
+        name: 'Lithuania'
       }
 
       // initiate the click and check whether it opened the dropdown
@@ -124,6 +124,35 @@ describe('CountrySelect', () => {
 
       expect(wrapper.emitted().selected).to.be.ok
       expect(wrapper.emitted().selected[0]).to.eql([countryExpected])
+    })
+  })
+
+  describe('selectedCountryLabel()', () => {
+    beforeEach(() => {
+      wrapper = mountWith(new RendererCommunication(fakeMessageBus))
+      fakeMessageBus.clean()
+    })
+
+    it('returns truncated long country name label', () => {
+      const country = {
+        name: 'The Democratic Republic of the Congo',
+        id: '0x1234567890',
+        code: 'cd'
+      }
+
+      const label = wrapper.vm.selectedCountryLabel(country)
+      expect(label).to.be.eql('The Democr.. (0x1234567..)')
+    })
+
+    it('returns truncated short country name label', () => {
+      const country = {
+        name: 'Lithuania',
+        id: '0x1234567890',
+        code: 'lt'
+      }
+
+      const label = wrapper.vm.selectedCountryLabel(country)
+      expect(label).to.be.eql('Lithuania (0x1234567..)')
     })
   })
 })
