@@ -19,6 +19,7 @@
 import {ChildProcess} from 'child_process'
 import sleep from '../../../../../src/libraries/sleep'
 import Process from '../../../../../src/libraries/mysterium-client/standalone/process'
+import ProcessMonitoring from '../../../../../src/libraries/mysterium-client/process-monitoring'
 import processLogLevels from '../../../../../src/libraries/mysterium-client/log-levels'
 import tequilapiClientFactory from '../../../../../src/libraries/mysterium-tequilapi/client-factory'
 import {xdescribe, it, before, after, expect} from '../../../../helpers/dependencies'
@@ -54,22 +55,44 @@ xdescribe('Standalone Process', () => {
     process.stop()
   })
 
-  it('spawns in less than 100ms without errors', () => {
-    expect(process.child).to.be.instanceOf(ChildProcess)
+  describe('startup', () => {
+    it('spawns in less than 100ms without errors', () => {
+      expect(process.child).to.be.instanceOf(ChildProcess)
+    })
+
+    it('sends log data to callback on()', () => {
+      expect(logs.pop()).to.include('Api started on: ' + tequilapiPort)
+    })
   })
 
-  it('sends log data to callback on()', () => {
-    expect(logs.pop()).to.include('Api started on: ' + tequilapiPort)
+  describe('health checking', () => {
+    it('responds to healthcheck with uptime', async () => {
+      const res = await tequilapi.healthCheck()
+      expect(res.uptime).to.be.ok
+      expect(res.version).to.be.ok
+    })
+
+    it('responds to healthcheck with version string', async () => {
+      const res = await tequilapi.healthCheck()
+      expect(res.version).to.include.all.keys(['branch', 'commit', 'buildNumber'])
+    })
   })
 
-  it('responds to healthcheck with uptime', async () => {
-    const res = await tequilapi.healthCheck()
-    expect(res.uptime).to.be.ok
-    expect(res.version).to.be.ok
-  })
+  describe('monitoring checking', () => {
+    let processMonitoring
+    before(async () => {
+      processMonitoring = new ProcessMonitoring(tequilapi)
+      processMonitoring.start()
+    })
 
-  it('responds to healthcheck with version string', async () => {
-    const res = await tequilapi.healthCheck()
-    expect(res.version).to.include.all.keys(['branch', 'commit', 'buildNumber'])
+    after(() => {
+      processMonitoring.stop()
+    })
+
+    it('monitoring send UP status', (done) => {
+      processMonitoring.subscribeUp(() => {
+        done()
+      })
+    })
   })
 })

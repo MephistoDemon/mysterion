@@ -97,6 +97,9 @@ class Mysterion {
     const send = this._getSendFunction(browserWindow)
     this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
     this.communication = new MainMessageBusCommunication(this.messageBus)
+    this.communication.onCurrentIdentityChange((identity) => {
+      this.bugReporter.setUser(identity)
+    })
 
     await this._onRendererLoaded()
 
@@ -253,16 +256,6 @@ class Mysterion {
   }
 
   _startProcessAndMonitoring () {
-    const updateRendererWithHealth = () => {
-      try {
-        this.communication.sendHealthCheck({ isRunning: this.monitoring.isRunning() })
-      } catch (e) {
-        this.bugReporter.captureException(e)
-        return
-      }
-
-      setTimeout(() => updateRendererWithHealth(), 1500)
-    }
     const cacheLogs = (level, data) => {
       this.communication.sendMysteriumClientLog({ level, data })
       this.bugReporter.pushToLogCache(level, data)
@@ -275,31 +268,16 @@ class Mysterion {
 
     logInfo("Starting 'mysterium_client' monitoring")
     this.monitoring.start()
+    this.monitoring.subscribeStatus((isRunning) => {
+      this.communication.sendHealthCheck({ isRunning: isRunning })
+    })
     this.monitoring.onProcessReady(() => {
-      this.updateHealthcheckLoop()
       this.updateProposalsLoop()
       this.startApp()
     })
 
-    this.communication.onCurrentIdentityChange((identity) => {
-      this.bugReporter.setUser(identity)
-    })
-
     synchronizeUserSettings(this.userSettingsStore, this.communication)
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
-  }
-
-  updateHealthcheckLoop () {
-    logInfo("Checking 'mysterium_client' health")
-    try {
-      this.communication.sendHealthCheck({ isRunning: this.monitoring.isRunning() })
-    } catch (e) {
-      logException("Checking 'mysterium_client' health failed", e)
-      bugReporter.main.captureException(e)
-      return
-    }
-
-    setTimeout(() => this.updateHealthcheckLoop(), 1500)
   }
 
   updateProposalsLoop () {

@@ -15,58 +15,110 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// @flow
+import TequilapiClient from '../mysterium-tequilapi/client'
+
 const healthCheckInterval = 1500
 const healthCheckTimeout = 500
 
+type StatusCallback = (boolean) => void
+type UpCallback = () => void
+type DownCallback = () => void
+
 class ProcessMonitoring {
-  /**
-   * @param {TequilapiClient} tequilapi
-   */
-  constructor (tequilapi) {
+  api: TequilapiClient
+  _timer: ?number = null
+
+  _lastIsRunning: boolean = false
+  _subscribersStatus: Array<StatusCallback> = []
+  _subscribersUp: Array<UpCallback> = []
+  _subscribersDown: Array<DownCallback> = []
+
+  constructor (tequilapi: TequilapiClient) {
     this.api = tequilapi
-    this.clientIsRunning = false
-    this.apiTimeout = null
-    this.ipcTimeout = null
   }
 
   start () {
-    this._healthCheck()
+    this._healthCheckLoop()
   }
 
   stop () {
-    if (this.apiTimeout) {
-      clearTimeout(this.apiTimeout)
-    }
-    if (this.ipcTimeout) {
-      clearTimeout(this.ipcTimeout)
+    if (this._timer) {
+      clearTimeout(this._timer)
     }
   }
 
-  isRunning () {
-    return this.clientIsRunning
+  isRunning (): boolean {
+    return this._lastIsRunning
   }
 
-  onProcessReady (callback) {
+  onProcessReady (callback: Function) {
     const interval = setInterval(() => {
-      if (this.clientIsRunning) {
+      if (this._lastIsRunning) {
         clearInterval(interval)
         callback()
       }
     }, 100)
   }
 
-  async _healthCheck () {
+  subscribeStatus (callback: StatusCallback) {
+    this._subscribersStatus.push(callback)
+  }
+
+  subscribeUp (callback: UpCallback) {
+    this._subscribersUp.push(callback)
+  }
+
+  subscribeDown (callback: DownCallback) {
+    this._subscribersDown.push(callback)
+  }
+
+  async _healthCheckLoop (): Promise<boolean> {
+    let isRunning
     try {
       await this.api.healthCheck(healthCheckTimeout)
-      this.clientIsRunning = true
+      isRunning = true
     } catch (e) {
-      this.clientIsRunning = false
+      isRunning = false
     }
 
-    this.apiTimeout = setTimeout(() => {
-      this._healthCheck()
-    }, healthCheckInterval)
+    this._notifySubscribers(isRunning)
+
+    this._timer = setTimeout(() => this._healthCheckLoop(), healthCheckInterval)
+  }
+
+  _notifySubscribers (isRunning: boolean) {
+    this._notifySubscribersStatus(isRunning)
+
+    if (this._lastIsRunning === isRunning) {
+      return
+    }
+    if (isRunning) {
+      this._notifySubscribersUp()
+    } else {
+      this._notifySubscribersDown()
+    }
+    this._lastIsRunning = isRunning
+  }
+
+  _notifySubscribersStatus (isRunning: boolean) {
+    this._subscribersStatus.forEach((callback: StatusCallback) => {
+      callback(isRunning)
+    })
+  }
+
+  _notifySubscribersUp () {
+    this._subscribersUp.forEach((callback: UpCallback) => {
+      callback()
+    })
+  }
+
+  _notifySubscribersDown () {
+    this._subscribersDown.forEach((callback: DownCallback) => {
+      callback()
+    })
   }
 }
 
 export default ProcessMonitoring
+export type {StatusCallback, UpCallback, DownCallback}
