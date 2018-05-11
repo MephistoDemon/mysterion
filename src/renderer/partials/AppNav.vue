@@ -44,7 +44,7 @@
 
   export default {
     name: 'AppNav',
-    dependencies: ['bugReporter', 'feedbackForm'],
+    dependencies: ['feedbackForm'],
     components: {
       IconEye,
       IconIssue,

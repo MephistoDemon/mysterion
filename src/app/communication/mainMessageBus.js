@@ -9,7 +9,7 @@ class MainMessageBus implements MessageBus {
   _send: Sender
   _captureException: Function
 
-  constructor (send: Sender, captureException: Function) {
+  constructor (send: Sender, captureException: (Error) => void) {
     this._send = send
     this._captureException = captureException
   }

@@ -7,7 +7,7 @@ import FeedbackFormPlugin from '../../../app/bug-reporting/feedback-form-plugin'
 function bootstrap (container: Container) {
   container.constant('mysterionReleaseID', `${process.env.MYSTERION_VERSION}(${process.env.BUILD_NUMBER})`)
 
-  const singleton = true
+  const browserWindowIsSingleton = true
 
   let browserWindow
   container.factory(
@@ -19,7 +19,7 @@ function bootstrap (container: Container) {
         show: false
       })
       return browserWindow
-    }, singleton)
+    }, browserWindowIsSingleton)
 
   container.service(
     'mysterionWindow',
