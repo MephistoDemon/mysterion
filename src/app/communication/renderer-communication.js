@@ -64,6 +64,10 @@ class RendererCommunication {
     this._on(messages.TERMS_REQUESTED, callback)
   }
 
+  onTermsAccepted (callback: () => void): void {
+    this._on(messages.TERMS_ACCEPTED, callback)
+  }
+
   _send (channel: string, dto: mixed): void {
     this._messageBus.send(channel, dto)
   }

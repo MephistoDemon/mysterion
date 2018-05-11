@@ -10,9 +10,9 @@ export default {
 
   TERMS_REQUESTED: 'terms.requested',
   TERMS_ANSWERED: 'terms.answered',
-
-  // TODO: refactor these message to be used in communication
   TERMS_ACCEPTED: 'terms.accepted',
+
+  // TODO: refactor these messages to be used in communication
   APP_START: 'app.start',
   APP_ERROR: 'app.error',
   HEALTHCHECK: 'healthcheck',

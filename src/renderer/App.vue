@@ -71,7 +71,7 @@
         this.$router.push('/load')
       })
 
-      messageBus.on(messages.TERMS_ACCEPTED, () => {
+      communication.onTermsAccepted(() => {
         this.$router.push('/')
       })
 
