@@ -140,7 +140,7 @@ class Mysterion {
     })
 
     const termsAnswer = await onFirstEvent((callback) => {
-      this.messageBus.on(busMessages.TERMS_ANSWERED, callback)
+      this.communication.onTermsAnswered(callback)
     })
     if (!termsAnswer) {
       return false

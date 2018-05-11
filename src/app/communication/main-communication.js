@@ -8,7 +8,8 @@ import type {
   CurrentIdentityChangeDTO,
   MysteriumClientLogDTO,
   ProposalUpdateDto,
-  RequestTermsDTO
+  RequestTermsDTO,
+  TermsAnsweredDTO
 } from './dto'
 
 /**
@@ -44,6 +45,10 @@ class MainCommunication {
 
   onProposalUpdateRequest (callback: () => void) {
     this._on(messages.PROPOSALS_UPDATE, callback)
+  }
+
+  onTermsAnswered (callback: (TermsAnsweredDTO) => void) {
+    this._on(messages.TERMS_ANSWERED, callback)
   }
 
   sendProposals (proposals: ProposalUpdateDto) {
