@@ -12,8 +12,9 @@ export default {
   TERMS_ANSWERED: 'terms.answered',
   TERMS_ACCEPTED: 'terms.accepted',
 
-  // TODO: refactor these messages to be used in communication
   APP_START: 'app.start',
+
+  // TODO: refactor these messages to be used in communication
   APP_ERROR: 'app.error',
   HEALTHCHECK: 'healthcheck',
   PROPOSALS_UPDATE: 'proposals.update'

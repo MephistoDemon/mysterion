@@ -68,6 +68,10 @@ class RendererCommunication {
     this._on(messages.TERMS_ACCEPTED, callback)
   }
 
+  onAppStart (callback: () => void): void {
+    this._on(messages.APP_START, callback)
+  }
+
   _send (channel: string, dto: mixed): void {
     this._messageBus.send(channel, dto)
   }

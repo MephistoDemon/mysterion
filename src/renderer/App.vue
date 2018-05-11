@@ -67,7 +67,7 @@
         this.$router.push('/terms')
       })
 
-      messageBus.on(messages.APP_START, () => {
+      communication.onAppStart(() => {
         this.$router.push('/load')
       })
 
