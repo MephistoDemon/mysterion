@@ -57,7 +57,7 @@
           return
         }
 
-        return getCountryLabel(country, 9, 10)
+        return getCountryLabel(country, 10)
       },
       countryLabel (country) {
         if (typeof country !== 'object') {

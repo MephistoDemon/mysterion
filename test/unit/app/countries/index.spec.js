@@ -82,9 +82,9 @@ describe('Countries', () => {
       expect(getCountryLabel(list[1])).to.be.eql('Congo, The Democratic Republic of the (0x0987654..)')
       expect(getCountryLabel(list[2])).to.be.eql('Lithuania (0x1234567..)')
 
-      expect(getCountryLabel(list[0], 9, 10)).to.be.eql('Australia (0x0987654..)')
-      expect(getCountryLabel(list[1], 9, 10)).to.be.eql('Congo, The.. (0x0987654..)')
-      expect(getCountryLabel(list[2], 9, 10)).to.be.eql('Lithuania (0x1234567..)')
+      expect(getCountryLabel(list[0], 10)).to.be.eql('Australia (0x0987654..)')
+      expect(getCountryLabel(list[1], 10)).to.be.eql('Congo, The.. (0x0987654..)')
+      expect(getCountryLabel(list[2], 10)).to.be.eql('Lithuania (0x1234567..)')
     })
   })
 })
