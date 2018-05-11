@@ -29,13 +29,7 @@ class RendererBugReporter implements BugReporter {
   }
 
   captureException (ex: Error | string, options: Object) {
-    let error
-    if (typeof ex === 'string') {
-      error = new Error(ex)
-    } else {
-      error = ex
-    }
-    RavenJs.captureException(error, options)
+    RavenJs.captureException(ex, options)
   }
 }
 
