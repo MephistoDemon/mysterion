@@ -2,7 +2,7 @@
 
 // TODO: find better name - AppWindow?
 import {BrowserWindow} from 'electron'
-import type {Pluggable, Plugin} from '../../plugins'
+import type {Pluggable, WindowPlugin} from './plugins'
 
 class Window implements Pluggable {
   window: BrowserWindow
@@ -13,7 +13,7 @@ class Window implements Pluggable {
     this.window = browserWindow
   }
 
-  registerPlugin (plugin: Plugin) {
+  registerPlugin (plugin: WindowPlugin) {
     plugin.install(this.window)
   }
 

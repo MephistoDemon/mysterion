@@ -1,11 +1,11 @@
 // @flow
-import {session as browserSession, BrowserWindow} from 'electron'
-import type {Plugin} from '../../plugins'
+import {BrowserWindow} from 'electron'
+import type {WindowPlugin} from '../window/plugins'
 
 import registerHeaderRules from '../window/requestHeaders'
 import type {HeaderRule} from '../window/requestHeaders'
 
-class FeedbackFormPlugin implements Plugin {
+class FeedbackFormPlugin implements WindowPlugin {
   _rule: HeaderRule
 
   constructor (rule: HeaderRule) {
@@ -13,9 +13,7 @@ class FeedbackFormPlugin implements Plugin {
   }
 
   install (window: BrowserWindow) {
-    window.once('ready-to-show', () => {
-      registerHeaderRules(browserSession.defaultSession, this._rule)
-    })
+    registerHeaderRules(window.webContents.session, this._rule)
   }
 }
 
