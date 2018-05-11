@@ -67,6 +67,10 @@ class MainCommunication {
     this._send(messages.TERMS_REQUESTED, data)
   }
 
+  sendTermsAccepted () {
+    this._send(messages.TERMS_ACCEPTED)
+  }
+
   _send (channel: string, dto: mixed): void {
     this._messageBus.send(channel, dto)
   }

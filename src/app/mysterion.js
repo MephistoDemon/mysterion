@@ -146,7 +146,7 @@ class Mysterion {
       return false
     }
 
-    this.messageBus.send(busMessages.TERMS_ACCEPTED)
+    this.communication.sendTermsAccepted()
 
     try {
       this.terms.accept()
