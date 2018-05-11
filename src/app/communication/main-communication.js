@@ -7,7 +7,8 @@ import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
   MysteriumClientLogDTO,
-  ProposalUpdateDto
+  ProposalUpdateDto,
+  RequestTermsDTO
 } from './dto'
 
 /**
@@ -55,6 +56,10 @@ class MainCommunication {
 
   sendConnectionRequest (data: RequestConnectionDto) {
     this._send(messages.CONNECTION_REQUEST, data)
+  }
+
+  sendTermsRequest (data: RequestTermsDTO) {
+    this._send(messages.TERMS_REQUESTED, data)
   }
 
   _send (channel: string, dto: mixed): void {

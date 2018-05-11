@@ -135,7 +135,7 @@ class Mysterion {
   }
 
   async acceptTerms () {
-    this.messageBus.send(busMessages.TERMS_REQUESTED, {
+    this.communication.sendTermsRequest({
       content: this.terms.getContent()
     })
 

@@ -21,3 +21,7 @@ export type ProposalUpdateDto = Array<ProposalDTO>
 export type RequestConnectionDto = {
   providerId: string
 }
+
+export type RequestTermsDTO = {
+  content: string
+}
