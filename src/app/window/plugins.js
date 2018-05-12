@@ -1,10 +1,7 @@
 // @flow
-import {BrowserWindow} from 'electron'
 
-export interface WindowPlugin {
-  install (window: BrowserWindow): void
-}
+import type {HeaderRule} from './requestHeaders'
 
-export interface Pluggable {
-  registerPlugin (Plugin): void
+export interface RequestRewriter {
+  registerRequestHeadersRule (HeaderRule): void
 }

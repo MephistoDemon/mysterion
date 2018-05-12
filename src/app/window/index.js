@@ -2,9 +2,11 @@
 
 // TODO: find better name - AppWindow?
 import {BrowserWindow} from 'electron'
-import type {Pluggable, WindowPlugin} from './plugins'
+import type {RequestRewriter} from './plugins'
+import type {HeaderRule} from './requestHeaders'
+import registerHeaderRules from './requestHeaders'
 
-class Window implements Pluggable {
+class Window implements RequestRewriter {
   window: BrowserWindow
   url: string
 
@@ -13,8 +15,8 @@ class Window implements Pluggable {
     this.window = browserWindow
   }
 
-  registerPlugin (plugin: WindowPlugin) {
-    plugin.install(this.window)
+  registerRequestHeadersRule (rule: HeaderRule) {
+    registerHeaderRules(this.window.webContents.session, rule)
   }
 
   exists () {

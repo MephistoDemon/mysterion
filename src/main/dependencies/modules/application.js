@@ -2,7 +2,6 @@
 import type {Container} from '../../../app/di'
 import {BrowserWindow} from 'electron'
 import Window from '../../../app/window'
-import FeedbackFormPlugin from '../../../app/bug-reporting/feedback-form-plugin'
 
 function bootstrap (container: Container) {
   container.constant('mysterionReleaseID', `${process.env.MYSTERION_VERSION}(${process.env.BUILD_NUMBER})`)
@@ -28,7 +27,7 @@ function bootstrap (container: Container) {
       const url = process.env.NODE_ENV === 'development' ? `http://localhost:9080/` : `file://${__dirname}/index.html`
 
       const window = new Window(browserWindow, url)
-      window.registerPlugin(new FeedbackFormPlugin(rule))
+      window.registerRequestHeadersRule(rule)
       return window
     }
   )
