@@ -75,8 +75,8 @@
         this.$router.push('/')
       })
 
-      messageBus.on(messages.APP_ERROR, (error) => {
-        console.log('APP_ERROR received from ipc:', event)
+      communication.onAppError((error) => {
+        console.log('App error received from communication:', event)
         this.$store.dispatch(type.OVERLAY_ERROR, error)
       })
 

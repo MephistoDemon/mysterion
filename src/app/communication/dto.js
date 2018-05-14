@@ -29,3 +29,9 @@ export type RequestTermsDTO = {
 export type TermsAnsweredDTO = {
   answer: boolean
 }
+
+export type AppErrorDTO = {
+  message: string,
+  hint: string,
+  fatal: boolean
+}

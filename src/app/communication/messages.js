@@ -13,9 +13,9 @@ export default {
   TERMS_ACCEPTED: 'terms.accepted',
 
   APP_START: 'app.start',
+  APP_ERROR: 'app.error',
 
   // TODO: refactor these messages to be used in communication
-  APP_ERROR: 'app.error',
   HEALTHCHECK: 'healthcheck',
   PROPOSALS_UPDATE: 'proposals.update'
 }

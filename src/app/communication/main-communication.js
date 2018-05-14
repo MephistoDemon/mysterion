@@ -9,7 +9,8 @@ import type {
   MysteriumClientLogDTO,
   ProposalUpdateDto,
   RequestTermsDTO,
-  TermsAnsweredDTO
+  TermsAnsweredDTO,
+  AppErrorDTO
 } from './dto'
 
 /**
@@ -73,6 +74,10 @@ class MainCommunication {
 
   sendAppStart () {
     this._send(messages.APP_START)
+  }
+
+  sendAppError (data: AppErrorDTO) {
+    this._send(messages.APP_ERROR, data)
   }
 
   _send (channel: string, dto: mixed): void {
