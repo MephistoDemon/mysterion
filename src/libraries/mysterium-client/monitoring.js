@@ -25,7 +25,7 @@ type StatusCallback = (boolean) => void
 type UpCallback = () => void
 type DownCallback = () => void
 
-class ProcessMonitoring {
+class Monitoring {
   api: TequilapiClient
   _timer: ?number = null
 
@@ -120,5 +120,5 @@ class ProcessMonitoring {
   }
 }
 
-export default ProcessMonitoring
+export default Monitoring
 export type {StatusCallback, UpCallback, DownCallback}

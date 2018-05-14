@@ -19,7 +19,7 @@
 import {ChildProcess} from 'child_process'
 import sleep from '../../../../../src/libraries/sleep'
 import Process from '../../../../../src/libraries/mysterium-client/standalone/process'
-import ProcessMonitoring from '../../../../../src/libraries/mysterium-client/process-monitoring'
+import Monitoring from '../../../../../src/libraries/mysterium-client/monitoring'
 import processLogLevels from '../../../../../src/libraries/mysterium-client/log-levels'
 import tequilapiClientFactory from '../../../../../src/libraries/mysterium-tequilapi/client-factory'
 import {xdescribe, it, before, after, expect} from '../../../../helpers/dependencies'
@@ -81,7 +81,7 @@ xdescribe('Standalone Process', () => {
   describe('monitoring checking', () => {
     let processMonitoring
     before(async () => {
-      processMonitoring = new ProcessMonitoring(tequilapi)
+      processMonitoring = new Monitoring(tequilapi)
       processMonitoring.start()
     })
 
