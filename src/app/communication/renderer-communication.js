@@ -41,7 +41,7 @@ class RendererCommunication {
   }
 
   sendTermsAnswered (dto: TermsAnsweredDTO): void {
-    return this._send(messages.TERMS_ANSWERED)
+    return this._send(messages.TERMS_ANSWERED, dto)
   }
 
   onConnectionRequest (callback: (RequestConnectionDto) => void) {

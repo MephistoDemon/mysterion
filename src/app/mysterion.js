@@ -139,9 +139,10 @@ class Mysterion {
       content: this.terms.getContent()
     })
 
-    const termsAnswer = await onFirstEvent((callback) => {
+    const termsAnsweredDTO = await onFirstEvent((callback) => {
       this.communication.onTermsAnswered(callback)
     })
+    const termsAnswer = termsAnsweredDTO.answer
     if (!termsAnswer) {
       return false
     }
