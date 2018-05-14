@@ -2,7 +2,7 @@
 
 // TODO: find better name - AppWindow?
 import {BrowserWindow} from 'electron'
-import type {RequestRewriter} from './plugins'
+import type {RequestRewriter} from './interface'
 import type {HeaderRule} from './requestHeaders'
 import registerHeaderRules from './requestHeaders'
 

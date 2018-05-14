@@ -63,7 +63,7 @@ describe('CountrySelect', () => {
 
   const fakeMessageBus = new FakeMessageBus()
 
-  describe.skip('errors', () => {
+  describe('errors', () => {
     let store
     beforeEach(() => {
       store = new Store({
@@ -79,19 +79,12 @@ describe('CountrySelect', () => {
     })
 
     it(`commits ${translations.countryListIsEmpty} when empty proposal list is received`, async () => {
-      fakeMessageBus.triggerOn(messages.PROPOSALS_UPDATE, null)
+      fakeMessageBus.triggerOn(messages.PROPOSALS_UPDATE, [])
 
       wrapper.vm.fetchCountries()
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.$store.state.errorMessage).to.eql(translations.countryListIsEmpty)
-    })
-
-    it(`commits ${translations.countryLoadingFailed} when proposal listing throws`, async () => {
-      wrapper.vm.fetchCountries()
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.$store.state.errorMessage).to.eql(translations.countryLoadingFailed)
     })
   })
 

@@ -70,7 +70,7 @@ function bootstrap (container: Container) {
   container.service(
     'vue-store.identity',
     ['tequilapiClient'],
-    (tequilapiClient) => identityFactory(tequilapiClient)
+    (tequilapiClient) => identityFactory(tequilapiClient, container)
   )
   container.service(
     'vue-store.connection',
@@ -81,7 +81,7 @@ function bootstrap (container: Container) {
     'vue-store.connection.actions',
     ['tequilapiClient', 'rendererCommunication', 'statsCollector', 'statsEventFactory'],
     (tequilapiClient, rendererCommunication, statsCollector, statsEventFactory) => {
-      return actionsFactory(tequilapiClient, rendererCommunication, statsCollector, statsEventFactory)
+      return actionsFactory(tequilapiClient, rendererCommunication, statsCollector, statsEventFactory, container)
     }
   )
   container.constant('vue-store.errors', errors)

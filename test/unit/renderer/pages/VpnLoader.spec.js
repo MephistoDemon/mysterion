@@ -17,6 +17,8 @@ import messages from '../../../../src/app/messages'
 import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
 import TequilapiClient from '../../../../src/libraries/mysterium-tequilapi/client'
 
+import DIContainer from '../../../../src/app/di/vue-container'
+
 Vue.use(Vuex)
 Vue.use(Router)
 
@@ -25,9 +27,11 @@ describe('VpnLoader', () => {
 
   async function mountComponent (tequilapi: TequilapiClient): Vue {
     const router = new Router({routes: []})
+    const dependencies = new DIContainer(Vue)
+    dependencies.constant('bugReporter', {setUser: function () {}})
     const store = new Vuex.Store({
       modules: {
-        identity: idStoreFactory(tequilapi),
+        identity: idStoreFactory(tequilapi, dependencies),
         main: mainStoreFactory(tequilapi),
         errors: errorStore
       },

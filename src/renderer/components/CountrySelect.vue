@@ -82,7 +82,7 @@
         this.countriesAreLoading = false
 
         if (proposals.length < 1) {
-          const error = new Error(messages.countriesLoadingFailed)
+          const error = new Error(messages.countryListIsEmpty)
 
           this.$store.commit(type.SHOW_ERROR, error)
           this.bugReporter.captureException(error)

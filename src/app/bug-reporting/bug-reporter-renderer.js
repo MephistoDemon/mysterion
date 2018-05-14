@@ -2,28 +2,34 @@
 import RavenJs from 'raven-js'
 import RavenVue from 'raven-js/plugins/vue'
 import {pushToLogCache} from './logsCache'
+import {logLevel} from '../../libraries/mysterium-client'
 import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
+import type {BugReporter} from './interface'
 
-function install (url: string, vue: Object, config: Object) {
-  RavenJs
-    .config(url, config)
-    .install()
-    .addPlugin(RavenVue, vue)
+class BugReporterRenderer implements BugReporter {
+  install (url: string, vue: Object, config: Object) {
+    RavenJs
+      .config(url, config)
+      .install()
+      .addPlugin(RavenVue, vue)
+  }
+
+  setUser (userData: IdentityDTO) {
+    RavenJs.setUserContext(userData)
+  }
+
+  captureException (err: Error): void {
+    RavenJs.captureException(err)
+  }
+
+  pushToLogCache (level: logLevel.LOG | logLevel.ERROR, data: string) {
+    pushToLogCache(level, data)
+  }
 }
 
 function getRavenInstance (): Object {
   return RavenJs
 }
 
-function setUser (userData: IdentityDTO) {
-  RavenJs.setUserContext(userData)
-}
-const captureException = RavenJs.captureException.bind(RavenJs)
-
-export default {
-  install,
-  setUser,
-  pushToLogCache,
-  getRavenInstance,
-  captureException
-}
+export default BugReporterRenderer
+export {getRavenInstance}
