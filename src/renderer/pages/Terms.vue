@@ -14,12 +14,10 @@
 </template>
 <script>
   import {mapGetters} from 'vuex'
-  import RendererMessageBus from '../../app/communication/rendererMessageBus'
-  import RendererCommunication from '../../app/communication/renderer-communication'
+  import dependencies from '../dependencies'
 
   function answerTerms (answer) {
-    const messageBus = new RendererMessageBus()
-    const communication = new RendererCommunication(messageBus)
+    const communication = dependencies.get('rendererCommunication')
     communication.sendTermsAnswered({ answer })
   }
 
