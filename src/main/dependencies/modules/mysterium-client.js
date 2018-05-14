@@ -23,23 +23,17 @@ function bootstrap (container: Container) {
   container.service(
     'mysteriumClientInstaller',
     ['mysteriumClient.config'],
-    (config) => {
-      return new Installer(config)
-    }
+    (config) => new Installer(config)
   )
   container.service(
     'mysteriumClientProcess',
     ['tequilapiClient', 'mysteriumClient.config'],
-    (tequilapiClient, mysteriumClientConfig) => {
-      return new Process(tequilapiClient, mysteriumClientConfig.dataDir)
-    }
+    (tequilapiClient, mysteriumClientConfig) => new Process(tequilapiClient, mysteriumClientConfig.dataDir)
   )
   container.service(
     'mysteriumClientMonitoring',
     ['tequilapiClient'],
-    (tequilapiClient) => {
-      return new Monitoring(tequilapiClient)
-    }
+    (tequilapiClient) => new Monitoring(tequilapiClient)
   )
 }
 
