@@ -2,6 +2,8 @@ import MainCommunication from '../../../../src/app/communication/main-communicat
 import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
 
+// TODO: add specs for new methods
+
 describe('MainCommunication', () => {
   let fakeMessageBus
   let communication

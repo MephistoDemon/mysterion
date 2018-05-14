@@ -22,7 +22,6 @@
   import type from '@/store/types'
   import AppVisual from '@/partials/AppVisual'
   import AppNav from '@/partials/AppNav'
-  import messages from '../app/communication/messages'
 
   import AppError from '@/partials/AppError'
   import AppModal from '@/partials/AppModal'
@@ -82,7 +81,8 @@
 
       let previousClientRunningState = true
 
-      messageBus.on(messages.HEALTHCHECK, (clientRunningState) => {
+      communication.onHealthCheck((healthCheckDTO) => {
+        const clientRunningState = healthCheckDTO.status
         // do nothing while on terms page
         if (this.$route.name === 'terms') {
           return

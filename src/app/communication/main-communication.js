@@ -80,6 +80,10 @@ class MainCommunication {
     this._send(messages.APP_ERROR, data)
   }
 
+  sendHealthCheck (data: HealthCheckDTO) {
+    this._send(messages.HEALTHCHECK, data)
+  }
+
   _send (channel: string, dto: mixed): void {
     this._messageBus.send(channel, dto)
   }

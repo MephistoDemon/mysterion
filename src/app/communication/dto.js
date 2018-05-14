@@ -2,6 +2,8 @@
 import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 
+// TODO: unify "DTO" and "Dto" naming
+
 export type ConnectionStatusChangeDTO = {
   oldStatus: ConnectionStatus,
   newStatus: ConnectionStatus
@@ -34,4 +36,8 @@ export type AppErrorDTO = {
   message: string,
   hint: string,
   fatal: boolean
+}
+
+export type HealthCheckDTO = {
+  status: boolean
 }

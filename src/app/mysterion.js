@@ -1,5 +1,4 @@
 import {app} from 'electron'
-import busMessages from './communication/messages'
 import trayFactory from '../main/tray/factory'
 import {logLevels as processLogLevels} from '../libraries/mysterium-client'
 import translations from './messages'
@@ -166,7 +165,7 @@ class Mysterion {
   async startProcess () {
     const updateRendererWithHealth = () => {
       try {
-        this.messageBus.send(busMessages.HEALTHCHECK, this.monitoring.isRunning())
+        this.communication.sendHealthCheck({ status: this.monitoring.isRunning() })
       } catch (e) {
         this.bugReporter.captureException(e)
         return

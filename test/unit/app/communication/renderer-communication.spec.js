@@ -2,6 +2,8 @@ import RendererCommunication from '../../../../src/app/communication/renderer-co
 import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
 
+// TODO: add specs for new methods
+
 describe('RendererCommunication', () => {
   let fakeMessageBus
   let communication

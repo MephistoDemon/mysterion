@@ -14,8 +14,6 @@ export default {
 
   APP_START: 'app.start',
   APP_ERROR: 'app.error',
-
-  // TODO: refactor these messages to be used in communication
   HEALTHCHECK: 'healthcheck',
   PROPOSALS_UPDATE: 'proposals.update'
 }

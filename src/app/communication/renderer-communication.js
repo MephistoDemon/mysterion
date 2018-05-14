@@ -10,7 +10,8 @@ import type {
   ProposalUpdateDto,
   RequestTermsDto,
   TermsAnsweredDTO,
-  AppErrorDTO
+  AppErrorDTO,
+  HealthCheckDTO
 } from './dto'
 
 /**
@@ -75,6 +76,10 @@ class RendererCommunication {
 
   onAppError (callback: (AppErrorDTO) => void): void {
     this._on(messages.APP_ERROR, callback)
+  }
+
+  onHealthCheck (callback: (HealthCheckDTO) => void): void {
+    this._on(messages.HEALTHCHECK, callback)
   }
 
   _send (channel: string, dto: mixed): void {
