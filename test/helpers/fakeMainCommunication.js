@@ -19,7 +19,7 @@
 
 import type {MainCommunication} from '../../src/app/communication/main-communication'
 import type {
-  AppErrorDTO, ConnectionStatusChangeDTO, CurrentIdentityChangeDTO, HealthCheckDTO,
+  AppErrorDTO, ConnectionStatusChangeDTO, CurrentIdentityChangeDTO,
   MysteriumClientLogDTO,
   ProposalUpdateDTO,
   RequestTermsDTO, TermsAnsweredDTO
@@ -62,6 +62,14 @@ class FakeMainCommunication implements MainCommunication {
     this._registerMethod(this.sendMysteriumClientLog)
   }
 
+  sendMysteriumClientUp () {
+    this._registerMethod(this.sendMysteriumClientUp)
+  }
+
+  sendMysteriumClientDown () {
+    this._registerMethod(this.sendMysteriumClientDown)
+  }
+
   sendProposals (proposals: ProposalUpdateDTO): void {
     this._registerMethod(this.sendProposals)
   }
@@ -80,10 +88,6 @@ class FakeMainCommunication implements MainCommunication {
 
   sendTermsAccepted (): void {
     this._registerMethod(this.sendTermsAccepted)
-  }
-
-  sendHealthCheck (data: HealthCheckDTO): void {
-    this._registerMethod(this.sendHealthCheck)
   }
 
   sendUserSettings (data: UserSettings): void {

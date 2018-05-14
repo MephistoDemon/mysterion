@@ -113,7 +113,11 @@ class Mysterion {
 
     await this._ensureDaemonInstallation()
     await this._startProcessAndMonitoring()
+    this.updateProposalsLoop()
+    this.startApp()
 
+    synchronizeUserSettings(this.userSettingsStore, this.communication)
+    showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
     await this._loadUserSettings()
   }
 
@@ -262,22 +266,22 @@ class Mysterion {
     }
 
     logInfo("Starting 'mysterium_client' process")
-    this.process.start()
+    await this.process.start()
     this.process.onLog(processLogLevels.LOG, (data) => cacheLogs(processLogLevels.LOG, data))
     this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
 
     logInfo("Starting 'mysterium_client' monitoring")
+    this.monitoring.subscribeUp(() => {
+      logInfo("'mysterium_client' is up")
+      this.communication.sendMysteriumClientUp()
+    })
+    this.monitoring.subscribeDown(() => {
+      logInfo("'mysterium_client' is down")
+      this.communication.sendMysteriumClientDown()
+    })
     this.monitoring.start()
-    this.monitoring.subscribeStatus((isRunning) => {
-      this.communication.sendHealthCheck({ isRunning: isRunning })
-    })
-    this.monitoring.onProcessReady(() => {
-      this.updateProposalsLoop()
-      this.startApp()
-    })
 
-    synchronizeUserSettings(this.userSettingsStore, this.communication)
-    showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
+    await onFirstEvent(this.monitoring.subscribeUp.bind(this.monitoring))
   }
 
   updateProposalsLoop () {
@@ -299,6 +303,7 @@ class Mysterion {
   }
 
   buildTray () {
+    logInfo('Building tray')
     trayFactory(
       this.communication,
       this.proposalFetcher,

@@ -52,7 +52,3 @@ export type AppErrorDTO = {
   hint: string,
   fatal: boolean
 }
-
-export type HealthCheckDTO = {
-  isRunning: boolean
-}

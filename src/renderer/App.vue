@@ -92,32 +92,26 @@
         this.$store.dispatch(type.OVERLAY_ERROR, error)
       })
 
-      let previousClientRunningState = true
+      // if the client was down, but now up, we need to unlock the identity once again
+      this.rendererCommunication.onMysteriumClientUp(() => {
+        this.$store.dispatch('setClientRunningState', true)
 
-      this.rendererCommunication.onHealthCheck((healthCheckDTO) => {
-        const clientRunningState = healthCheckDTO.isRunning
         // do nothing while on terms page
-        if (this.$route.name === 'terms') {
-          return
-        }
-
-        if (previousClientRunningState === clientRunningState) {
-          return
-        }
-        previousClientRunningState = clientRunningState
-
-        // if the client was down, but now up, we need to unlock the identity once again
-        if (clientRunningState) {
+        if (this.$route.name !== 'terms') {
           this.$store.dispatch(type.OVERLAY_ERROR, null)
           this.$router.push('/load')
-          return
         }
+      })
+      this.rendererCommunication.onMysteriumClientDown(() => {
+        this.$store.dispatch('setClientRunningState', false)
 
-        this.$store.dispatch(type.OVERLAY_ERROR, {
-          message: 'mysterium_client is down',
-          hint: 'Please give it a moment to boot. If this message persists try restarting the app or please contact support'
-        })
-        this.$store.dispatch('setClientRunningState', clientRunningState)
+        // do nothing while on terms page
+        if (this.$route.name !== 'terms') {
+          this.$store.dispatch(type.OVERLAY_ERROR, {
+            message: 'mysterium_client is down',
+            hint: 'Please give it a moment to boot. If this message persists try restarting the app or please contact support'
+          })
+        }
       })
     }
   }

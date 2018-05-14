@@ -108,13 +108,19 @@ describe('MainMessageBusCommunication', () => {
     })
   })
 
-  describe('sendHealthCheck', () => {
+  describe('sendMysteriumClientUp', () => {
     it('sends message to bus', () => {
-      const data = { isRunning: true }
-      communication.sendHealthCheck(data)
+      communication.sendMysteriumClientUp()
 
-      expect(fakeMessageBus.lastChannel).to.eql(messages.HEALTHCHECK)
-      expect(fakeMessageBus.lastData).to.eql(data)
+      expect(fakeMessageBus.lastChannel).to.eql(messages.HEALTHCHECK_UP)
+    })
+  })
+
+  describe('sendMysteriumClientDown', () => {
+    it('sends message to bus', () => {
+      communication.sendMysteriumClientDown()
+
+      expect(fakeMessageBus.lastChannel).to.eql(messages.HEALTHCHECK_DOWN)
     })
   })
 

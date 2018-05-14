@@ -48,19 +48,6 @@ class Monitoring {
     }
   }
 
-  isRunning (): boolean {
-    return this._lastIsRunning
-  }
-
-  onProcessReady (callback: Function) {
-    const interval = setInterval(() => {
-      if (this._lastIsRunning) {
-        clearInterval(interval)
-        callback()
-      }
-    }, 100)
-  }
-
   subscribeStatus (callback: StatusCallback) {
     this._subscribersStatus.push(callback)
   }

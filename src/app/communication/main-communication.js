@@ -18,7 +18,6 @@
 // @flow
 
 import type {
-  HealthCheckDTO,
   RequestConnectionDTO,
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
@@ -41,6 +40,10 @@ interface MainCommunication {
 
   sendMysteriumClientLog (dto: MysteriumClientLogDTO): void,
 
+  sendMysteriumClientUp (): void,
+
+  sendMysteriumClientDown (): void,
+
   sendProposals (proposals: ProposalUpdateDTO): void,
 
   sendConnectionCancelRequest (): void,
@@ -50,8 +53,6 @@ interface MainCommunication {
   sendTermsRequest (data: RequestTermsDTO): void,
 
   sendTermsAccepted (): void,
-
-  sendHealthCheck (data: HealthCheckDTO): void,
 
   sendUserSettings (data: UserSettings): void,
 

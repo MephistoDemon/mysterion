@@ -186,15 +186,23 @@ describe('RendererCommunication', () => {
     })
   })
 
-  describe('onHealthCheck', () => {
+  describe('onMysteriumClientUp', () => {
     it('receives message from bus', () => {
-      communication.onHealthCheck(callbackRecorder.getCallback())
+      communication.onMysteriumClientUp(callbackRecorder.getCallback())
 
-      const data = { isRunning: true }
-      fakeMessageBus.triggerOn(messages.HEALTHCHECK, data)
+      fakeMessageBus.triggerOn(messages.HEALTHCHECK_UP)
 
       expect(callbackRecorder.invoked).to.eql(true)
-      expect(callbackRecorder.argument).to.eql(data)
+    })
+  })
+
+  describe('onMysteriumClientDown', () => {
+    it('receives message from bus', () => {
+      communication.onMysteriumClientDown(callbackRecorder.getCallback())
+
+      fakeMessageBus.triggerOn(messages.HEALTHCHECK_DOWN)
+
+      expect(callbackRecorder.invoked).to.eql(true)
     })
   })
 
