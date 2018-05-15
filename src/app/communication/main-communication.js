@@ -1,6 +1,6 @@
 // @flow
 
-import messages from './index'
+import messages from './messages'
 import type {MessageBus} from './messageBus'
 import type {
   RequestConnectionDto,

@@ -1,6 +1,6 @@
 import {createLocalVue, mount} from '@vue/test-utils'
 import CountrySelect from '@/components/CountrySelect'
-import messages from '../../../../src/app/communication'
+import messages from '../../../../src/app/communication/messages'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import DIContainer from '../../../../src/app/di/vue-container'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'

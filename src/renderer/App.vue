@@ -22,7 +22,7 @@
   import type from '@/store/types'
   import AppVisual from '@/partials/AppVisual'
   import AppNav from '@/partials/AppNav'
-  import messages from '../app/communication'
+  import messages from '../app/communication/messages'
 
   import AppError from '@/partials/AppError'
   import AppModal from '@/partials/AppModal'

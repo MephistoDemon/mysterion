@@ -1,5 +1,5 @@
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
-import messages from '../../../../src/app/communication/index'
+import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
 
 describe('RendererCommunication', () => {

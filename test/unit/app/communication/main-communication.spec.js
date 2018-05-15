@@ -1,5 +1,5 @@
 import MainCommunication from '../../../../src/app/communication/main-communication'
-import messages from '../../../../src/app/communication/index'
+import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
 
 describe('MainCommunication', () => {

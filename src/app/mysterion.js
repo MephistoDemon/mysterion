@@ -1,8 +1,8 @@
 import {app} from 'electron'
-import communication from './communication/index'
+import busMessages from './communication/messages'
 import trayFactory from '../main/tray/factory'
 import {logLevel as processLogLevel} from '../libraries/mysterium-client/index'
-import messages from './messages'
+import translations from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
 import {onFirstEvent} from './communication/utils'
@@ -96,7 +96,7 @@ class Mysterion {
         }
       } catch (e) {
         this.bugReporter.captureException(e)
-        return communication.sendErrorToRenderer(e.message)
+        return this.communication.sendErrorToRenderer(e.message)
       }
     }
 
@@ -108,7 +108,7 @@ class Mysterion {
       } catch (e) {
         this.bugReporter.captureException(e)
         console.error(e)
-        return communication.sendErrorToRenderer(messages.daemonInstallationError)
+        return this.communication.sendErrorToRenderer(translations.daemonInstallationError)
       }
     }
     // if all is good, let's boot up the client
@@ -135,23 +135,23 @@ class Mysterion {
   }
 
   async acceptTerms () {
-    this.messageBus.send(communication.TERMS_REQUESTED, {
+    this.messageBus.send(busMessages.TERMS_REQUESTED, {
       content: this.terms.getContent()
     })
 
     const termsAnswer = await onFirstEvent((callback) => {
-      this.messageBus.on(communication.TERMS_ANSWERED, callback)
+      this.messageBus.on(busMessages.TERMS_ANSWERED, callback)
     })
     if (!termsAnswer) {
       return false
     }
 
-    this.messageBus.send(communication.TERMS_ACCEPTED)
+    this.messageBus.send(busMessages.TERMS_ACCEPTED)
 
     try {
       this.terms.accept()
     } catch (e) {
-      const error = new Error(messages.termsAcceptError)
+      const error = new Error(translations.termsAcceptError)
       error.original = e
       console.error(error)
       throw error
@@ -165,7 +165,7 @@ class Mysterion {
   async startProcess () {
     const updateRendererWithHealth = () => {
       try {
-        this.messageBus.send(communication.HEALTHCHECK, this.monitoring.isRunning())
+        this.messageBus.send(busMessages.HEALTHCHECK, this.monitoring.isRunning())
       } catch (e) {
         this.bugReporter.captureException(e)
         return
@@ -203,7 +203,7 @@ class Mysterion {
       this.communication.sendProposals(await this.proposalFetcher.fetch())
     })
 
-    this.messageBus.send(communication.APP_START)
+    this.messageBus.send(busMessages.APP_START)
   }
 
   buildTray () {
