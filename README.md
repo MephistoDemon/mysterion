@@ -31,6 +31,28 @@ yarn && yarn build
 
 ```
 
+#### Maintenance
+
+To update dependencies:
+
+```bash
+yarn upgrade
+```
+
+This will update packages according to version constrains in *package.json*.
+To update version constraints, edit version constrain in *package.json* and then upgrade yarn:
+
+```bash
+vim package.json
+yarn upgrade
+```
+
+To update Flow type signatures of dependencies, run:
+
+```bash
+yarn flow-typed install
+```
+
 #### Testing
 
 To run all tests:

@@ -3,9 +3,9 @@
         <multiselect class="countries__multiselect"
                      :max-height="120"
                      v-model="country"
-                     :custom-label="countryLabel"
+                     :custom-label="selectedCountryLabel"
                      placeholder="Choose country"
-                     :options="countriesList"
+                     :options="countryList"
                      :loading="countriesAreLoading"
                      :searchable="true"
                      :show-labels="false"
@@ -15,7 +15,7 @@
                 <div class="multiselect__flag">
                     <img :src="imagePath(props.option.code)" class="multiselect__flag-svg"/>
                 </div>
-                <div class="multiselect__option-title" v-text="props.option.label"></div>
+                <div class="multiselect__option-title" v-text="countryLabel(props.option)"></div>
             </template>
         </multiselect>
 
@@ -30,22 +30,13 @@
   import path from 'path'
   import type from '@/store/types'
   import messages from '@/../app/messages'
-  import {getCountryCodeFromProposal, getCountryNameFromProposal} from '@/../app/countries'
+  import {getCountryLabel, getSortedCountryListFromProposals} from '@/../app/countries'
   import Multiselect from 'vue-multiselect'
   import IconWorld from '@/assets/img/icon--world.svg'
-  import bugReporter from '@/../app/bugReporting/bug-reporting'
-
-  function proposalToCountry (proposal) {
-    return {
-      label: getCountryNameFromProposal(proposal),
-      id: proposal.providerId,
-      code: getCountryCodeFromProposal(proposal)
-    }
-  }
 
   export default {
     name: 'CountrySelect',
-    dependencies: ['rendererCommunication'],
+    dependencies: ['rendererCommunication', 'bugReporter'],
     components: {
       Multiselect,
       IconWorld
@@ -53,7 +44,7 @@
     data () {
       return {
         country: null,
-        countriesList: [],
+        countryList: [],
         countriesAreLoading: false
       }
     },
@@ -61,10 +52,19 @@
       onChange (country) {
         this.$emit('selected', country)
       },
-      countryLabel (country) {
-        if (typeof country === 'object') {
-          return country.label
+      selectedCountryLabel (country) {
+        if (typeof country !== 'object') {
+          return
         }
+
+        return getCountryLabel(country, 10)
+      },
+      countryLabel (country) {
+        if (typeof country !== 'object') {
+          return
+        }
+
+        return getCountryLabel(country)
       },
       imagePath (code) {
         if (!code) {
@@ -83,14 +83,21 @@
         this.countriesAreLoading = false
 
         if (proposals.length < 1) {
-          const error = new Error(messages.countriesLoadingFailed)
+          const error = new Error(messages.countryListIsEmpty)
 
           this.$store.commit(type.SHOW_ERROR, error)
-          bugReporter.renderer.captureException(error)
+          this.bugReporter.captureException(error)
           return
         }
 
-        this.countriesList = proposals.map(proposalToCountry)
+        this.countryList = getSortedCountryListFromProposals(proposals)
+      })
+
+      this.rendererCommunication.onConnectionRequest((proposal) => {
+        const selectedCountry = this.countryList.find((country) => country.id === proposal.providerId)
+
+        this.country = selectedCountry
+        this.$emit('selected', selectedCountry)
       })
     }
   }

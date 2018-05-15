@@ -1,7 +1,8 @@
 // @flow
 import type from '../types'
+import type {Container} from '../../../app/di'
+
 import messages from '../../../app/messages'
-import bugReporter from '../../../app/bugReporting/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import config from '@/config'
 import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/events-connection'
@@ -19,7 +20,7 @@ type ConnectionStore = {
   ip: ?string,
   status: ConnectionStatus,
   statistics: Object,
-  actionLoopers: Map<string, FunctionLooper>
+  actionLoopers: { [string]: FunctionLooper }
 }
 
 class ActionLooper {
@@ -59,7 +60,7 @@ const getters = {
   connection (state: ConnectionStore): ConnectionStore {
     return state
   },
-  ip (state: ConnectionStore): string {
+  ip (state: ConnectionStore): ?string {
     return state.ip
   }
 }
@@ -92,7 +93,8 @@ function actionsFactory (
   tequilapi: TequilapiClient,
   rendererCommunication: RendererCommunication,
   statsCollector: StatsCollector,
-  statsEventsFactory: StatsEventsFactory
+  statsEventsFactory: StatsEventsFactory,
+  dependencies: Container
 ) {
   return {
     async [type.LOCATION] ({commit}) {
@@ -114,7 +116,7 @@ function actionsFactory (
         if (err.isTimeoutError() || err.isServiceUnavailableError()) {
           return
         }
-        bugReporter.renderer.captureException(err)
+        dependencies.get('bugReporter').captureException(err)
       }
     },
     [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperConfig): FunctionLooper {
@@ -198,7 +200,7 @@ function actionsFactory (
           return
         }
         commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
-        let error = new Error('Connection to node failed.')
+        const error: Object = new Error('Connection to node failed.')
         error.original = err
         eventTracker.connectEnded(error.toString())
         throw error

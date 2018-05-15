@@ -23,7 +23,7 @@
     "test:integration:start-server": "karma start test/integration/karma.conf.js",
     "unit:start-server": "karma start test/unit/karma.conf.js",
     "unit:run": "karma run test/unit/karma.conf.js",
-    "ci": "yarn lint && yarn flow && yarn unit"
+    "ci": "yarn lint && yarn unit"
   },
   "build": {
     "productName": "Mysterion",
@@ -78,6 +78,7 @@
     "axios": "^0.16.1",
     "dbly-linked-list": "^0.2.0",
     "file-size": "^1.0.0",
+    "flow-typed": "^2.4.0",
     "jpex": "^2.1.0",
     "less": "^2.7.3",
     "less-loader": "^4.0.5",

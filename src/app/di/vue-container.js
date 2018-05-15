@@ -25,6 +25,11 @@ class VueContainer implements Container {
   service (name: string, dependencies: Array<string>, factory: ServiceFactory): void {
     this.injector.service(name, dependencies, factory)
   }
+
+  factory (name: string, dependencies: Array<string>, factory: ServiceFactory, cache: ?boolean): void {
+    const factoryWrapper = this.injector.factory(name, dependencies, factory)
+    if (cache) factoryWrapper.lifecycle.application()
+  }
 }
 
 export default VueContainer

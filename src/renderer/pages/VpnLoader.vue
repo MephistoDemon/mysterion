@@ -5,7 +5,6 @@
   import config from '@/config'
   import messages from '../../app/messages'
   import sleep from '../../libraries/sleep'
-  import bugReporter from '../../app/bugReporting/bug-reporting'
 
   async function identityGet ({dispatch, commit}) {
     const identities = await dispatch(type.IDENTITY_LIST)
@@ -19,6 +18,7 @@
   }
 
   export default {
+    dependencies: ['bugReporter'],
     async mounted () {
       const {commit, dispatch} = this.$store
       try {
@@ -37,7 +37,7 @@
 
         commit(type.INIT_FAIL)
         commit(type.OVERLAY_ERROR, messages.initializationError)
-        bugReporter.renderer.captureException(err)
+        this.bugReporter.captureException(err)
       }
     },
     computed: {

@@ -2,7 +2,7 @@ import {app} from 'electron'
 import path from 'path'
 
 let appContentsPath = path.resolve(app.getAppPath(), '../../')
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing') {
   // path from this file
   appContentsPath = path.resolve(__dirname, '../../')
 }
@@ -52,7 +52,6 @@ const mysterionConfig = {
    * window configuration
    */
   windows: {
-    url: process.env.NODE_ENV === 'development' ? `http://localhost:9080/` : `file://${__dirname}/index.html`,
     terms: {
       width: 800,
       height: 650

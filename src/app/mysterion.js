@@ -1,18 +1,26 @@
 import {app} from 'electron'
-import Window from './window'
-import communication from './communication/index'
+import busMessages from './communication/messages'
 import trayFactory from '../main/tray/factory'
 import {logLevel as processLogLevel} from '../libraries/mysterium-client/index'
-import bugReporter from './bugReporting/bug-reporting'
-import messages from './messages'
+import translations from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
 import {onFirstEvent} from './communication/utils'
 import path from 'path'
 
 class Mysterion {
-  constructor ({config, terms, installer, monitoring, process, proposalFetcher}) {
-    Object.assign(this, {config, terms, installer, monitoring, process, proposalFetcher})
+  constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter}) {
+    Object.assign(this, {
+      browserWindowFactory,
+      windowFactory,
+      config,
+      terms,
+      installer,
+      monitoring,
+      process,
+      proposalFetcher,
+      bugReporter
+    })
   }
 
   run () {
@@ -44,33 +52,34 @@ class Mysterion {
       termsAccepted = this.terms.isAccepted()
     } catch (e) {
       termsAccepted = false
-      bugReporter.main.captureException(e)
+      this.bugReporter.captureException(e)
     }
 
-    this.window = new Window(
-      termsAccepted
-        ? this.config.windows.app
-        : this.config.windows.terms,
-      this.config.windows.url
-    )
-
+    let browserWindow
     try {
+      browserWindow = this.browserWindowFactory()
+      this.window = this.windowFactory()
+      if (termsAccepted) {
+        this.window.resize(this.config.windows.app)
+      } else {
+        this.window.resize(this.config.windows.terms)
+      }
       this.window.open()
     } catch (e) {
       console.error(e)
-      bugReporter.main.captureException(e)
+      this.bugReporter.captureException(e)
       throw new Error('Failed to open window.')
     }
 
-    const send = this.window.send.bind(this.window)
-    this.messageBus = new MainMessageBus(send)
+    const send = browserWindow.webContents.send.bind(browserWindow.webContents)
+    this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
     this.communication = new MainCommunication(this.messageBus)
 
     try {
       await onFirstEvent(this.communication.onRendererLoaded.bind(this.communication))
     } catch (e) {
       console.error(e)
-      bugReporter.main.captureException(e)
+      this.bugReporter.captureException(e)
       // TODO: add an error wrapper method
       throw new Error('Failed to load app.')
     }
@@ -86,8 +95,8 @@ class Mysterion {
           return
         }
       } catch (e) {
-        bugReporter.main.captureException(e)
-        return this.sendErrorToRenderer(e.message)
+        this.bugReporter.captureException(e)
+        return this.communication.sendErrorToRenderer(e.message)
       }
     }
 
@@ -97,9 +106,9 @@ class Mysterion {
       try {
         await this.installer.install()
       } catch (e) {
-        bugReporter.main.captureException(e)
+        this.bugReporter.captureException(e)
         console.error(e)
-        return this.sendErrorToRenderer(messages.daemonInstallationError)
+        return this.communication.sendErrorToRenderer(translations.daemonInstallationError)
       }
     }
     // if all is good, let's boot up the client
@@ -121,28 +130,28 @@ class Mysterion {
       await this.process.stop()
     } catch (e) {
       console.error('Failed to stop mysterium_client process')
-      bugReporter.main.captureException(e)
+      this.bugReporter.captureException(e)
     }
   }
 
   async acceptTerms () {
-    this.messageBus.send(communication.TERMS_REQUESTED, {
+    this.messageBus.send(busMessages.TERMS_REQUESTED, {
       content: this.terms.getContent()
     })
 
     const termsAnswer = await onFirstEvent((callback) => {
-      this.messageBus.on(communication.TERMS_ANSWERED, callback)
+      this.messageBus.on(busMessages.TERMS_ANSWERED, callback)
     })
     if (!termsAnswer) {
       return false
     }
 
-    this.messageBus.send(communication.TERMS_ACCEPTED)
+    this.messageBus.send(busMessages.TERMS_ACCEPTED)
 
     try {
       this.terms.accept()
     } catch (e) {
-      const error = new Error(messages.termsAcceptError)
+      const error = new Error(translations.termsAcceptError)
       error.original = e
       console.error(error)
       throw error
@@ -156,9 +165,9 @@ class Mysterion {
   async startProcess () {
     const updateRendererWithHealth = () => {
       try {
-        this.messageBus.send(communication.HEALTHCHECK, this.monitoring.isRunning())
+        this.messageBus.send(busMessages.HEALTHCHECK, this.monitoring.isRunning())
       } catch (e) {
-        bugReporter.main.captureException(e)
+        this.bugReporter.captureException(e)
         return
       }
 
@@ -166,7 +175,7 @@ class Mysterion {
     }
     const cacheLogs = (level, data) => {
       this.communication.sendMysteriumClientLog({level, data})
-      bugReporter.pushToLogCache(level, data)
+      this.bugReporter.pushToLogCache(level, data)
     }
 
     this.process.start()
@@ -179,7 +188,7 @@ class Mysterion {
     })
 
     this.communication.onCurrentIdentityChange((identity) => {
-      bugReporter.setUser(identity)
+      this.bugReporter.setUser(identity)
     })
   }
 
@@ -194,11 +203,7 @@ class Mysterion {
       this.communication.sendProposals(await this.proposalFetcher.fetch())
     })
 
-    this.messageBus.send(communication.APP_START)
-  }
-
-  sendErrorToRenderer (error, hint = '', fatal = true) {
-    this.window.send(communication.APP_ERROR, {message: error, hint: hint, fatal: fatal})
+    this.messageBus.send(busMessages.APP_START)
   }
 
   buildTray () {
