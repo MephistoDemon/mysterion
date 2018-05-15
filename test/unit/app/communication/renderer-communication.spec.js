@@ -1,6 +1,7 @@
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
+import {CallbackRecorder} from "../../../helpers/utils";
 
 // TODO: add specs for new methods
 
@@ -44,15 +45,13 @@ describe('RendererCommunication', () => {
 
   describe('onMysteriumClientLog', () => {
     it('receives message from bus', () => {
-      let callbackData = null
-      communication.onMysteriumClientLog((data) => {
-        callbackData = data
-      })
+      const callbackRecorder = new CallbackRecorder()
+      communication.onMysteriumClientLog(callbackRecorder.getCallback())
 
       const data = { level: 'INFO', data: 'Test log' }
       fakeMessageBus.triggerOn(messages.MYSTERIUM_CLIENT_LOG, data)
 
-      expect(callbackData).to.eql(data)
+      expect(callbackRecorder.data).to.eql(data)
     })
   })
 })
