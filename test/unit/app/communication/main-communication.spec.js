@@ -1,17 +1,22 @@
+// @flow
 import MainCommunication from '../../../../src/app/communication/main-communication'
 import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
+import { describe, beforeEach, it } from '../../../helpers/dependencies'
 
 class Recorder {
+  invoked: boolean
+  data: any
+
   constructor () {
     this.invoked = false
     this.data = null
   }
-  getCallback () {
+  getCallback (): (any) => void {
     return this._record.bind(this)
   }
 
-  _record (data) {
+  _record (data: any): void {
     this.invoked = true
     this.data = data
   }
