@@ -31,26 +31,6 @@ class MainCommunication {
     this._send(messages.MYSTERIUM_CLIENT_LOG, dto)
   }
 
-  onConnectionStatusChange (callback: (ConnectionStatusChangeDTO) => void): void {
-    this._on(messages.CONNECTION_STATUS_CHANGED, callback)
-  }
-
-  onCurrentIdentityChange (callback: (CurrentIdentityChangeDTO) => void) {
-    this._on(messages.CURRENT_IDENTITY_CHANGED, callback)
-  }
-
-  onRendererLoaded (callback: () => void) {
-    this._on(messages.RENDERER_LOADED, callback)
-  }
-
-  onProposalUpdateRequest (callback: () => void) {
-    this._on(messages.PROPOSALS_UPDATE, callback)
-  }
-
-  onTermsAnswered (callback: (TermsAnsweredDTO) => void) {
-    this._on(messages.TERMS_ANSWERED, callback)
-  }
-
   sendProposals (proposals: ProposalUpdateDTO) {
     this._send(messages.PROPOSALS_UPDATE, proposals)
   }
@@ -81,6 +61,26 @@ class MainCommunication {
 
   sendHealthCheck (data: HealthCheckDTO) {
     this._send(messages.HEALTHCHECK, data)
+  }
+
+  onConnectionStatusChange (callback: (ConnectionStatusChangeDTO) => void): void {
+    this._on(messages.CONNECTION_STATUS_CHANGED, callback)
+  }
+
+  onCurrentIdentityChange (callback: (CurrentIdentityChangeDTO) => void) {
+    this._on(messages.CURRENT_IDENTITY_CHANGED, callback)
+  }
+
+  onRendererLoaded (callback: () => void) {
+    this._on(messages.RENDERER_LOADED, callback)
+  }
+
+  onProposalUpdateRequest (callback: () => void) {
+    this._on(messages.PROPOSALS_UPDATE, callback)
+  }
+
+  onTermsAnswered (callback: (TermsAnsweredDTO) => void) {
+    this._on(messages.TERMS_ANSWERED, callback)
   }
 
   _send (channel: string, dto: mixed): void {

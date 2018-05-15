@@ -1,7 +1,7 @@
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
-import {CallbackRecorder} from "../../../helpers/utils";
+import {CallbackRecorder} from '../../../helpers/utils'
 
 // TODO: add specs for new methods
 
