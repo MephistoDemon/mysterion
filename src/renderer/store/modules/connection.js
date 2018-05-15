@@ -105,7 +105,7 @@ function actionsFactory (
         if (err.isTimeoutError() || err.isServiceUnavailableError()) {
           return
         }
-        bugReporter.renderer.captureException(err)
+        dependencies.get('bugReporter').captureException(err)
       }
     },
     async [type.CONNECTION_IP] ({commit}) {
