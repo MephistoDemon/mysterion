@@ -24,8 +24,6 @@ class RendererCommunication {
     this._messageBus = messageBus
   }
 
-  // TODO: remaining other messages
-
   sendConnectionStatusChange (dto: ConnectionStatusChangeDTO): void {
     return this._send(messages.CONNECTION_STATUS_CHANGED, dto)
   }

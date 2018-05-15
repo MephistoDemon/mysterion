@@ -2,15 +2,32 @@ import MainCommunication from '../../../../src/app/communication/main-communicat
 import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
 
+class Recorder {
+  constructor () {
+    this.invoked = false
+    this.data = null
+  }
+  getCallback () {
+    return this._record.bind(this)
+  }
+
+  _record (data) {
+    this.invoked = true
+    this.data = data
+  }
+}
+
 // TODO: add specs for new methods
 
 describe('MainCommunication', () => {
   let fakeMessageBus
   let communication
+  let recorder
 
   beforeEach(() => {
     fakeMessageBus = new FakeMessageBus()
     communication = new MainCommunication(fakeMessageBus)
+    recorder = new Recorder()
   })
 
   describe('sendMysteriumClientLog', () => {
@@ -25,42 +42,34 @@ describe('MainCommunication', () => {
 
   describe('onConnectionStatusChange', () => {
     it('receives message from bus', () => {
-      let callbackData = null
-      communication.onConnectionStatusChange((data) => {
-        callbackData = data
-      })
+      communication.onConnectionStatusChange(recorder.getCallback())
 
       const data = { oldStatus: 'old', newStatus: 'new' }
       fakeMessageBus.triggerOn(messages.CONNECTION_STATUS_CHANGED, data)
 
-      expect(callbackData).to.eql(data)
+      expect(recorder.invoked).to.eql(true)
+      expect(recorder.data).to.eql(data)
     })
   })
 
   describe('onCurrentIdentityChange', () => {
     it('receives message from bus', () => {
-      let callbackData = null
-      communication.onCurrentIdentityChange((data) => {
-        callbackData = data
-      })
+      communication.onCurrentIdentityChange(recorder.getCallback())
 
       const data = { id: '0xC001FACE00000123' }
       fakeMessageBus.triggerOn(messages.CURRENT_IDENTITY_CHANGED, data)
 
-      expect(callbackData).to.eql(data)
+      expect(recorder.invoked).to.eql(true)
+      expect(recorder.data).to.eql(data)
     })
   })
 
   describe('onRendererLoaded', () => {
     it('receives message from bus', () => {
-      let callbackInvoked = false
-      communication.onRendererLoaded(() => {
-        callbackInvoked = true
-      })
-
+      communication.onRendererLoaded(recorder.getCallback())
       fakeMessageBus.triggerOn(messages.RENDERER_LOADED)
 
-      expect(callbackInvoked).to.eql(true)
+      expect(recorder.invoked).to.eql(true)
     })
   })
 })

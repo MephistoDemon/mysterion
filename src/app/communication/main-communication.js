@@ -27,7 +27,6 @@ class MainCommunication {
     this._send(messages.APP_ERROR, {message: error, hint: hint, fatal: fatal})
   }
 
-  // TODO: remaining other messages
   sendMysteriumClientLog (dto: MysteriumClientLogDTO): void {
     this._send(messages.MYSTERIUM_CLIENT_LOG, dto)
   }
