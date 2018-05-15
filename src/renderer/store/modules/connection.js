@@ -19,7 +19,7 @@ type ConnectionStore = {
   ip: ?string,
   status: ConnectionStatus,
   statistics: Object,
-  actionLoopers: Map<string, FunctionLooper>
+  actionLoopers: { [string]: FunctionLooper }
 }
 
 class ActionLooper {
@@ -59,7 +59,7 @@ const getters = {
   connection (state: ConnectionStore): ConnectionStore {
     return state
   },
-  ip (state: ConnectionStore): string {
+  ip (state: ConnectionStore): ?string {
     return state.ip
   }
 }
@@ -181,7 +181,7 @@ function actionsFactory (
         }
 
         commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
-        let error = new Error('Connection to node failed.')
+        const error: Object = new Error('Connection to node failed.')
         error.original = err
         eventTracker.connectEnded(error.toString())
         throw error
