@@ -6,8 +6,6 @@ import { describe, beforeEach, it } from '../../../helpers/dependencies'
 import { CallbackRecorder } from '../../../helpers/utils'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 
-// TODO: add specs for new methods
-
 describe('MainCommunication', () => {
   let fakeMessageBus
   let communication
