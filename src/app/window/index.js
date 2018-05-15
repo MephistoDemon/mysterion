@@ -7,42 +7,43 @@ import type {HeaderRule} from './requestHeaders'
 import registerHeaderRules from './requestHeaders'
 
 class Window implements RequestRewriter {
-  window: BrowserWindow
+  browserWindow: BrowserWindow
   url: string
+  willQuitApp: boolean
 
   constructor (browserWindow: BrowserWindow, url: string) {
     this.url = url
-    this.window = browserWindow
+    this.browserWindow = browserWindow
   }
 
   registerRequestHeadersRule (rule: HeaderRule) {
-    registerHeaderRules(this.window.webContents.session, rule)
+    registerHeaderRules(this.browserWindow.webContents.session, rule)
   }
 
   exists () {
-    return !!this.window
+    return !!this.browserWindow
   }
 
   show () {
-    this.window.show()
+    this.browserWindow.show()
   }
 
   hide () {
-    this.window.hide()
+    this.browserWindow.hide()
   }
 
   open () {
-    this.window.loadURL(this.url)
-    this.window.once('ready-to-show', () => {
-      this.window.show()
+    this.browserWindow.loadURL(this.url)
+    this.browserWindow.once('ready-to-show', () => {
+      this.browserWindow.show()
     })
-    this.window.on('closed', () => {
-      this.window = null
+    this.browserWindow.on('closed', () => {
+      this.browserWindow = null
     })
-    this.window.on('before-quit', () => {
+    this.browserWindow.on('before-quit', () => {
       this.willQuitApp = true
     })
-    this.window.on('close', (e) => {
+    this.browserWindow.on('close', (e) => {
       if (!this.willQuitApp) {
         /* the user only tried to close the window */
         e.preventDefault()
@@ -52,12 +53,12 @@ class Window implements RequestRewriter {
   }
 
   resize (size: Size) {
-    this.window.setSize(size.width, size.height)
+    this.browserWindow.setSize(size.width, size.height)
   }
 
   toggleDevTools () {
-    this.window.show()
-    this.window.toggleDevTools()
+    this.browserWindow.show()
+    this.browserWindow.toggleDevTools()
   }
 }
 

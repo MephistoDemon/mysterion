@@ -16,24 +16,24 @@ const fakeBrowserSession = {
   }
 }
 
-const customRules: Array<HeaderRule> = [
-  {
-    urls: ['some url'],
-    write: function (headers) {
-      headers['CustomHeader'] = 'FakeHeader'
-      return headers
-    }
-  },
-  {
-    urls: ['some other url'],
-    write: function (headers) {
-      headers['CustomOtherHeader'] = 'FakeOtherHeader'
-      return headers
-    }
-  }
-]
-
 describe('registerHeaderRules', () => {
+  const customRules: Array<HeaderRule> = [
+    {
+      urls: ['some url'],
+      write: function (headers) {
+        headers['CustomHeader'] = 'FakeHeader'
+        return headers
+      }
+    },
+    {
+      urls: ['some other url'],
+      write: function (headers) {
+        headers['CustomOtherHeader'] = 'FakeOtherHeader'
+        return headers
+      }
+    }
+  ]
+
   before(() => {
     defaultHeaders = {requestHeaders: {}}
   })

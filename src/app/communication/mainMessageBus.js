@@ -7,7 +7,7 @@ type Sender = (channel: string, data?: mixed) => void
 
 class MainMessageBus implements MessageBus {
   _send: Sender
-  _captureException: Function
+  _captureException: (Error) => void
 
   constructor (send: Sender, captureException: (Error) => void) {
     this._send = send

@@ -1,9 +1,10 @@
 // @flow
+import RavenJs from 'raven-js'
 
 class FeedbackForm {
   raven: Object
 
-  constructor (raven: Object) {
+  constructor (raven: RavenJs) {
     this.raven = raven
   }
 
