@@ -3,36 +3,19 @@ import MainCommunication from '../../../../src/app/communication/main-communicat
 import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
 import { describe, beforeEach, it } from '../../../helpers/dependencies'
-
-class Recorder {
-  invoked: boolean
-  data: any
-
-  constructor () {
-    this.invoked = false
-    this.data = null
-  }
-  getCallback (): (any) => void {
-    return this._record.bind(this)
-  }
-
-  _record (data: any): void {
-    this.invoked = true
-    this.data = data
-  }
-}
+import { CallbackRecorder } from '../../../helpers/utils'
 
 // TODO: add specs for new methods
 
 describe('MainCommunication', () => {
   let fakeMessageBus
   let communication
-  let recorder
+  let callbackRecorder
 
   beforeEach(() => {
     fakeMessageBus = new FakeMessageBus()
     communication = new MainCommunication(fakeMessageBus)
-    recorder = new Recorder()
+    callbackRecorder = new CallbackRecorder()
   })
 
   describe('sendMysteriumClientLog', () => {
@@ -47,34 +30,34 @@ describe('MainCommunication', () => {
 
   describe('onConnectionStatusChange', () => {
     it('receives message from bus', () => {
-      communication.onConnectionStatusChange(recorder.getCallback())
+      communication.onConnectionStatusChange(callbackRecorder.getCallback())
 
       const data = { oldStatus: 'old', newStatus: 'new' }
       fakeMessageBus.triggerOn(messages.CONNECTION_STATUS_CHANGED, data)
 
-      expect(recorder.invoked).to.eql(true)
-      expect(recorder.data).to.eql(data)
+      expect(callbackRecorder.invoked).to.eql(true)
+      expect(callbackRecorder.data).to.eql(data)
     })
   })
 
   describe('onCurrentIdentityChange', () => {
     it('receives message from bus', () => {
-      communication.onCurrentIdentityChange(recorder.getCallback())
+      communication.onCurrentIdentityChange(callbackRecorder.getCallback())
 
       const data = { id: '0xC001FACE00000123' }
       fakeMessageBus.triggerOn(messages.CURRENT_IDENTITY_CHANGED, data)
 
-      expect(recorder.invoked).to.eql(true)
-      expect(recorder.data).to.eql(data)
+      expect(callbackRecorder.invoked).to.eql(true)
+      expect(callbackRecorder.data).to.eql(data)
     })
   })
 
   describe('onRendererLoaded', () => {
     it('receives message from bus', () => {
-      communication.onRendererLoaded(recorder.getCallback())
+      communication.onRendererLoaded(callbackRecorder.getCallback())
       fakeMessageBus.triggerOn(messages.RENDERER_LOADED)
 
-      expect(recorder.invoked).to.eql(true)
+      expect(callbackRecorder.invoked).to.eql(true)
     })
   })
 })
