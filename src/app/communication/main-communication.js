@@ -1,6 +1,6 @@
 // @flow
 
-import messages from './index'
+import messages from './messages'
 import type {MessageBus} from './messageBus'
 import type {
   RequestConnectionDto,
@@ -18,6 +18,10 @@ class MainCommunication {
 
   constructor (messageBus: MessageBus) {
     this._messageBus = messageBus
+  }
+
+  sendErrorToRenderer (error: string, hint: string = '', fatal: boolean = true) {
+    this._send(messages.APP_ERROR, {message: error, hint: hint, fatal: fatal})
   }
 
   // TODO: remaining other messages

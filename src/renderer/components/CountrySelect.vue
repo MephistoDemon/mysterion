@@ -33,7 +33,6 @@
   import {getCountryCodeFromProposal, getCountryNameFromProposal} from '@/../app/countries'
   import Multiselect from 'vue-multiselect'
   import IconWorld from '@/assets/img/icon--world.svg'
-  import bugReporter from '@/../app/bugReporting/bug-reporting'
 
   function proposalToCountry (proposal) {
     return {
@@ -45,7 +44,7 @@
 
   export default {
     name: 'CountrySelect',
-    dependencies: ['rendererCommunication'],
+    dependencies: ['rendererCommunication', 'bugReporter'],
     components: {
       Multiselect,
       IconWorld
@@ -83,10 +82,10 @@
         this.countriesAreLoading = false
 
         if (proposals.length < 1) {
-          const error = new Error(messages.countriesLoadingFailed)
+          const error = new Error(messages.countryListIsEmpty)
 
           this.$store.commit(type.SHOW_ERROR, error)
-          bugReporter.renderer.captureException(error)
+          this.bugReporter.captureException(error)
           return
         }
 

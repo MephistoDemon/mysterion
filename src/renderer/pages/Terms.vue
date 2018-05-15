@@ -14,7 +14,7 @@
 </template>
 <script>
   import {mapGetters} from 'vuex'
-  import communication from '../../app/communication'
+  import communication from '../../app/communication/messages'
   import RendererMessageBus from '../../app/communication/rendererMessageBus'
 
   export default {

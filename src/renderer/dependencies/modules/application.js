@@ -10,6 +10,9 @@ import type {ApplicationInfo} from '../../../app/statistics/events'
 import {createEventFactory} from '../../../app/statistics/events'
 
 function bootstrap (container: Container) {
+  const mysterionReleaseID = remote.getGlobal('__mysterionReleaseID')
+  container.constant('mysterionReleaseID', mysterionReleaseID)
+
   container.service(
     'rendererCommunication',
     [],
@@ -22,7 +25,7 @@ function bootstrap (container: Container) {
     'statsApplicationInfo',
     {
       name: 'mysterion_application',
-      version: `${remote.getGlobal('__version')}(${remote.getGlobal('__buildNumber')})`
+      version: mysterionReleaseID
     }
   )
   container.service(

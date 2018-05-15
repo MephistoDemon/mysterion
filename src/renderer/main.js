@@ -1,14 +1,12 @@
-import Vue from 'vue'
 import dependencies from './dependencies'
-import bugReporter from '../app/bugReporting/bug-reporting'
 
-bugReporter.renderer.install(Vue)
+const bugReporter = dependencies.get('bugReporter')
 
 const application = dependencies.get('vue-application')
 application.$mount()
 
 window.addEventListener('unhandledrejection', (evt) => {
-  bugReporter.renderer.captureException(evt.reason, {
+  bugReporter.captureException(evt.reason, {
     extra: evt.reason.response ? evt.reason.response.data : evt.reason
   })
 })

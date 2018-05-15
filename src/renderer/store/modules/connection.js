@@ -1,7 +1,8 @@
 // @flow
 import type from '../types'
+import type {Container} from '../../../app/di'
+
 import messages from '../../../app/messages'
-import bugReporter from '../../../app/bugReporting/bug-reporting'
 import {FunctionLooper} from '../../../libraries/functionLooper'
 import config from '@/config'
 import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/events-connection'
@@ -88,7 +89,8 @@ function actionsFactory (
   tequilapi: TequilapiClient,
   rendererCommunication: RendererCommunication,
   statsCollector: StatsCollector,
-  statsEventsFactory: StatsEventsFactory
+  statsEventsFactory: StatsEventsFactory,
+  dependencies: Container
 ) {
   return {
     async [type.CONNECTION_IP] ({commit}) {
@@ -99,7 +101,7 @@ function actionsFactory (
         if (err.isTimeoutError() || err.isServiceUnavailableError()) {
           return
         }
-        bugReporter.renderer.captureException(err)
+        dependencies.get('bugReporter').captureException(err)
       }
     },
     [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperConfig): FunctionLooper {

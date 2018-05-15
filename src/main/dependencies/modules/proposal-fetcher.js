@@ -1,7 +1,7 @@
 // @flow
 
 import ProposalFetcher from '../../../app/data-fetchers/proposal-fetcher'
-import type {Container} from '../../../app/di/index'
+import type {Container} from '../../../app/di'
 
 function bootstrap (container: Container) {
   container.constant(

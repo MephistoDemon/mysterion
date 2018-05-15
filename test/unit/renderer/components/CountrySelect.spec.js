@@ -1,6 +1,6 @@
 import {createLocalVue, mount} from '@vue/test-utils'
 import CountrySelect from '@/components/CountrySelect'
-import messages from '../../../../src/app/communication'
+import messages from '../../../../src/app/communication/messages'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import DIContainer from '../../../../src/app/di/vue-container'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
@@ -41,11 +41,16 @@ const communicationProposalsResponse = [
   }
 ]
 
+const bugReporterMock = {
+  captureException: () => {}
+}
+
 function mountWith (rendererCommunication, store) {
   const vue = createLocalVue()
 
   const dependencies = new DIContainer(vue)
   dependencies.constant('rendererCommunication', rendererCommunication)
+  dependencies.constant('bugReporter', bugReporterMock)
 
   return mount(CountrySelect, {
     localVue: vue,
@@ -58,7 +63,7 @@ describe('CountrySelect', () => {
 
   const fakeMessageBus = new FakeMessageBus()
 
-  describe.skip('errors', () => {
+  describe('errors', () => {
     let store
     beforeEach(() => {
       store = new Store({
@@ -74,19 +79,12 @@ describe('CountrySelect', () => {
     })
 
     it(`commits ${translations.countryListIsEmpty} when empty proposal list is received`, async () => {
-      fakeMessageBus.triggerOn(messages.PROPOSALS_UPDATE, null)
+      fakeMessageBus.triggerOn(messages.PROPOSALS_UPDATE, [])
 
       wrapper.vm.fetchCountries()
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.$store.state.errorMessage).to.eql(translations.countryListIsEmpty)
-    })
-
-    it(`commits ${translations.countryLoadingFailed} when proposal listing throws`, async () => {
-      wrapper.vm.fetchCountries()
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.$store.state.errorMessage).to.eql(translations.countryLoadingFailed)
     })
   })
 

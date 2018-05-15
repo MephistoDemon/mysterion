@@ -22,9 +22,8 @@
   import type from '@/store/types'
   import AppVisual from '@/partials/AppVisual'
   import AppNav from '@/partials/AppNav'
-  import messages from '../app/communication'
+  import messages from '../app/communication/messages'
 
-  import {remote} from 'electron'
   import AppError from '@/partials/AppError'
   import AppModal from '@/partials/AppModal'
   import RendererMessageBus from '../app/communication/rendererMessageBus'
@@ -38,14 +37,12 @@
       AppError,
       AppModal
     },
+    dependencies: ['mysterionReleaseID'],
     computed: {
       ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
       version () {
-        const mysterionSemanticVersion = remote.getGlobal('__version')
-        const mysterionBuildNumber = remote.getGlobal('__buildNumber')
-        const mysterionVisibleVersion = `${mysterionSemanticVersion}(${mysterionBuildNumber})`
         const clientVisibleVersion = this.clientBuildInfo.buildNumber ? this.clientBuildInfo.buildNumber : ''
-        return `v${mysterionVisibleVersion}.${clientVisibleVersion}`
+        return `v${this.mysterionReleaseID}.${clientVisibleVersion}`
       }
     },
     async mounted () {

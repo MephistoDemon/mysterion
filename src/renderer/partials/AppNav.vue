@@ -16,7 +16,7 @@
                     </a>
                 </li>
                 <li class="nav__item">
-                    <a class="nav__trigger" href="#" @click="openRemoteLink('https://mysterium.zendesk.com/hc/en-us/requests/new')">
+                    <a class="nav__trigger" href="#" @click="reportIssue">
                         <icon-issue class="nav__icon nav__icon--issue"/>
                         <span class="nav__text">report issue</span>
                     </a>
@@ -44,13 +44,11 @@
 
   export default {
     name: 'AppNav',
+    dependencies: ['feedbackForm'],
     components: {
       IconEye,
       IconIssue,
       IconQuit
-    },
-    data () {
-      return {}
     },
     computed: {
       // mix the getters into computed with object spread operator
@@ -63,6 +61,9 @@
       },
       openRemoteLink (url) {
         shell.openExternal(url)
+      },
+      reportIssue () {
+        this.feedbackForm.show()
       }
     }
   }
