@@ -6,7 +6,7 @@ const COUNTRY_NAME_UNKNOWN = 'N/A'
 
 type Country = {
   id: string,
-  code: string,
+  code: ?string,
   name: string
 }
 
@@ -67,13 +67,13 @@ function getCountryNameFromProposal (proposal: ProposalDTO): string {
 }
 
 function getCountryCodeFromProposal (proposal: ProposalDTO): ?string {
-  if (typeof proposal.serviceDefinition === 'undefined') {
+  if (proposal.serviceDefinition == null) {
     return null
   }
-  if (typeof proposal.serviceDefinition.locationOriginate === 'undefined') {
+  if (proposal.serviceDefinition.locationOriginate == null) {
     return null
   }
-  if (typeof proposal.serviceDefinition.locationOriginate.country === 'undefined') {
+  if (proposal.serviceDefinition.locationOriginate.country == null) {
     return null
   }
 

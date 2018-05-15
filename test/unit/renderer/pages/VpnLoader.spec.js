@@ -12,6 +12,7 @@ import errorStore from '@/store/modules/errors'
 import VpnLoader from '@/pages/VpnLoader'
 
 import {nextTick} from '../../../helpers/utils'
+import {describe, it, before, after} from '../../../helpers/dependencies'
 import config from '@/config'
 import messages from '../../../../src/app/messages'
 import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
@@ -57,7 +58,7 @@ describe('VpnLoader', () => {
     return vm
   }
 
-  function tequilapiMockCreate (version: string): TequilapiClient {
+  function tequilapiMockCreate (version: string): Object {
     const healtcheckResponse = {
       version: {
         commit: version
@@ -69,23 +70,23 @@ describe('VpnLoader', () => {
     }
   }
 
-  function tequilapiMockIdentitiesList (tequilapi: TequilapiClient, identities: Array<IdentityDTO>) {
+  function tequilapiMockIdentitiesList (tequilapi: Object, identities: Array<IdentityDTO>) {
     tequilapi.identitiesList = () => Promise.resolve(identities)
   }
 
-  function tequilapiMockIdentitiesListError (tequilapi: TequilapiClient, error: Error) {
+  function tequilapiMockIdentitiesListError (tequilapi: Object, error: Error) {
     tequilapi.identitiesList = () => Promise.reject(error)
   }
 
-  function tequilapiMockIdentityCreate (tequilapi: TequilapiClient, identity: IdentityDTO) {
+  function tequilapiMockIdentityCreate (tequilapi: Object, identity: IdentityDTO) {
     tequilapi.identityCreate = () => Promise.resolve(identity)
   }
 
-  function tequilapiMockIdentityUnlock (tequilapi: TequilapiClient) {
+  function tequilapiMockIdentityUnlock (tequilapi: Object) {
     tequilapi.identityUnlock = () => Promise.resolve()
   }
 
-  function tequilapiMockIdentityUnlockError (tequilapi: TequilapiClient, error: Error) {
+  function tequilapiMockIdentityUnlockError (tequilapi: Object, error: Error) {
     tequilapi.identityUnlock = () => Promise.reject(error)
   }
 
@@ -101,7 +102,7 @@ describe('VpnLoader', () => {
     let vm
     before(async () => {
       const tequilapi = tequilapiMockCreate('caed3112')
-      tequilapiMockIdentitiesList(tequilapi, [{id: '0xC001FACE'}])
+      tequilapiMockIdentitiesList(tequilapi, [new IdentityDTO({id: '0xC001FACE'})])
       tequilapiMockIdentityUnlock(tequilapi)
 
       vm = await mountAndPrepareLoadingScreen(tequilapi)
@@ -124,7 +125,7 @@ describe('VpnLoader', () => {
     before(async () => {
       const tequilapi = tequilapiMockCreate('caed3112')
       tequilapiMockIdentitiesList(tequilapi, [])
-      tequilapiMockIdentityCreate(tequilapi, {id: '0xC001FACY'})
+      tequilapiMockIdentityCreate(tequilapi, new IdentityDTO({id: '0xC001FACY'}))
       tequilapiMockIdentityUnlock(tequilapi)
 
       vm = await mountAndPrepareLoadingScreen(tequilapi)
@@ -167,7 +168,7 @@ describe('VpnLoader', () => {
       let vm
       before(async () => {
         const tequilapi = tequilapiMockCreate('caed3112')
-        tequilapiMockIdentitiesList(tequilapi, [{id: '0xC001FACE'}])
+        tequilapiMockIdentitiesList(tequilapi, [new IdentityDTO({id: '0xC001FACE'})])
         tequilapiMockIdentityUnlockError(tequilapi, new Error('Failed'))
 
         vm = await mountComponent(tequilapi)

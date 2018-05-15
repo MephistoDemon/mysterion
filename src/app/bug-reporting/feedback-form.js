@@ -4,7 +4,7 @@ import RavenJs from 'raven-js'
 class FeedbackForm {
   raven: Object
 
-  constructor (raven: RavenJs) {
+  constructor (raven: typeof RavenJs) {
     this.raven = raven
   }
 

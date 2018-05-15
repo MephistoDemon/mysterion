@@ -14,7 +14,7 @@ class AxiosAdapter implements HttpInterface {
     this._timeout = defaultTimeout
   }
 
-  get (path: string, query: ?HttpQueryParams, timeout: ?number): Promise<?mixed> {
+  get (path: string, query: ?HttpQueryParams, timeout: ?number): Promise<?any> {
     const options = this._decorateOptions(timeout)
     options.params = query
 
@@ -23,19 +23,19 @@ class AxiosAdapter implements HttpInterface {
     )
   }
 
-  post (path: string, data: mixed, timeout: ?number): Promise<?mixed> {
+  post (path: string, data: mixed, timeout: ?number): Promise<?any> {
     return decorateResponse(
       this._axios.post(path, data, this._decorateOptions(timeout))
     )
   }
 
-  delete (path: string, timeout: ?number): Promise<?mixed> {
+  delete (path: string, timeout: ?number): Promise<?any> {
     return decorateResponse(
       this._axios.delete(path, this._decorateOptions(timeout))
     )
   }
 
-  put (path: string, data: mixed, timeout: ?number): Promise<?mixed> {
+  put (path: string, data: mixed, timeout: ?number): Promise<?any> {
     return decorateResponse(
       this._axios.put(path, data, this._decorateOptions(timeout))
     )

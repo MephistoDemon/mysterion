@@ -13,8 +13,8 @@ function bootstrap (container: Container) {
     'bugReporter',
     ['bugReporter.sentryURL', 'bugReporter.config'],
     (sentryURL, config) => {
-      const bugReporter = new BugReporterMain()
-      bugReporter.install(sentryURL, config)
+      const bugReporter = new BugReporterMain(sentryURL, config)
+      bugReporter.install()
       return bugReporter
     }, bugReporterInstallOnce
   )

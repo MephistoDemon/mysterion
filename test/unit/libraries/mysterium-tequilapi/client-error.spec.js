@@ -1,5 +1,6 @@
 // @flow
 import TequilapiClientError from '../../../../src/libraries/mysterium-tequilapi/client-error'
+import { describe, it, expect } from '../../../helpers/dependencies'
 
 describe('TequilapiClientError', () => {
   it('construct with parent exception', () => {
@@ -24,7 +25,7 @@ describe('TequilapiClientError', () => {
   it('isTimeoutError()', () => {
     let original
 
-    original = new Error()
+    original = (new Error(): Object)
     original.code = 'ECONNABORTED'
     expect(new TequilapiClientError(original).isTimeoutError()).to.be.true
 
@@ -35,7 +36,7 @@ describe('TequilapiClientError', () => {
   it('isRequestClosedError()', () => {
     let original
 
-    original = new Error()
+    original = (new Error(): Object)
     original.response = {status: 499}
     expect(new TequilapiClientError(original).isRequestClosedError()).to.be.true
 
@@ -46,7 +47,7 @@ describe('TequilapiClientError', () => {
   it('isServiceUnavailableError()', () => {
     let original
 
-    original = new Error()
+    original = (new Error(): Object)
     original.response = {status: 503}
     expect(new TequilapiClientError(original).isServiceUnavailableError()).to.be.true
 
