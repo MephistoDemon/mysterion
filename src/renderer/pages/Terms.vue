@@ -14,21 +14,19 @@
 </template>
 <script>
   import {mapGetters} from 'vuex'
-  import dependencies from '../dependencies'
-
-  function answerTerms (answer) {
-    const communication = dependencies.get('rendererCommunication')
-    communication.sendTermsAnswered({ answer })
-  }
 
   export default {
     name: 'terms',
+    dependencies: ['rendererCommunication'],
     methods: {
       accept () {
-        answerTerms(true)
+        this._answerTerms(true)
       },
       decline () {
-        answerTerms(false)
+        this._answerTerms(false)
+      },
+      _answerTerms (answer) {
+        this.rendererCommunication.sendTermsAnswered({answer})
       }
     },
     computed: {
