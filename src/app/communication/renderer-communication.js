@@ -6,8 +6,8 @@ import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
   MysteriumClientLogDTO,
-  RequestConnectionDto,
-  ProposalUpdateDto,
+  RequestConnectionDTO,
+  ProposalUpdateDTO,
   RequestTermsDto,
   TermsAnsweredDTO,
   AppErrorDTO,
@@ -46,7 +46,7 @@ class RendererCommunication {
     return this._send(messages.TERMS_ANSWERED, dto)
   }
 
-  onConnectionRequest (callback: (RequestConnectionDto) => void) {
+  onConnectionRequest (callback: (RequestConnectionDTO) => void) {
     this._on(messages.CONNECTION_REQUEST, callback)
   }
 
@@ -54,7 +54,7 @@ class RendererCommunication {
     this._on(messages.CONNECTION_CANCEL, callback)
   }
 
-  onProposalUpdate (callback: (ProposalUpdateDto) => void) {
+  onProposalUpdate (callback: (ProposalUpdateDTO) => void) {
     this._on(messages.PROPOSALS_UPDATE, callback)
   }
 

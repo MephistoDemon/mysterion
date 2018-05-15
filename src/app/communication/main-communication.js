@@ -3,11 +3,11 @@
 import messages from './messages'
 import type {MessageBus} from './messageBus'
 import type {
-  RequestConnectionDto,
+  RequestConnectionDTO,
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
   MysteriumClientLogDTO,
-  ProposalUpdateDto,
+  ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
   AppErrorDTO
@@ -52,7 +52,7 @@ class MainCommunication {
     this._on(messages.TERMS_ANSWERED, callback)
   }
 
-  sendProposals (proposals: ProposalUpdateDto) {
+  sendProposals (proposals: ProposalUpdateDTO) {
     this._send(messages.PROPOSALS_UPDATE, proposals)
   }
 
@@ -60,7 +60,7 @@ class MainCommunication {
     this._send(messages.CONNECTION_CANCEL)
   }
 
-  sendConnectionRequest (data: RequestConnectionDto) {
+  sendConnectionRequest (data: RequestConnectionDTO) {
     this._send(messages.CONNECTION_REQUEST, data)
   }
 

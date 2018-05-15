@@ -2,8 +2,6 @@
 import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 
-// TODO: unify "DTO" and "Dto" naming
-
 export type ConnectionStatusChangeDTO = {
   oldStatus: ConnectionStatus,
   newStatus: ConnectionStatus
@@ -18,9 +16,9 @@ export type CurrentIdentityChangeDTO = {
   id: string
 }
 
-export type ProposalUpdateDto = Array<ProposalDTO>
+export type ProposalUpdateDTO = Array<ProposalDTO>
 
-export type RequestConnectionDto = {
+export type RequestConnectionDTO = {
   providerId: string
 }
 
