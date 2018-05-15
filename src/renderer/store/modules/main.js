@@ -13,14 +13,16 @@ const state = {
   showError: false
 }
 
+// TODO: add type for state
+
 const getters = {
-  loading: state => (state.init === type.INIT_PENDING),
-  visual: state => state.visual,
-  navOpen: state => state.navOpen,
-  navVisible: state => state.navVisible && !(state.init === type.INIT_PENDING),
-  clientBuildInfo: state => state.clientBuildInfo,
-  errorMessage: state => state.errorMessage,
-  showError: state => state.showError
+  loading: (state: Object) => (state.init === type.INIT_PENDING),
+  visual: (state: Object) => state.visual,
+  navOpen: (state: Object) => state.navOpen,
+  navVisible: (state: Object) => state.navVisible && !(state.init === type.INIT_PENDING),
+  clientBuildInfo: (state: Object) => state.clientBuildInfo,
+  errorMessage: (state: Object) => state.errorMessage,
+  showError: (state: Object) => state.showError
 }
 
 const mutations = {
