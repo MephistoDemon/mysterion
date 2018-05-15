@@ -10,6 +10,7 @@ import ConnectionStatisticsDTO from './dto/connection-statistics'
 import ConnectionIPDTO from './dto/connection-ip'
 import ConnectionStatusDTO from './dto/connection-status'
 import ConnectionRequestDTO from './dto/connection-request'
+import NodeLocationDTO from './dto/node-location'
 import {TIMEOUT_DISABLED} from './timeouts'
 
 class TequilapiClient {
@@ -89,6 +90,12 @@ class TequilapiClient {
     const response = await this.http.get('connection/statistics')
 
     return new ConnectionStatisticsDTO(response)
+  }
+
+  async location (timeout: ?number): Promise<NodeLocationDTO> {
+    const response = await this.http.get('location', null, timeout)
+
+    return new NodeLocationDTO(response)
   }
 }
 

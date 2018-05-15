@@ -37,7 +37,7 @@ describe('Connection statistics', () => {
 
   it('sends connect failed event', async () => {
     const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider, mockedEventFactory)
-    eventTracker.connectStarted(connectionDetails)
+    eventTracker.connectStarted(connectionDetails, 'original country')
     await eventTracker.connectEnded('some error')
     expect(mockedCollector.events[0]).to.deep.eql(
       {
@@ -57,14 +57,15 @@ describe('Connection statistics', () => {
             localTime: 444
           },
           timeDelta: 123,
-          error: 'some error'
+          error: 'some error',
+          originalCountry: 'original country'
         }
       }
     )
   })
   it('sends connect successful event', async () => {
     const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider, mockedEventFactory)
-    eventTracker.connectStarted(connectionDetails)
+    eventTracker.connectStarted(connectionDetails, 'original country')
     await eventTracker.connectEnded()
     expect(mockedCollector.events[0]).to.deep.eql(
       {
@@ -83,14 +84,15 @@ describe('Connection statistics', () => {
             utcTime: 246,
             localTime: 444
           },
-          timeDelta: 123
+          timeDelta: 123,
+          originalCountry: 'original country'
         }
       }
     )
   })
   it('sends connect canceled event', async () => {
     const eventTracker = new ConnectEventTracker(mockedCollector, mockedTimeProvider, mockedEventFactory)
-    eventTracker.connectStarted(connectionDetails)
+    eventTracker.connectStarted(connectionDetails, 'original country')
     await eventTracker.connectCanceled()
     expect(mockedCollector.events[0]).to.deep.eql(
       {
@@ -109,7 +111,8 @@ describe('Connection statistics', () => {
             utcTime: 246,
             localTime: 444
           },
-          timeDelta: 123
+          timeDelta: 123,
+          originalCountry: 'original country'
         }
       }
     )

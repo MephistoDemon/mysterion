@@ -22,6 +22,7 @@
     async mounted () {
       const {commit, dispatch} = this.$store
       try {
+        this.$store.dispatch(type.LOCATION)
         commit(type.INIT_PENDING)
         const identity = await identityGet(this.$store)
         commit(type.IDENTITY_GET_SUCCESS, identity)

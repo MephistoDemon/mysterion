@@ -10,6 +10,7 @@ import ConnectionStatisticsDTO from '../../../../src/libraries/mysterium-tequila
 import ConnectionIPDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 import ConnectionStatusDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
 import ConnectionRequestDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-request'
+import NodeLocationDTO from '../../../../src/libraries/mysterium-tequilapi/dto/node-location'
 
 describe('TequilapiClient', () => {
   let api
@@ -257,6 +258,32 @@ describe('TequilapiClient', () => {
       mock.onGet('connection/statistics').reply(500)
 
       const e = await capturePromiseError(api.connectionStatistics())
+      expect(e.message).to.equal('Request failed with status code 500')
+    })
+  })
+
+  describe('location()', () => {
+    it('returns response', async () => {
+      const response = {
+        original: {ip: '100.100.100.100', country: 'original country'},
+        current: {ip: '123.123.123.123', country: 'current country'}
+      }
+      mock.onGet('location').reply(200, response)
+
+      const stats = await api.location()
+
+      let dto = new NodeLocationDTO(response)
+      expect(stats.originalCountry).to.deep.equal(dto.originalCountry)
+      expect(stats.originalIP).to.deep.equal(dto.originalIP)
+      expect(stats.currentCountry).to.deep.equal(dto.currentCountry)
+      expect(stats.currentIP).to.deep.equal(dto.currentIP)
+      expect(stats).to.deep.equal(dto)
+    })
+
+    it('handles error', async () => {
+      mock.onGet('location').reply(500)
+
+      const e = await capturePromiseError(api.location())
       expect(e.message).to.equal('Request failed with status code 500')
     })
   })

@@ -16,7 +16,7 @@ import config from '@/config'
 import messages from '../../../../src/app/messages'
 import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
 import TequilapiClient from '../../../../src/libraries/mysterium-tequilapi/client'
-
+import types from '@/store/types'
 Vue.use(Vuex)
 Vue.use(Router)
 
@@ -29,7 +29,12 @@ describe('VpnLoader', () => {
       modules: {
         identity: idStoreFactory(tequilapi),
         main: mainStoreFactory(tequilapi),
-        errors: errorStore
+        errors: errorStore,
+        connection: {
+          actions: {
+            [types.LOCATION]: function () {}
+          }
+        }
       },
       strict: false
     })
