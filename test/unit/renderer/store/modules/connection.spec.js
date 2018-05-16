@@ -3,7 +3,6 @@ import {expect} from 'chai'
 
 import type from '@/store/types'
 import {mutations, actionsFactory} from '@/store/modules/connection'
-import {capturePromiseError} from '../../../../helpers/utils'
 import {describe, it, beforeEach} from '../../../../helpers/dependencies'
 import factoryTequilapiManipulator from './tequilapi-manipulator'
 import {FunctionLooper} from '@/../libraries/functionLooper'
@@ -15,6 +14,7 @@ import {createEventFactory} from '../../../../../src/app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../../../src/app/statistics/events'
 import {ActionLooper, ActionLooperConfig} from '../../../../../src/renderer/store/modules/connection'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
+import DIContainer from '../../../../../src/app/di/jpex-container'
 
 const fakeTequilapi = factoryTequilapiManipulator()
 const fakeMessageBus = new FakeMessageBus()
@@ -28,6 +28,10 @@ function statsEventsFactory (): StatsEventsFactory {
   return createEventFactory({name: 'Test'})
 }
 
+const bugReporterMock = {
+  captureInfoException: () => {}
+}
+
 async function executeAction (action, state = {}, payload = {}) {
   const mutations = []
   const commit = (key, value) => {
@@ -36,7 +40,10 @@ async function executeAction (action, state = {}, payload = {}) {
 
   const dispatch = (action, payload = {}) => {
     const context = {commit, dispatch, state}
-    const actions = actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector, statsEventsFactory)
+    const dependencies = new DIContainer()
+    dependencies.constant('bugReporter', bugReporterMock)
+    const actions =
+      actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector, statsEventsFactory, dependencies)
 
     return actions[action](context, payload)
   }
@@ -377,14 +384,16 @@ describe('actions', () => {
         fakeTequilapi.setConnectFail(true)
       })
 
-      it('throws error', async () => {
+      it('shows error', async () => {
         fakeTequilapi.setConnectFail(true)
         const state = {
           actionLoopers: {}
         }
-        const error = await capturePromiseError(executeAction(type.CONNECT, state))
-        expect(error).to.be.an('error')
-        expect(error.message).to.eql('Connection to node failed.')
+        const committed = await executeAction(type.CONNECT, state)
+        expect(committed[committed.length - 1]).to.eql({
+          key: 'SHOW_ERROR_MESSAGE',
+          value: 'Connection failed. Try another country'
+        })
       })
     })
 

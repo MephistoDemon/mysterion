@@ -93,6 +93,7 @@ function actionsFactory (
   statsEventsFactory: StatsEventsFactory,
   dependencies: Container
 ) {
+  const bugReporter = dependencies.get('bugReporter')
   return {
     async [type.CONNECTION_IP] ({commit}) {
       try {
@@ -102,7 +103,7 @@ function actionsFactory (
         if (isTimeoutError(err) || isServiceUnavailableError(err)) {
           return
         }
-        dependencies.get('bugReporter').captureException(err)
+        bugReporter.captureException(err)
       }
     },
     [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperConfig): FunctionLooper {
@@ -185,7 +186,7 @@ function actionsFactory (
         const error: Object = new Error('Connection to node failed.')
         error.original = err
         eventTracker.connectEnded(error.toString())
-        throw error
+        bugReporter.captureInfoException(err)
       } finally {
         if (looper) {
           looper.start()
