@@ -85,7 +85,7 @@ function bootstrap (container: Container) {
         resizable: false,
         show: false
       })
-    }, browserWindowIsSingleton)
+    })
 
   container.service(
     'mysterionWindow',
