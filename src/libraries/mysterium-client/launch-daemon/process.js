@@ -19,6 +19,8 @@ import {Tail} from 'tail'
 import path from 'path'
 import logLevels from '../log-levels'
 
+const SYSTEM_LOG = '/var/log/system.log'
+
 /**
  * Spawns 'mysterium_client' daemon on OSX by calling TequilapiClient.healthcheck()
  */
@@ -26,11 +28,11 @@ class Process {
   /**
    * @constructor
    * @param {TequilapiClient} tequilapi - api to be used
-   * @param {string} dataDir - directory where it's looking for logs
+   * @param {string} logDirectory - directory where it's looking for logs
    */
-  constructor (tequilapi, dataDir) {
+  constructor (tequilapi, logDirectory) {
     this.tequilapi = tequilapi
-    this.dataDir = dataDir
+    this.logDirectory = logDirectory
   }
 
   start () {
@@ -44,40 +46,42 @@ class Process {
   }
 
   onLog (level, cb) {
-    tailFile(this._getFileForLevel(level), cb)
+    if (level === logLevels.LOG) {
+      tailFile(path.join(this.logDirectory, 'stdout.log'), cb)
+      return
+    }
+
+    if (level === logLevels.ERROR) {
+      tailFile(path.join(this.logDirectory, 'stderr.log'), cb)
+      tailFile(SYSTEM_LOG, filterLine('network.mysterium.mysteriumclient', cb))
+      return
+    }
+
+    throw new Error(`Unknown daemon logging level: ${level}`)
   }
 
   async stop () {
     await this.tequilapi.stop()
     console.log('Client Quit was successful')
   }
-
-  /**
-   * Converts log level to log files 'stdout.log' or 'stderr.log'
-   *
-   * @param {string} level
-   * @return {string}
-   * @private
-   */
-  _getFileForLevel (level) {
-    switch (level) {
-      case logLevels.LOG:
-        return path.join(this.dataDir, 'stdout.log')
-      case logLevels.ERROR:
-        return path.join(this.dataDir, 'stderr.log')
-      default:
-        throw new Error(`Unknown daemon logging level: ${level}`)
-    }
-  }
 }
 
 function tailFile (filePath, cb) {
-  try {
-    const logTail = new Tail(filePath)
-    logTail.on('line', cb)
-    logTail.on('error', cb)
-  } catch (e) {
-    console.error('log file watching failed. file probably doesn\'t exist: ' + filePath)
+  const logTail = new Tail(filePath)
+  logTail.on('line', cb)
+  logTail.on('error', () => {
+    console.error(`log file watching failed. file probably doesn't exist: ` + filePath)
+  })
+}
+
+function filterLine (filter, cb) {
+  const regex = new RegExp(filter)
+
+  return (data) => {
+    if (!regex.test(data)) {
+      return
+    }
+    cb(data)
   }
 }
 
