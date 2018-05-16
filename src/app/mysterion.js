@@ -21,12 +21,13 @@ import {logLevels as processLogLevels} from '../libraries/mysterium-client'
 import translations from './messages'
 import MainMessageBusCommunication from './communication/main-message-bus-communication'
 import MainMessageBus from './communication/mainMessageBus'
-import {onFirstEvent} from './communication/utils'
+import {onFirstEvent, onFirstEventOrTimeout} from './communication/utils'
 import path from 'path'
 import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import logger from './logger'
 
 const LOG_PREFIX = '[Mysterion] '
+const MYSTERIUM_CLIENT_STARTUP_THRESHOLD = 10000
 
 class Mysterion {
   constructor ({ browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, userSettingsStore, disconnectNotification }) {
@@ -189,7 +190,7 @@ class Mysterion {
       try {
         await this.installer.install()
       } catch (e) {
-        this.communication.sendRendererShowErrorMessage(translations.daemonInstallationError)
+        this.communication.sendRendererShowErrorMessage(translations.processInstallationError)
         throw new Error("Failed to install 'mysterium_client' process. " + e)
       }
     }
@@ -291,8 +292,12 @@ class Mysterion {
   }
 
   _onProcessReady (callback) {
-    onFirstEvent(this.monitoring.subscribeUp.bind(this.monitoring))
+    onFirstEventOrTimeout(this.monitoring.subscribeUp.bind(this.monitoring), MYSTERIUM_CLIENT_STARTUP_THRESHOLD)
       .then(callback)
+      .catch(err => {
+        this.communication.sendRendererShowErrorMessage(translations.processStartError)
+        logException("Failed to start 'mysterium_client' process", err)
+      })
   }
 
   _subscribeProposals () {
@@ -348,8 +353,12 @@ function logInfo (message) {
   logger.info(LOG_PREFIX + message)
 }
 
+function logError (message) {
+  console.error(LOG_PREFIX + message)
+}
+
 function logException (message, err) {
-  logger.error(LOG_PREFIX + message, err)
+  logError(LOG_PREFIX + message + '. ' + err)
 }
 
 export default Mysterion
