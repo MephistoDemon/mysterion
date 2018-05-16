@@ -19,17 +19,10 @@ import fs from 'fs'
 import sudo from 'sudo-prompt'
 import path from 'path'
 import md5 from 'md5'
-
-const DaemonDirectory = '/Library/LaunchDaemons'
-const InverseDomainPackageName = 'network.mysterium.mysteriumclient'
-const PropertyListFile = InverseDomainPackageName + '.plist'
-
-function getDaemonFileName () {
-  return path.join(DaemonDirectory, PropertyListFile)
-}
+import {InverseDomainPackageName, PropertyListName, PropertyListFile} from './config'
 
 function processInstalled () {
-  return fs.existsSync(getDaemonFileName())
+  return fs.existsSync(PropertyListFile)
 }
 
 class Installer {
@@ -91,7 +84,7 @@ class Installer {
 
   _pListChecksumMismatch () {
     let templateChecksum = md5(this.template())
-    let plistChecksum = md5(fs.readFileSync(getDaemonFileName()))
+    let plistChecksum = md5(fs.readFileSync(PropertyListFile))
     return templateChecksum !== plistChecksum
   }
 
@@ -100,15 +93,15 @@ class Installer {
   }
 
   install () {
-    let tempPlistFile = path.join(this.config.runtimeDir, PropertyListFile)
+    let tempPlistFile = path.join(this.config.runtimeDir, PropertyListName)
     let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
     let script = `\
-      cp ${tempPlistFile} ${getDaemonFileName()}\
-      && launchctl load ${getDaemonFileName()}\
+      cp ${tempPlistFile} ${PropertyListFile}\
+      && launchctl load ${PropertyListFile}\
       && launchctl setenv PATH "${envPath}"\
     `
     if (processInstalled()) {
-      script = `launchctl unload ${getDaemonFileName()} && ` + script
+      script = `launchctl unload ${PropertyListFile} && ` + script
     }
     let command = `sh -c '${script}'`
 

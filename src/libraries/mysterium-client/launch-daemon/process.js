@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ * Copyright (C) 2018 The "MysteriumNetwork/mysterion" Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 import {Tail} from 'tail'
 import path from 'path'
 import logLevels from '../log-levels'
+import {InverseDomainPackageName} from './config'
 
 const SYSTEM_LOG = '/var/log/system.log'
 
@@ -53,7 +54,7 @@ class Process {
 
     if (level === logLevels.ERROR) {
       tailFile(path.join(this.logDirectory, 'stderr.log'), cb)
-      tailFile(SYSTEM_LOG, filterLine('network.mysterium.mysteriumclient', cb))
+      tailFile(SYSTEM_LOG, filterLine(InverseDomainPackageName, cb))
       return
     }
 
