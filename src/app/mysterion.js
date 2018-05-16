@@ -45,35 +45,74 @@ class Mysterion {
   }
 
   async bootstrap () {
-    let termsAccepted
-    try {
-      this.terms.load()
-      termsAccepted = this.terms.isAccepted()
-    } catch (e) {
-      termsAccepted = false
-      this.bugReporter.captureException(e)
+    const showTerms = !this._AreTermsAccepted()
+    const browserWindow = this._tryCreatingBrowserWindow()
+    const windowSize = this._getWindowSize(showTerms)
+    this.window = this._tryCreatingWindow(windowSize)
+
+    const send = this._getSendFunction(browserWindow)
+    this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
+    this.communication = new MainCommunication(this.messageBus)
+
+    await this._onRendererLoaded()
+
+    if (showTerms) {
+      const accepted = await this._acceptTermsOrQuit()
+      if (!accepted) {
+        return
+      }
     }
 
-    let browserWindow
+    await this._ensureDaemonInstallation()
+    await this._startProcessAndMonitoring()
+  }
+
+  _getWindowSize (showTerms) {
+    if (showTerms) {
+      return this.config.windows.terms
+    } else {
+      return this.config.windows.app
+    }
+  }
+
+  _AreTermsAccepted () {
     try {
-      browserWindow = this.browserWindowFactory()
-      this.window = this.windowFactory()
-      if (termsAccepted) {
-        this.window.resize(this.config.windows.app)
-      } else {
-        this.window.resize(this.config.windows.terms)
-      }
-      this.window.open()
+      this.terms.load()
+      return this.terms.isAccepted()
+    } catch (e) {
+      this.bugReporter.captureException(e)
+      return false
+    }
+  }
+
+  _getSendFunction (browserWindow) {
+    return browserWindow.webContents.send.bind(browserWindow.webContents)
+  }
+
+  _tryCreatingBrowserWindow () {
+    try {
+      return this.browserWindowFactory()
     } catch (e) {
       console.error(e)
       this.bugReporter.captureException(e)
       throw new Error('Failed to open window.')
     }
+  }
 
-    const send = browserWindow.webContents.send.bind(browserWindow.webContents)
-    this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
-    this.communication = new MainCommunication(this.messageBus)
+  _tryCreatingWindow (size) {
+    try {
+      const window = this.windowFactory()
+      window.resize(size)
+      window.open()
+      return window
+    } catch (e) {
+      console.error(e)
+      this.bugReporter.captureException(e)
+      throw new Error('Failed to open window.')
+    }
+  }
 
+  async _onRendererLoaded () {
     try {
       await onFirstEvent(this.communication.onRendererBooted.bind(this.communication))
     } catch (e) {
@@ -82,25 +121,11 @@ class Mysterion {
       // TODO: add an error wrapper method
       throw new Error('Failed to load app.')
     }
+  }
 
-    // make sure terms are up to date and accepted
-    // declining terms will quit the app
-    if (!termsAccepted) {
-      try {
-        const accepted = await this.acceptTerms()
-        if (!accepted) {
-          console.log('Terms were refused. Quitting.')
-          app.quit()
-          return
-        }
-      } catch (e) {
-        this.bugReporter.captureException(e)
-        return this.communication.sendRendererShowErrorMessage(e.message)
-      }
-    }
-
-    // checks if daemon is installed or daemon file is expired
-    // if the installation fails, it sends a message to the renderer window
+  // checks if daemon is installed or daemon file is expired
+  // if the installation fails, it sends a message to the renderer window
+  async _ensureDaemonInstallation () {
     if (this.installer.needsInstallation()) {
       try {
         await this.installer.install()
@@ -110,9 +135,6 @@ class Mysterion {
         return this.communication.sendRendererShowErrorMessage(translations.daemonInstallationError)
       }
     }
-    // if all is good, let's boot up the client
-    // and start monitoring it
-    await this.startProcess()
   }
 
   onWindowsClosed () {
@@ -133,7 +155,25 @@ class Mysterion {
     }
   }
 
-  async acceptTerms () {
+  // make sure terms are up to date and accepted
+  // declining terms will quit the app
+  async _acceptTermsOrQuit () {
+    try {
+      const accepted = await this._acceptTerms()
+      if (!accepted) {
+        console.log('Terms were refused. Quitting.')
+        app.quit()
+        return false
+      }
+    } catch (e) {
+      this.bugReporter.captureException(e)
+      this.communication.sendRendererShowErrorMessage(e.message)
+      return false
+    }
+    return true
+  }
+
+  async _acceptTerms () {
     this.communication.sendTermsRequest({
       htmlContent: this.terms.getContent()
     })
@@ -162,7 +202,7 @@ class Mysterion {
     return true
   }
 
-  async startProcess () {
+  async _startProcessAndMonitoring () {
     const updateRendererWithHealth = () => {
       try {
         this.communication.sendHealthCheck({ isRunning: this.monitoring.isRunning() })
