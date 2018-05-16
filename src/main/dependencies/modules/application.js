@@ -8,16 +8,14 @@ function bootstrap (container: Container) {
 
   const browserWindowIsSingleton = true
 
-  let browserWindow
   container.factory(
     'mysterionBrowserWindow',
     [],
     () => {
-      browserWindow = new BrowserWindow({
+      return new BrowserWindow({
         resizable: false,
         show: false
       })
-      return browserWindow
     }, browserWindowIsSingleton)
 
   container.service(

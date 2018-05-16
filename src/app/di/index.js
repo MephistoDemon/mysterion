@@ -8,5 +8,5 @@ export interface Container {
   get (name: string): mixed,
   constant (name: string, value: mixed): void,
   service (name: string, dependencies: Array<string>, factory: ServiceFactory): void,
-  factory (name: string, dependencies: Array<string>, factory: ServiceFactory, cache: ?boolean): void
+  factory (name: string, dependencies: Array<string>, factory: ServiceFactory): void
 }
