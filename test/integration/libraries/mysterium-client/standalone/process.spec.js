@@ -3,7 +3,6 @@ import {ChildProcess} from 'child_process'
 import sleep from '../../../../../src/libraries/sleep'
 import Process from '../../../../../src/libraries/mysterium-client/standalone/process'
 import processLogLevels from '../../../../../src/libraries/mysterium-client/log-levels'
-import ClientConfig from '../../../../../src/libraries/mysterium-client/config'
 import tequilapiClientFactory from '../../../../../src/libraries/mysterium-tequilapi/client-factory'
 import path from 'path'
 import os from 'os'
@@ -16,15 +15,15 @@ xdescribe('Standalone Process', () => {
   const tmpDirectory = os.tmpdir()
 
   before(async () => {
-    process = new Process(new ClientConfig(
-      path.join(clientBinDirectory, 'mysterium_client'),
-      path.join(clientBinDirectory, 'config'),
-      path.join(clientBinDirectory, 'openvpn'),
-      tmpDirectory,
-      tmpDirectory,
-      tmpDirectory,
-      tequilapiPort
-    ))
+    process = new Process({
+      clientBin: path.join(clientBinDirectory, 'mysterium_client'),
+      configDir: path.join(clientBinDirectory, 'config'),
+      openVPNBin: path.join(clientBinDirectory, 'openvpn'),
+      dataDir: tmpDirectory,
+      runtimeDir: tmpDirectory,
+      logDir: tmpDirectory,
+      tequilapiPort: tequilapiPort
+    })
     process.start()
     process.onLog(processLogLevels.LOG, data => logs.push(data))
 
