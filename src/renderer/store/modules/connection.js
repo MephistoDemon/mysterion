@@ -173,9 +173,9 @@ function actionsFactory (
     async [type.CONNECT] ({commit, dispatch, state}, connectionRequest: ConnectionRequestDTO) {
       let eventTracker = new ConnectEventTracker(statsCollector, currentUserTime, statsEventsFactory)
       let originalCountry = ''
-      try {
+      if (state.location != null) {
         originalCountry = state.location.originalCountry
-      } catch (err) {}
+      }
       eventTracker.connectStarted(
         {
           consumerId: connectionRequest.consumerId,

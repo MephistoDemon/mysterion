@@ -272,11 +272,11 @@ describe('TequilapiClient', () => {
 
       const stats = await api.location()
 
-      let dto = new NodeLocationDTO(response)
-      expect(stats.originalCountry).to.deep.equal(dto.originalCountry)
-      expect(stats.originalIP).to.deep.equal(dto.originalIP)
-      expect(stats.currentCountry).to.deep.equal(dto.currentCountry)
-      expect(stats.currentIP).to.deep.equal(dto.currentIP)
+      const dto = new NodeLocationDTO(response)
+      expect(stats.originalCountry).to.equal(dto.originalCountry)
+      expect(stats.originalIP).to.equal(dto.originalIP)
+      expect(stats.currentCountry).to.equal(dto.currentCountry)
+      expect(stats.currentIP).to.equal(dto.currentIP)
       expect(stats).to.deep.equal(dto)
     })
 
