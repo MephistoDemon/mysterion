@@ -112,9 +112,10 @@ class Mysterion {
     }
 
     await this._ensureDaemonInstallation()
-    await this._startProcessAndMonitoring()
+    this.startProcess()
+    this.startProcessMonitoringLoop()
     this.updateProposalsLoop()
-    this.startApp()
+    this.renderApplication()
 
     synchronizeUserSettings(this.userSettingsStore, this.communication)
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
@@ -259,7 +260,7 @@ class Mysterion {
     return true
   }
 
-  _startProcessAndMonitoring () {
+  startProcess () {
     const cacheLogs = (level, data) => {
       this.communication.sendMysteriumClientLog({ level, data })
       this.bugReporter.pushToLogCache(level, data)
@@ -269,8 +270,9 @@ class Mysterion {
     await this.process.start()
     this.process.onLog(processLogLevels.LOG, (data) => cacheLogs(processLogLevels.LOG, data))
     this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
+  }
 
-    logInfo("Starting 'mysterium_client' monitoring")
+  startProcessMonitoringLoop () {
     this.monitoring.subscribeUp(() => {
       logInfo("'mysterium_client' is up")
       this.communication.sendMysteriumClientUp()
@@ -279,15 +281,19 @@ class Mysterion {
       logInfo("'mysterium_client' is down")
       this.communication.sendMysteriumClientDown()
     })
-    this.monitoring.start()
 
-    await onFirstEvent(this.monitoring.subscribeUp.bind(this.monitoring))
+    logInfo("Starting 'mysterium_client' monitoring")
+    this.monitoring.start()
   }
 
   updateProposalsLoop () {
-    logInfo("Subscribing 'mysterium_client' proposals")
     this.proposalFetcher.subscribe((proposals) => this.communication.sendProposals(proposals))
-    this.proposalFetcher.start()
+
+    this.monitoring.subscribeUp(() => {
+      logInfo("Subscribing 'mysterium_client' proposals")
+      this.proposalFetcher.start()
+    })
+    this.monitoring.subscribeDown(() => this.proposalFetcher.stop())
 
     this.communication.onProposalUpdateRequest(async () => {
       this.communication.sendProposals(await this.proposalFetcher.fetch())
@@ -297,7 +303,10 @@ class Mysterion {
   /**
    * notifies the renderer that we're good to go and sets up the system tray
    */
-  startApp () {
+  async renderApplication () {
+    // Block rendering until process is launched
+    await onFirstEvent(this.monitoring.subscribeUp.bind(this.monitoring))
+
     console.log(`Notify that 'mysterium_client' process is ready`)
     this.communication.sendMysteriumClientIsReady()
   }
