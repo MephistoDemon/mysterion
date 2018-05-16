@@ -12,11 +12,11 @@ class JpexContainer implements Container {
     this.jpex = Jpex.extend()
   }
 
-  get (name: string): mixed {
+  get (name: string): any {
     return this.jpex.$resolve(name)
   }
 
-  constant (name: string, value: mixed): void {
+  constant (name: string, value: any): void {
     this.jpex.register.constant(name, value)
   }
 

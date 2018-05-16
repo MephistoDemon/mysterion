@@ -1,33 +1,34 @@
-import Process, {logLevel} from '../../../../../src/libraries/mysterium-client/standalone/process'
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import configInjector from 'inject-loader!../../../../../src/app/mysterion-config'
+// @flow
 import {ChildProcess} from 'child_process'
 import sleep from '../../../../../src/libraries/sleep'
+import Process from '../../../../../src/libraries/mysterium-client/standalone/process'
+import processLogLevels from '../../../../../src/libraries/mysterium-client/log-levels'
 import tequilapiClientFactory from '../../../../../src/libraries/mysterium-tequilapi/client-factory'
+import path from 'path'
+import os from 'os'
 
-const config = configInjector({
-  'electron': {
-    app: {
-      getPath () {
-        return './test/mocks'
-      },
-      getAppPath () {
-        return './src/main/'
-      }
-    }
-  }
-}).default
-
-// TODO: re-enable once mysterium client is fixed
 xdescribe('Standalone Process', () => {
   let process, tequilapi
   const logs = []
-  const port = 4055
+  const tequilapiPort = 4055
+  const clientBinDirectory = path.resolve(__dirname, '../../../../../bin')
+  const tmpDirectory = os.tmpdir()
+
   before(async () => {
-    tequilapi = tequilapiClientFactory(`http://127.0.0.1:${port}`)
-    process = new Process(config)
-    process.start(port)
-    process.onLog(logLevel.LOG, data => logs.push(data))
+    process = new Process({
+      clientBin: path.join(clientBinDirectory, 'mysterium_client'),
+      configDir: path.join(clientBinDirectory, 'config'),
+      openVPNBin: path.join(clientBinDirectory, 'openvpn'),
+      dataDir: tmpDirectory,
+      runtimeDir: tmpDirectory,
+      logDir: tmpDirectory,
+      tequilapiPort: tequilapiPort
+    })
+    process.start()
+    process.onLog(processLogLevels.LOG, data => logs.push(data))
+
+    tequilapi = tequilapiClientFactory(`http://127.0.0.1:${tequilapiPort}`)
+
     await sleep(100)
   })
 
@@ -40,7 +41,7 @@ xdescribe('Standalone Process', () => {
   })
 
   it('sends log data to callback on()', () => {
-    expect(logs.pop()).to.include('Api started on: ' + port)
+    expect(logs.pop()).to.include('Api started on: ' + tequilapiPort)
   })
 
   it('responds to healthcheck with uptime', async () => {
