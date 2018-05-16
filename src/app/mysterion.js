@@ -75,7 +75,7 @@ class Mysterion {
     this.communication = new MainCommunication(this.messageBus)
 
     try {
-      await onFirstEvent(this.communication.onRendererLoaded.bind(this.communication))
+      await onFirstEvent(this.communication.onRendererLoadStarted.bind(this.communication))
     } catch (e) {
       console.error(e)
       this.bugReporter.captureException(e)
@@ -95,7 +95,7 @@ class Mysterion {
         }
       } catch (e) {
         this.bugReporter.captureException(e)
-        return this.communication.sendErrorToRenderer(e.message)
+        return this.communication.sendRendererShowErrorMessage(e.message)
       }
     }
 
@@ -107,7 +107,7 @@ class Mysterion {
       } catch (e) {
         this.bugReporter.captureException(e)
         console.error(e)
-        return this.communication.sendErrorToRenderer(translations.daemonInstallationError)
+        return this.communication.sendRendererShowErrorMessage(translations.daemonInstallationError)
       }
     }
     // if all is good, let's boot up the client
@@ -204,7 +204,8 @@ class Mysterion {
       this.communication.sendProposals(await this.proposalFetcher.fetch())
     })
 
-    this.communication.sendAppStart()
+    console.log('Notify window to finish rendering')
+    this.communication.sendRendererLoadContinue()
   }
 
   buildTray () {

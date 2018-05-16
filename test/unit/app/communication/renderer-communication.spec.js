@@ -42,11 +42,11 @@ describe('RendererCommunication', () => {
     })
   })
 
-  describe('sendRendererLoaded', () => {
+  describe('sendRendererLoadStarted', () => {
     it('sends message to bus', () => {
-      communication.sendRendererLoaded()
+      communication.sendRendererLoadStarted()
 
-      expect(fakeMessageBus.lastChannel).to.eql(messages.RENDERER_LOADED)
+      expect(fakeMessageBus.lastChannel).to.eql(messages.RENDERER_LOAD_STARTED)
     })
   })
 
@@ -128,22 +128,22 @@ describe('RendererCommunication', () => {
     })
   })
 
-  describe('onAppStart', () => {
+  describe('onRendererLoadContinue', () => {
     it('receives message from bus', () => {
-      communication.onAppStart(callbackRecorder.getCallback())
+      communication.onRendererLoadContinue(callbackRecorder.getCallback())
 
-      fakeMessageBus.triggerOn(messages.APP_START)
+      fakeMessageBus.triggerOn(messages.RENDERER_LOAD_CONTINUE)
 
       expect(callbackRecorder.invoked).to.eql(true)
     })
   })
 
-  describe('onAppError', () => {
+  describe('onShowRendererError', () => {
     it('receives message from bus', () => {
-      communication.onAppError(callbackRecorder.getCallback())
+      communication.onShowRendererError(callbackRecorder.getCallback())
 
       const data = { message: 'Error', hint: 'Hint', fatal: false }
-      fakeMessageBus.triggerOn(messages.APP_ERROR, data)
+      fakeMessageBus.triggerOn(messages.RENDERER_SHOW_ERROR, data)
 
       expect(callbackRecorder.invoked).to.eql(true)
       expect(callbackRecorder.argument).to.eql(data)

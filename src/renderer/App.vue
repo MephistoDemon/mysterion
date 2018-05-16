@@ -49,7 +49,7 @@
       const communication = new RendererCommunication(messageBus)
 
       // we need to notify the main process that we're up
-      communication.sendRendererLoaded()
+      communication.sendRendererLoadStarted()
       communication.onConnectionRequest((proposal) => {
         this.$store.dispatch(type.CONNECT, {
           consumerId: this.$store.getters.currentIdentity,
@@ -66,7 +66,7 @@
         this.$router.push('/terms')
       })
 
-      communication.onAppStart(() => {
+      communication.onRendererLoadContinue(() => {
         this.$router.push('/load')
       })
 
@@ -74,7 +74,7 @@
         this.$router.push('/')
       })
 
-      communication.onAppError((error) => {
+      communication.onShowRendererError((error) => {
         console.log('App error received from communication:', event)
         this.$store.dispatch(type.OVERLAY_ERROR, error)
       })

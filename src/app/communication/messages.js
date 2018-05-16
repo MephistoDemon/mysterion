@@ -6,14 +6,15 @@ export default {
 
   MYSTERIUM_CLIENT_LOG: 'mysterium.client.log',
   CURRENT_IDENTITY_CHANGED: 'current.identity.changed',
-  RENDERER_LOADED: 'renderer.loaded',
 
   TERMS_REQUESTED: 'terms.requested',
   TERMS_ANSWERED: 'terms.answered',
   TERMS_ACCEPTED: 'terms.accepted',
 
-  APP_START: 'app.start',
-  APP_ERROR: 'app.error',
+  RENDERER_LOAD_STARTED: 'renderer.load.started',
+  RENDERER_LOAD_CONTINUE: 'renderer.load.continue',
+  RENDERER_SHOW_ERROR: 'renderer.show-error',
+
   HEALTHCHECK: 'healthcheck',
   PROPOSALS_UPDATE: 'proposals.update'
 }
