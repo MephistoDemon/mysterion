@@ -4,16 +4,17 @@ export default {
   CONNECTION_REQUEST: 'connection.request',
   CONNECTION_CANCEL: 'connection.cancel',
 
-  MYSTERIUM_CLIENT_LOG: 'mysterium.client.log',
+  MYSTERIUM_CLIENT_READY: 'mysterium-client.ready',
+  MYSTERIUM_CLIENT_LOG: 'mysterium-client.log',
   CURRENT_IDENTITY_CHANGED: 'current.identity.changed',
-  RENDERER_LOADED: 'renderer.loaded',
 
   TERMS_REQUESTED: 'terms.requested',
   TERMS_ANSWERED: 'terms.answered',
   TERMS_ACCEPTED: 'terms.accepted',
 
-  APP_START: 'app.start',
-  APP_ERROR: 'app.error',
+  RENDERER_BOOTED: 'renderer.booted',
+  RENDERER_SHOW_ERROR: 'renderer.show-error',
+
   HEALTHCHECK: 'healthcheck',
   PROPOSALS_UPDATE: 'proposals.update'
 }

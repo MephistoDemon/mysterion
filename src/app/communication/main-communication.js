@@ -3,6 +3,7 @@
 import messages from './messages'
 import type {MessageBus} from './messageBus'
 import type {
+  HealthCheckDTO,
   RequestConnectionDTO,
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
@@ -23,8 +24,27 @@ class MainCommunication {
     this._messageBus = messageBus
   }
 
-  sendErrorToRenderer (error: string, hint: string = '', fatal: boolean = true) {
-    this._send(messages.APP_ERROR, {message: error, hint: hint, fatal: fatal})
+  onRendererBooted (callback: () => void) {
+    this._on(messages.RENDERER_BOOTED, callback)
+  }
+
+  sendRendererShowErrorMessage (error: string) {
+    this.sendRendererShowError({
+      message: error,
+      hint: '',
+      fatal: true
+    })
+  }
+
+  sendRendererShowError (data: AppErrorDTO) {
+    this._send(messages.RENDERER_SHOW_ERROR, data)
+  }
+
+  /**
+   * Notifies the renderer that we're good to go
+   */
+  sendMysteriumClientIsReady () {
+    this._send(messages.MYSTERIUM_CLIENT_READY)
   }
 
   sendMysteriumClientLog (dto: MysteriumClientLogDTO): void {
@@ -51,14 +71,6 @@ class MainCommunication {
     this._send(messages.TERMS_ACCEPTED)
   }
 
-  sendAppStart () {
-    this._send(messages.APP_START)
-  }
-
-  sendAppError (data: AppErrorDTO) {
-    this._send(messages.APP_ERROR, data)
-  }
-
   sendHealthCheck (data: HealthCheckDTO) {
     this._send(messages.HEALTHCHECK, data)
   }
@@ -69,10 +81,6 @@ class MainCommunication {
 
   onCurrentIdentityChange (callback: (CurrentIdentityChangeDTO) => void) {
     this._on(messages.CURRENT_IDENTITY_CHANGED, callback)
-  }
-
-  onRendererLoaded (callback: () => void) {
-    this._on(messages.RENDERER_LOADED, callback)
   }
 
   onProposalUpdateRequest (callback: () => void) {
