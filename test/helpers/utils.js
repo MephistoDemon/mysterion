@@ -31,11 +31,11 @@ async function captureAsyncError (func: () => Promise<any>) {
  */
 class CallbackRecorder {
   invoked: boolean
-  data: any
+  argument: any
 
   constructor () {
     this.invoked = false
-    this.data = null
+    this.argument = null
   }
 
   /**
@@ -48,9 +48,9 @@ class CallbackRecorder {
     return this._record.bind(this)
   }
 
-  _record (data: any): void {
+  _record (argument: any): void {
     this.invoked = true
-    this.data = data
+    this.argument = argument
   }
 }
 

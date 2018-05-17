@@ -68,7 +68,7 @@ describe('RendererCommunication', () => {
       fakeMessageBus.triggerOn(messages.CONNECTION_REQUEST, data)
 
       expect(callbackRecorder.invoked).to.eql(true)
-      expect(callbackRecorder.data).to.eql(data)
+      expect(callbackRecorder.argument).to.eql(data)
     })
   })
 
@@ -90,7 +90,7 @@ describe('RendererCommunication', () => {
       fakeMessageBus.triggerOn(messages.PROPOSALS_UPDATE, data)
 
       expect(callbackRecorder.invoked).to.eql(true)
-      expect(callbackRecorder.data).to.eql(data)
+      expect(callbackRecorder.argument).to.eql(data)
     })
   })
 
@@ -102,7 +102,7 @@ describe('RendererCommunication', () => {
       fakeMessageBus.triggerOn(messages.MYSTERIUM_CLIENT_LOG, data)
 
       expect(callbackRecorder.invoked).to.eql(true)
-      expect(callbackRecorder.data).to.eql(data)
+      expect(callbackRecorder.argument).to.eql(data)
     })
   })
 
@@ -114,7 +114,7 @@ describe('RendererCommunication', () => {
       fakeMessageBus.triggerOn(messages.TERMS_REQUESTED, data)
 
       expect(callbackRecorder.invoked).to.eql(true)
-      expect(callbackRecorder.data).to.eql(data)
+      expect(callbackRecorder.argument).to.eql(data)
     })
   })
 
@@ -146,7 +146,7 @@ describe('RendererCommunication', () => {
       fakeMessageBus.triggerOn(messages.APP_ERROR, data)
 
       expect(callbackRecorder.invoked).to.eql(true)
-      expect(callbackRecorder.data).to.eql(data)
+      expect(callbackRecorder.argument).to.eql(data)
     })
   })
 
@@ -158,7 +158,7 @@ describe('RendererCommunication', () => {
       fakeMessageBus.triggerOn(messages.HEALTHCHECK, data)
 
       expect(callbackRecorder.invoked).to.eql(true)
-      expect(callbackRecorder.data).to.eql(data)
+      expect(callbackRecorder.argument).to.eql(data)
     })
   })
 })

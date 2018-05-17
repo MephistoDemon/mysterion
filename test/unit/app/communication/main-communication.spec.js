@@ -109,7 +109,7 @@ describe('MainCommunication', () => {
       fakeMessageBus.triggerOn(messages.CONNECTION_STATUS_CHANGED, data)
 
       expect(callbackRecorder.invoked).to.eql(true)
-      expect(callbackRecorder.data).to.eql(data)
+      expect(callbackRecorder.argument).to.eql(data)
     })
   })
 
@@ -121,7 +121,7 @@ describe('MainCommunication', () => {
       fakeMessageBus.triggerOn(messages.CURRENT_IDENTITY_CHANGED, data)
 
       expect(callbackRecorder.invoked).to.eql(true)
-      expect(callbackRecorder.data).to.eql(data)
+      expect(callbackRecorder.argument).to.eql(data)
     })
   })
 
@@ -151,7 +151,7 @@ describe('MainCommunication', () => {
       fakeMessageBus.triggerOn(messages.TERMS_ANSWERED, data)
 
       expect(callbackRecorder.invoked).to.eql(true)
-      expect(callbackRecorder.data).to.eql(data)
+      expect(callbackRecorder.argument).to.eql(data)
     })
   })
 })
