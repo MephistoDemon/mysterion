@@ -14,7 +14,7 @@ class VueContainer implements Container {
     this.injector = Injector.extend({
       // Once per class. Every instance of that class will use the same factory instance,
       // but any parent or child classes will create a new instance.
-      defaultLifecicles: constants.CLASS
+      defaultLifecycle: constants.CLASS
     })
     vueInstance.use(this.injector)
   }
@@ -31,9 +31,8 @@ class VueContainer implements Container {
     this.injector.service(name, dependencies, factory)
   }
 
-  factory (name: string, dependencies: Array<string>, factory: ServiceFactory, cache: ?boolean): void {
-    const factoryWrapper = this.injector.factory(name, dependencies, factory)
-    if (cache) factoryWrapper.lifecycle.application()
+  factory (name: string, dependencies: Array<string>, factory: ServiceFactory): void {
+    this.injector.factory(name, dependencies, factory)
   }
 }
 
