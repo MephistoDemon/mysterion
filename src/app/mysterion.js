@@ -66,14 +66,14 @@ class Mysterion {
     // fired when app activated
     app.on('activate', () => {
       try {
-        logInfo('Application activate')
+        logInfo('Show window')
         if (!this.window.exists()) {
           this.bootstrap()
           return
         }
         this.window.show()
       } catch (e) {
-        logException('Application activate failed', e)
+        logException('Failed to show window', e)
         this.bugReporter.captureException(e)
       }
     })
