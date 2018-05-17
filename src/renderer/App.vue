@@ -22,7 +22,6 @@
   import type from '@/store/types'
   import AppVisual from '@/partials/AppVisual'
   import AppNav from '@/partials/AppNav'
-  import messages from '../app/communication/messages'
 
   import AppError from '@/partials/AppError'
   import AppModal from '@/partials/AppModal'
@@ -62,27 +61,28 @@
         this.$store.dispatch(type.DISCONNECT)
       })
 
-      messageBus.on(messages.TERMS_REQUESTED, (terms) => {
+      communication.onTermsRequest((terms) => {
         this.$store.dispatch(type.TERMS, terms)
         this.$router.push('/terms')
       })
 
-      messageBus.on(messages.APP_START, () => {
+      communication.onAppStart(() => {
         this.$router.push('/load')
       })
 
-      messageBus.on(messages.TERMS_ACCEPTED, () => {
+      communication.onTermsAccepted(() => {
         this.$router.push('/')
       })
 
-      messageBus.on(messages.APP_ERROR, (error) => {
-        console.log('APP_ERROR received from ipc:', event)
+      communication.onAppError((error) => {
+        console.log('App error received from communication:', event)
         this.$store.dispatch(type.OVERLAY_ERROR, error)
       })
 
       let previousClientRunningState = true
 
-      messageBus.on(messages.HEALTHCHECK, (clientRunningState) => {
+      communication.onHealthCheck((healthCheckDTO) => {
+        const clientRunningState = healthCheckDTO.isRunning
         // do nothing while on terms page
         if (this.$route.name === 'terms') {
           return

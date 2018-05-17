@@ -3,11 +3,14 @@
 import messages from './messages'
 import type {MessageBus} from './messageBus'
 import type {
-  RequestConnectionDto,
+  RequestConnectionDTO,
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
   MysteriumClientLogDTO,
-  ProposalUpdateDto
+  ProposalUpdateDTO,
+  RequestTermsDTO,
+  TermsAnsweredDTO,
+  AppErrorDTO
 } from './dto'
 
 /**
@@ -24,9 +27,40 @@ class MainCommunication {
     this._send(messages.APP_ERROR, {message: error, hint: hint, fatal: fatal})
   }
 
-  // TODO: remaining other messages
   sendMysteriumClientLog (dto: MysteriumClientLogDTO): void {
     this._send(messages.MYSTERIUM_CLIENT_LOG, dto)
+  }
+
+  sendProposals (proposals: ProposalUpdateDTO) {
+    this._send(messages.PROPOSALS_UPDATE, proposals)
+  }
+
+  sendConnectionCancelRequest () {
+    this._send(messages.CONNECTION_CANCEL)
+  }
+
+  sendConnectionRequest (data: RequestConnectionDTO) {
+    this._send(messages.CONNECTION_REQUEST, data)
+  }
+
+  sendTermsRequest (data: RequestTermsDTO) {
+    this._send(messages.TERMS_REQUESTED, data)
+  }
+
+  sendTermsAccepted () {
+    this._send(messages.TERMS_ACCEPTED)
+  }
+
+  sendAppStart () {
+    this._send(messages.APP_START)
+  }
+
+  sendAppError (data: AppErrorDTO) {
+    this._send(messages.APP_ERROR, data)
+  }
+
+  sendHealthCheck (data: HealthCheckDTO) {
+    this._send(messages.HEALTHCHECK, data)
   }
 
   onConnectionStatusChange (callback: (ConnectionStatusChangeDTO) => void): void {
@@ -45,16 +79,8 @@ class MainCommunication {
     this._on(messages.PROPOSALS_UPDATE, callback)
   }
 
-  sendProposals (proposals: ProposalUpdateDto) {
-    this._send(messages.PROPOSALS_UPDATE, proposals)
-  }
-
-  sendConnectionCancelRequest () {
-    this._send(messages.CONNECTION_CANCEL)
-  }
-
-  sendConnectionRequest (data: RequestConnectionDto) {
-    this._send(messages.CONNECTION_REQUEST, data)
+  onTermsAnswered (callback: (TermsAnsweredDTO) => void) {
+    this._on(messages.TERMS_ANSWERED, callback)
   }
 
   _send (channel: string, dto: mixed): void {

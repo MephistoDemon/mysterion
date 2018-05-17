@@ -3,7 +3,7 @@
     <div class="terms-content">
       <div style="height:10vh;border-bottom:1px solid #eee"></div>
       <div class="terms-box">
-        <div style="padding:1rem 8rem;" v-html="termsAndConditions.content"></div>
+        <div style="padding:1rem 8rem;" v-html="termsAndConditions.htmlContent"></div>
       </div>
     </div>
     <div class="terms-actions">
@@ -14,19 +14,19 @@
 </template>
 <script>
   import {mapGetters} from 'vuex'
-  import communication from '../../app/communication/messages'
-  import RendererMessageBus from '../../app/communication/rendererMessageBus'
 
   export default {
     name: 'terms',
+    dependencies: ['rendererCommunication'],
     methods: {
       accept () {
-        const messageBus = new RendererMessageBus()
-        messageBus.send(communication.TERMS_ANSWERED, true)
+        this._answerTerms(true)
       },
       decline () {
-        const messageBus = new RendererMessageBus()
-        messageBus.send(communication.TERMS_ANSWERED, false)
+        this._answerTerms(false)
+      },
+      _answerTerms (answer) {
+        this.rendererCommunication.sendTermsAnswered({isAccepted: answer})
       }
     },
     computed: {
