@@ -42,11 +42,11 @@ describe('RendererCommunication', () => {
     })
   })
 
-  describe('sendRendererLoadStarted', () => {
+  describe('sendRendererBooted', () => {
     it('sends message to bus', () => {
-      communication.sendRendererLoadStarted()
+      communication.sendRendererBooted()
 
-      expect(fakeMessageBus.lastChannel).to.eql(messages.RENDERER_LOAD_STARTED)
+      expect(fakeMessageBus.lastChannel).to.eql(messages.RENDERER_BOOTED)
     })
   })
 

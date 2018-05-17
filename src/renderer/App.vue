@@ -49,7 +49,7 @@
       const communication = new RendererCommunication(messageBus)
 
       // we need to notify the main process that we're up
-      communication.sendRendererLoadStarted()
+      communication.sendRendererBooted()
       communication.onConnectionRequest((proposal) => {
         this.$store.dispatch(type.CONNECT, {
           consumerId: this.$store.getters.currentIdentity,

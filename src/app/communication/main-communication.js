@@ -24,8 +24,8 @@ class MainCommunication {
     this._messageBus = messageBus
   }
 
-  onRendererLoadStarted (callback: () => void) {
-    this._on(messages.RENDERER_LOAD_STARTED, callback)
+  onRendererBooted (callback: () => void) {
+    this._on(messages.RENDERER_BOOTED, callback)
   }
 
   sendRendererShowErrorMessage (error: string) {

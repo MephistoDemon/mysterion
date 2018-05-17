@@ -12,7 +12,7 @@ export default {
   TERMS_ANSWERED: 'terms.answered',
   TERMS_ACCEPTED: 'terms.accepted',
 
-  RENDERER_LOAD_STARTED: 'renderer.load.started',
+  RENDERER_BOOTED: 'renderer.booted',
   RENDERER_SHOW_ERROR: 'renderer.show-error',
 
   HEALTHCHECK: 'healthcheck',

@@ -75,7 +75,7 @@ class Mysterion {
     this.communication = new MainCommunication(this.messageBus)
 
     try {
-      await onFirstEvent(this.communication.onRendererLoadStarted.bind(this.communication))
+      await onFirstEvent(this.communication.onRendererBooted.bind(this.communication))
     } catch (e) {
       console.error(e)
       this.bugReporter.captureException(e)

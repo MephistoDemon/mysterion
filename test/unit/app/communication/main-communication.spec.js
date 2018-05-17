@@ -125,10 +125,10 @@ describe('MainCommunication', () => {
     })
   })
 
-  describe('onRendererLoadStarted', () => {
+  describe('onRendererBooted', () => {
     it('receives message from bus', () => {
-      communication.onRendererLoadStarted(callbackRecorder.getCallback())
-      fakeMessageBus.triggerOn(messages.RENDERER_LOAD_STARTED)
+      communication.onRendererBooted(callbackRecorder.getCallback())
+      fakeMessageBus.triggerOn(messages.RENDERER_BOOTED)
 
       expect(callbackRecorder.invoked).to.eql(true)
     })

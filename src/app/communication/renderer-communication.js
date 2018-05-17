@@ -24,8 +24,8 @@ class RendererCommunication {
     this._messageBus = messageBus
   }
 
-  sendRendererLoadStarted (): void {
-    return this._send(messages.RENDERER_LOAD_STARTED)
+  sendRendererBooted (): void {
+    return this._send(messages.RENDERER_BOOTED)
   }
 
   onShowRendererError (callback: (AppErrorDTO) => void): void {
