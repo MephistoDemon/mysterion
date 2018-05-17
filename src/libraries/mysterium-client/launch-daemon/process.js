@@ -18,7 +18,7 @@
 import {Tail} from 'tail'
 import path from 'path'
 import logLevels from '../log-levels'
-import {InverseDomainPackageName} from './config'
+import {INVERSE_DOMAIN_PACKAGE_NAME} from './config'
 
 const SYSTEM_LOG = '/var/log/system.log'
 
@@ -54,7 +54,7 @@ class Process {
 
     if (level === logLevels.ERROR) {
       tailFile(path.join(this.logDirectory, 'stderr.log'), cb)
-      tailFile(SYSTEM_LOG, filterLine(InverseDomainPackageName, cb))
+      tailFile(SYSTEM_LOG, filterLine(INVERSE_DOMAIN_PACKAGE_NAME, cb))
       return
     }
 
@@ -71,7 +71,7 @@ function tailFile (filePath, cb) {
   const logTail = new Tail(filePath)
   logTail.on('line', cb)
   logTail.on('error', () => {
-    console.error(`log file watching failed. file probably doesn't exist: ` + filePath)
+    console.error(`log file watching failed. file probably doesn't exist: ${filePath}`)
   })
 }
 

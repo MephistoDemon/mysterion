@@ -19,10 +19,10 @@ import fs from 'fs'
 import sudo from 'sudo-prompt'
 import path from 'path'
 import md5 from 'md5'
-import {InverseDomainPackageName, PropertyListName, PropertyListFile} from './config'
+import {INVERSE_DOMAIN_PACKAGE_NAME, PROPERTY_LIST_NAME, PROPERTY_LIST_FILE} from './config'
 
 function processInstalled () {
-  return fs.existsSync(PropertyListFile)
+  return fs.existsSync(PROPERTY_LIST_FILE)
 }
 
 class Installer {
@@ -40,7 +40,7 @@ class Installer {
       <plist version="1.0">
       <dict>
         <key>Label</key>
-          <string>${InverseDomainPackageName}</string>
+          <string>${INVERSE_DOMAIN_PACKAGE_NAME}</string>
           <key>Program</key>
           <string>${this.config.clientBin}</string>
           <key>ProgramArguments</key>
@@ -84,7 +84,7 @@ class Installer {
 
   _pListChecksumMismatch () {
     let templateChecksum = md5(this.template())
-    let plistChecksum = md5(fs.readFileSync(PropertyListFile))
+    let plistChecksum = md5(fs.readFileSync(PROPERTY_LIST_FILE))
     return templateChecksum !== plistChecksum
   }
 
@@ -93,15 +93,15 @@ class Installer {
   }
 
   install () {
-    let tempPlistFile = path.join(this.config.runtimeDir, PropertyListName)
+    let tempPlistFile = path.join(this.config.runtimeDir, PROPERTY_LIST_NAME)
     let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
     let script = `\
-      cp ${tempPlistFile} ${PropertyListFile}\
-      && launchctl load ${PropertyListFile}\
+      cp ${tempPlistFile} ${PROPERTY_LIST_FILE}\
+      && launchctl load ${PROPERTY_LIST_FILE}\
       && launchctl setenv PATH "${envPath}"\
     `
     if (processInstalled()) {
-      script = `launchctl unload ${PropertyListFile} && ` + script
+      script = `launchctl unload ${PROPERTY_LIST_FILE} && ` + script
     }
     let command = `sh -c '${script}'`
 

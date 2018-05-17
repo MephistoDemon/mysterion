@@ -17,6 +17,6 @@
 
 import path from 'path'
 
-export const InverseDomainPackageName = 'network.mysterium.mysteriumclient'
-export const PropertyListName = InverseDomainPackageName + '.plist'
-export const PropertyListFile = path.join('/Library/LaunchDaemons', PropertyListName)
+export const INVERSE_DOMAIN_PACKAGE_NAME = 'network.mysterium.mysteriumclient'
+export const PROPERTY_LIST_NAME = INVERSE_DOMAIN_PACKAGE_NAME + '.plist'
+export const PROPERTY_LIST_FILE = path.join('/Library/LaunchDaemons', PROPERTY_LIST_NAME)

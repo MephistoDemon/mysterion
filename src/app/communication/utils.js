@@ -17,7 +17,7 @@
 
 // @flow
 type Callback = (data: any) => void
-type SubscriberCallback = (Callback) => void
+type Subscriber = (Callback) => void
 
 /**
  * Subscribes for specific event and resolves when first event is received.
@@ -26,7 +26,7 @@ type SubscriberCallback = (Callback) => void
  *
  * @returns {Promise<any>}
  */
-function onFirstEvent (subscriber: SubscriberCallback): Promise<void> {
+function onFirstEvent (subscriber: Subscriber): Promise<void> {
   return new Promise((resolve) => {
     subscriber((data) => {
       resolve(data)
@@ -42,10 +42,10 @@ function onFirstEvent (subscriber: SubscriberCallback): Promise<void> {
  *
  * @returns {Promise<any>}
  */
-function onFirstEventOrTimeout (subscriber: SubscriberCallback, timeout: number): Promise<void> {
+function onFirstEventOrTimeout (subscriber: Subscriber, timeout: number): Promise<void> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(
-      () => reject(new Error('Promise timed out after ' + timeout + ' ms')),
+      () => reject(new Error(`Promise timed out after ${timeout} ms`)),
       timeout
     )
 
