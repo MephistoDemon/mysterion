@@ -3,7 +3,7 @@ import Raven from 'raven'
 import {pushToLogCache} from './logsCache'
 import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
 import type {BugReporter} from './interface'
-import {logLevel} from '../../libraries/mysterium-client'
+import {logLevels} from '../../libraries/mysterium-client'
 
 class BugReporterMain implements BugReporter {
   _url: string
@@ -28,7 +28,7 @@ class BugReporterMain implements BugReporter {
     Raven.captureException(err)
   }
 
-  pushToLogCache (level: logLevel.LOG | logLevel.ERROR, data: string) {
+  pushToLogCache (level: logLevels.LOG | logLevels.ERROR, data: string) {
     pushToLogCache(level, data)
   }
 }

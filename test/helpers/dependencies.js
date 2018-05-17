@@ -7,12 +7,12 @@
 
 // mocha
 declare var describe: Function
-declare var it: Function
 declare var before: Function
 declare var beforeEach: Function
 declare var after: Function
+declare var it: Function
 
 // chai
 declare var expect: Function
 
-export { describe, it, expect, before, beforeEach, after }
+export { describe, before, beforeEach, after, it, expect }

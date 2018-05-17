@@ -1,25 +1,24 @@
 import {spawn} from 'child_process'
+import logLevels from '../log-levels'
 
-// these constants correspond to child process members
-// child.stdout and child.stderr
-export const logLevel = {LOG: 'stdout', ERROR: 'stderr'}
-
+/**
+ * 'mysterium_client' process handler
+ */
 class Process {
   /**
-   * Creates mysterium_client process handler
    * @constructor
-   * @param {{clientBinaryPath,openVPNBinary,clientConfigPath,runtimeDirectory: string}} config
+   * @param {ClientConfig} config
    */
   constructor (config) {
     this.config = config
   }
 
-  start (port = 4050) {
-    this.child = spawn(this.config.clientBinaryPath, [
-      '--config-dir', this.config.clientConfigPath,
-      '--runtime-dir', this.config.runtimeDirectory,
-      '--openvpn.binary', this.config.openVPNBinary,
-      '--tequilapi.port', port
+  start () {
+    this.child = spawn(this.config.clientBin, [
+      '--config-dir', this.config.configDir,
+      '--runtime-dir', this.config.runtimeDir,
+      '--openvpn.binary', this.config.openVPNBin,
+      '--tequilapi.port', this.config.tequilapiPort
     ])
   }
 
@@ -29,16 +28,32 @@ class Process {
 
   /**
    * Registers a callback for a specific process log/error message
+   *
    * @param {string} level
    * @param {LogCallback} cb
    */
   onLog (level, cb) {
-    if (!Object.values(logLevel).includes(level) || !this.child[level]) {
-      throw new Error(`Unknown logging level: ${level}`)
-    }
-    this.child[level].on('data', (data) => {
+    this._getStreamForLevel(level).on('data', (data) => {
       cb(data.toString())
     })
+  }
+
+  /**
+   * Converts log level to child process members 'child.stdout' and 'child.stderr'
+   *
+   * @param {string} level
+   * @return {Readable}
+   * @private
+   */
+  _getStreamForLevel (level) {
+    switch (level) {
+      case logLevels.LOG:
+        return this.child.stdout
+      case logLevels.ERROR:
+        return this.child.stderr
+      default:
+        throw new Error(`Unknown logging level: ${level}`)
+    }
   }
 }
 

@@ -1,24 +1,91 @@
 // @flow
+import {app, BrowserWindow} from 'electron'
 import type {Container} from '../../../app/di'
-import {BrowserWindow} from 'electron'
+import Mysterion from '../../../app/mysterion'
+import type {MysterionConfig} from '../../../app/mysterionConfig'
+import path from 'path'
 import Window from '../../../app/window'
+import Terms from '../../../app/terms'
 
 function bootstrap (container: Container) {
   container.constant('mysterionReleaseID', `${process.env.MYSTERION_VERSION}(${process.env.BUILD_NUMBER})`)
+  container.service(
+    'mysterionApplication.config',
+    [],
+    () => {
+      const inDevMode = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing'
 
-  const browserWindowIsSingleton = true
+      let contentsDirectory = path.resolve(app.getAppPath(), '../../')
+      if (inDevMode) {
+        // path from this file
+        contentsDirectory = path.resolve(__dirname, '../../../../')
+      }
 
-  let browserWindow
+      let staticDirectory = path.join(app.getAppPath(), '../', 'static')
+      if (inDevMode) {
+        // path from this file
+        staticDirectory = path.resolve(__dirname, '../../../../static')
+      }
+
+      return {
+        // Application root directory
+        contentsDirectory: contentsDirectory,
+        // User data directory. This should store logs, terms and conditions file, etc.
+        userDataDirectory: app.getPath('userData'),
+        // Runtime/working directory, used for storing temp files
+        runtimeDirectory: app.getPath('temp'),
+        // Static file directory
+        staticDirectory: staticDirectory.replace(/\\/g, '\\\\'),
+        // Window configuration
+        windows: {
+          terms: {width: 800, height: 650},
+          app: {width: 650, height: 650}
+        }
+      }
+    }
+  )
+
+  container.service(
+    'mysterionApplication',
+    [
+      'mysterionApplication.config',
+      'mysteriumClientInstaller',
+      'mysteriumClientProcess',
+      'mysteriumClientMonitoring',
+      'proposalFetcher',
+      'bugReporter'
+    ],
+    (
+      mysterionConfig: MysterionConfig,
+      mysteriumClientInstaller,
+      mysteriumClientProcess,
+      mysteriumClientMonitoring,
+      proposalFetcher,
+      bugReporter
+    ) => {
+      return new Mysterion({
+        config: mysterionConfig,
+        browserWindowFactory: () => container.get('mysterionBrowserWindow'),
+        windowFactory: () => container.get('mysterionWindow'),
+        terms: new Terms(path.join(mysterionConfig.staticDirectory, 'terms'), mysterionConfig.userDataDirectory),
+        installer: mysteriumClientInstaller,
+        process: mysteriumClientProcess,
+        monitoring: mysteriumClientMonitoring,
+        proposalFetcher: proposalFetcher,
+        bugReporter: bugReporter
+      })
+    }
+  )
+
   container.factory(
     'mysterionBrowserWindow',
     [],
     () => {
-      browserWindow = new BrowserWindow({
+      return new BrowserWindow({
         resizable: false,
         show: false
       })
-      return browserWindow
-    }, browserWindowIsSingleton)
+    })
 
   container.service(
     'mysterionWindow',

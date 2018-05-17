@@ -1,7 +1,6 @@
 import {app} from 'electron'
-import busMessages from './communication/messages'
 import trayFactory from '../main/tray/factory'
-import {logLevel as processLogLevel} from '../libraries/mysterium-client/index'
+import {logLevels as processLogLevels} from '../libraries/mysterium-client'
 import translations from './messages'
 import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
@@ -135,18 +134,19 @@ class Mysterion {
   }
 
   async acceptTerms () {
-    this.messageBus.send(busMessages.TERMS_REQUESTED, {
-      content: this.terms.getContent()
+    this.communication.sendTermsRequest({
+      htmlContent: this.terms.getContent()
     })
 
-    const termsAnswer = await onFirstEvent((callback) => {
-      this.messageBus.on(busMessages.TERMS_ANSWERED, callback)
+    const termsAnsweredDTO = await onFirstEvent((callback) => {
+      this.communication.onTermsAnswered(callback)
     })
+    const termsAnswer = termsAnsweredDTO.isAccepted
     if (!termsAnswer) {
       return false
     }
 
-    this.messageBus.send(busMessages.TERMS_ACCEPTED)
+    this.communication.sendTermsAccepted()
 
     try {
       this.terms.accept()
@@ -165,7 +165,7 @@ class Mysterion {
   async startProcess () {
     const updateRendererWithHealth = () => {
       try {
-        this.messageBus.send(busMessages.HEALTHCHECK, this.monitoring.isRunning())
+        this.communication.sendHealthCheck({ isRunning: this.monitoring.isRunning() })
       } catch (e) {
         this.bugReporter.captureException(e)
         return
@@ -179,9 +179,10 @@ class Mysterion {
     }
 
     this.process.start()
+    this.process.onLog(processLogLevels.LOG, (data) => cacheLogs(processLogLevels.LOG, data))
+    this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
+
     this.monitoring.start()
-    this.process.onLog(processLogLevel.LOG, (data) => cacheLogs(processLogLevel.LOG, data))
-    this.process.onLog(processLogLevel.ERROR, (data) => cacheLogs(processLogLevel.ERROR, data))
     this.monitoring.onProcessReady(() => {
       updateRendererWithHealth()
       this.startApp()
@@ -203,7 +204,7 @@ class Mysterion {
       this.communication.sendProposals(await this.proposalFetcher.fetch())
     })
 
-    this.messageBus.send(busMessages.APP_START)
+    this.communication.sendAppStart()
   }
 
   buildTray () {
@@ -211,7 +212,7 @@ class Mysterion {
       this.communication,
       this.proposalFetcher,
       this.window,
-      path.join(this.config.staticDirectoryPath, 'icons')
+      path.join(this.config.staticDirectory, 'icons')
     )
   }
 }

@@ -1,9 +1,8 @@
 // @flow
-import os from 'os'
-import {logLevel} from '../libraries/mysterium-client/index'
-import {getLogCache} from '../app/bug-reporting/logsCache'
-
 import type {Container} from '../app/di'
+import os from 'os'
+import {logLevels} from '../libraries/mysterium-client'
+import {getLogCache} from '../app/bug-reporting/logsCache'
 
 function bootstrap (container: Container) {
   container.service(
@@ -22,11 +21,9 @@ function bootstrap (container: Container) {
           platform_release: os.release()
         },
         dataCallback: (data) => {
-          const stderr = getLogCache(logLevel.ERROR)
-          const stdout = getLogCache(logLevel.LOG)
           data.extra.logs = {
-            [logLevel.LOG]: stdout,
-            [logLevel.ERROR]: stderr
+            [logLevels.LOG]: getLogCache(logLevels.LOG),
+            [logLevels.ERROR]: getLogCache(logLevels.ERROR)
           }
           return data
         },
