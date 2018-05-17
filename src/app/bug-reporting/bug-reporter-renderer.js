@@ -7,15 +7,25 @@ import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
 import type {BugReporter} from './interface'
 
 class BugReporterRenderer implements BugReporter {
-  install (url: string, vue: Object, config: Object) {
+  _url: string
+  _vue: Object
+  _config: Object
+
+  constructor (url: string, vue: Object, config: Object) {
+    this._url = url
+    this._vue = vue
+    this._config = config
+  }
+
+  install () {
     RavenJs
-      .config(url, config)
+      .config(this._url, this._config)
       .install()
-      .addPlugin(RavenVue, vue)
+      .addPlugin(RavenVue, this._vue)
   }
 
   setUser (userData: IdentityDTO) {
-    RavenJs.setUserContext(userData)
+    RavenJs.setUserContext({ id: userData.id })
   }
 
   captureException (err: Error): void {

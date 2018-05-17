@@ -10,7 +10,7 @@ function nextTick (): Promise<void> {
 /**
  * Runs async function and captures error of it's execution.
  */
-async function capturePromiseError (promise: Promise<any>): ?Error {
+async function capturePromiseError (promise: Promise<any>): Promise<?Error> {
   try {
     await promise
   } catch (e) {

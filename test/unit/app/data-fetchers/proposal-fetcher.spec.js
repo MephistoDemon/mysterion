@@ -61,7 +61,7 @@ describe('DataFetchers', () => {
           proposals = fetchedProposals
         })
 
-        fetcher.start(1001)
+        fetcher.start()
 
         await tickWithDelay(1000)
 

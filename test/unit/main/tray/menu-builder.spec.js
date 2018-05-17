@@ -3,6 +3,7 @@ import TrayMenuBuilder from '../../../../src/main/tray/menu-builder'
 import ConnectionStatusEnum from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import translations from '../../../../src/main/tray/translations'
+import { describe, it, expect, beforeEach } from '../../../helpers/dependencies'
 
 class FakeMainCommunication {
   sentConnect: boolean = false

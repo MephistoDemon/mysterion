@@ -22,6 +22,10 @@ class TequilapiClient {
   async healthCheck (timeout: ?number) {
     const response = await this.http.get('healthcheck', null, timeout)
 
+    if (!response) {
+      throw new Error('Healthcheck response body is missing')
+    }
+
     return new NodeHealthcheckDTO(response)
   }
 
@@ -31,6 +35,9 @@ class TequilapiClient {
 
   async identitiesList (): Promise<Array<IdentityDTO>> {
     const response = await this.http.get('identities')
+    if (!response) {
+      throw new Error('Identities response body is missing')
+    }
     const responseDto = new IdentitiesResponseDTO(response)
 
     return responseDto.identities
@@ -38,6 +45,9 @@ class TequilapiClient {
 
   async identityCreate (passphrase: string): Promise<IdentityDTO> {
     const response = await this.http.post('identities', {passphrase})
+    if (!response) {
+      throw new Error('Identities creation response body is missing')
+    }
 
     return new IdentityDTO(response)
   }
@@ -49,8 +59,14 @@ class TequilapiClient {
   async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {
     const query = filter ? filter.toQueryParams() : null
     const response = await this.http.get('proposals', query)
+    if (!response) {
+      throw new Error('Proposals response body is missing')
+    }
     const responseDto = new ProposalsResponseDTO(response)
 
+    if (!responseDto.proposals) {
+      return []
+    }
     return responseDto.proposals
   }
 
@@ -63,30 +79,45 @@ class TequilapiClient {
       },
       timeout
     )
+    if (!response) {
+      throw new Error('Connection creation response body is missing')
+    }
 
     return new ConnectionStatusDTO(response)
   }
 
   async connectionStatus (): Promise<ConnectionStatusDTO> {
     const response = await this.http.get('connection')
+    if (!response) {
+      throw new Error('Connection status response body is missing')
+    }
 
     return new ConnectionStatusDTO(response)
   }
 
   async connectionCancel (): Promise<ConnectionStatusDTO> {
     const response = await this.http.delete('connection')
+    if (!response) {
+      throw new Error('Connection canceling response body is missing')
+    }
 
     return new ConnectionStatusDTO(response)
   }
 
   async connectionIP (timeout: ?number): Promise<ConnectionIPDTO> {
     const response = await this.http.get('connection/ip', null, timeout)
+    if (!response) {
+      throw new Error('Connection IP response body is missing')
+    }
 
     return new ConnectionIPDTO(response)
   }
 
   async connectionStatistics (): Promise<ConnectionStatisticsDTO> {
     const response = await this.http.get('connection/statistics')
+    if (!response) {
+      throw new Error('Connection statistics response body is missing')
+    }
 
     return new ConnectionStatisticsDTO(response)
   }

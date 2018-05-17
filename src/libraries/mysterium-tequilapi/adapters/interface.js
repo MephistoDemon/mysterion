@@ -5,10 +5,10 @@ type HttpQueryParams = {
 }
 
 interface HttpInterface {
-  get (path: string, query: ?HttpQueryParams, timeout: ?number): Promise<?mixed>;
-  post (path: string, data: mixed, timeout: ?number): Promise<?mixed>;
-  delete (path: string, timeout: ?number): Promise<?mixed>;
-  put (path: string, timeout: ?number): Promise<?mixed>;
+  get (path: string, query: ?HttpQueryParams, timeout: ?number): Promise<?any>;
+  post (path: string, data: mixed, timeout: ?number): Promise<?any>;
+  delete (path: string, timeout: ?number): Promise<?any>;
+  put (path: string, data: mixed, timeout: ?number): Promise<?any>;
 }
 
 export type {HttpInterface, HttpQueryParams}

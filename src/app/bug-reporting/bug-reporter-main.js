@@ -6,8 +6,16 @@ import type {BugReporter} from './interface'
 import {logLevels} from '../../libraries/mysterium-client'
 
 class BugReporterMain implements BugReporter {
-  install (url: string, config: Object) {
-    Raven.config(url, config).install()
+  _url: string
+  _config: Object
+
+  constructor (url: string, config: Object) {
+    this._url = url
+    this._config = config
+  }
+
+  install () {
+    Raven.config(this._url, this._config).install()
   }
 
   setUser (userData: IdentityDTO) {
