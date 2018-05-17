@@ -11,8 +11,19 @@ function bootstrap (container: Container) {
 
   container.factory(
     'bugReporter',
-    ['bugReporter.raven'],
-    (raven) => new BugReporterRenderer(raven)
+    ['bugReporter.raven', 'rendererCommunication'],
+    (raven, rendererCommunication) => {
+      const bugReporter = new BugReporterRenderer(raven)
+      window.addEventListener('unhandledrejection', (evt) => {
+        bugReporter.captureMessage(evt.reason, evt.reason.response ? evt.reason.response.data : evt.reason)
+      })
+
+      rendererCommunication.onMysteriumClientLog(({ level, data }) => {
+        bugReporter.pushToLogCache(level, data)
+      })
+
+      return bugReporter
+    }
   )
 
   container.service(
