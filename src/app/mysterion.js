@@ -45,10 +45,10 @@ class Mysterion {
   }
 
   async bootstrap () {
-    const showTerms = !this._AreTermsAccepted()
-    const browserWindow = this._tryCreatingBrowserWindow()
+    const showTerms = !this._areTermsAccepted()
+    const browserWindow = this._createBrowserWindow()
     const windowSize = this._getWindowSize(showTerms)
-    this.window = this._tryCreatingWindow(windowSize)
+    this.window = this._createWindow(windowSize)
 
     const send = this._getSendFunction(browserWindow)
     this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
@@ -75,7 +75,7 @@ class Mysterion {
     }
   }
 
-  _AreTermsAccepted () {
+  _areTermsAccepted () {
     try {
       this.terms.load()
       return this.terms.isAccepted()
@@ -89,7 +89,7 @@ class Mysterion {
     return browserWindow.webContents.send.bind(browserWindow.webContents)
   }
 
-  _tryCreatingBrowserWindow () {
+  _createBrowserWindow () {
     try {
       return this.browserWindowFactory()
     } catch (e) {
@@ -99,7 +99,7 @@ class Mysterion {
     }
   }
 
-  _tryCreatingWindow (size) {
+  _createWindow (size) {
     try {
       const window = this.windowFactory()
       window.resize(size)
