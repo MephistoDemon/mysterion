@@ -1,4 +1,5 @@
 // @flow
+import Raven from 'raven'
 import BugReporterMain from '../../../app/bug-reporting/bug-reporter-main'
 import type {Container} from '../../../app/di'
 
@@ -8,15 +9,13 @@ function bootstrap (container: Container) {
     'https://f1e63dd563c34c35a56e98aa02518d40:0104611dab3d492eae3c28936c34505f@sentry.io/300978'
   )
 
-  const bugReporterInstallOnce = true
   container.factory(
     'bugReporter',
     ['bugReporter.sentryURL', 'bugReporter.config'],
     (sentryURL, config) => {
-      const bugReporter = new BugReporterMain(sentryURL, config)
-      bugReporter.install()
-      return bugReporter
-    }, bugReporterInstallOnce
+      const raven = Raven.config(sentryURL, config).install()
+      return new BugReporterMain(raven)
+    }
   )
 
   container.constant(
