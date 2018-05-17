@@ -28,10 +28,6 @@ class RendererCommunication {
     return this._send(messages.RENDERER_LOAD_STARTED)
   }
 
-  onRendererLoadContinue (callback: () => void) {
-    this._on(messages.RENDERER_LOAD_CONTINUE, callback)
-  }
-
   onShowRendererError (callback: (AppErrorDTO) => void): void {
     this._on(messages.RENDERER_SHOW_ERROR, callback)
   }
@@ -62,6 +58,10 @@ class RendererCommunication {
 
   onProposalUpdate (callback: (ProposalUpdateDTO) => void) {
     this._on(messages.PROPOSALS_UPDATE, callback)
+  }
+
+  onMysteriumClientIsReady (callback: () => void) {
+    this._on(messages.MYSTERIUM_CLIENT_READY, callback)
   }
 
   onMysteriumClientLog (callback: (MysteriumClientLogDTO) => void): void {

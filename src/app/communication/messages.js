@@ -4,7 +4,8 @@ export default {
   CONNECTION_REQUEST: 'connection.request',
   CONNECTION_CANCEL: 'connection.cancel',
 
-  MYSTERIUM_CLIENT_LOG: 'mysterium.client.log',
+  MYSTERIUM_CLIENT_READY: 'mysterium-client.ready',
+  MYSTERIUM_CLIENT_LOG: 'mysterium-client.log',
   CURRENT_IDENTITY_CHANGED: 'current.identity.changed',
 
   TERMS_REQUESTED: 'terms.requested',
@@ -12,7 +13,6 @@ export default {
   TERMS_ACCEPTED: 'terms.accepted',
 
   RENDERER_LOAD_STARTED: 'renderer.load.started',
-  RENDERER_LOAD_CONTINUE: 'renderer.load.continue',
   RENDERER_SHOW_ERROR: 'renderer.show-error',
 
   HEALTHCHECK: 'healthcheck',

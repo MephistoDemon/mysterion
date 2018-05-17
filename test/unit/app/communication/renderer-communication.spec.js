@@ -128,11 +128,11 @@ describe('RendererCommunication', () => {
     })
   })
 
-  describe('onRendererLoadContinue', () => {
+  describe('onMysteriumClientIsReady', () => {
     it('receives message from bus', () => {
-      communication.onRendererLoadContinue(callbackRecorder.getCallback())
+      communication.onMysteriumClientIsReady(callbackRecorder.getCallback())
 
-      fakeMessageBus.triggerOn(messages.RENDERER_LOAD_CONTINUE)
+      fakeMessageBus.triggerOn(messages.MYSTERIUM_CLIENT_READY)
 
       expect(callbackRecorder.invoked).to.eql(true)
     })

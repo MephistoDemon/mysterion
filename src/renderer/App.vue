@@ -66,7 +66,7 @@
         this.$router.push('/terms')
       })
 
-      communication.onRendererLoadContinue(() => {
+      communication.onMysteriumClientIsReady(() => {
         this.$router.push('/load')
       })
 

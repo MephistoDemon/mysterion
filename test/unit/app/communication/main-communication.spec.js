@@ -73,11 +73,11 @@ describe('MainCommunication', () => {
     })
   })
 
-  describe('sendRendererLoadContinue', () => {
+  describe('sendMysteriumClientIsReady', () => {
     it('sends message to bus', () => {
-      communication.sendRendererLoadContinue()
+      communication.sendMysteriumClientIsReady()
 
-      expect(fakeMessageBus.lastChannel).to.eql(messages.RENDERER_LOAD_CONTINUE)
+      expect(fakeMessageBus.lastChannel).to.eql(messages.MYSTERIUM_CLIENT_READY)
     })
   })
 

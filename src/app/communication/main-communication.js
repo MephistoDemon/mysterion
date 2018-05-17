@@ -28,13 +28,6 @@ class MainCommunication {
     this._on(messages.RENDERER_LOAD_STARTED, callback)
   }
 
-  /**
-   * Notifies the renderer that we're good to go
-   */
-  sendRendererLoadContinue () {
-    this._send(messages.RENDERER_LOAD_CONTINUE)
-  }
-
   sendRendererShowErrorMessage (error: string) {
     this.sendRendererShowError({
       message: error,
@@ -45,6 +38,13 @@ class MainCommunication {
 
   sendRendererShowError (data: AppErrorDTO) {
     this._send(messages.RENDERER_SHOW_ERROR, data)
+  }
+
+  /**
+   * Notifies the renderer that we're good to go
+   */
+  sendMysteriumClientIsReady () {
+    this._send(messages.MYSTERIUM_CLIENT_READY)
   }
 
   sendMysteriumClientLog (dto: MysteriumClientLogDTO): void {

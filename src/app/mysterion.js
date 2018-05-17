@@ -204,8 +204,8 @@ class Mysterion {
       this.communication.sendProposals(await this.proposalFetcher.fetch())
     })
 
-    console.log('Notify window to finish rendering')
-    this.communication.sendRendererLoadContinue()
+    console.log(`Notify that 'mysterium_client' process is ready`)
+    this.communication.sendMysteriumClientIsReady()
   }
 
   buildTray () {
