@@ -3,7 +3,7 @@
     <div class="terms-content">
       <div style="height:10vh;border-bottom:1px solid #eee"></div>
       <div class="terms-box">
-        <div style="padding:1rem 8rem;" v-html="termsAndConditions.content"></div>
+        <div style="padding:1rem 8rem;" v-html="termsAndConditions.htmlContent"></div>
       </div>
     </div>
     <div class="terms-actions">
@@ -26,7 +26,7 @@
         this._answerTerms(false)
       },
       _answerTerms (answer) {
-        this.rendererCommunication.sendTermsAnswered({answer})
+        this.rendererCommunication.sendTermsAnswered({isAccepted: answer})
       }
     },
     computed: {

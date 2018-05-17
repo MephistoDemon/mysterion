@@ -135,13 +135,13 @@ class Mysterion {
 
   async acceptTerms () {
     this.communication.sendTermsRequest({
-      content: this.terms.getContent()
+      htmlContent: this.terms.getContent()
     })
 
     const termsAnsweredDTO = await onFirstEvent((callback) => {
       this.communication.onTermsAnswered(callback)
     })
-    const termsAnswer = termsAnsweredDTO.answer
+    const termsAnswer = termsAnsweredDTO.isAccepted
     if (!termsAnswer) {
       return false
     }
@@ -165,7 +165,7 @@ class Mysterion {
   async startProcess () {
     const updateRendererWithHealth = () => {
       try {
-        this.communication.sendHealthCheck({ status: this.monitoring.isRunning() })
+        this.communication.sendHealthCheck({ isRunning: this.monitoring.isRunning() })
       } catch (e) {
         this.bugReporter.captureException(e)
         return

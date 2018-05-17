@@ -154,7 +154,7 @@ describe('RendererCommunication', () => {
     it('receives message from bus', () => {
       communication.onHealthCheck(callbackRecorder.getCallback())
 
-      const data = { status: true }
+      const data = { isRunning: true }
       fakeMessageBus.triggerOn(messages.HEALTHCHECK, data)
 
       expect(callbackRecorder.invoked).to.eql(true)

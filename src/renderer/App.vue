@@ -82,7 +82,7 @@
       let previousClientRunningState = true
 
       communication.onHealthCheck((healthCheckDTO) => {
-        const clientRunningState = healthCheckDTO.status
+        const clientRunningState = healthCheckDTO.isRunning
         // do nothing while on terms page
         if (this.$route.name === 'terms') {
           return

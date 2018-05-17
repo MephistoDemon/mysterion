@@ -93,7 +93,7 @@ describe('MainCommunication', () => {
 
   describe('sendHealthCheck', () => {
     it('sends message to bus', () => {
-      const data = { status: true }
+      const data = { isRunning: true }
       communication.sendHealthCheck(data)
 
       expect(fakeMessageBus.lastChannel).to.eql(messages.HEALTHCHECK)

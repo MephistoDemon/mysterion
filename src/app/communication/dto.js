@@ -23,11 +23,11 @@ export type RequestConnectionDTO = {
 }
 
 export type RequestTermsDTO = {
-  content: string
+  htmlContent: string
 }
 
 export type TermsAnsweredDTO = {
-  answer: boolean
+  isAccepted: boolean
 }
 
 export type AppErrorDTO = {
@@ -37,5 +37,5 @@ export type AppErrorDTO = {
 }
 
 export type HealthCheckDTO = {
-  status: boolean
+  isRunning: boolean
 }
