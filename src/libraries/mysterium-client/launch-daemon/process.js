@@ -36,7 +36,7 @@ class Process {
   start () {
     this.tequilapi.healthCheck()
       .then(() => {
-        console.log('Touched the daemon, now it must be up')
+        console.log('Touched the daemon, now it should be up')
       })
       .catch(() => {
         console.log('Touched the daemon with error, anyway it should be up')

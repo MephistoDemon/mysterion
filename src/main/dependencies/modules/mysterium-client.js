@@ -51,9 +51,7 @@ function bootstrap (container: Container) {
   container.service(
     'mysteriumClientMonitoring',
     ['tequilapiClient'],
-    (tequilapiClient) => {
-      return new Monitoring(tequilapiClient)
-    }
+    (tequilapiClient) => new Monitoring(tequilapiClient)
   )
 }
 

@@ -53,7 +53,7 @@ class Mysterion {
       try {
         logInfo('Application launch')
         await this.bootstrap()
-        this.buildTray()
+        this._buildTray()
       } catch (e) {
         logException('Application launch failed', e)
         this.bugReporter.captureException(e)
@@ -66,14 +66,14 @@ class Mysterion {
     // fired when app activated
     app.on('activate', () => {
       try {
-        logInfo('Show window')
+        logInfo('Application activation')
         if (!this.window.exists()) {
           this.bootstrap()
           return
         }
         this.window.show()
       } catch (e) {
-        logException('Failed to show window', e)
+        logException('Application activation failed', e)
         this.bugReporter.captureException(e)
       }
     })
@@ -112,10 +112,17 @@ class Mysterion {
     }
 
     await this._ensureDaemonInstallation()
-    this.startProcess()
-    this.startProcessMonitoringLoop()
-    this.updateProposalsLoop()
-    this.renderApplication()
+    // if all is good, let's boot up the client
+    this._startProcess()
+    // and start monitoring it
+    this._startProcessMonitoring()
+    // and handle some actions after process is up
+    this._onProcessReady(() => {
+      logInfo(`Notify that 'mysterium_client' process is ready`)
+      this.communication.sendMysteriumClientIsReady()
+    })
+
+    this._subscribeProposals()
 
     synchronizeUserSettings(this.userSettingsStore, this.communication)
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
@@ -260,7 +267,7 @@ class Mysterion {
     return true
   }
 
-  startProcess () {
+  _startProcess () {
     const cacheLogs = (level, data) => {
       this.communication.sendMysteriumClientLog({ level, data })
       this.bugReporter.pushToLogCache(level, data)
@@ -272,7 +279,7 @@ class Mysterion {
     this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
   }
 
-  startProcessMonitoringLoop () {
+  _startProcessMonitoring () {
     this.monitoring.subscribeUp(() => {
       logInfo("'mysterium_client' is up")
       this.communication.sendMysteriumClientUp()
@@ -286,11 +293,20 @@ class Mysterion {
     this.monitoring.start()
   }
 
-  updateProposalsLoop () {
+  /**
+   * Blocking function until process is launched
+   */
+  async _onProcessReady (callback) {
+    await onFirstEvent(this.monitoring.subscribeUp.bind(this.monitoring))
+
+    callback()
+  }
+
+  _subscribeProposals () {
     this.proposalFetcher.subscribe((proposals) => this.communication.sendProposals(proposals))
 
     this.monitoring.subscribeUp(() => {
-      logInfo("Subscribing 'mysterium_client' proposals")
+      logInfo('Starting proposal fetcher')
       this.proposalFetcher.start()
     })
     this.monitoring.subscribeDown(() => this.proposalFetcher.stop())
@@ -300,18 +316,7 @@ class Mysterion {
     })
   }
 
-  /**
-   * notifies the renderer that we're good to go and sets up the system tray
-   */
-  async renderApplication () {
-    // Block rendering until process is launched
-    await onFirstEvent(this.monitoring.subscribeUp.bind(this.monitoring))
-
-    console.log(`Notify that 'mysterium_client' process is ready`)
-    this.communication.sendMysteriumClientIsReady()
-  }
-
-  buildTray () {
+  _buildTray () {
     logInfo('Building tray')
     trayFactory(
       this.communication,
