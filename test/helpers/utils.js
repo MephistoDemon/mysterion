@@ -8,7 +8,7 @@ function nextTick (): Promise<void> {
 }
 
 /**
- * Runs async function and captures error of it's execution
+ * Runs async function and captures error of it's execution.
  */
 async function capturePromiseError (promise: Promise<any>): ?Error {
   try {
@@ -20,10 +20,38 @@ async function capturePromiseError (promise: Promise<any>): ?Error {
 }
 
 /**
- * Resolves promise and captures error of it's execution
+ * Resolves promise and captures error of it's execution.
  */
 async function captureAsyncError (func: () => Promise<any>) {
   return capturePromiseError(func())
 }
 
-export { nextTick, capturePromiseError, captureAsyncError }
+/**
+ * Records callback invocation. Useful for asserting that callback was invoked.
+ */
+class CallbackRecorder {
+  invoked: boolean
+  argument: any
+
+  constructor () {
+    this.invoked = false
+    this.argument = null
+  }
+
+  /**
+   * Returns function, which records it's invocation and argument
+   * into current instance.
+   *
+   * @returns Function
+   */
+  getCallback (): (any) => void {
+    return this._record.bind(this)
+  }
+
+  _record (argument: any): void {
+    this.invoked = true
+    this.argument = argument
+  }
+}
+
+export { nextTick, capturePromiseError, captureAsyncError, CallbackRecorder }

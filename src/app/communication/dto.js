@@ -16,8 +16,26 @@ export type CurrentIdentityChangeDTO = {
   id: string
 }
 
-export type ProposalUpdateDto = Array<ProposalDTO>
+export type ProposalUpdateDTO = Array<ProposalDTO>
 
-export type RequestConnectionDto = {
+export type RequestConnectionDTO = {
   providerId: string
+}
+
+export type RequestTermsDTO = {
+  htmlContent: string
+}
+
+export type TermsAnsweredDTO = {
+  isAccepted: boolean
+}
+
+export type AppErrorDTO = {
+  message: string,
+  hint: string,
+  fatal: boolean
+}
+
+export type HealthCheckDTO = {
+  isRunning: boolean
 }

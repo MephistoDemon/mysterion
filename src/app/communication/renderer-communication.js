@@ -6,8 +6,12 @@ import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
   MysteriumClientLogDTO,
-  RequestConnectionDto,
-  ProposalUpdateDto
+  RequestConnectionDTO,
+  ProposalUpdateDTO,
+  RequestTermsDto,
+  TermsAnsweredDTO,
+  AppErrorDTO,
+  HealthCheckDTO
 } from './dto'
 
 /**
@@ -19,8 +23,6 @@ class RendererCommunication {
   constructor (messageBus: MessageBus) {
     this._messageBus = messageBus
   }
-
-  // TODO: remaining other messages
 
   sendConnectionStatusChange (dto: ConnectionStatusChangeDTO): void {
     return this._send(messages.CONNECTION_STATUS_CHANGED, dto)
@@ -38,7 +40,11 @@ class RendererCommunication {
     return this._send(messages.RENDERER_LOADED)
   }
 
-  onConnectionRequest (callback: (RequestConnectionDto) => void) {
+  sendTermsAnswered (dto: TermsAnsweredDTO): void {
+    return this._send(messages.TERMS_ANSWERED, dto)
+  }
+
+  onConnectionRequest (callback: (RequestConnectionDTO) => void) {
     this._on(messages.CONNECTION_REQUEST, callback)
   }
 
@@ -46,12 +52,32 @@ class RendererCommunication {
     this._on(messages.CONNECTION_CANCEL, callback)
   }
 
-  onProposalUpdate (callback: (ProposalUpdateDto) => void) {
+  onProposalUpdate (callback: (ProposalUpdateDTO) => void) {
     this._on(messages.PROPOSALS_UPDATE, callback)
   }
 
   onMysteriumClientLog (callback: (MysteriumClientLogDTO) => void): void {
     this._on(messages.MYSTERIUM_CLIENT_LOG, callback)
+  }
+
+  onTermsRequest (callback: (RequestTermsDto) => void): void {
+    this._on(messages.TERMS_REQUESTED, callback)
+  }
+
+  onTermsAccepted (callback: () => void): void {
+    this._on(messages.TERMS_ACCEPTED, callback)
+  }
+
+  onAppStart (callback: () => void): void {
+    this._on(messages.APP_START, callback)
+  }
+
+  onAppError (callback: (AppErrorDTO) => void): void {
+    this._on(messages.APP_ERROR, callback)
+  }
+
+  onHealthCheck (callback: (HealthCheckDTO) => void): void {
+    this._on(messages.HEALTHCHECK, callback)
   }
 
   _send (channel: string, dto: mixed): void {
