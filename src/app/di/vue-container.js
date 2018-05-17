@@ -2,6 +2,7 @@
 import type {Container, ServiceFactory} from './index'
 import Vue from 'vue'
 import Injector from 'vue-inject'
+import constants from 'jpex/src/constants'
 
 /**
  * Implementation of DI container which is Vue plugin at the same time.
@@ -10,7 +11,11 @@ class VueContainer implements Container {
   injector: Injector
 
   constructor (vueInstance: Vue) {
-    this.injector = Injector.spawn()
+    this.injector = Injector.extend({
+      // Once per class. Every instance of that class will use the same factory instance,
+      // but any parent or child classes will create a new instance.
+      defaultLifecicles: constants.CLASS
+    })
     vueInstance.use(this.injector)
   }
 

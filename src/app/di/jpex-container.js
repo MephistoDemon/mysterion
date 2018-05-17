@@ -1,6 +1,7 @@
 // @flow
 import type {Container, ServiceFactory} from './index'
 import Jpex from 'jpex'
+import constants from 'jpex/src/constants'
 
 /**
  * Implementation of DI container which works via Jpex library.
@@ -9,7 +10,11 @@ class JpexContainer implements Container {
   jpex: Jpex
 
   constructor () {
-    this.jpex = Jpex.extend()
+    this.jpex = Jpex.extend({
+      // Once per class. Every instance of that class will use the same factory instance,
+      // but any parent or child classes will create a new instance.
+      defaultLifecicles: constants.CLASS
+    })
   }
 
   get (name: string): any {
