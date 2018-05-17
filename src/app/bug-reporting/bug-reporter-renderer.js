@@ -16,8 +16,17 @@ class BugReporterRenderer implements BugReporter {
     this.raven.setUserContext(userData)
   }
 
-  captureException (err: Error): void {
-    this.raven.captureException(err)
+  captureMessage (message: string, context: ?any): void {
+    this.raven.captureMessage(message, {
+      extra: context
+    })
+  }
+
+  captureException (err: Error, context: ?any): void {
+    this.raven.captureException(err, {
+      level: 'error',
+      extra: context
+    })
   }
 
   pushToLogCache (level: logLevels.LOG | logLevels.ERROR, data: string) {
