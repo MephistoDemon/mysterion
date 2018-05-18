@@ -34,7 +34,7 @@ class BugReporterRenderer implements BugReporter {
     pushToLogCache(level, data)
   }
 
-  _captureException (err: Error, level: string, context: ?any): void {
+  _captureException (err: Error, level: 'error' | 'info', context: ?any): void {
     this.raven.captureException(err, { level, extra: context })
   }
 }
