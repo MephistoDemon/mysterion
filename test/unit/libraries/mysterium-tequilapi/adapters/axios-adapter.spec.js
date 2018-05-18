@@ -2,7 +2,7 @@ import axios from 'axios/index'
 import AxiosAdapter from '../../../../../src/libraries/mysterium-tequilapi/adapters/axios-adapter'
 import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../../helpers/utils'
-import TequilapiClientError from '../../../../../src/libraries/mysterium-tequilapi/client-error'
+import { isNetworkError, isTimeoutError } from '../../../../../src/libraries/mysterium-tequilapi/client-error'
 
 describe('TequilapiClient AxiosAdapter', () => {
   let adapter
@@ -47,27 +47,27 @@ describe('TequilapiClient AxiosAdapter', () => {
     expect(response).to.deep.equal(responseExpected)
   })
 
-  it('decorates network error', async () => {
+  it('returns network error', async () => {
     mock.onGet('test-url').networkError()
 
     const err = await capturePromiseError(adapter.get('test-url'))
-    expect(err).to.be.instanceOf(TequilapiClientError)
-    expect(err.isNetworkError()).to.be.true
+    expect(err).to.be.instanceOf(Error)
+    expect(isNetworkError(err)).to.be.true
   })
 
-  it('decorates timeout error', async () => {
+  it('returns timeout error', async () => {
     mock.onGet('test-url').timeout()
 
     const err = await capturePromiseError(adapter.get('test-url'))
-    expect(err).to.be.instanceOf(TequilapiClientError)
-    expect(err.isTimeoutError()).to.be.true
+    expect(err).to.be.instanceOf(Error)
+    expect(isTimeoutError(err)).to.be.true
   })
 
-  it('decorates 404 response', async () => {
+  it('returns 404 response error', async () => {
     mock.onGet('test-url').reply(404, {message: 'What is wrong'})
 
     const err = await capturePromiseError(adapter.get('test-url'))
-    expect(err).to.be.instanceOf(TequilapiClientError)
+    expect(err).to.be.instanceOf(Error)
     expect(err.message).to.be.equal('Request failed with status code 404')
   })
 })

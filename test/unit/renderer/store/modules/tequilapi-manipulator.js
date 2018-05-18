@@ -2,23 +2,6 @@
 import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
-import TequilapiClientError from '../../../../../src/libraries/mysterium-tequilapi/client-error'
-
-class TimeoutError extends Error {
-  isTimeoutError (): boolean {
-    return true
-  }
-}
-
-class RequestClosedError extends Error {
-  isTimeoutError (): boolean {
-    return false
-  }
-
-  isRequestClosedError (): boolean {
-    return true
-  }
-}
 
 function factoryTequilapiManipulator () {
   let statusFail = false
@@ -28,9 +11,9 @@ function factoryTequilapiManipulator () {
   let connectFail = false
   let connectFailClosedRequest = false
 
-  const errorMock = new TequilapiClientError('Mock error')
-  const timeoutErrorMock = new TimeoutError('Mock timeout error')
-  const closedRequestErrorMock = new RequestClosedError('Mock closed request error')
+  const errorMock = new Error('Mock error')
+  const timeoutErrorMock = createMockTimeoutError()
+  const closedRequestErrorMock = createMockRequestClosedError()
 
   return {
     getFakeApi: function () {
@@ -111,6 +94,20 @@ function factoryTequilapiManipulator () {
       return timeoutErrorMock
     }
   }
+}
+
+function createMockTimeoutError (): Object {
+  const error = new Error('Mock timeout error')
+  const object = (error: Object)
+  object.code = 'ECONNABORTED'
+  return error
+}
+
+function createMockRequestClosedError (): Object {
+  const error = new Error('Mock closed request error')
+  const object = (error: Object)
+  object.response = { status: 499 }
+  return error
 }
 
 export default factoryTequilapiManipulator
