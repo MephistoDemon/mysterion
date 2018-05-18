@@ -2,7 +2,6 @@
 
 import Axios from 'axios'
 import type {HttpInterface, HttpQueryParams} from './interface'
-import TequilapiClientError from '../client-error'
 import {TIMEOUT_DEFAULT} from '../timeouts'
 
 class AxiosAdapter implements HttpInterface {
@@ -48,13 +47,9 @@ class AxiosAdapter implements HttpInterface {
   }
 }
 
-function decorateResponse (promise: Promise<Object>): Promise<Object> {
-  return promise
-    .then((response: Object) => {
-      return Promise.resolve(response.data)
-    }).catch((error: Error) => {
-      return Promise.reject(new TequilapiClientError(error))
-    })
+async function decorateResponse (promise: Promise<Object>): Promise<Object> {
+  const response = await promise
+  return response.data
 }
 
 export default AxiosAdapter

@@ -9,36 +9,23 @@ const httpResponseCodes = {
   SERVICE_UNAVAILABLE: 503
 }
 
-class TequilapiClientError extends Error {
-  original: Error
+function isNetworkError (error: Error): boolean {
+  return error.message === 'Network Error'
+}
 
-  constructor (original: Error) {
-    super()
-    super.name = this.constructor.name
-    super.message = original.message
-    super.stack = original.stack
-
-    this.original = original
+function isTimeoutError (error: Error): boolean {
+  if (!error.code) {
+    return false
   }
+  return error.code === errorCodes.CONNECTION_ABORTED_ERROR_CODE
+}
 
-  isNetworkError (): boolean {
-    return this.message === 'Network Error'
-  }
+function isRequestClosedError (error: Error): boolean {
+  return hasHttpStatus(error, httpResponseCodes.CLIENT_CLOSED_REQUEST)
+}
 
-  isTimeoutError (): boolean {
-    if (!this.original.code) {
-      return false
-    }
-    return this.original.code === errorCodes.CONNECTION_ABORTED_ERROR_CODE
-  }
-
-  isRequestClosedError (): boolean {
-    return hasHttpStatus(this.original, httpResponseCodes.CLIENT_CLOSED_REQUEST)
-  }
-
-  isServiceUnavailableError (): boolean {
-    return hasHttpStatus(this.original, httpResponseCodes.SERVICE_UNAVAILABLE)
-  }
+function isServiceUnavailableError (error: Error): boolean {
+  return hasHttpStatus(error, httpResponseCodes.SERVICE_UNAVAILABLE)
 }
 
 function hasHttpStatus (error: Error, expectedStatus: number): boolean {
@@ -49,4 +36,4 @@ function hasHttpStatus (error: Error, expectedStatus: number): boolean {
   return error.response.status === expectedStatus
 }
 
-export default TequilapiClientError
+export { isNetworkError, isTimeoutError, isRequestClosedError, isServiceUnavailableError }

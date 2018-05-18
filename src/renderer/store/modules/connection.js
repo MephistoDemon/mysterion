@@ -14,6 +14,7 @@ import type {ConnectionStatus} from '../../../libraries/mysterium-tequilapi/dto/
 import ConnectionStatusEnum from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatisticsDTO from '../../../libraries/mysterium-tequilapi/dto/connection-statistics'
 import ConnectionRequestDTO from '../../../libraries/mysterium-tequilapi/dto/connection-request'
+import {isServiceUnavailableError, isTimeoutError, isRequestClosedError} from '../../../libraries/mysterium-tequilapi/client-error'
 
 type ConnectionStore = {
   ip: ?string,
@@ -98,7 +99,7 @@ function actionsFactory (
         const ipModel = await tequilapi.connectionIP(config.ipUpdateTimeout)
         commit(type.CONNECTION_IP, ipModel.ip)
       } catch (err) {
-        if (err.isTimeoutError() || err.isServiceUnavailableError()) {
+        if (isTimeoutError(err) || isServiceUnavailableError(err)) {
           return
         }
         dependencies.get('bugReporter').captureException(err)
@@ -175,7 +176,7 @@ function actionsFactory (
         eventTracker.connectEnded()
         commit(type.HIDE_ERROR)
       } catch (err) {
-        if (err.isRequestClosedError()) {
+        if (isRequestClosedError(err)) {
           eventTracker.connectCanceled()
           return
         }
