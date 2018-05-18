@@ -36,6 +36,14 @@ async function capturePromiseError (promise: Promise<any>): Promise<?Error> {
   return null
 }
 
+function captureError (fn: Function): ?Error {
+  try {
+    fn()
+  } catch (e) {
+    return e
+  }
+}
+
 /**
  * Resolves promise and captures error of it's execution.
  */
@@ -71,4 +79,8 @@ class CallbackRecorder {
   }
 }
 
-export { nextTick, capturePromiseError, captureAsyncError, CallbackRecorder }
+export { nextTick,
+  capturePromiseError,
+  captureAsyncError,
+  captureError,
+  CallbackRecorder }
