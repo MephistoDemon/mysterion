@@ -1,6 +1,5 @@
 // @flow
 import type from '../types'
-import type {Container} from '../../../app/di'
 
 import messages from '../../../app/messages'
 import {FunctionLooper} from '../../../libraries/functionLooper'
@@ -14,6 +13,7 @@ import type {ConnectionStatus} from '../../../libraries/mysterium-tequilapi/dto/
 import ConnectionStatusEnum from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatisticsDTO from '../../../libraries/mysterium-tequilapi/dto/connection-statistics'
 import ConnectionRequestDTO from '../../../libraries/mysterium-tequilapi/dto/connection-request'
+import type {BugReporter} from '../../../app/bug-reporting/interface'
 import {isServiceUnavailableError, isTimeoutError, isRequestClosedError} from '../../../libraries/mysterium-tequilapi/client-error'
 
 type ConnectionStore = {
@@ -91,9 +91,8 @@ function actionsFactory (
   rendererCommunication: RendererCommunication,
   statsCollector: StatsCollector,
   statsEventsFactory: StatsEventsFactory,
-  dependencies: Container
+  bugReporter: BugReporter
 ) {
-  const bugReporter = dependencies.get('bugReporter')
   return {
     async [type.CONNECTION_IP] ({commit}) {
       try {

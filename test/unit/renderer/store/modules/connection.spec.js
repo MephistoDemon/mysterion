@@ -40,10 +40,8 @@ async function executeAction (action, state = {}, payload = {}) {
 
   const dispatch = (action, payload = {}) => {
     const context = {commit, dispatch, state}
-    const dependencies = new DIContainer()
-    dependencies.constant('bugReporter', bugReporterMock)
     const actions =
-      actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector, statsEventsFactory, dependencies)
+      actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector, statsEventsFactory, bugReporterMock)
 
     return actions[action](context, payload)
   }
