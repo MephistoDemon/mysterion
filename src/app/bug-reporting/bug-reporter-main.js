@@ -1,31 +1,34 @@
 // @flow
+import type {BugReporter} from './interface'
 import Raven from 'raven'
 import {pushToLogCache} from './logsCache'
 import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
-import type {BugReporter} from './interface'
 import {logLevels} from '../../libraries/mysterium-client'
 
 class BugReporterMain implements BugReporter {
-  _url: string
-  _config: Object
+  raven: Raven
 
-  constructor (url: string, config: Object) {
-    this._url = url
-    this._config = config
-  }
-
-  install () {
-    Raven.config(this._url, this._config).install()
+  constructor (raven: Raven) {
+    this.raven = raven
   }
 
   setUser (userData: IdentityDTO) {
-    Raven.setContext({
+    this.raven.setContext({
       user: userData
     })
   }
 
-  captureException (err: Error): void {
-    Raven.captureException(err)
+  captureMessage (message: string, context: ?any): void {
+    this.raven.captureMessage(message, {
+      extra: context
+    })
+  }
+
+  captureException (err: Error, context: ?any): void {
+    this.raven.captureException(err, {
+      level: 'error',
+      extra: context
+    })
   }
 
   pushToLogCache (level: logLevels.LOG | logLevels.ERROR, data: string) {

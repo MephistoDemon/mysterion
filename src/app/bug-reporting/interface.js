@@ -4,8 +4,8 @@ import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
 import {logLevels} from '../../libraries/mysterium-client'
 
 export interface BugReporter {
-  install (): void,
   setUser (IdentityDTO): void,
-  captureException (Error): void,
+  captureMessage (message: string, context: ?any): void,
+  captureException (err: Error, context: ?any): void,
   pushToLogCache (logLevels.LOG | logLevels.ERROR, string): void
 }

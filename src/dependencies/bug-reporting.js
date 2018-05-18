@@ -8,7 +8,7 @@ function bootstrap (container: Container) {
   container.service(
     'bugReporter.config',
     ['mysterionReleaseID'],
-    (mysterionReleaseID) => {
+    (mysterionReleaseID): RavenOptions => {
       return {
         captureUnhandledRejections: true,
         release: mysterionReleaseID,

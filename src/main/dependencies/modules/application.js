@@ -8,7 +8,10 @@ import Window from '../../../app/window'
 import Terms from '../../../app/terms'
 
 function bootstrap (container: Container) {
-  container.constant('mysterionReleaseID', `${process.env.MYSTERION_VERSION}(${process.env.BUILD_NUMBER})`)
+  const mysterionReleaseID = `${process.env.MYSTERION_VERSION}(${process.env.BUILD_NUMBER})`
+  global.__mysterionReleaseID = mysterionReleaseID
+
+  container.constant('mysterionReleaseID', mysterionReleaseID)
   container.service(
     'mysterionApplication.config',
     [],
