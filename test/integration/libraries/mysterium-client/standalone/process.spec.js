@@ -66,7 +66,7 @@ xdescribe('Standalone Process', () => {
   })
 
   describe('health checking', () => {
-    it('responds to healthcheck with uptime', async () => {
+    it('response contains uptime and version', async () => {
       const res = await tequilapi.healthCheck()
       expect(res.uptime).to.be.ok
       expect(res.version).to.be.ok
@@ -89,10 +89,8 @@ xdescribe('Standalone Process', () => {
       processMonitoring.stop()
     })
 
-    it('monitoring send UP status', (done) => {
-      processMonitoring.subscribeUp(() => {
-        done()
-      })
+    it('sends status UP', (done) => {
+      processMonitoring.subscribeUp(() => done())
     })
   })
 })

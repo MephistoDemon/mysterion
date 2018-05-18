@@ -112,11 +112,8 @@ class Mysterion {
     }
 
     await this._ensureDaemonInstallation()
-    // if all is good, let's boot up the client
     this._startProcess()
-    // and start monitoring it
     this._startProcessMonitoring()
-    // and handle some actions after process is up
     this._onProcessReady(() => {
       logInfo(`Notify that 'mysterium_client' process is ready`)
       this.communication.sendMysteriumClientIsReady()
