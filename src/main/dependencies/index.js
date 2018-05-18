@@ -23,6 +23,8 @@ import bugReportingBootstrap from './modules/bug-reporting'
 import mysteriumClientBootstrap from './modules/mysterium-client'
 import mysteriumTequilapiBootstrap from '../../dependencies/mysterium-tequilapi'
 import proposalFetcherBootstrap from './modules/proposal-fetcher'
+import userSettingsBootstrap from './modules/user-settings'
+import disconnectNotificationsBootstrap from './modules/disconnect-notification'
 
 /**
  * Bootstraps all application dependencies into DI container
@@ -35,6 +37,8 @@ function bootstrap (): DIContainer {
   mysteriumClientBootstrap(container)
   mysteriumTequilapiBootstrap(container)
   proposalFetcherBootstrap(container)
+  userSettingsBootstrap(container)
+  disconnectNotificationsBootstrap(container)
 
   return container
 }

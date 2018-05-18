@@ -73,7 +73,8 @@ function bootstrap (container: Container) {
       'mysteriumClientProcess',
       'mysteriumClientMonitoring',
       'proposalFetcher',
-      'bugReporter'
+      'bugReporter',
+      'userSettings'
     ],
     (
       mysterionConfig: MysterionConfig,
@@ -81,7 +82,8 @@ function bootstrap (container: Container) {
       mysteriumClientProcess,
       mysteriumClientMonitoring,
       proposalFetcher,
-      bugReporter
+      bugReporter,
+      userSettings
     ) => {
       return new Mysterion({
         config: mysterionConfig,
@@ -92,7 +94,8 @@ function bootstrap (container: Container) {
         process: mysteriumClientProcess,
         monitoring: mysteriumClientMonitoring,
         proposalFetcher: proposalFetcher,
-        bugReporter: bugReporter
+        bugReporter: bugReporter,
+        userSettings: userSettings
       })
     }
   )
