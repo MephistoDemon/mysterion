@@ -23,6 +23,8 @@ class Mysterion {
   }
 
   run () {
+    this.logUnhandledRejections()
+
     // fired when app has been launched
     app.on('ready', async () => {
       await this.bootstrap()
@@ -41,6 +43,12 @@ class Mysterion {
     })
     app.on('before-quit', () => {
       this.window.willQuitApp = true
+    })
+  }
+
+  logUnhandledRejections () {
+    process.on('unhandledRejection', error => {
+      console.log('Received unhandled rejection:', error)
     })
   }
 

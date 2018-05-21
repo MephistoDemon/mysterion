@@ -1,6 +1,5 @@
 // @flow
 import type from '../types'
-import type {Container} from '../../../app/di'
 
 import messages from '../../../app/messages'
 import {FunctionLooper} from '../../../libraries/functionLooper'
@@ -14,6 +13,7 @@ import type {ConnectionStatus} from '../../../libraries/mysterium-tequilapi/dto/
 import ConnectionStatusEnum from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatisticsDTO from '../../../libraries/mysterium-tequilapi/dto/connection-statistics'
 import ConnectionRequestDTO from '../../../libraries/mysterium-tequilapi/dto/connection-request'
+import type {BugReporter} from '../../../app/bug-reporting/interface'
 import {isServiceUnavailableError, isTimeoutError, isRequestClosedError} from '../../../libraries/mysterium-tequilapi/client-error'
 
 type ConnectionStore = {
@@ -91,7 +91,7 @@ function actionsFactory (
   rendererCommunication: RendererCommunication,
   statsCollector: StatsCollector,
   statsEventsFactory: StatsEventsFactory,
-  dependencies: Container
+  bugReporter: BugReporter
 ) {
   return {
     async [type.CONNECTION_IP] ({commit}) {
@@ -102,7 +102,7 @@ function actionsFactory (
         if (isTimeoutError(err) || isServiceUnavailableError(err)) {
           return
         }
-        dependencies.get('bugReporter').captureException(err)
+        bugReporter.captureException(err)
       }
     },
     [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperConfig): FunctionLooper {
@@ -185,7 +185,7 @@ function actionsFactory (
         const error: Object = new Error('Connection to node failed.')
         error.original = err
         eventTracker.connectEnded(error.toString())
-        throw error
+        bugReporter.captureInfoException(err)
       } finally {
         if (looper) {
           looper.start()
