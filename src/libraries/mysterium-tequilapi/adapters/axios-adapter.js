@@ -1,15 +1,15 @@
 // @flow
 
-import Axios from 'axios'
+import axios from 'axios'
 import type {HttpInterface, HttpQueryParams} from './interface'
 import {TIMEOUT_DEFAULT} from '../timeouts'
 
 class AxiosAdapter implements HttpInterface {
-  _axios: Axios
+  _axios: axios.Axios
   _timeout: number
 
-  constructor (axios: Axios, defaultTimeout: number = TIMEOUT_DEFAULT) {
-    this._axios = axios
+  constructor (axiosInstance: axios.Axios, defaultTimeout: number = TIMEOUT_DEFAULT) {
+    this._axios = axiosInstance
     this._timeout = defaultTimeout
   }
 

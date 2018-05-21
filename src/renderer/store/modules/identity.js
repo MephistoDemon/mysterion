@@ -58,6 +58,9 @@ function actionsFactory (tequilapi: TequilapiClient) {
     },
     async [type.IDENTITY_UNLOCK] ({commit}) {
       try {
+        if (state.current == null) {
+          throw new Error('Identity is not available')
+        }
         await tequilapi.identityUnlock(state.current.id, await getPassword())
         commit(type.IDENTITY_UNLOCK_SUCCESS)
       } catch (err) {

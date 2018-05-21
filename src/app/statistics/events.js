@@ -33,7 +33,7 @@ function currentTime (): number {
 
 function createEventFactory (applicationInfo: ApplicationInfo): EventFactory {
   return function (name: string, context: Object) {
-    return newEvent(applicationInfo, name, currentTime, context)
+    return newEvent(applicationInfo, name, currentTime(), context)
   }
 }
 

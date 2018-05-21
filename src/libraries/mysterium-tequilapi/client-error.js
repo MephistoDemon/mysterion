@@ -9,15 +9,22 @@ const httpResponseCodes = {
   SERVICE_UNAVAILABLE: 503
 }
 
+type AxiosError = {
+  message: string,
+  response?: { status: number },
+  code?: string
+}
+
 function isNetworkError (error: Error): boolean {
   return error.message === 'Network Error'
 }
 
 function isTimeoutError (error: Error): boolean {
-  if (!error.code) {
+  const axiosError = (error: AxiosError)
+  if (!axiosError.code) {
     return false
   }
-  return error.code === errorCodes.CONNECTION_ABORTED_ERROR_CODE
+  return axiosError.code === errorCodes.CONNECTION_ABORTED_ERROR_CODE
 }
 
 function isRequestClosedError (error: Error): boolean {
@@ -29,11 +36,12 @@ function isServiceUnavailableError (error: Error): boolean {
 }
 
 function hasHttpStatus (error: Error, expectedStatus: number): boolean {
-  if (!error.response) {
+  const axiosError = (error: AxiosError)
+  if (!axiosError.response) {
     return false
   }
 
-  return error.response.status === expectedStatus
+  return axiosError.response.status === expectedStatus
 }
 
 export { isNetworkError, isTimeoutError, isRequestClosedError, isServiceUnavailableError }

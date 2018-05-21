@@ -2,7 +2,7 @@
 import MainCommunication from '../../../../src/app/communication/main-communication'
 import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
-import { describe, beforeEach, it } from '../../../helpers/dependencies'
+import { describe, beforeEach, it, expect } from '../../../helpers/dependencies'
 import { CallbackRecorder } from '../../../helpers/utils'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 
@@ -57,7 +57,7 @@ describe('MainCommunication', () => {
 
   describe('sendTermsRequest', () => {
     it('sends message to bus', () => {
-      const data = { content: 'Cool terms' }
+      const data = { htmlContent: 'Cool terms' }
       communication.sendTermsRequest(data)
 
       expect(fakeMessageBus.lastChannel).to.eql(messages.TERMS_REQUESTED)
