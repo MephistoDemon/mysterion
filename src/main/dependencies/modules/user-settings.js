@@ -1,24 +1,33 @@
 // @flow
 import type {Container} from '../../../app/di'
-import UserSettings from '../../../app/userSettings'
+import {loadSettings} from '../../../app/userSettings'
 import {join} from 'path'
 
 const userSettingsFilename = 'userSettings.json'
 
 function bootstrap (container: Container) {
   container.factory(
-    'userSettings',
+    'userSettingsPath',
     ['mysterionApplication.config'],
     (mysterionConfig) => {
-      const userSettingsFilePath = join(mysterionConfig.userDataDirectory, userSettingsFilename)
-      const userSettings = new UserSettings(userSettingsFilePath)
+      return join(mysterionConfig.userDataDirectory, userSettingsFilename)
+    }
+  )
+
+  container.factory(
+    'userSettings',
+    ['userSettingsPath'],
+    (userSettingsPath) => {
+      let userSettings
       try {
-        userSettings.load()
+        userSettings = loadSettings(userSettingsPath)
       } catch (e) {
-        console.log(`Failing to load ${userSettingsFilePath}`)
+        console.log(`Failing to load ${userSettingsPath}`)
+        console.log(e)
       }
       return userSettings
-    })
+    }
+  )
 }
 
 export default bootstrap

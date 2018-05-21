@@ -1,5 +1,5 @@
 // @flow
-import UserSettings from '../../../src/app/userSettings'
+import UserSettings, {saveSettings, loadSettings} from '../../../src/app/userSettings'
 import {describe, expect, it, after} from '../../helpers/dependencies'
 import {tmpdir} from 'os'
 import {join} from 'path'
@@ -20,7 +20,7 @@ describe('UserSettings', () => {
     })
 
     it('exports a valid json on save()', () => {
-      userSettings.save()
+      saveSettings(settingsPath, userSettings)
       const data = readFileSync(settingsPath, {encoding: 'utf8'})
       expect(data.toString()).to.eql('{"showDisconnectNotifications":false}')
     })
@@ -38,23 +38,20 @@ describe('UserSettings', () => {
     })
 
     it('reads showDiscinnectNotifications correctly from file', () => {
-      const loadedUserSettings = new UserSettings(loadSettingsPath)
-      loadedUserSettings.load()
+      const loadedObject = loadSettings(loadSettingsPath)
+      const loadedUserSettings = new UserSettings(loadedObject)
       expect(loadedUserSettings.showDisconnectNotifications).to.be.false
     })
   })
 
-  describe.only('invalid path', () => {
-    const userSettingsInvalidPath = new UserSettings(invalidPath)
-
+  describe('invalid path', () => {
     it('throws error on save()', () => {
-      const error = captureError(userSettingsInvalidPath.save)
+      const error = captureError(saveSettings(invalidPath, new UserSettings({showDisconnectNotifications: false})))
       expect(error instanceof Error).to.be.true
     })
 
     it('throws error on load()', () => {
-      const error = captureError(userSettingsInvalidPath.load)
-      console.log(error)
+      const error = captureError(loadSettings(invalidPath))
       expect(error instanceof TypeError).to.be.true
     })
   })

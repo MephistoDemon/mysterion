@@ -23,9 +23,11 @@ import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
 import {onFirstEvent} from './communication/utils'
 import path from 'path'
+import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
+import {saveSettings} from './userSettings'
 
 class Mysterion {
-  constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter}) {
+  constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, userSettingsPath, disconnectNotification}) {
     Object.assign(this, {
       browserWindowFactory,
       windowFactory,
@@ -35,7 +37,9 @@ class Mysterion {
       monitoring,
       process,
       proposalFetcher,
-      bugReporter
+      bugReporter,
+      userSettingsPath,
+      disconnectNotification
     })
   }
 
@@ -59,6 +63,13 @@ class Mysterion {
       this.window.show()
     })
     app.on('before-quit', () => {
+      try {
+        saveSettings(this.userSettingsPath)
+      } catch (e) {
+        console.log(`user settigs saving failed ${this.userSettingsPath}`)
+        this.bugReporter.captureException(e)
+      }
+
       this.window.willQuitApp = true
     })
   }
@@ -255,6 +266,12 @@ class Mysterion {
 
     this.communication.onCurrentIdentityChange((identity) => {
       this.bugReporter.setUser(identity)
+    })
+
+    this.communication.onConnectionStatusChange((status) => {
+      if (this.disconnectNotification.isEnabled && status.newStatus === ConnectionStatusEnum.NOT_CONNECTED) {
+        this.disconnectNotification.show()
+      }
     })
   }
 

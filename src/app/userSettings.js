@@ -1,26 +1,25 @@
 // @flow
 import {readFileSync, writeFileSync} from 'fs'
-import type {BugReporter} from './bug-reporting/interface'
 
 export default class UserSettings {
-  showDisconnectNotifications: boolean = true
-  userSettingsJsonPath: string
-  bugReporter: BugReporter
+  showDisconnectNotifications: boolean
 
-  constructor (userSettingsJsonPath, bugReporter) {
-    this.userSettingsJsonPath = userSettingsJsonPath
-    this.bugReporter = bugReporter
-  }
-
-  save () {
-    const {showDisconnectNotifications} = this
-    const settingsString = JSON.stringify({showDisconnectNotifications})
-    writeFileSync(this.userSettingsJsonPath, settingsString)
-  }
-
-  load () {
-    const data = readFileSync(this.userSettingsJsonPath, {encoding: 'utf8'})
-    const parsed = JSON.parse(data)
-    this.showDisconnectNotifications = parsed.showDisconnectNotifications
+  constructor (obj: { showDisconnectNotifications: boolean }) {
+    this.showDisconnectNotifications = obj.showDisconnectNotifications
   }
 }
+
+function saveSettings (path: string, settings: UserSettings) {
+  const settingsString = JSON.stringify(settings)
+  writeFileSync(path, settingsString)
+}
+
+function loadSettings (path: string): UserSettings {
+  const data = readFileSync(path, {encoding: 'utf8'})
+  if (data !== 'undefined') {
+    return new UserSettings(JSON.parse(data))
+  }
+  return new UserSettings({showDisconnectNotifications: true})
+}
+
+export {saveSettings, loadSettings}

@@ -12,6 +12,7 @@ function bootstrap (container: Container) {
       if (userSettings.showDisconnectNotifications === false) {
         disconnectNotification.disable()
       }
+      return disconnectNotification
     }
   )
 }
