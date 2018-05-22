@@ -19,109 +19,54 @@
 import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
+import type {TequilapiClient} from '../../../../../src/libraries/mysterium-tequilapi/client'
+import NodeHealthcheckDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
+import IdentityDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/identity'
+import ProposalsFilter from '../../../../../src/libraries/mysterium-tequilapi/dto/proposals-filter'
+import ProposalDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 
-function factoryTequilapiManipulator () {
-  let statusFail = false
-  let statisticsFail = false
-  let ipFail = false
-  let ipTimeout = false
-  let connectFail = false
-  let connectFailClosedRequest = false
+class TequilapiManipulator implements TequilapiClient {
+  async healthCheck (_timeout: ?number): Promise<NodeHealthcheckDTO> {
+    return new NodeHealthcheckDTO({})
+  }
 
-  const errorMock = new Error('Mock error')
-  const timeoutErrorMock = createMockTimeoutError()
-  const closedRequestErrorMock = createMockRequestClosedError()
+  async stop (): Promise<void> {
+  }
 
-  return {
-    getFakeApi: function () {
-      return {
-        connectionIP: async function (): Promise<ConnectionIPDTO> {
-          if (ipTimeout) {
-            throw timeoutErrorMock
-          }
-          if (ipFail) {
-            throw errorMock
-          }
-          return new ConnectionIPDTO({
-            ip: 'mock ip'
-          })
-        },
+  async identitiesList (): Promise<Array<IdentityDTO>> {
+    return []
+  }
 
-        connectionStatus: async function (): Promise<ConnectionStatusDTO> {
-          if (statusFail) {
-            throw errorMock
-          }
-          return new ConnectionStatusDTO({
-            status: 'mock status'
-          })
-        },
+  async identityCreate (passphrase: string): Promise<IdentityDTO> {
+    return new IdentityDTO({})
+  }
 
-        connectionStatistics: async function (): Promise<ConnectionStatisticsDTO> {
-          if (statisticsFail) {
-            throw errorMock
-          }
-          return new ConnectionStatisticsDTO({duration: 1})
-        },
+  async identityUnlock (id: string, passphrase: string): Promise<void> {
+  }
 
-        connectionCreate: async function (): Promise<ConnectionStatusDTO> {
-          if (connectFailClosedRequest) {
-            throw closedRequestErrorMock
-          }
-          if (connectFail) {
-            throw errorMock
-          }
-          return new ConnectionStatusDTO({})
-        },
+  async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {
+    return []
+  }
 
-        connectionCancel: async function (): Promise<ConnectionStatusDTO> {
-          return new ConnectionStatusDTO({})
-        }
-      }
-    },
-    cleanup: function () {
-      this.setStatusFail(false)
-      this.setStatisticsFail(false)
-      this.setIpFail(false)
-      this.setIpTimeout(false)
-      this.setConnectFail(false)
-      this.setConnectFailClosedRequest(false)
-    },
-    setStatusFail: function (value: boolean) {
-      statusFail = value
-    },
-    setStatisticsFail: function (value: boolean) {
-      statisticsFail = value
-    },
-    setIpTimeout: function (value: boolean) {
-      ipTimeout = value
-    },
-    setIpFail: function (value: boolean) {
-      ipFail = value
-    },
-    setConnectFail: function (value: boolean) {
-      connectFail = value
-    },
-    setConnectFailClosedRequest: function (value: boolean) {
-      connectFailClosedRequest = value
-    },
-    getFakeError: function (): Error {
-      return errorMock
-    }
+  async connectionCreate (): Promise<ConnectionStatusDTO> {
+    return new ConnectionStatusDTO({})
+  }
+
+  async connectionStatus (): Promise<ConnectionStatusDTO> {
+    return new ConnectionStatusDTO({})
+  }
+
+  async connectionCancel (): Promise<ConnectionStatusDTO> {
+    return new ConnectionStatusDTO({})
+  }
+
+  async connectionIP (): Promise<ConnectionIPDTO> {
+    return new ConnectionIPDTO({})
+  }
+
+  async connectionStatistics (): Promise<ConnectionStatisticsDTO> {
+    return new ConnectionStatisticsDTO({})
   }
 }
 
-function createMockTimeoutError (): Object {
-  const error = new Error('Mock timeout error')
-  const object = (error: Object)
-  object.code = 'ECONNABORTED'
-  return error
-}
-
-function createMockRequestClosedError (): Object {
-  const error = new Error('Mock closed request error')
-  const object = (error: Object)
-  object.response = { status: 499 }
-  return error
-}
-
-export default factoryTequilapiManipulator
+export default TequilapiManipulator

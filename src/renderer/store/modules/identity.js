@@ -19,7 +19,7 @@
 import type from '../types'
 import RendererMessageBus from '../../../app/communication/rendererMessageBus'
 import RendererCommunication from '../../../app/communication/renderer-communication'
-import TequilapiClient from '../../../libraries/mysterium-tequilapi/client'
+import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../../libraries/mysterium-tequilapi/dto/identity'
 import type {Container} from '../../../app/di'
 

@@ -33,7 +33,7 @@ import {describe, it, before, after} from '../../../helpers/dependencies'
 import config from '@/config'
 import messages from '../../../../src/app/messages'
 import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
-import TequilapiClient from '../../../../src/libraries/mysterium-tequilapi/client'
+import type { TequilapiClient } from '../../../../src/libraries/mysterium-tequilapi/client'
 
 import DIContainer from '../../../../src/app/di/vue-container'
 
