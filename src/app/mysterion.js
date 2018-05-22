@@ -27,7 +27,7 @@ import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connectio
 import {saveSettings} from './userSettings'
 
 class Mysterion {
-  constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, userSettingsPath, disconnectNotification}) {
+  constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, userSettingsPath, userSettings, disconnectNotification}) {
     Object.assign(this, {
       browserWindowFactory,
       windowFactory,
@@ -39,6 +39,7 @@ class Mysterion {
       proposalFetcher,
       bugReporter,
       userSettingsPath,
+      userSettings,
       disconnectNotification
     })
   }
@@ -269,7 +270,7 @@ class Mysterion {
     })
 
     this.communication.onConnectionStatusChange((status) => {
-      if (this.disconnectNotification.isEnabled && status.newStatus === ConnectionStatusEnum.NOT_CONNECTED) {
+      if (this.userSettings.showDisconnectNotifications && status.newStatus === ConnectionStatusEnum.NOT_CONNECTED) {
         this.disconnectNotification.show()
       }
     })
