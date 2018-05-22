@@ -1,25 +1,34 @@
 // @flow
-import {readFileSync, writeFileSync} from 'fs'
+import {readFile, writeFile} from 'fs'
+import {promisify} from 'util'
+
+const readFileAsync = promisify(readFile)
+const writeFileAsync = promisify(writeFile)
+
+type UserSettingsDTO = {
+  showDisconnectNotifications: boolean
+}
 
 export default class UserSettings {
   showDisconnectNotifications: boolean
 
-  constructor (obj: { showDisconnectNotifications: boolean }) {
+  constructor (obj: UserSettingsDTO) {
     this.showDisconnectNotifications = obj.showDisconnectNotifications
   }
 }
 
-function saveSettings (path: string, settings: UserSettings) {
+async function saveSettings (path: string, settings: UserSettings): Promise<?Error> {
   const settingsString = JSON.stringify(settings)
-  writeFileSync(path, settingsString)
+  await writeFileAsync(path, settingsString)
 }
 
-function loadSettings (path: string): UserSettings {
-  const data = readFileSync(path, {encoding: 'utf8'})
-  if (data !== 'undefined') {
-    return new UserSettings(JSON.parse(data))
+async function loadSettings (path: string): Promise<?UserSettings> {
+  const data = await readFileAsync(path, {encoding: 'utf8'})
+  const parsedSettings = JSON.parse(data)
+
+  if (typeof parsedSettings.showDisconnectNotifications === 'boolean') {
+    return new UserSettings(parsedSettings)
   }
-  return new UserSettings({showDisconnectNotifications: true})
 }
 
 export {saveSettings, loadSettings}

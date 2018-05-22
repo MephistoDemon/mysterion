@@ -1,6 +1,6 @@
 // @flow
 import type {Container} from '../../../app/di'
-import {loadSettings} from '../../../app/userSettings'
+import UserSettings, {loadSettings} from '../../../app/userSettings'
 import {join} from 'path'
 
 const userSettingsFilename = 'userSettings.json'
@@ -15,17 +15,16 @@ function bootstrap (container: Container) {
   )
 
   container.factory(
-    'userSettings',
+    'userSettingsPromise',
     ['userSettingsPath'],
-    (userSettingsPath) => {
-      let userSettings
+    async (userSettingsPath) => {
       try {
-        userSettings = loadSettings(userSettingsPath)
+        return await loadSettings(userSettingsPath)
       } catch (e) {
         console.log(`Failing to load ${userSettingsPath}`)
         console.log(e)
+        return new UserSettings({showDisconnectNotifications: true})
       }
-      return userSettings
     }
   )
 }

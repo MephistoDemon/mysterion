@@ -36,7 +36,7 @@ async function capturePromiseError (promise: Promise<any>): Promise<?Error> {
   return null
 }
 
-function captureError (fn: Function): ?Error {
+function captureError (fn: () => any): ?Error {
   try {
     fn()
   } catch (e) {

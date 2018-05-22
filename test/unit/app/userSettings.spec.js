@@ -1,32 +1,38 @@
 // @flow
 import UserSettings, {saveSettings, loadSettings} from '../../../src/app/userSettings'
-import {describe, expect, it, after} from '../../helpers/dependencies'
+import {describe, expect, it, after, before} from '../../helpers/dependencies'
 import {tmpdir} from 'os'
 import {join} from 'path'
 import {readFileSync, writeFileSync, unlinkSync} from 'fs'
-import {captureError} from '../../helpers/utils'
+import {capturePromiseError} from '../../helpers/utils'
 
-describe('UserSettings', () => {
+describe('User Settings storage', () => {
   const settingsPath = join(tmpdir(), 'settings.test.saving.json')
   const loadSettingsPath = join(tmpdir(), 'settings.test.loading.json')
-  const invalidPath = join(tmpdir(), 'some')
+  const invalidPath = join(tmpdir(), 'some', 'file')
 
-  describe('saves settings', () => {
-    const userSettings = new UserSettings(settingsPath)
-    userSettings.showDisconnectNotifications = false
+  describe('saveSettings', () => {
+    const userSettings = new UserSettings({showDisconnectNotifications: false})
 
     after(() => {
       unlinkSync(settingsPath)
     })
 
-    it('exports a valid json on save()', () => {
-      saveSettings(settingsPath, userSettings)
+    it('exports a valid json on save()', async () => {
+      await saveSettings(settingsPath, userSettings)
       const data = readFileSync(settingsPath, {encoding: 'utf8'})
       expect(data.toString()).to.eql('{"showDisconnectNotifications":false}')
     })
+
+    it('throws error if saveSettings() fails on invalid path to file', async () => {
+      const err = await capturePromiseError(
+        saveSettings(invalidPath, new UserSettings({showDisconnectNotifications: false})))
+
+      expect(err instanceof Error).to.be.true
+    })
   })
 
-  describe('loads settings from file', () => {
+  describe('loadSettings', () => {
     before(() => {
       writeFileSync(
         loadSettingsPath,
@@ -37,22 +43,14 @@ describe('UserSettings', () => {
       unlinkSync(loadSettingsPath)
     })
 
-    it('reads showDiscinnectNotifications correctly from file', () => {
-      const loadedObject = loadSettings(loadSettingsPath)
-      const loadedUserSettings = new UserSettings(loadedObject)
+    it('reads showDisconnectNotifications correctly from file', async () => {
+      const loadedUserSettings = await loadSettings(loadSettingsPath)
       expect(loadedUserSettings.showDisconnectNotifications).to.be.false
     })
-  })
 
-  describe('invalid path', () => {
-    it('throws error on save()', () => {
-      const error = captureError(saveSettings(invalidPath, new UserSettings({showDisconnectNotifications: false})))
+    it('throws error if loadSettings() fails on invalid path to file', async () => {
+      const error = await capturePromiseError(loadSettings(invalidPath))
       expect(error instanceof Error).to.be.true
-    })
-
-    it('throws error on load()', () => {
-      const error = captureError(loadSettings(invalidPath))
-      expect(error instanceof TypeError).to.be.true
     })
   })
 })
