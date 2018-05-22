@@ -86,29 +86,26 @@ function factoryTequilapiManipulator () {
       this.setConnectFail(false)
       this.setConnectFailClosedRequest(false)
     },
-    setStatusFail: function (error: Error) {
-      statusFail = error
+    setStatusFail: function (value: boolean) {
+      statusFail = value
     },
-    setStatisticsFail: function (error: Error) {
-      statisticsFail = error
+    setStatisticsFail: function (value: boolean) {
+      statisticsFail = value
     },
-    setIpTimeout: function (error: Error) {
-      ipTimeout = error
+    setIpTimeout: function (value: boolean) {
+      ipTimeout = value
     },
-    setIpFail: function (error: Error) {
-      ipFail = error
+    setIpFail: function (value: boolean) {
+      ipFail = value
     },
-    setConnectFail: function (error: Error) {
-      connectFail = error
+    setConnectFail: function (value: boolean) {
+      connectFail = value
     },
-    setConnectFailClosedRequest: function (error: Error) {
-      connectFailClosedRequest = error
+    setConnectFailClosedRequest: function (value: boolean) {
+      connectFailClosedRequest = value
     },
     getFakeError: function (): Error {
       return errorMock
-    },
-    getFakeTimeoutError: function (): Error {
-      return timeoutErrorMock
     }
   }
 }

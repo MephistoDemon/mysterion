@@ -31,7 +31,7 @@ import {createEventFactory} from '../../../../../src/app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../../../src/app/statistics/events'
 import {ActionLooper, ActionLooperConfig} from '../../../../../src/renderer/store/modules/connection'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
-import DIContainer from '../../../../../src/app/di/jpex-container'
+import type {BugReporter} from '../../../../../src/app/bug-reporting/interface'
 
 const fakeTequilapi = factoryTequilapiManipulator()
 const fakeMessageBus = new FakeMessageBus()
@@ -42,12 +42,27 @@ const fakeCollector = {
 }
 
 function statsEventsFactory (): StatsEventsFactory {
-  return createEventFactory({name: 'Test'})
+  return createEventFactory({name: 'Test', version: '1.0.test'})
 }
 
-const bugReporterMock = {
-  captureInfoException: () => {}
+class BugReporterMock implements BugReporter {
+  setUser (identity): void {
+  }
+
+  captureMessage (_message, _context): void {
+  }
+
+  captureException (_err, _context): void {
+  }
+
+  captureInfoException (_err, _context): void {
+  }
+
+  pushToLogCache (level, log): void {
+  }
 }
+
+const bugReporterMock = new BugReporterMock()
 
 async function executeAction (action, state = {}, payload = {}) {
   const mutations = []
@@ -113,13 +128,13 @@ describe('mutations', () => {
       const state = {
         actionLoopers: {}
       }
-      const actionLooper1 = new ActionLooper(type.CONNECTION_IP, new FunctionLooper())
+      const actionLooper1 = new ActionLooper(type.CONNECTION_IP, new FunctionLooper(() => {}, 1000))
       mutations[type.SET_ACTION_LOOPER](state, actionLooper1)
       expect(state.actionLoopers).to.eql({
         [actionLooper1.action]: actionLooper1.looper
       })
 
-      const actionLooper2 = new ActionLooper(type.FETCH_CONNECTION_STATUS, new FunctionLooper())
+      const actionLooper2 = new ActionLooper(type.FETCH_CONNECTION_STATUS, new FunctionLooper(() => {}, 1000))
       mutations[type.SET_ACTION_LOOPER](state, actionLooper2)
       expect(state.actionLoopers).to.eql({
         [actionLooper1.action]: actionLooper1.looper,

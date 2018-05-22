@@ -20,7 +20,7 @@ import axios from 'axios'
 import type {Event, EventCollector} from './events'
 
 class ElkCollector implements EventCollector {
-  _axiosApi: axios
+  _axiosApi: axios.Axios
 
   constructor (url: string) {
     this._axiosApi = axios.create({

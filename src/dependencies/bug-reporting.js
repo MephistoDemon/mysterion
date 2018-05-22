@@ -22,6 +22,7 @@ import {logLevels} from '../libraries/mysterium-client'
 import {getLogCache} from '../app/bug-reporting/logsCache'
 
 function bootstrap (container: Container) {
+  const extendedProcess = (process: { type?: string })
   container.service(
     'bugReporter.config',
     ['mysterionReleaseID'],
@@ -30,10 +31,10 @@ function bootstrap (container: Container) {
         captureUnhandledRejections: true,
         release: mysterionReleaseID,
         tags: {
-          environment: process.env.NODE_ENV,
-          process: process.type,
-          electron: process.versions.electron,
-          chrome: process.versions.chrome,
+          environment: process.env.NODE_ENV || '',
+          process: extendedProcess.type || '',
+          electron: process.versions.electron || '',
+          chrome: process.versions.chrome || '',
           platform: os.platform(),
           platform_release: os.release()
         },
