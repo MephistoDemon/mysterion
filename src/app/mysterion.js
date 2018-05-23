@@ -26,7 +26,7 @@ import path from 'path'
 import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
 
 class Mysterion {
-  constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, userSettingsPath, userSettingsPromise, disconnectNotification}) {
+  constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, userSettingsStore, disconnectNotification}) {
     Object.assign(this, {
       browserWindowFactory,
       windowFactory,
@@ -238,7 +238,7 @@ class Mysterion {
   async _startProcessAndMonitoring () {
     const updateRendererWithHealth = () => {
       try {
-        this.communication.sendHealthCheck({ isRunning: this.monitoring.isRunning() })
+        this.communication.sendHealthCheck({isRunning: this.monitoring.isRunning()})
       } catch (e) {
         this.bugReporter.captureException(e)
         return
@@ -265,12 +265,7 @@ class Mysterion {
       this.bugReporter.setUser(identity)
     })
 
-    this.communication.onConnectionStatusChange(async (status) => {
-      const userSettings = await this.userSettingsPromise
-      if (userSettings.showDisconnectNotifications && status.newStatus === ConnectionStatusEnum.NOT_CONNECTED) {
-        this.disconnectNotification.show()
-      }
-    })
+    registerUserSettingsCommunication(this.userSettingsStore, this.communication, this.disconnectNotification)
   }
 
   /**
@@ -296,6 +291,24 @@ class Mysterion {
       path.join(this.config.staticDirectory, 'icons')
     )
   }
+}
+
+function registerUserSettingsCommunication (userSettingsStore, communication, disconnectNotification) {
+  communication.onConnectionStatusChange(async (status) => {
+    if (userSettingsStore.settings.showDisconnectNotifications &&
+      status.newStatus === ConnectionStatusEnum.NOT_CONNECTED) {
+      disconnectNotification.show()
+    }
+  })
+
+  communication.onUserSettingsRequest(async () => {
+    communication.sendUserSettings(userSettingsStore.settings)
+  })
+
+  communication.onUserSettingsUpdate((userSettings) => {
+    userSettingsStore.set(userSettings)
+    userSettingsStore.save()
+  })
 }
 
 export default Mysterion
