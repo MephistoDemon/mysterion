@@ -23,6 +23,7 @@ import MainCommunication from './communication/main-communication'
 import MainMessageBus from './communication/mainMessageBus'
 import {onFirstEvent} from './communication/utils'
 import path from 'path'
+import logger from './logger'
 
 class Mysterion {
   constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter}) {
@@ -65,7 +66,7 @@ class Mysterion {
 
   logUnhandledRejections () {
     process.on('unhandledRejection', error => {
-      console.log('Received unhandled rejection:', error)
+      logger.info('Received unhandled rejection:', error)
     })
   }
 
@@ -118,7 +119,7 @@ class Mysterion {
     try {
       return this.browserWindowFactory()
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.bugReporter.captureException(e)
       throw new Error('Failed to open window.')
     }
@@ -131,7 +132,7 @@ class Mysterion {
       window.open()
       return window
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.bugReporter.captureException(e)
       throw new Error('Failed to open window.')
     }
@@ -141,7 +142,7 @@ class Mysterion {
     try {
       await onFirstEvent(this.communication.onRendererBooted.bind(this.communication))
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.bugReporter.captureException(e)
       // TODO: add an error wrapper method
       throw new Error('Failed to load app.')
@@ -156,7 +157,7 @@ class Mysterion {
         await this.installer.install()
       } catch (e) {
         this.bugReporter.captureException(e)
-        console.error(e)
+        logger.error(e)
         return this.communication.sendRendererShowErrorMessage(translations.daemonInstallationError)
       }
     }
@@ -175,7 +176,7 @@ class Mysterion {
     try {
       await this.process.stop()
     } catch (e) {
-      console.error('Failed to stop mysterium_client process')
+      logger.error('Failed to stop mysterium_client process')
       this.bugReporter.captureException(e)
     }
   }
@@ -186,7 +187,7 @@ class Mysterion {
     try {
       const accepted = await this._acceptTerms()
       if (!accepted) {
-        console.log('Terms were refused. Quitting.')
+        logger.info('Terms were refused. Quitting.')
         app.quit()
         return false
       }
@@ -218,7 +219,7 @@ class Mysterion {
     } catch (e) {
       const error = new Error(translations.termsAcceptError)
       error.original = e
-      console.error(error)
+      logger.error(error)
       throw error
     }
 
@@ -269,7 +270,7 @@ class Mysterion {
       this.communication.sendProposals(await this.proposalFetcher.fetch())
     })
 
-    console.log(`Notify that 'mysterium_client' process is ready`)
+    logger.info(`Notify that 'mysterium_client' process is ready`)
     this.communication.sendMysteriumClientIsReady()
   }
 
