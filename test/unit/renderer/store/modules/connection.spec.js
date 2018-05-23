@@ -47,7 +47,7 @@ function factoryTequilapiManipulator () {
   const timeoutErrorMock = createMockTimeoutError()
   const closedRequestErrorMock = createMockRequestClosedError()
 
-  class ConnectionApiManipulator extends EmptyTequilapiClientMock {
+  class ConnectionTequilapiClientMock extends EmptyTequilapiClientMock {
     async connectionCreate (): Promise<ConnectionStatusDTO> {
       if (connectFailClosedRequest) {
         throw closedRequestErrorMock
@@ -93,7 +93,7 @@ function factoryTequilapiManipulator () {
 
   return {
     getFakeApi () {
-      return new ConnectionApiManipulator()
+      return new ConnectionTequilapiClientMock()
     },
     cleanup () {
       this.setStatusFail(false)

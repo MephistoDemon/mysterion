@@ -23,7 +23,7 @@ import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/propo
 import {nextTick} from '../../../helpers/utils'
 import EmptyTequilapiClientMock from '../../renderer/store/modules/empty-tequilapi-client-mock'
 
-class IdentityApiManipulator extends EmptyTequilapiClientMock {
+class IdentityTequilapiClientMock extends EmptyTequilapiClientMock {
   _proposals: Array<ProposalDTO>
 
   constructor (proposals: Array<ProposalDTO>) {
@@ -54,7 +54,7 @@ describe('DataFetchers', () => {
       await nextTick()
     }
 
-    const tequilapi = new IdentityApiManipulator([
+    const tequilapi = new IdentityTequilapiClientMock([
       new ProposalDTO({id: '0x1'}),
       new ProposalDTO({id: '0x2'})
     ])
