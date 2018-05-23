@@ -26,7 +26,7 @@ class FeedbackForm {
   }
 
   show () {
-    this.raven.captureMessage('User opened issue report form.')
+    this.raven.captureMessage('User opened issue report form.', { level: 'info' })
     this.raven.showReportDialog()
   }
 }

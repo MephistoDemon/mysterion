@@ -156,7 +156,7 @@ class Mysterion {
       try {
         await this.installer.install()
       } catch (e) {
-        this.bugReporter.captureException(e)
+        this.bugReporter.captureInfoException(e)
         logger.error(e)
         return this.communication.sendRendererShowErrorMessage(translations.daemonInstallationError)
       }
