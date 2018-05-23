@@ -37,8 +37,7 @@ class Mysterion {
       process,
       proposalFetcher,
       bugReporter,
-      userSettingsPath,
-      userSettingsPromise,
+      userSettingsStore,
       disconnectNotification
     })
   }
@@ -84,6 +83,11 @@ class Mysterion {
     this.communication = new MainCommunication(this.messageBus)
 
     await this._onRendererLoaded()
+    try {
+      await this.userSettingsStore.load()
+    } catch (e) {
+      this.userSettingsStore.set({showDisconnectNotifications: true})
+    }
 
     if (showTerms) {
       const accepted = await this._acceptTermsOrQuit()

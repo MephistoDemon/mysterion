@@ -74,8 +74,7 @@ function bootstrap (container: Container) {
       'mysteriumClientMonitoring',
       'proposalFetcher',
       'bugReporter',
-      'userSettingsPath',
-      'userSettingsPromise',
+      'userSettingsStore',
       'disconnectNotification'
     ],
     (
@@ -85,8 +84,7 @@ function bootstrap (container: Container) {
       mysteriumClientMonitoring,
       proposalFetcher,
       bugReporter,
-      userSettingsPath,
-      userSettingsPromise,
+      userSettingsStore,
       disconnectNotification
     ) => {
       return new Mysterion({
@@ -99,8 +97,7 @@ function bootstrap (container: Container) {
         monitoring: mysteriumClientMonitoring,
         proposalFetcher: proposalFetcher,
         bugReporter: bugReporter,
-        userSettingsPath,
-        userSettingsPromise,
+        userSettingsStore,
         disconnectNotification
       })
     }

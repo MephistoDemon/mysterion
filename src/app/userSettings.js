@@ -9,7 +9,7 @@ type UserSettingsDTO = {
   showDisconnectNotifications: boolean
 }
 
-export default class UserSettings {
+class UserSettings {
   showDisconnectNotifications: boolean
 
   constructor (obj: UserSettingsDTO) {
@@ -31,4 +31,25 @@ async function loadSettings (path: string): Promise<?UserSettings> {
   }
 }
 
-export {saveSettings, loadSettings}
+class UserSettingsStore {
+  settings: UserSettings
+  constructor (path) {
+    this._path = path
+  }
+
+  async load (): Promise<?UserSettings> {
+    this.settings = await loadSettings(this._path)
+    return this.settings
+  }
+
+  async save (): Promise<?Error> {
+    return saveSettings(this._path, this.settings)
+  }
+
+  set (settings: UserSettingsDTO) {
+    this.settings = new UserSettings(settings)
+  }
+}
+
+export {UserSettings, UserSettingsStore}
+export type {UserSettingsDTO}
