@@ -32,8 +32,9 @@ async function loadSettings (path: string): Promise<?UserSettings> {
 }
 
 class UserSettingsStore {
-  settings: UserSettings
-  constructor (path) {
+  settings: ?UserSettings
+  _path: string
+  constructor (path: string) {
     this._path = path
   }
 
@@ -43,6 +44,7 @@ class UserSettingsStore {
   }
 
   async save (): Promise<?Error> {
+    if (!this.settings) throw new Error('Trying to save UserSettings, but UserSettingsStore.settings is missing')
     return saveSettings(this._path, this.settings)
   }
 
