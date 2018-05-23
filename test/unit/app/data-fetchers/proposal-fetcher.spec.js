@@ -21,9 +21,9 @@ import lolex from 'lolex'
 import ProposalFetcher from '../../../../src/app/data-fetchers/proposal-fetcher'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import {nextTick} from '../../../helpers/utils'
-import TequilapiManipulator from '../../renderer/store/modules/tequilapi-manipulator'
+import EmptyTequilapiClientMock from '../../renderer/store/modules/empty-tequilapi-client-mock'
 
-class IdentityApiManipulator extends TequilapiManipulator {
+class IdentityApiManipulator extends EmptyTequilapiClientMock {
   _proposals: Array<ProposalDTO>
 
   constructor (proposals: Array<ProposalDTO>) {

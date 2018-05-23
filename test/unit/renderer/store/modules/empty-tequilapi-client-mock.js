@@ -25,7 +25,7 @@ import IdentityDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/id
 import ProposalsFilter from '../../../../../src/libraries/mysterium-tequilapi/dto/proposals-filter'
 import ProposalDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 
-class TequilapiManipulator implements TequilapiClient {
+class EmptyTequilapiClientMock implements TequilapiClient {
   async healthCheck (_timeout: ?number): Promise<NodeHealthcheckDTO> {
     return new NodeHealthcheckDTO({})
   }
@@ -69,4 +69,4 @@ class TequilapiManipulator implements TequilapiClient {
   }
 }
 
-export default TequilapiManipulator
+export default EmptyTequilapiClientMock

@@ -31,7 +31,7 @@ import type {EventFactory as StatsEventsFactory} from '../../../../../src/app/st
 import {ActionLooper, ActionLooperConfig} from '../../../../../src/renderer/store/modules/connection'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
 import type {BugReporter} from '../../../../../src/app/bug-reporting/interface'
-import TequilapiManipulator from './tequilapi-manipulator'
+import EmptyTequilapiClientMock from './empty-tequilapi-client-mock'
 import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
 import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 
@@ -47,7 +47,7 @@ function factoryTequilapiManipulator () {
   const timeoutErrorMock = createMockTimeoutError()
   const closedRequestErrorMock = createMockRequestClosedError()
 
-  class ConnectionApiManipulator extends TequilapiManipulator {
+  class ConnectionApiManipulator extends EmptyTequilapiClientMock {
     async connectionCreate (): Promise<ConnectionStatusDTO> {
       if (connectFailClosedRequest) {
         throw closedRequestErrorMock
