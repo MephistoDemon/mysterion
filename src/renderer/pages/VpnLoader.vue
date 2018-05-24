@@ -22,6 +22,7 @@
   import config from '@/config'
   import messages from '../../app/messages'
   import sleep from '../../libraries/sleep'
+  import logger from '../../app/logger'
 
   async function identityGet ({dispatch, commit}) {
     const identities = await dispatch(type.IDENTITY_LIST)
@@ -49,7 +50,7 @@
         commit(type.INIT_SUCCESS)
         this.$router.push('/vpn')
       } catch (err) {
-        console.error('Application init failed', err.stack)
+        logger.error('Application init failed', err.stack)
 
         commit(type.INIT_FAIL)
         commit(type.OVERLAY_ERROR, messages.initializationError)

@@ -220,16 +220,11 @@ describe('HttpTequilapiClient', () => {
   })
 
   describe('connectionCancel()', () => {
-    it('returns response', async () => {
+    it('succeeds', async () => {
       const expectedRequest = undefined
-      const response = {
-        status: 'NotConnected',
-        sessionId: ''
-      }
-      mock.onDelete('connection', expectedRequest).reply(200, response)
+      mock.onDelete('connection', expectedRequest).reply(200)
 
-      const connection = await api.connectionCancel()
-      expect(connection).to.deep.equal(new ConnectionStatusDTO(response))
+      await api.connectionCancel()
     })
 
     it('handles error', async () => {
