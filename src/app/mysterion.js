@@ -83,11 +83,6 @@ class Mysterion {
     this.communication = new MainCommunication(this.messageBus)
 
     await this._onRendererLoaded()
-    try {
-      await this.userSettingsStore.load()
-    } catch (e) {
-      this.userSettingsStore.set({showDisconnectNotifications: true})
-    }
 
     if (showTerms) {
       const accepted = await this._acceptTermsOrQuit()
@@ -98,6 +93,8 @@ class Mysterion {
 
     await this._ensureDaemonInstallation()
     await this._startProcessAndMonitoring()
+
+    await this._loadUserSettings()
   }
 
   _getWindowSize (showTerms) {
@@ -167,6 +164,14 @@ class Mysterion {
         console.error(e)
         return this.communication.sendRendererShowErrorMessage(translations.daemonInstallationError)
       }
+    }
+  }
+
+  async _loadUserSettings () {
+    try {
+      await this.userSettingsStore.load()
+    } catch (e) {
+      this.userSettingsStore.setDefault()
     }
   }
 
@@ -265,7 +270,8 @@ class Mysterion {
       this.bugReporter.setUser(identity)
     })
 
-    registerUserSettingsCommunication(this.userSettingsStore, this.communication, this.disconnectNotification)
+    synchronizeUserSettings(this.userSettingsStore, this.communication)
+    showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
   }
 
   /**
@@ -293,16 +299,18 @@ class Mysterion {
   }
 }
 
-function registerUserSettingsCommunication (userSettingsStore, communication, disconnectNotification) {
+function showNotificationOnDisconnect (userSettingsStore, communication, disconnectNotification) {
   communication.onConnectionStatusChange(async (status) => {
-    if (userSettingsStore.settings.showDisconnectNotifications &&
+    if (userSettingsStore.get().showDisconnectNotifications &&
       status.newStatus === ConnectionStatusEnum.NOT_CONNECTED) {
       disconnectNotification.show()
     }
   })
+}
 
+function synchronizeUserSettings (userSettingsStore, communication) {
   communication.onUserSettingsRequest(async () => {
-    communication.sendUserSettings(userSettingsStore.settings)
+    communication.sendUserSettings(userSettingsStore.get())
   })
 
   communication.onUserSettingsUpdate((userSettings) => {
