@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 // @flow
 
 /**
@@ -8,9 +25,9 @@ function nextTick (): Promise<void> {
 }
 
 /**
- * Runs async function and captures error of it's execution
+ * Runs async function and captures error of it's execution.
  */
-async function capturePromiseError (promise: Promise<any>): ?Error {
+async function capturePromiseError (promise: Promise<any>): Promise<?Error> {
   try {
     await promise
   } catch (e) {
@@ -20,10 +37,38 @@ async function capturePromiseError (promise: Promise<any>): ?Error {
 }
 
 /**
- * Resolves promise and captures error of it's execution
+ * Resolves promise and captures error of it's execution.
  */
 async function captureAsyncError (func: () => Promise<any>) {
   return capturePromiseError(func())
 }
 
-export { nextTick, capturePromiseError, captureAsyncError }
+/**
+ * Records callback invocation. Useful for asserting that callback was invoked.
+ */
+class CallbackRecorder {
+  invoked: boolean
+  argument: any
+
+  constructor () {
+    this.invoked = false
+    this.argument = null
+  }
+
+  /**
+   * Returns function, which records it's invocation and argument
+   * into current instance.
+   *
+   * @returns Function
+   */
+  getCallback (): (any) => void {
+    return this._record.bind(this)
+  }
+
+  _record (argument: any): void {
+    this.invoked = true
+    this.argument = argument
+  }
+}
+
+export { nextTick, capturePromiseError, captureAsyncError, CallbackRecorder }

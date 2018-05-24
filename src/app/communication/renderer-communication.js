@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 // @flow
 
 import messages from './messages'
@@ -6,8 +23,12 @@ import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
   MysteriumClientLogDTO,
-  RequestConnectionDto,
-  ProposalUpdateDto
+  RequestConnectionDTO,
+  ProposalUpdateDTO,
+  RequestTermsDTO,
+  TermsAnsweredDTO,
+  AppErrorDTO,
+  HealthCheckDTO
 } from './dto'
 
 /**
@@ -20,7 +41,13 @@ class RendererCommunication {
     this._messageBus = messageBus
   }
 
-  // TODO: remaining other messages
+  sendRendererBooted (): void {
+    return this._send(messages.RENDERER_BOOTED)
+  }
+
+  onShowRendererError (callback: (AppErrorDTO) => void): void {
+    this._on(messages.RENDERER_SHOW_ERROR, callback)
+  }
 
   sendConnectionStatusChange (dto: ConnectionStatusChangeDTO): void {
     return this._send(messages.CONNECTION_STATUS_CHANGED, dto)
@@ -34,11 +61,11 @@ class RendererCommunication {
     return this._send(messages.PROPOSALS_UPDATE)
   }
 
-  sendRendererLoaded (): void {
-    return this._send(messages.RENDERER_LOADED)
+  sendTermsAnswered (dto: TermsAnsweredDTO): void {
+    return this._send(messages.TERMS_ANSWERED, dto)
   }
 
-  onConnectionRequest (callback: (RequestConnectionDto) => void) {
+  onConnectionRequest (callback: (RequestConnectionDTO) => void) {
     this._on(messages.CONNECTION_REQUEST, callback)
   }
 
@@ -46,12 +73,28 @@ class RendererCommunication {
     this._on(messages.CONNECTION_CANCEL, callback)
   }
 
-  onProposalUpdate (callback: (ProposalUpdateDto) => void) {
+  onProposalUpdate (callback: (ProposalUpdateDTO) => void) {
     this._on(messages.PROPOSALS_UPDATE, callback)
+  }
+
+  onMysteriumClientIsReady (callback: () => void) {
+    this._on(messages.MYSTERIUM_CLIENT_READY, callback)
   }
 
   onMysteriumClientLog (callback: (MysteriumClientLogDTO) => void): void {
     this._on(messages.MYSTERIUM_CLIENT_LOG, callback)
+  }
+
+  onTermsRequest (callback: (RequestTermsDTO) => void): void {
+    this._on(messages.TERMS_REQUESTED, callback)
+  }
+
+  onTermsAccepted (callback: () => void): void {
+    this._on(messages.TERMS_ACCEPTED, callback)
+  }
+
+  onHealthCheck (callback: (HealthCheckDTO) => void): void {
+    this._on(messages.HEALTHCHECK, callback)
   }
 
   _send (channel: string, dto: mixed): void {

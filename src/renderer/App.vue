@@ -1,3 +1,20 @@
+<!--
+  - Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+  -
+  - This program is free software: you can redistribute it and/or modify
+  - it under the terms of the GNU General Public License as published by
+  - the Free Software Foundation, either version 3 of the License, or
+  - (at your option) any later version.
+  -
+  - This program is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU General Public License for more details.
+  -
+  - You should have received a copy of the GNU General Public License
+  - along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <template>
     <div id="app" class="app">
         <div id="content">
@@ -22,12 +39,12 @@
   import type from '@/store/types'
   import AppVisual from '@/partials/AppVisual'
   import AppNav from '@/partials/AppNav'
-  import messages from '../app/communication/messages'
 
   import AppError from '@/partials/AppError'
   import AppModal from '@/partials/AppModal'
   import RendererMessageBus from '../app/communication/rendererMessageBus'
   import RendererCommunication from '../app/communication/renderer-communication'
+  import logger from '../app/logger'
 
   export default {
     name: 'App',
@@ -50,7 +67,7 @@
       const communication = new RendererCommunication(messageBus)
 
       // we need to notify the main process that we're up
-      communication.sendRendererLoaded()
+      communication.sendRendererBooted()
       communication.onConnectionRequest((proposal) => {
         this.$store.dispatch(type.CONNECT, {
           consumerId: this.$store.getters.currentIdentity,
@@ -62,27 +79,28 @@
         this.$store.dispatch(type.DISCONNECT)
       })
 
-      messageBus.on(messages.TERMS_REQUESTED, (terms) => {
+      communication.onTermsRequest((terms) => {
         this.$store.dispatch(type.TERMS, terms)
         this.$router.push('/terms')
       })
 
-      messageBus.on(messages.APP_START, () => {
+      communication.onMysteriumClientIsReady(() => {
         this.$router.push('/load')
       })
 
-      messageBus.on(messages.TERMS_ACCEPTED, () => {
+      communication.onTermsAccepted(() => {
         this.$router.push('/')
       })
 
-      messageBus.on(messages.APP_ERROR, (error) => {
-        console.log('APP_ERROR received from ipc:', event)
+      communication.onShowRendererError((error) => {
+        logger.info('App error received from communication:', event)
         this.$store.dispatch(type.OVERLAY_ERROR, error)
       })
 
       let previousClientRunningState = true
 
-      messageBus.on(messages.HEALTHCHECK, (clientRunningState) => {
+      communication.onHealthCheck((healthCheckDTO) => {
+        const clientRunningState = healthCheckDTO.isRunning
         // do nothing while on terms page
         if (this.$route.name === 'terms') {
           return

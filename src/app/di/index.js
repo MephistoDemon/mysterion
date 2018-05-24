@@ -1,12 +1,29 @@
+/*
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 // @flow
 
 // Factory this creates named instance
-export type ServiceFactory = (...dependencies: Array<mixed>) => mixed
+export type ServiceFactory = (...dependencies: Array<any>) => any
 
 // DI Container which holds list of named instances
 export interface Container {
-  get (name: string): mixed,
-  constant (name: string, value: mixed): void,
+  get (name: string): any,
+  constant (name: string, value: any): void,
   service (name: string, dependencies: Array<string>, factory: ServiceFactory): void,
-  factory (name: string, dependencies: Array<string>, factory: ServiceFactory, cache: ?boolean): void
+  factory (name: string, dependencies: Array<string>, factory: ServiceFactory): void
 }

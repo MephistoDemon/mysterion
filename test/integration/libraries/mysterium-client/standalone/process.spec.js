@@ -1,33 +1,52 @@
-import Process, {logLevel} from '../../../../../src/libraries/mysterium-client/standalone/process'
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import configInjector from 'inject-loader!../../../../../src/app/mysterion-config'
+/*
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// @flow
 import {ChildProcess} from 'child_process'
 import sleep from '../../../../../src/libraries/sleep'
+import Process from '../../../../../src/libraries/mysterium-client/standalone/process'
+import processLogLevels from '../../../../../src/libraries/mysterium-client/log-levels'
 import tequilapiClientFactory from '../../../../../src/libraries/mysterium-tequilapi/client-factory'
+import {xdescribe, it, before, after, expect} from '../../../../helpers/dependencies'
+import path from 'path'
+import os from 'os'
 
-const config = configInjector({
-  'electron': {
-    app: {
-      getPath () {
-        return './test/mocks'
-      },
-      getAppPath () {
-        return './src/main/'
-      }
-    }
-  }
-}).default
-
-// TODO: re-enable once mysterium client is fixed
 xdescribe('Standalone Process', () => {
   let process, tequilapi
   const logs = []
-  const port = 4055
+  const tequilapiPort = 4055
+  const clientBinDirectory = path.resolve(__dirname, '../../../../../bin')
+  const tmpDirectory = os.tmpdir()
+
   before(async () => {
-    tequilapi = tequilapiClientFactory(`http://127.0.0.1:${port}`)
-    process = new Process(config)
-    process.start(port)
-    process.onLog(logLevel.LOG, data => logs.push(data))
+    process = new Process({
+      clientBin: path.join(clientBinDirectory, 'mysterium_client'),
+      configDir: path.join(clientBinDirectory, 'config'),
+      openVPNBin: path.join(clientBinDirectory, 'openvpn'),
+      dataDir: tmpDirectory,
+      runtimeDir: tmpDirectory,
+      logDir: tmpDirectory,
+      tequilapiPort: tequilapiPort
+    })
+    process.start()
+    process.onLog(processLogLevels.LOG, data => logs.push(data))
+
+    tequilapi = tequilapiClientFactory(`http://127.0.0.1:${tequilapiPort}`)
+
     await sleep(100)
   })
 
@@ -40,7 +59,7 @@ xdescribe('Standalone Process', () => {
   })
 
   it('sends log data to callback on()', () => {
-    expect(logs.pop()).to.include('Api started on: ' + port)
+    expect(logs.pop()).to.include('Api started on: ' + tequilapiPort)
   })
 
   it('responds to healthcheck with uptime', async () => {

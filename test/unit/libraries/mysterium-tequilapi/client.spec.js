@@ -1,4 +1,21 @@
-import TequilapiClient from '../../../../src/libraries/mysterium-tequilapi/client'
+/*
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import HttpTequilapiClient from '../../../../src/libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import AxiosAdapter from '../../../../src/libraries/mysterium-tequilapi/adapters/axios-adapter'
@@ -12,12 +29,12 @@ import ConnectionStatusDTO from '../../../../src/libraries/mysterium-tequilapi/d
 import ConnectionRequestDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-request'
 import NodeLocationDTO from '../../../../src/libraries/mysterium-tequilapi/dto/node-location'
 
-describe('TequilapiClient', () => {
+describe('HttpTequilapiClient', () => {
   let api
   let mock
   beforeEach(() => {
     const axioInstance = axios.create()
-    api = new TequilapiClient(new AxiosAdapter(axioInstance), 1)
+    api = new HttpTequilapiClient(new AxiosAdapter(axioInstance), 1)
     mock = new MockAdapter(axioInstance)
   })
 
@@ -204,16 +221,11 @@ describe('TequilapiClient', () => {
   })
 
   describe('connectionCancel()', () => {
-    it('returns response', async () => {
+    it('succeeds', async () => {
       const expectedRequest = undefined
-      const response = {
-        status: 'NotConnected',
-        sessionId: ''
-      }
-      mock.onDelete('connection', expectedRequest).reply(200, response)
+      mock.onDelete('connection', expectedRequest).reply(200)
 
-      const connection = await api.connectionCancel()
-      expect(connection).to.deep.equal(new ConnectionStatusDTO(response))
+      await api.connectionCancel()
     })
 
     it('handles error', async () => {

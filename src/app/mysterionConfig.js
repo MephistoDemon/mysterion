@@ -15,42 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.countries {
-  position: relative;
-  background-color: @white;
-  &__flag {
-    position: absolute;
-    top: 0.7rem;
-    left: 0.6rem;
-    width: 17px;
-    height: 17px;
-    border-radius: 100%;
-    z-index: 2;
-    background-repeat: no-repeat;
-    background-size: cover;
-    display: block;
-    overflow: hidden;
-    transition: opacity 200ms @easeOutQuad;
-  }
-  &__flag-svg {
-    display: block;
-    max-width: 30px;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-  &.is-disabled {
-    .countries {
-      &__multiselect,
-      &__flag {
-        opacity: 0.2;
-        pointer-events: none;
-      }
-    }
-    .multiselect {
-      &__tags {
-        border-color: @g8;
-      }
-    }
-  }
+// @flow
+
+type WindowSizeConfig = {
+  width: number,
+  height: number
 }
+
+type MysterionWindowsConfig = {
+  terms: WindowSizeConfig,
+  app: WindowSizeConfig
+}
+
+type MysterionConfig = {
+  // Application root directory
+  contentsDirectory: string,
+  // User data directory. This should store logs, terms and conditions file, etc.
+  userDataDirectory: string,
+  // Runtime/working directory, used for storing temp files
+  runtimeDirectory: string,
+  // Static file directory
+  staticDirectory: string,
+  // Window configuration
+  windows: MysterionWindowsConfig
+}
+
+export type {MysterionConfig, MysterionWindowsConfig, WindowSizeConfig}

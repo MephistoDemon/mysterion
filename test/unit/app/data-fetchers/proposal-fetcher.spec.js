@@ -1,9 +1,40 @@
+/*
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 // @flow
 import {describe, it, expect, before, beforeEach, after} from '../../../helpers/dependencies'
 import lolex from 'lolex'
 import ProposalFetcher from '../../../../src/app/data-fetchers/proposal-fetcher'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import {nextTick} from '../../../helpers/utils'
+import EmptyTequilapiClientMock from '../../renderer/store/modules/empty-tequilapi-client-mock'
+
+class IdentityTequilapiClientMock extends EmptyTequilapiClientMock {
+  _proposals: Array<ProposalDTO>
+
+  constructor (proposals: Array<ProposalDTO>) {
+    super()
+    this._proposals = proposals
+  }
+
+  async findProposals (_filter): Promise<Array<ProposalDTO>> {
+    return this._proposals
+  }
+}
 
 describe('DataFetchers', () => {
   describe('ProposalFetcher', () => {
@@ -23,13 +54,7 @@ describe('DataFetchers', () => {
       await nextTick()
     }
 
-    function mockTequilapiClient (proposals: Array<ProposalDTO>) {
-      return {
-        findProposals: () => Promise.resolve(proposals)
-      }
-    }
-
-    const tequilapi = mockTequilapiClient([
+    const tequilapi = new IdentityTequilapiClientMock([
       new ProposalDTO({id: '0x1'}),
       new ProposalDTO({id: '0x2'})
     ])
@@ -61,7 +86,7 @@ describe('DataFetchers', () => {
           proposals = fetchedProposals
         })
 
-        fetcher.start(1001)
+        fetcher.start()
 
         await tickWithDelay(1000)
 

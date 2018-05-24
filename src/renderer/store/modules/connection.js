@@ -1,6 +1,22 @@
+/*
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 // @flow
 import type from '../types'
-import type {Container} from '../../../app/di'
 
 import messages from '../../../app/messages'
 import {FunctionLooper} from '../../../libraries/functionLooper'
@@ -9,12 +25,15 @@ import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/even
 import RendererCommunication from '../../../app/communication/renderer-communication'
 import {EventCollector as StatsCollector} from '../../../app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../app/statistics/events'
-import TequilapiClient from '../../../libraries/mysterium-tequilapi/client'
+import type {TequilapiClient} from '../../../libraries/mysterium-tequilapi/client'
 import type {ConnectionStatus} from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatusEnum from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatisticsDTO from '../../../libraries/mysterium-tequilapi/dto/connection-statistics'
 import ConnectionRequestDTO from '../../../libraries/mysterium-tequilapi/dto/connection-request'
 import NodeLocationDTO from '../../../libraries/mysterium-tequilapi/dto/node-location'
+import type {BugReporter} from '../../../app/bug-reporting/interface'
+import {isServiceUnavailableError, isTimeoutError, isRequestClosedError} from '../../../libraries/mysterium-tequilapi/client-error'
+import logger from '../../../app/logger'
 
 type ConnectionStore = {
   ip: ?string,
@@ -94,7 +113,7 @@ function actionsFactory (
   rendererCommunication: RendererCommunication,
   statsCollector: StatsCollector,
   statsEventsFactory: StatsEventsFactory,
-  dependencies: Container
+  bugReporter: BugReporter
 ) {
   return {
     async [type.LOCATION] ({commit}) {
@@ -102,10 +121,10 @@ function actionsFactory (
         const locationDto = await tequilapi.location(config.locationUpdateTimeout)
         commit(type.LOCATION, locationDto)
       } catch (err) {
-        if (err.isTimeoutError() || err.isServiceUnavailableError()) {
+        if (isTimeoutError(err) || isServiceUnavailableError(err)) {
           return
         }
-        dependencies.get('bugReporter').captureException(err)
+        bugReporter.captureException(err)
       }
     },
     async [type.CONNECTION_IP] ({commit}) {
@@ -113,16 +132,16 @@ function actionsFactory (
         const ipModel = await tequilapi.connectionIP(config.ipUpdateTimeout)
         commit(type.CONNECTION_IP, ipModel.ip)
       } catch (err) {
-        if (err.isTimeoutError() || err.isServiceUnavailableError()) {
+        if (isTimeoutError(err) || isServiceUnavailableError(err)) {
           return
         }
-        dependencies.get('bugReporter').captureException(err)
+        bugReporter.captureException(err)
       }
     },
     [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperConfig): FunctionLooper {
       const currentLooper = state.actionLoopers[event.action]
       if (currentLooper) {
-        console.log('Warning: requested to start looping action which is already looping: ' + event.action)
+        logger.info('Warning: requested to start looping action which is already looping: ' + event.action)
         return currentLooper
       }
 
@@ -195,7 +214,7 @@ function actionsFactory (
         eventTracker.connectEnded()
         commit(type.HIDE_ERROR)
       } catch (err) {
-        if (err.isRequestClosedError()) {
+        if (isRequestClosedError(err)) {
           eventTracker.connectCanceled()
           return
         }
@@ -203,7 +222,7 @@ function actionsFactory (
         const error: Object = new Error('Connection to node failed.')
         error.original = err
         eventTracker.connectEnded(error.toString())
-        throw error
+        bugReporter.captureInfoException(err)
       } finally {
         if (looper) {
           looper.start()

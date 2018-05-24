@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import fs from 'fs'
 import sudo from 'sudo-prompt'
 import path from 'path'
@@ -16,6 +33,10 @@ function processInstalled () {
 }
 
 class Installer {
+  /**
+   * @constructor
+   * @param {ClientConfig} config
+   */
   constructor (config) {
     this.config = config
   }
@@ -28,18 +49,20 @@ class Installer {
         <key>Label</key>
           <string>${InverseDomainPackageName}</string>
           <key>Program</key>
-          <string>${this.config.clientBinaryPath}</string>
+          <string>${this.config.clientBin}</string>
           <key>ProgramArguments</key>
           <array>
-            <string>${this.config.clientBinaryPath}</string>
+            <string>${this.config.clientBin}</string>
             <string>--config-dir</string>
-            <string>${this.config.clientConfigPath}</string>
+            <string>${this.config.configDir}</string>
             <string>--data-dir</string>
-            <string>${this.config.userDataDirectory}</string>
+            <string>${this.config.dataDir}</string>
             <string>--runtime-dir</string>
-            <string>${this.config.runtimeDirectory}</string>
+            <string>${this.config.runtimeDir}</string>
             <string>--openvpn.binary</string>
-            <string>${this.config.openVPNBinary}</string>
+            <string>${this.config.openVPNBin}</string>
+            <string>--tequilapi.port</string>
+            <string>${this.config.tequilapiPort}</string>
           </array>
           <key>Sockets</key>
             <dict>
@@ -57,11 +80,11 @@ class Installer {
             <false/>
           </dict>
           <key>WorkingDirectory</key>
-          <string>${this.config.runtimeDirectory}</string>
+          <string>${this.config.runtimeDir}</string>
           <key>StandardOutPath</key>
-          <string>${this.config.userDataDirectory}/stdout.log</string>
+          <string>${this.config.logDir}/stdout.log</string>
           <key>StandardErrorPath</key>
-          <string>${this.config.userDataDirectory}/stderr.log</string>
+          <string>${this.config.logDir}/stderr.log</string>
          </dict>
       </plist>`
   }
@@ -77,7 +100,7 @@ class Installer {
   }
 
   install () {
-    let tempPlistFile = path.join(this.config.runtimeDirectory, PropertyListFile)
+    let tempPlistFile = path.join(this.config.runtimeDir, PropertyListFile)
     let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
     let script = `\
       cp ${tempPlistFile} ${getDaemonFileName()}\

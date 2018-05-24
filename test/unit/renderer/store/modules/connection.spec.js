@@ -1,10 +1,26 @@
+/*
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 // @flow
 import {expect} from 'chai'
 
 import type from '@/store/types'
 import {mutations, actionsFactory} from '@/store/modules/connection'
-import {capturePromiseError} from '../../../../helpers/utils'
-import factoryTequilapiManipulator from './tequilapi-manipulator'
+import {describe, it, beforeEach} from '../../../../helpers/dependencies'
 import {FunctionLooper} from '@/../libraries/functionLooper'
 import ConnectionStatusEnum from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
 import communication from '@/../app/communication/messages'
@@ -14,6 +30,116 @@ import {createEventFactory} from '../../../../../src/app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../../../src/app/statistics/events'
 import {ActionLooper, ActionLooperConfig} from '../../../../../src/renderer/store/modules/connection'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
+import type {BugReporter} from '../../../../../src/app/bug-reporting/interface'
+import EmptyTequilapiClientMock from './empty-tequilapi-client-mock'
+import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
+import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
+
+function factoryTequilapiManipulator () {
+  let statusFail = false
+  let statisticsFail = false
+  let ipFail = false
+  let ipTimeout = false
+  let connectFail = false
+  let connectFailClosedRequest = false
+
+  const errorMock = new Error('Mock error')
+  const timeoutErrorMock = createMockTimeoutError()
+  const closedRequestErrorMock = createMockRequestClosedError()
+
+  class ConnectionTequilapiClientMock extends EmptyTequilapiClientMock {
+    async connectionCreate (): Promise<ConnectionStatusDTO> {
+      if (connectFailClosedRequest) {
+        throw closedRequestErrorMock
+      }
+      if (connectFail) {
+        throw errorMock
+      }
+      return new ConnectionStatusDTO({})
+    }
+
+    async connectionStatus (): Promise<ConnectionStatusDTO> {
+      if (statusFail) {
+        throw errorMock
+      }
+      return new ConnectionStatusDTO({
+        status: 'mock status'
+      })
+    }
+
+    async connectionCancel (): Promise<ConnectionStatusDTO> {
+      return new ConnectionStatusDTO({})
+    }
+
+    async connectionIP (): Promise<ConnectionIPDTO> {
+      if (ipTimeout) {
+        throw timeoutErrorMock
+      }
+      if (ipFail) {
+        throw errorMock
+      }
+      return new ConnectionIPDTO({
+        ip: 'mock ip'
+      })
+    }
+
+    async connectionStatistics (): Promise<ConnectionStatisticsDTO> {
+      if (statisticsFail) {
+        throw errorMock
+      }
+      return new ConnectionStatisticsDTO({duration: 1})
+    }
+  }
+
+  return {
+    getFakeApi () {
+      return new ConnectionTequilapiClientMock()
+    },
+    cleanup () {
+      this.setStatusFail(false)
+      this.setStatisticsFail(false)
+      this.setIpFail(false)
+      this.setIpTimeout(false)
+      this.setConnectFail(false)
+      this.setConnectFailClosedRequest(false)
+    },
+    setStatusFail (value: boolean) {
+      statusFail = value
+    },
+    setStatisticsFail (value: boolean) {
+      statisticsFail = value
+    },
+    setIpTimeout (value: boolean) {
+      ipTimeout = value
+    },
+    setIpFail (value: boolean) {
+      ipFail = value
+    },
+    setConnectFail (value: boolean) {
+      connectFail = value
+    },
+    setConnectFailClosedRequest (value: boolean) {
+      connectFailClosedRequest = value
+    },
+    getFakeError (): Error {
+      return errorMock
+    }
+  }
+}
+
+function createMockTimeoutError (): Object {
+  const error = new Error('Mock timeout error')
+  const object = (error: Object)
+  object.code = 'ECONNABORTED'
+  return error
+}
+
+function createMockRequestClosedError (): Object {
+  const error = new Error('Mock closed request error')
+  const object = (error: Object)
+  object.response = { status: 499 }
+  return error
+}
 
 const fakeTequilapi = factoryTequilapiManipulator()
 const fakeMessageBus = new FakeMessageBus()
@@ -24,8 +150,27 @@ const fakeCollector = {
 }
 
 function statsEventsFactory (): StatsEventsFactory {
-  return createEventFactory({name: 'Test'})
+  return createEventFactory({name: 'Test', version: '1.0.test'})
 }
+
+class BugReporterMock implements BugReporter {
+  setUser (identity): void {
+  }
+
+  captureMessage (_message, _context): void {
+  }
+
+  captureException (_err, _context): void {
+  }
+
+  captureInfoException (_err, _context): void {
+  }
+
+  pushToLogCache (level, log): void {
+  }
+}
+
+const bugReporterMock = new BugReporterMock()
 
 async function executeAction (action, state = {}, payload = {}) {
   const mutations = []
@@ -35,7 +180,8 @@ async function executeAction (action, state = {}, payload = {}) {
 
   const dispatch = (action, payload = {}) => {
     const context = {commit, dispatch, state}
-    const actions = actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector, statsEventsFactory)
+    const actions =
+      actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector, statsEventsFactory, bugReporterMock)
 
     return actions[action](context, payload)
   }
@@ -90,13 +236,13 @@ describe('mutations', () => {
       const state = {
         actionLoopers: {}
       }
-      const actionLooper1 = new ActionLooper(type.CONNECTION_IP, new FunctionLooper())
+      const actionLooper1 = new ActionLooper(type.CONNECTION_IP, new FunctionLooper(() => {}, 1000))
       mutations[type.SET_ACTION_LOOPER](state, actionLooper1)
       expect(state.actionLoopers).to.eql({
         [actionLooper1.action]: actionLooper1.looper
       })
 
-      const actionLooper2 = new ActionLooper(type.FETCH_CONNECTION_STATUS, new FunctionLooper())
+      const actionLooper2 = new ActionLooper(type.FETCH_CONNECTION_STATUS, new FunctionLooper(() => {}, 1000))
       mutations[type.SET_ACTION_LOOPER](state, actionLooper2)
       expect(state.actionLoopers).to.eql({
         [actionLooper1.action]: actionLooper1.looper,
@@ -377,15 +523,17 @@ describe('actions', () => {
         fakeTequilapi.setConnectFail(true)
       })
 
-      it('throws error', async () => {
+      it('shows error', async () => {
         fakeTequilapi.setConnectFail(true)
         const state = {
           actionLoopers: {},
           location: {originalCountry: ''}
         }
-        const error = await capturePromiseError(executeAction(type.CONNECT, state))
-        expect(error).to.be.an('error')
-        expect(error.message).to.eql('Connection to node failed.')
+        const committed = await executeAction(type.CONNECT, state)
+        expect(committed[committed.length - 1]).to.eql({
+          key: 'SHOW_ERROR_MESSAGE',
+          value: 'Connection failed. Try another country'
+        })
       })
     })
 

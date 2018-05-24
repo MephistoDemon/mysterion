@@ -1,13 +1,34 @@
+/*
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 // @flow
 
 import messages from './messages'
 import type {MessageBus} from './messageBus'
 import type {
-  RequestConnectionDto,
+  HealthCheckDTO,
+  RequestConnectionDTO,
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
   MysteriumClientLogDTO,
-  ProposalUpdateDto
+  ProposalUpdateDTO,
+  RequestTermsDTO,
+  TermsAnsweredDTO,
+  AppErrorDTO
 } from './dto'
 
 /**
@@ -20,13 +41,55 @@ class MainCommunication {
     this._messageBus = messageBus
   }
 
-  sendErrorToRenderer (error: string, hint: string = '', fatal: boolean = true) {
-    this._send(messages.APP_ERROR, {message: error, hint: hint, fatal: fatal})
+  onRendererBooted (callback: () => void) {
+    this._on(messages.RENDERER_BOOTED, callback)
   }
 
-  // TODO: remaining other messages
+  sendRendererShowErrorMessage (error: string) {
+    this.sendRendererShowError({
+      message: error,
+      hint: '',
+      fatal: true
+    })
+  }
+
+  sendRendererShowError (data: AppErrorDTO) {
+    this._send(messages.RENDERER_SHOW_ERROR, data)
+  }
+
+  /**
+   * Notifies the renderer that we're good to go
+   */
+  sendMysteriumClientIsReady () {
+    this._send(messages.MYSTERIUM_CLIENT_READY)
+  }
+
   sendMysteriumClientLog (dto: MysteriumClientLogDTO): void {
     this._send(messages.MYSTERIUM_CLIENT_LOG, dto)
+  }
+
+  sendProposals (proposals: ProposalUpdateDTO) {
+    this._send(messages.PROPOSALS_UPDATE, proposals)
+  }
+
+  sendConnectionCancelRequest () {
+    this._send(messages.CONNECTION_CANCEL)
+  }
+
+  sendConnectionRequest (data: RequestConnectionDTO) {
+    this._send(messages.CONNECTION_REQUEST, data)
+  }
+
+  sendTermsRequest (data: RequestTermsDTO) {
+    this._send(messages.TERMS_REQUESTED, data)
+  }
+
+  sendTermsAccepted () {
+    this._send(messages.TERMS_ACCEPTED)
+  }
+
+  sendHealthCheck (data: HealthCheckDTO) {
+    this._send(messages.HEALTHCHECK, data)
   }
 
   onConnectionStatusChange (callback: (ConnectionStatusChangeDTO) => void): void {
@@ -37,24 +100,12 @@ class MainCommunication {
     this._on(messages.CURRENT_IDENTITY_CHANGED, callback)
   }
 
-  onRendererLoaded (callback: () => void) {
-    this._on(messages.RENDERER_LOADED, callback)
-  }
-
   onProposalUpdateRequest (callback: () => void) {
     this._on(messages.PROPOSALS_UPDATE, callback)
   }
 
-  sendProposals (proposals: ProposalUpdateDto) {
-    this._send(messages.PROPOSALS_UPDATE, proposals)
-  }
-
-  sendConnectionCancelRequest () {
-    this._send(messages.CONNECTION_CANCEL)
-  }
-
-  sendConnectionRequest (data: RequestConnectionDto) {
-    this._send(messages.CONNECTION_REQUEST, data)
+  onTermsAnswered (callback: (TermsAnsweredDTO) => void) {
+    this._on(messages.TERMS_ANSWERED, callback)
   }
 
   _send (channel: string, dto: mixed): void {

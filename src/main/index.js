@@ -1,28 +1,20 @@
-// @flow
-'use strict'
+/*
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import dependencies from './dependencies'
-import path from 'path'
-import Mysterion from '../app/mysterion'
-import mysterionConfig from '../app/mysterion-config'
-import Terms from '../app/terms'
-import {Installer as MysteriumDaemonInstaller, Process as MysteriumProcess} from '../libraries/mysterium-client'
-import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 
-global.__mysterionReleaseID = dependencies.get('mysterionReleaseID')
-global.__static = mysterionConfig.staticDirectoryPath
-
-const tequilApi = dependencies.get('tequilapiClient')
-const mysterion = new Mysterion({
-  browserWindowFactory: () => dependencies.get('mysterionBrowserWindow'),
-  windowFactory: () => dependencies.get('mysterionWindow'),
-  config: mysterionConfig,
-  terms: new Terms(path.join(mysterionConfig.staticDirectoryPath, 'terms'), mysterionConfig.userDataDirectory),
-  installer: new MysteriumDaemonInstaller(mysterionConfig),
-  monitoring: new ProcessMonitoring(tequilApi),
-  process: new MysteriumProcess(tequilApi, mysterionConfig.userDataDirectory),
-  proposalFetcher: dependencies.get('proposalFetcher'),
-  bugReporter: dependencies.get('bugReporter')
-})
-
-mysterion.run()
+dependencies.get('mysterionApplication').run()

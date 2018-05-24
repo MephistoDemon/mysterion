@@ -1,8 +1,25 @@
+/*
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import axios from 'axios/index'
 import AxiosAdapter from '../../../../../src/libraries/mysterium-tequilapi/adapters/axios-adapter'
 import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../../helpers/utils'
-import TequilapiClientError from '../../../../../src/libraries/mysterium-tequilapi/client-error'
+import { isNetworkError, isTimeoutError } from '../../../../../src/libraries/mysterium-tequilapi/client-error'
 
 describe('TequilapiClient AxiosAdapter', () => {
   let adapter
@@ -47,27 +64,27 @@ describe('TequilapiClient AxiosAdapter', () => {
     expect(response).to.deep.equal(responseExpected)
   })
 
-  it('decorates network error', async () => {
+  it('returns network error', async () => {
     mock.onGet('test-url').networkError()
 
     const err = await capturePromiseError(adapter.get('test-url'))
-    expect(err).to.be.instanceOf(TequilapiClientError)
-    expect(err.isNetworkError()).to.be.true
+    expect(err).to.be.instanceOf(Error)
+    expect(isNetworkError(err)).to.be.true
   })
 
-  it('decorates timeout error', async () => {
+  it('returns timeout error', async () => {
     mock.onGet('test-url').timeout()
 
     const err = await capturePromiseError(adapter.get('test-url'))
-    expect(err).to.be.instanceOf(TequilapiClientError)
-    expect(err.isTimeoutError()).to.be.true
+    expect(err).to.be.instanceOf(Error)
+    expect(isTimeoutError(err)).to.be.true
   })
 
-  it('decorates 404 response', async () => {
+  it('returns 404 response error', async () => {
     mock.onGet('test-url').reply(404, {message: 'What is wrong'})
 
     const err = await capturePromiseError(adapter.get('test-url'))
-    expect(err).to.be.instanceOf(TequilapiClientError)
+    expect(err).to.be.instanceOf(Error)
     expect(err.message).to.be.equal('Request failed with status code 404')
   })
 })

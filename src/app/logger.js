@@ -15,42 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.countries {
-  position: relative;
-  background-color: @white;
-  &__flag {
-    position: absolute;
-    top: 0.7rem;
-    left: 0.6rem;
-    width: 17px;
-    height: 17px;
-    border-radius: 100%;
-    z-index: 2;
-    background-repeat: no-repeat;
-    background-size: cover;
-    display: block;
-    overflow: hidden;
-    transition: opacity 200ms @easeOutQuad;
+// @flow
+
+class Logger {
+  info (...data: Array<any>): void {
+    console.info(...data)
   }
-  &__flag-svg {
-    display: block;
-    max-width: 30px;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-  &.is-disabled {
-    .countries {
-      &__multiselect,
-      &__flag {
-        opacity: 0.2;
-        pointer-events: none;
-      }
-    }
-    .multiselect {
-      &__tags {
-        border-color: @g8;
-      }
-    }
+
+  error (...data: Array<any>): void {
+    console.error(...data)
   }
 }
+
+const logger = new Logger()
+
+export default logger
