@@ -32,6 +32,7 @@ import ConnectionStatisticsDTO from '../../../libraries/mysterium-tequilapi/dto/
 import ConnectionRequestDTO from '../../../libraries/mysterium-tequilapi/dto/connection-request'
 import type {BugReporter} from '../../../app/bug-reporting/interface'
 import {isServiceUnavailableError, isTimeoutError, isRequestClosedError} from '../../../libraries/mysterium-tequilapi/client-error'
+import logger from '../../../app/logger'
 
 type ConnectionStore = {
   ip: ?string,
@@ -125,7 +126,7 @@ function actionsFactory (
     [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperConfig): FunctionLooper {
       const currentLooper = state.actionLoopers[event.action]
       if (currentLooper) {
-        console.log('Warning: requested to start looping action which is already looping: ' + event.action)
+        logger.info('Warning: requested to start looping action which is already looping: ' + event.action)
         return currentLooper
       }
 
