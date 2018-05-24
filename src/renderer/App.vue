@@ -42,6 +42,7 @@
 
   import AppError from '@/partials/AppError'
   import AppModal from '@/partials/AppModal'
+  import logger from '../app/logger'
 
   export default {
     name: 'App',
@@ -87,7 +88,7 @@
       })
 
       this.rendererCommunication.onShowRendererError((error) => {
-        console.log('App error received from communication:', event)
+        logger.info('App error received from communication:', event)
         this.$store.dispatch(type.OVERLAY_ERROR, error)
       })
 

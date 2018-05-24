@@ -25,13 +25,14 @@ import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/even
 import RendererCommunication from '../../../app/communication/renderer-communication'
 import {EventCollector as StatsCollector} from '../../../app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../app/statistics/events'
-import TequilapiClient from '../../../libraries/mysterium-tequilapi/client'
+import type {TequilapiClient} from '../../../libraries/mysterium-tequilapi/client'
 import type {ConnectionStatus} from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatusEnum from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatisticsDTO from '../../../libraries/mysterium-tequilapi/dto/connection-statistics'
 import ConnectionRequestDTO from '../../../libraries/mysterium-tequilapi/dto/connection-request'
 import type {BugReporter} from '../../../app/bug-reporting/interface'
 import {isServiceUnavailableError, isTimeoutError, isRequestClosedError} from '../../../libraries/mysterium-tequilapi/client-error'
+import logger from '../../../app/logger'
 
 type ConnectionStore = {
   ip: ?string,
@@ -125,7 +126,7 @@ function actionsFactory (
     [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperConfig): FunctionLooper {
       const currentLooper = state.actionLoopers[event.action]
       if (currentLooper) {
-        console.log('Warning: requested to start looping action which is already looping: ' + event.action)
+        logger.info('Warning: requested to start looping action which is already looping: ' + event.action)
         return currentLooper
       }
 

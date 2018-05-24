@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TequilapiClient from '../../../../src/libraries/mysterium-tequilapi/client'
+import HttpTequilapiClient from '../../../../src/libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import AxiosAdapter from '../../../../src/libraries/mysterium-tequilapi/adapters/axios-adapter'
@@ -28,12 +28,12 @@ import ConnectionIPDTO from '../../../../src/libraries/mysterium-tequilapi/dto/c
 import ConnectionStatusDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
 import ConnectionRequestDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-request'
 
-describe('TequilapiClient', () => {
+describe('HttpTequilapiClient', () => {
   let api
   let mock
   beforeEach(() => {
     const axioInstance = axios.create()
-    api = new TequilapiClient(new AxiosAdapter(axioInstance), 1)
+    api = new HttpTequilapiClient(new AxiosAdapter(axioInstance), 1)
     mock = new MockAdapter(axioInstance)
   })
 
@@ -220,16 +220,11 @@ describe('TequilapiClient', () => {
   })
 
   describe('connectionCancel()', () => {
-    it('returns response', async () => {
+    it('succeeds', async () => {
       const expectedRequest = undefined
-      const response = {
-        status: 'NotConnected',
-        sessionId: ''
-      }
-      mock.onDelete('connection', expectedRequest).reply(200, response)
+      mock.onDelete('connection', expectedRequest).reply(200)
 
-      const connection = await api.connectionCancel()
-      expect(connection).to.deep.equal(new ConnectionStatusDTO(response))
+      await api.connectionCancel()
     })
 
     it('handles error', async () => {

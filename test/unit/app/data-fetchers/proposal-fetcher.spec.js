@@ -21,6 +21,20 @@ import lolex from 'lolex'
 import ProposalFetcher from '../../../../src/app/data-fetchers/proposal-fetcher'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import {nextTick} from '../../../helpers/utils'
+import EmptyTequilapiClientMock from '../../renderer/store/modules/empty-tequilapi-client-mock'
+
+class IdentityTequilapiClientMock extends EmptyTequilapiClientMock {
+  _proposals: Array<ProposalDTO>
+
+  constructor (proposals: Array<ProposalDTO>) {
+    super()
+    this._proposals = proposals
+  }
+
+  async findProposals (_filter): Promise<Array<ProposalDTO>> {
+    return this._proposals
+  }
+}
 
 describe('DataFetchers', () => {
   describe('ProposalFetcher', () => {
@@ -40,13 +54,7 @@ describe('DataFetchers', () => {
       await nextTick()
     }
 
-    function mockTequilapiClient (proposals: Array<ProposalDTO>) {
-      return {
-        findProposals: () => Promise.resolve(proposals)
-      }
-    }
-
-    const tequilapi = mockTequilapiClient([
+    const tequilapi = new IdentityTequilapiClientMock([
       new ProposalDTO({id: '0x1'}),
       new ProposalDTO({id: '0x2'})
     ])
