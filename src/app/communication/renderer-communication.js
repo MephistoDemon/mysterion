@@ -31,7 +31,7 @@ import type {
   HealthCheckDTO
 } from './dto'
 
-import type {UserSettingsDTO} from '../userSettings'
+import type {UserSettings} from '../user-settings/user-settings'
 
 /**
  * This allows renderer process communicating with main process.
@@ -71,11 +71,11 @@ class RendererCommunication {
     return this._send(messages.USER_SETTINGS_GET)
   }
 
-  sendUserSettingsUpdate (dto: UserSettingsDTO): void {
+  sendUserSettingsUpdate (dto: UserSettings): void {
     return this._send(messages.USER_SETTINGS_SET, dto)
   }
 
-  onUserSettings (callback: (UserSettingsDTO) => void): void {
+  onUserSettings (callback: (UserSettings) => void): void {
     this._on(messages.USER_SETTINGS, callback)
   }
 

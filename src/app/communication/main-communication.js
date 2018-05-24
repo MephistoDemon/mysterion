@@ -30,7 +30,7 @@ import type {
   TermsAnsweredDTO,
   AppErrorDTO
 } from './dto'
-import type {UserSettingsDTO} from '../userSettings'
+import type {UserSettings} from '../user-settings/user-settings'
 
 /**
  * This allows main process communicating with renderer process.
@@ -93,7 +93,7 @@ class MainCommunication {
     this._send(messages.HEALTHCHECK, data)
   }
 
-  sendUserSettings (data: UserSettingsDTO) {
+  sendUserSettings (data: UserSettings) {
     this._send(messages.USER_SETTINGS, data)
   }
 
@@ -113,7 +113,7 @@ class MainCommunication {
     this._on(messages.TERMS_ANSWERED, callback)
   }
 
-  onUserSettingsUpdate (callback: (UserSettingsDTO) => void) {
+  onUserSettingsUpdate (callback: (UserSettings) => void) {
     this._on(messages.USER_SETTINGS_SET, callback)
   }
 

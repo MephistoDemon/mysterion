@@ -18,20 +18,13 @@
 // @flow
 import {readFile, writeFile} from 'fs'
 import {promisify} from 'util'
+import type {UserSettings} from './user-settings'
 
 const readFileAsync = promisify(readFile)
 const writeFileAsync = promisify(writeFile)
 
-type UserSettingsDTO = {
-  showDisconnectNotifications: boolean
-}
-
-class UserSettings {
-  showDisconnectNotifications: boolean
-
-  constructor (obj: UserSettingsDTO) {
-    this.showDisconnectNotifications = obj.showDisconnectNotifications
-  }
+const defaultSettings: UserSettings = {
+  showDisconnectNotifications: true
 }
 
 async function saveSettings (path: string, settings: UserSettings): Promise<?Error> {
@@ -43,32 +36,39 @@ async function loadSettings (path: string): Promise<?UserSettings> {
   const data = await readFileAsync(path, {encoding: 'utf8'})
   const parsedSettings = JSON.parse(data)
 
-  if (typeof parsedSettings.showDisconnectNotifications === 'boolean') {
-    return new UserSettings(parsedSettings)
+  if (typeof parsedSettings.showDisconnectNotifications !== 'boolean') {
+    return null
   }
+  return parsedSettings
 }
 
 class UserSettingsStore {
-  settings: ?UserSettings
+  _settings: ?UserSettings
   _path: string
   constructor (path: string) {
     this._path = path
   }
 
+  setDefault () {
+    this.settings = defaultSettings
+  }
+
   async load (): Promise<?UserSettings> {
-    this.settings = await loadSettings(this._path)
-    return this.settings
+    this._settings = await loadSettings(this._path)
   }
 
   async save (): Promise<?Error> {
-    if (!this.settings) throw new Error('Trying to save UserSettings, but UserSettingsStore.settings is missing')
-    return saveSettings(this._path, this.settings)
+    if (!this._settings) throw new Error('Trying to save UserSettings, but UserSettingsStore.settings is missing')
+    return saveSettings(this._path, this._settings)
   }
 
-  set (settings: UserSettingsDTO) {
-    this.settings = new UserSettings(settings)
+  set (settings: UserSettings) {
+    this._settings = settings
+  }
+
+  get (): ?UserSettings {
+    return this._settings
   }
 }
 
-export {UserSettings, UserSettingsStore}
-export type {UserSettingsDTO}
+export {UserSettingsStore}
