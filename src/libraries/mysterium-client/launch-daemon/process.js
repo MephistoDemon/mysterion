@@ -18,6 +18,7 @@
 import {Tail} from 'tail'
 import path from 'path'
 import logLevels from '../log-levels'
+import logger from '../../../app/logger'
 
 /**
  * Spawns 'mysterium_client' daemon on OSX by calling TequilapiClient.healthcheck()
@@ -35,7 +36,7 @@ class Process {
 
   start () {
     this.tequilapi.healthCheck().catch(() => {
-      console.log('touched the daemon, now it should be up')
+      logger.info('touched the daemon, now it should be up')
     })
   }
 
@@ -45,7 +46,7 @@ class Process {
 
   async stop () {
     await this.tequilapi.stop()
-    console.log('Client Quit was successful')
+    logger.info('Client Quit was successful')
   }
 
   /**
@@ -73,7 +74,7 @@ function tailFile (filePath, cb) {
     logTail.on('line', cb)
     logTail.on('error', cb)
   } catch (e) {
-    console.error('log file watching failed. file probably doesn\'t exist: ' + filePath)
+    logger.error('log file watching failed. file probably doesn\'t exist: ' + filePath)
   }
 }
 
