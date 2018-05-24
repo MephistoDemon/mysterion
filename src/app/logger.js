@@ -19,11 +19,11 @@
 
 class Logger {
   info (...data: Array<any>): void {
-    console.info(data)
+    console.info(...data)
   }
 
   error (...data: Array<any>): void {
-    console.error(data)
+    console.error(...data)
   }
 }
 
