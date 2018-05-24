@@ -18,7 +18,7 @@
 // @flow
 
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
-import TequilapiClient from '../../libraries/mysterium-tequilapi/client'
+import type { TequilapiClient } from '../../libraries/mysterium-tequilapi/client'
 import {FunctionLooper} from '../../libraries/functionLooper'
 
 class ProposalFetcher {

@@ -29,14 +29,31 @@ import ConnectionStatusDTO from './dto/connection-status'
 import ConnectionRequestDTO from './dto/connection-request'
 import {TIMEOUT_DISABLED} from './timeouts'
 
-class TequilapiClient {
+interface TequilapiClient {
+  healthCheck (timeout: ?number): Promise<NodeHealthcheckDTO>,
+  stop (): Promise<void>,
+
+  identitiesList (): Promise<Array<IdentityDTO>>,
+  identityCreate (passphrase: string): Promise<IdentityDTO>,
+  identityUnlock (id: string, passphrase: string): Promise<void>,
+
+  findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>>,
+
+  connectionCreate (request: ConnectionRequestDTO, timeout: ?number): Promise<ConnectionStatusDTO>,
+  connectionStatus (): Promise<ConnectionStatusDTO>,
+  connectionCancel (): Promise<ConnectionStatusDTO>,
+  connectionIP (timeout: ?number): Promise<ConnectionIPDTO>,
+  connectionStatistics (): Promise<ConnectionStatisticsDTO>
+}
+
+class HttpTequilapiClient implements TequilapiClient {
   http: HttpInterface
 
   constructor (http: HttpInterface) {
     this.http = http
   }
 
-  async healthCheck (timeout: ?number) {
+  async healthCheck (timeout: ?number): Promise<NodeHealthcheckDTO> {
     const response = await this.http.get('healthcheck', null, timeout)
 
     if (!response) {
@@ -46,8 +63,8 @@ class TequilapiClient {
     return new NodeHealthcheckDTO(response)
   }
 
-  async stop () {
-    return this.http.post('stop')
+  async stop (): Promise<void> {
+    await this.http.post('stop')
   }
 
   async identitiesList (): Promise<Array<IdentityDTO>> {
@@ -135,4 +152,5 @@ class TequilapiClient {
   }
 }
 
-export default TequilapiClient
+export type { TequilapiClient }
+export default HttpTequilapiClient

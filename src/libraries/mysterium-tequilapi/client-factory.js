@@ -19,7 +19,7 @@
 
 import axios from 'axios'
 import AxiosAdapter from './adapters/axios-adapter'
-import TequilapiClient from './client'
+import HttpTequilapiClient from './client'
 import {TIMEOUT_DEFAULT} from './timeouts'
 
 const TEQUILAPI_URL = 'http://127.0.0.1:4050'
@@ -33,7 +33,7 @@ function tequilapiClientFactory (baseUrl: string = TEQUILAPI_URL, defaultTimeout
   })
   const axiosAdapter = new AxiosAdapter(axioInstance, defaultTimeout)
 
-  return new TequilapiClient(axiosAdapter)
+  return new HttpTequilapiClient(axiosAdapter)
 }
 
 export default tequilapiClientFactory
