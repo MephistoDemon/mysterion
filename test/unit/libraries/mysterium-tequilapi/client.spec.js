@@ -27,7 +27,7 @@ import ConnectionStatisticsDTO from '../../../../src/libraries/mysterium-tequila
 import ConnectionIPDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 import ConnectionStatusDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
 import ConnectionRequestDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-request'
-import NodeLocationDTO from '../../../../src/libraries/mysterium-tequilapi/dto/node-location'
+import ConsumerLocationDTO from '../../../../src/libraries/mysterium-tequilapi/dto/consumer-location'
 
 describe('HttpTequilapiClient', () => {
   let api
@@ -284,7 +284,7 @@ describe('HttpTequilapiClient', () => {
 
       const stats = await api.location()
 
-      const dto = new NodeLocationDTO(response)
+      const dto = new ConsumerLocationDTO(response)
       expect(stats.originalCountry).to.equal(dto.originalCountry)
       expect(stats.originalIP).to.equal(dto.originalIP)
       expect(stats.currentCountry).to.equal(dto.currentCountry)

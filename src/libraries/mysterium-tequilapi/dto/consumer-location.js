@@ -1,6 +1,6 @@
 // @flow
 
-class NodeLocationDTO {
+class ConsumerLocationDTO {
   originalCountry: string
   originalIP: string
   currentCountry: string
@@ -14,4 +14,4 @@ class NodeLocationDTO {
   }
 }
 
-export default NodeLocationDTO
+export default ConsumerLocationDTO

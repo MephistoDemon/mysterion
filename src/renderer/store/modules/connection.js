@@ -30,7 +30,7 @@ import type {ConnectionStatus} from '../../../libraries/mysterium-tequilapi/dto/
 import ConnectionStatusEnum from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatisticsDTO from '../../../libraries/mysterium-tequilapi/dto/connection-statistics'
 import ConnectionRequestDTO from '../../../libraries/mysterium-tequilapi/dto/connection-request'
-import NodeLocationDTO from '../../../libraries/mysterium-tequilapi/dto/node-location'
+import ConsumerLocationDTO from '../../../libraries/mysterium-tequilapi/dto/consumer-location'
 import type {BugReporter} from '../../../app/bug-reporting/interface'
 import {isServiceUnavailableError, isTimeoutError, isRequestClosedError} from '../../../libraries/mysterium-tequilapi/client-error'
 import logger from '../../../app/logger'
@@ -94,7 +94,7 @@ const mutations = {
   [type.CONNECTION_IP] (state: ConnectionStore, ip: string) {
     state.ip = ip
   },
-  [type.LOCATION] (state: ConnectionStore, location: NodeLocationDTO) {
+  [type.LOCATION] (state: ConnectionStore, location: ConsumerLocationDTO) {
     state.location = location
   },
   [type.CONNECTION_STATISTICS_RESET] (state: ConnectionStore) {
