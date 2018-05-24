@@ -112,13 +112,8 @@ class TequilapiClient {
     return new ConnectionStatusDTO(response)
   }
 
-  async connectionCancel (): Promise<ConnectionStatusDTO> {
-    const response = await this.http.delete('connection')
-    if (!response) {
-      throw new Error('Connection canceling response body is missing')
-    }
-
-    return new ConnectionStatusDTO(response)
+  async connectionCancel (): Promise<void> {
+    await this.http.delete('connection')
   }
 
   async connectionIP (timeout: ?number): Promise<ConnectionIPDTO> {
