@@ -302,7 +302,6 @@ class Mysterion {
 
 function showNotificationOnDisconnect (userSettingsStore, communication, disconnectNotification) {
   communication.onConnectionStatusChange(async (status) => {
-    console.log(userSettingsStore.get())
     if (userSettingsStore.get().showDisconnectNotifications &&
       status.newStatus === ConnectionStatusEnum.NOT_CONNECTED) {
       disconnectNotification.show()
@@ -316,7 +315,6 @@ function synchronizeUserSettings (userSettingsStore, communication) {
   })
 
   communication.onUserSettingsUpdate((userSettings) => {
-    console.log('update settings')
     userSettingsStore.set(userSettings)
     userSettingsStore.save()
   })

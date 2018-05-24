@@ -17,7 +17,7 @@
 
 <template>
   <div class="round-checkbox">
-    <label class="outer" for="checkbox">Notify on disconnect</label>
+    <label class="outer" for="checkbox" @click="toggle">Notify on disconnect</label>
     <input type="checkbox" id="checkbox" v-model="isDisconnectNotificationEnabled" />
     <label class="inner" for="checkbox" @click="toggle" ></label>
   </div>
