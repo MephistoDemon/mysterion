@@ -42,7 +42,7 @@ interface TequilapiClient {
 
   connectionCreate (request: ConnectionRequestDTO, timeout: ?number): Promise<ConnectionStatusDTO>,
   connectionStatus (): Promise<ConnectionStatusDTO>,
-  connectionCancel (): Promise<ConnectionStatusDTO>,
+  connectionCancel (): Promise<void>,
   connectionIP (timeout: ?number): Promise<ConnectionIPDTO>,
   connectionStatistics (): Promise<ConnectionStatisticsDTO>
 }

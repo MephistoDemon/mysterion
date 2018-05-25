@@ -67,8 +67,7 @@ function factoryTequilapiManipulator () {
       })
     }
 
-    async connectionCancel (): Promise<ConnectionStatusDTO> {
-      return new ConnectionStatusDTO({})
+    async connectionCancel (): Promise<void> {
     }
 
     async connectionIP (): Promise<ConnectionIPDTO> {
@@ -181,7 +180,7 @@ async function executeAction (action, state = {}, payload = {}) {
   const dispatch = (action, payload = {}) => {
     const context = {commit, dispatch, state}
     const actions =
-      actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector, statsEventsFactory, bugReporterMock)
+      actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector, statsEventsFactory(), bugReporterMock)
 
     return actions[action](context, payload)
   }

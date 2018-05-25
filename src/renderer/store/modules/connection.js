@@ -238,7 +238,13 @@ function actionsFactory (
       try {
         await dispatch(type.SET_CONNECTION_STATUS, ConnectionStatusEnum.DISCONNECTING)
 
-        await tequilapi.connectionCancel()
+        try {
+          await tequilapi.connectionCancel()
+        } catch (err) {
+          commit(type.SHOW_ERROR, err)
+          console.log('Connection cancelling failed:', err)
+          bugReporter.captureInfoException(err)
+        }
         dispatch(type.FETCH_CONNECTION_STATUS)
         dispatch(type.CONNECTION_IP)
       } catch (err) {

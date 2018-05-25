@@ -19,7 +19,7 @@
 
 import type {Country} from '../../app/countries/index'
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
-import MainCommunication from '../../app/communication/main-communication'
+import type {MainCommunication} from '../../app/communication/main-communication'
 import {getCountryLabel, getSortedCountryListFromProposals} from '../../app/countries/index'
 import ConnectionStatusEnum from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'

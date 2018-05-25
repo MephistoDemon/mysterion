@@ -16,21 +16,21 @@
  */
 
 // @flow
-import MainCommunication from '../../../../src/app/communication/main-communication'
+import MainMessageBusCommunication from '../../../../src/app/communication/main-message-bus-communication'
 import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
 import { describe, beforeEach, it, expect } from '../../../helpers/dependencies'
 import { CallbackRecorder } from '../../../helpers/utils'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 
-describe('MainCommunication', () => {
+describe('MainMessageBusCommunication', () => {
   let fakeMessageBus
   let communication
   let callbackRecorder
 
   beforeEach(() => {
     fakeMessageBus = new FakeMessageBus()
-    communication = new MainCommunication(fakeMessageBus)
+    communication = new MainMessageBusCommunication(fakeMessageBus)
     callbackRecorder = new CallbackRecorder()
   })
 

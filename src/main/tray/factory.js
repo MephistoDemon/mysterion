@@ -17,7 +17,7 @@
 
 // @flow
 import {app, Tray as ElectronTray, Menu} from 'electron'
-import MainCommunication from '../../app/communication/main-communication'
+import type { MainCommunication } from '../../app/communication/main-communication'
 import ProposalFetcher from '../../app/data-fetchers/proposal-fetcher'
 import Window from '../../app/window'
 import TrayMenuBuilder from './menu-builder'
