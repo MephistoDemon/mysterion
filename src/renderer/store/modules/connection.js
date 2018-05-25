@@ -37,6 +37,7 @@ import logger from '../../../app/logger'
 
 type ConnectionStore = {
   ip: ?string,
+  location: ?ConsumerLocationDTO,
   status: ConnectionStatus,
   statistics: Object,
   actionLoopers: { [string]: FunctionLooper }
@@ -67,6 +68,7 @@ const defaultStatistics = {
 
 const state: ConnectionStore = {
   ip: null,
+  location: null,
   status: ConnectionStatusEnum.NOT_CONNECTED,
   statistics: defaultStatistics,
   actionLoopers: {}
@@ -192,7 +194,7 @@ function actionsFactory (
     async [type.CONNECT] ({commit, dispatch, state}, connectionRequest: ConnectionRequestDTO) {
       let eventTracker = new ConnectEventTracker(statsCollector, currentUserTime, statsEventsFactory)
       let originalCountry = ''
-      if (state.location != null) {
+      if (state.location != null && state.location.originalCountry != null) {
         originalCountry = state.location.originalCountry
       }
       eventTracker.connectStarted(

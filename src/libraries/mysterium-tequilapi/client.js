@@ -44,7 +44,8 @@ interface TequilapiClient {
   connectionStatus (): Promise<ConnectionStatusDTO>,
   connectionCancel (): Promise<void>,
   connectionIP (timeout: ?number): Promise<ConnectionIPDTO>,
-  connectionStatistics (): Promise<ConnectionStatisticsDTO>
+  connectionStatistics (): Promise<ConnectionStatisticsDTO>,
+  location (timeout: ?number): Promise<ConsumerLocationDTO>
 }
 
 class HttpTequilapiClient implements TequilapiClient {
@@ -154,6 +155,9 @@ class HttpTequilapiClient implements TequilapiClient {
 
   async location (timeout: ?number): Promise<ConsumerLocationDTO> {
     const response = await this.http.get('location', null, timeout)
+    if (!response) {
+      throw new Error('Location response body is missing')
+    }
 
     return new ConsumerLocationDTO(response)
   }
