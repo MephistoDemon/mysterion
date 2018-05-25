@@ -19,7 +19,7 @@ import {app} from 'electron'
 import trayFactory from '../main/tray/factory'
 import {logLevels as processLogLevels} from '../libraries/mysterium-client'
 import translations from './messages'
-import MainCommunication from './communication/main-communication'
+import MainMessageBusCommunication from './communication/main-message-bus-communication'
 import MainMessageBus from './communication/mainMessageBus'
 import {onFirstEvent} from './communication/utils'
 import path from 'path'
@@ -78,7 +78,7 @@ class Mysterion {
 
     const send = this._getSendFunction(browserWindow)
     this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
-    this.communication = new MainCommunication(this.messageBus)
+    this.communication = new MainMessageBusCommunication(this.messageBus)
 
     await this._onRendererLoaded()
 

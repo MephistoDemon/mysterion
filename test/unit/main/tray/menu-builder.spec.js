@@ -21,19 +21,7 @@ import ConnectionStatusEnum from '../../../../src/libraries/mysterium-tequilapi/
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import translations from '../../../../src/main/tray/translations'
 import { describe, it, expect, beforeEach } from '../../../helpers/dependencies'
-
-class FakeMainCommunication {
-  sentConnect: boolean = false
-  sentDisconnect: boolean = false
-
-  sendConnectionRequest () {
-    this.sentConnect = true
-  }
-
-  sendConnectionCancelRequest () {
-    this.sentDisconnect = true
-  }
-}
+import FakeMainCommunication from '../../../helpers/fakeMainCommunication'
 
 class FakeApplicationQuitter {
   didQuit: boolean = false
@@ -127,16 +115,16 @@ describe('tray', () => {
         ])
 
         const items = builder.build()
-        expect(communication.sentConnect).to.equal(false)
+        expect(communication.wasInvoked(communication.sendConnectionCancelRequest)).to.equal(false)
         items[2].submenu[0].click()
-        expect(communication.sentConnect).to.equal(true)
+        expect(communication.wasInvoked(communication.sendConnectionRequest)).to.equal(true)
       })
 
       it('disconnects', () => {
         const items = builder.updateConnectionStatus(ConnectionStatusEnum.CONNECTED).build()
-        expect(communication.sentDisconnect).to.equal(false)
+        expect(communication.wasInvoked(communication.sendConnectionCancelRequest)).to.equal(false)
         items[2].click()
-        expect(communication.sentDisconnect).to.equal(true)
+        expect(communication.wasInvoked(communication.sendConnectionCancelRequest)).to.equal(true)
       })
 
       it('shows window', () => {
