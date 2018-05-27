@@ -67,7 +67,7 @@ class RendererCommunication {
     return this._send(messages.TERMS_ANSWERED, dto)
   }
 
-  requestUserSettings (): void {
+  sendUserSettingsRequest (): void {
     return this._send(messages.USER_SETTINGS_REQUEST)
   }
 

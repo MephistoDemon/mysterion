@@ -19,6 +19,7 @@ import RendererCommunication from '../../../../src/app/communication/renderer-co
 import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
 import {CallbackRecorder} from '../../../helpers/utils'
+import {describe, beforeEach, it} from '../../../helpers/dependencies'
 
 describe('RendererCommunication', () => {
   let fakeMessageBus
@@ -73,6 +74,24 @@ describe('RendererCommunication', () => {
       communication.sendTermsAnswered(data)
 
       expect(fakeMessageBus.lastChannel).to.eql(messages.TERMS_ANSWERED)
+      expect(fakeMessageBus.lastData).to.eql(data)
+    })
+  })
+
+  describe('sendUserSettingsRequest', () => {
+    it('sends message to bus', () => {
+      communication.sendUserSettingsRequest()
+
+      expect(fakeMessageBus.lastChannel).to.eql(messages.USER_SETTINGS_REQUEST)
+    })
+  })
+
+  describe('sendUserSettingsUpdate', () => {
+    it('sends message to bus', () => {
+      const data = { showDisconnectNotifications: true }
+      communication.sendUserSettingsUpdate(data)
+
+      expect(fakeMessageBus.lastChannel).to.eql(messages.USER_SETTINGS_UPDATE)
       expect(fakeMessageBus.lastData).to.eql(data)
     })
   })
@@ -173,6 +192,18 @@ describe('RendererCommunication', () => {
 
       const data = { isRunning: true }
       fakeMessageBus.triggerOn(messages.HEALTHCHECK, data)
+
+      expect(callbackRecorder.invoked).to.eql(true)
+      expect(callbackRecorder.argument).to.eql(data)
+    })
+  })
+
+  describe('onUserSettings', () => {
+    it('receives message from bus', () => {
+      communication.onUserSettings(callbackRecorder.getCallback())
+
+      const data = { showDisconnectNotifications: true }
+      fakeMessageBus.triggerOn(messages.USER_SETTINGS, data)
 
       expect(callbackRecorder.invoked).to.eql(true)
       expect(callbackRecorder.argument).to.eql(data)

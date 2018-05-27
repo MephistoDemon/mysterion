@@ -94,7 +94,7 @@ class MainMessageBusCommunication implements MainCommunication {
     this._send(messages.HEALTHCHECK, data)
   }
 
-  sendUserSettings (data: UserSettings) {
+  sendUserSettings (data: UserSettings): void {
     this._send(messages.USER_SETTINGS, data)
   }
 
@@ -114,11 +114,11 @@ class MainMessageBusCommunication implements MainCommunication {
     this._on(messages.TERMS_ANSWERED, callback)
   }
 
-  onUserSettingsRequest (callback: () => void) {
+  onUserSettingsRequest (callback: () => void): void {
     this._on(messages.USER_SETTINGS_REQUEST, callback)
   }
 
-  onUserSettingsUpdate (callback: (UserSettings) => void) {
+  onUserSettingsUpdate (callback: (UserSettings) => void): void {
     this._on(messages.USER_SETTINGS_UPDATE, callback)
   }
 

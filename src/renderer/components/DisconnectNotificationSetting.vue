@@ -36,7 +36,7 @@
       this.rendererCommunication.onUserSettings((settings) => {
         this.isDisconnectNotificationEnabled = settings.showDisconnectNotifications
       })
-      this.rendererCommunication.requestUserSettings()
+      this.rendererCommunication.sendUserSettingsRequest()
     },
     methods: {
       toggle () {
