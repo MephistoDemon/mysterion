@@ -25,7 +25,9 @@ import Window from '../../../app/window'
 import Terms from '../../../app/terms'
 
 function bootstrap (container: Container) {
-  const mysterionReleaseID = `${process.env.MYSTERION_VERSION}(${process.env.BUILD_NUMBER})`
+  const version = process.env.MYSTERION_VERSION || ''
+  const build = process.env.BUILD_NUMBER || ''
+  const mysterionReleaseID = `${version}(${build})`
   global.__mysterionReleaseID = mysterionReleaseID
 
   container.constant('mysterionReleaseID', mysterionReleaseID)

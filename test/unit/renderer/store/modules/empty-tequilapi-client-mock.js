@@ -56,8 +56,7 @@ class EmptyTequilapiClientMock implements TequilapiClient {
     return new ConnectionStatusDTO({})
   }
 
-  async connectionCancel (): Promise<ConnectionStatusDTO> {
-    return new ConnectionStatusDTO({})
+  async connectionCancel (): Promise<void> {
   }
 
   async connectionIP (): Promise<ConnectionIPDTO> {

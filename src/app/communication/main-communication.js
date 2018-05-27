@@ -17,8 +17,6 @@
 
 // @flow
 
-import messages from './messages'
-import type {MessageBus} from './messageBus'
 import type {
   HealthCheckDTO,
   RequestConnectionDTO,
@@ -32,102 +30,42 @@ import type {
 } from './dto'
 import type {UserSettings} from '../user-settings/user-settings'
 
-/**
- * This allows main process communicating with renderer process.
- */
-class MainCommunication {
-  _messageBus: MessageBus
+interface MainCommunication {
+  onRendererBooted (callback: () => void): void,
 
-  constructor (messageBus: MessageBus) {
-    this._messageBus = messageBus
-  }
+  sendRendererShowErrorMessage (error: string): void,
 
-  onRendererBooted (callback: () => void) {
-    this._on(messages.RENDERER_BOOTED, callback)
-  }
+  sendRendererShowError (data: AppErrorDTO): void,
 
-  sendRendererShowErrorMessage (error: string) {
-    this.sendRendererShowError({
-      message: error,
-      hint: '',
-      fatal: true
-    })
-  }
+  sendMysteriumClientIsReady (): void,
 
-  sendRendererShowError (data: AppErrorDTO) {
-    this._send(messages.RENDERER_SHOW_ERROR, data)
-  }
+  sendMysteriumClientLog (dto: MysteriumClientLogDTO): void,
 
-  /**
-   * Notifies the renderer that we're good to go
-   */
-  sendMysteriumClientIsReady () {
-    this._send(messages.MYSTERIUM_CLIENT_READY)
-  }
+  sendProposals (proposals: ProposalUpdateDTO): void,
 
-  sendMysteriumClientLog (dto: MysteriumClientLogDTO): void {
-    this._send(messages.MYSTERIUM_CLIENT_LOG, dto)
-  }
+  sendConnectionCancelRequest (): void,
 
-  sendProposals (proposals: ProposalUpdateDTO) {
-    this._send(messages.PROPOSALS_UPDATE, proposals)
-  }
+  sendConnectionRequest (data: RequestConnectionDTO): void,
 
-  sendConnectionCancelRequest () {
-    this._send(messages.CONNECTION_CANCEL)
-  }
+  sendTermsRequest (data: RequestTermsDTO): void,
 
-  sendConnectionRequest (data: RequestConnectionDTO) {
-    this._send(messages.CONNECTION_REQUEST, data)
-  }
+  sendTermsAccepted (): void,
 
-  sendTermsRequest (data: RequestTermsDTO) {
-    this._send(messages.TERMS_REQUESTED, data)
-  }
+  sendHealthCheck (data: HealthCheckDTO): void,
 
-  sendTermsAccepted () {
-    this._send(messages.TERMS_ACCEPTED)
-  }
+  sendUserSettings (data: UserSettings): void,
 
-  sendHealthCheck (data: HealthCheckDTO) {
-    this._send(messages.HEALTHCHECK, data)
-  }
+  onConnectionStatusChange (callback: (ConnectionStatusChangeDTO) => void): void,
 
-  sendUserSettings (data: UserSettings) {
-    this._send(messages.USER_SETTINGS, data)
-  }
+  onCurrentIdentityChange (callback: (CurrentIdentityChangeDTO) => void): void,
 
-  onConnectionStatusChange (callback: (ConnectionStatusChangeDTO) => void): void {
-    this._on(messages.CONNECTION_STATUS_CHANGED, callback)
-  }
+  onProposalUpdateRequest (callback: () => void): void,
 
-  onCurrentIdentityChange (callback: (CurrentIdentityChangeDTO) => void) {
-    this._on(messages.CURRENT_IDENTITY_CHANGED, callback)
-  }
+  onTermsAnswered (callback: (TermsAnsweredDTO) => void): void,
 
-  onProposalUpdateRequest (callback: () => void) {
-    this._on(messages.PROPOSALS_UPDATE, callback)
-  }
+  onUserSettingsUpdate (callback: (UserSettings) => void): void,
 
-  onTermsAnswered (callback: (TermsAnsweredDTO) => void) {
-    this._on(messages.TERMS_ANSWERED, callback)
-  }
-
-  onUserSettingsUpdate (callback: (UserSettings) => void) {
-    this._on(messages.USER_SETTINGS_UPDATE, callback)
-  }
-
-  onUserSettingsRequest (callback: () => void) {
-    this._on(messages.USER_SETTINGS_REQUEST, callback)
-  }
-
-  _send (channel: string, dto: mixed): void {
-    this._messageBus.send(channel, dto)
-  }
-
-  _on (channel: string, callback: (dto: any) => void): void {
-    this._messageBus.on(channel, callback)
-  }
+  onUserSettingsRequest (callback: () => void): void
 }
 
-export default MainCommunication
+export type { MainCommunication }

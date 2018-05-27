@@ -24,6 +24,7 @@ install:
 - FORCE_DOWNLOAD=1 yarn download:bins
 script:
 - yarn ci
+- util_scripts/check-headers.sh
 #run e2e on Pull Requests env only
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
     yarn test:integration;

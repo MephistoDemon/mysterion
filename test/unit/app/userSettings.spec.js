@@ -50,7 +50,7 @@ describe('UserSettingsStore', () => {
     })
   })
 
-  describe.only('load()', () => {
+  describe('load()', () => {
     const loadSettingsPath = join(tmpdir(), 'settings.test.loading.json')
     const invalidPath = join(tmpdir(), 'someother', 'another')
     const invalidJsonPath = join(tmpdir(), 'invalidJsonFile')
