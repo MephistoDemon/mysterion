@@ -114,11 +114,11 @@ class MainCommunication {
   }
 
   onUserSettingsUpdate (callback: (UserSettings) => void) {
-    this._on(messages.USER_SETTINGS_SET, callback)
+    this._on(messages.USER_SETTINGS_UPDATE, callback)
   }
 
   onUserSettingsRequest (callback: () => void) {
-    this._on(messages.USER_SETTINGS_GET, callback)
+    this._on(messages.USER_SETTINGS_REQUEST, callback)
   }
 
   _send (channel: string, dto: mixed): void {

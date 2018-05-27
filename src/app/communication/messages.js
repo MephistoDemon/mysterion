@@ -36,6 +36,6 @@ export default {
   PROPOSALS_UPDATE: 'proposals.update',
 
   USER_SETTINGS: 'user.settings',
-  USER_SETTINGS_GET: 'user.settings.get',
-  USER_SETTINGS_SET: 'user.settings.set'
+  USER_SETTINGS_REQUEST: 'user.settings.request',
+  USER_SETTINGS_UPDATE: 'user.settings.update'
 }

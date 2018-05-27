@@ -68,11 +68,11 @@ class RendererCommunication {
   }
 
   requestUserSettings (): void {
-    return this._send(messages.USER_SETTINGS_GET)
+    return this._send(messages.USER_SETTINGS_REQUEST)
   }
 
   sendUserSettingsUpdate (dto: UserSettings): void {
-    return this._send(messages.USER_SETTINGS_SET, dto)
+    return this._send(messages.USER_SETTINGS_UPDATE, dto)
   }
 
   onUserSettings (callback: (UserSettings) => void): void {
