@@ -50,10 +50,10 @@ describe('UserSettingsStore', () => {
     })
   })
 
-  describe('load()', () => {
+  describe.only('load()', () => {
     const loadSettingsPath = join(tmpdir(), 'settings.test.loading.json')
-    const invalidPath = join(tmpdir(), 'someother')
-    const invalidJsonPath = join(tmpdir(), 'invalidjson')
+    const invalidPath = join(tmpdir(), 'someother', 'another')
+    const invalidJsonPath = join(tmpdir(), 'invalidJsonFile')
 
     before(() => {
       writeFileSync(
@@ -62,7 +62,7 @@ describe('UserSettingsStore', () => {
       )
       writeFileSync(
         invalidJsonPath,
-        'invalid Json content'
+        '{"notOfUserSettingsType":true}'
       )
     })
     after(() => {
@@ -77,11 +77,17 @@ describe('UserSettingsStore', () => {
       expect(userSettingsStore.get()).to.be.eql({showDisconnectNotifications: false})
     })
 
-    it('throws error if it fails on invalid path to file', async () => {
+    it('falls back to default settings when invalid path to settings.json file is given', async () => {
       const userSettingsStore = new UserSettingsStore(invalidPath)
-      const error = await capturePromiseError(userSettingsStore.load())
 
-      expect(error).to.be.an.instanceOf(Error)
+      await userSettingsStore.load()
+      expect(userSettingsStore.get()).to.be.eql({showDisconnectNotifications: true})
+    })
+
+    it('throws TypeError if parsed Object from file is not of UserSettings type', async () => {
+      const userSettingsStore = new UserSettingsStore(invalidJsonPath)
+      const error = await capturePromiseError(userSettingsStore.load())
+      expect(error).to.be.instanceOf(TypeError)
     })
   })
 })

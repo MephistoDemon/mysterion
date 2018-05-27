@@ -27,37 +27,26 @@ const defaultSettings: UserSettings = {
   showDisconnectNotifications: true
 }
 
-async function saveSettings (path: string, settings: UserSettings): Promise<?Error> {
-  const settingsString = JSON.stringify(settings)
-  await writeFileAsync(path, settingsString)
-}
-
-async function loadSettings (path: string): Promise<?UserSettings> {
-  const data = await readFileAsync(path, {encoding: 'utf8'})
-  const parsedSettings = JSON.parse(data)
-
-  if (typeof parsedSettings.showDisconnectNotifications !== 'boolean') {
-    return null
-  }
-  return parsedSettings
-}
-
 class UserSettingsStore {
-  _settings: ?UserSettings
+  _settings: UserSettings = defaultSettings
   _path: string
+
   constructor (path: string) {
     this._path = path
   }
 
-  setDefault () {
-    this.settings = defaultSettings
+  async load (): Promise<void> {
+    try {
+      this._settings = await loadSettings(this._path)
+    } catch (e) {
+      if (isFileNotExistError(e)) {
+        return
+      }
+      throw e
+    }
   }
 
-  async load (): Promise<?UserSettings> {
-    this._settings = await loadSettings(this._path)
-  }
-
-  async save (): Promise<?Error> {
+  async save (): Promise<void> {
     if (!this._settings) throw new Error('Trying to save UserSettings, but UserSettingsStore.settings is missing')
     return saveSettings(this._path, this._settings)
   }
@@ -69,6 +58,30 @@ class UserSettingsStore {
   get (): ?UserSettings {
     return this._settings
   }
+}
+
+async function saveSettings (path: string, settings: UserSettings): Promise<void> {
+  const settingsString = JSON.stringify(settings)
+  await writeFileAsync(path, settingsString)
+}
+
+async function loadSettings (path: string): Promise<UserSettings> {
+  let data = await readFileAsync(path, {encoding: 'utf8'})
+  const parsedSettings = JSON.parse(data)
+
+  if (!validateUserSettings(parsedSettings)) {
+    throw new TypeError('UserSettings loading failed. Parsed Object is not of UserSettings type.')
+  }
+
+  return parsedSettings
+}
+
+function validateUserSettings (settings: Object): boolean {
+  return (typeof settings.showDisconnectNotifications === 'boolean')
+}
+
+function isFileNotExistError (error: Object): boolean {
+  return (error.code && error.code === 'ENOENT')
 }
 
 export {UserSettingsStore}

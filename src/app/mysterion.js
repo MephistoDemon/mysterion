@@ -172,7 +172,7 @@ class Mysterion {
     try {
       await this.userSettingsStore.load()
     } catch (e) {
-      this.userSettingsStore.setDefault()
+      this.bugReporter.captureInfoException(e)
     }
   }
 
@@ -302,8 +302,15 @@ class Mysterion {
 
 function showNotificationOnDisconnect (userSettingsStore, communication, disconnectNotification) {
   communication.onConnectionStatusChange(async (status) => {
-    if (userSettingsStore.get().showDisconnectNotifications &&
-      status.newStatus === ConnectionStatusEnum.NOT_CONNECTED) {
+    const shouldShowNotification =
+      userSettingsStore.get().showDisconnectNotifications &&
+      (status.newStatus === ConnectionStatusEnum.NOT_CONNECTED &&
+        (status.oldStatus === ConnectionStatusEnum.DISCONNECTING ||
+          status.oldStatus === ConnectionStatusEnum.CONNECTED
+        )
+      )
+
+    if (shouldShowNotification) {
       disconnectNotification.show()
     }
   })
