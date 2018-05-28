@@ -22,7 +22,6 @@ import RendererCommunication from '../../../app/communication/renderer-communica
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../../libraries/mysterium-tequilapi/dto/identity'
 import type {Container} from '../../../app/di'
-import IdentityManager from '../../../app/identityManager'
 
 type State = {
   current: ?IdentityDTO,
@@ -65,35 +64,18 @@ const getters = {
   }
 }
 
-function actionsFactory (tequilapi: TequilapiClient) {
-  const identityManager = new IdentityManager(tequilapi)
-  return {
-    async [type.IDENTITY_LIST] ({commit}): Promise<Array<IdentityDTO>> {
-      return identityManager.listIdentities(commit)
-    },
-    async [type.IDENTITY_CREATE] ({commit}): Promise<IdentityDTO> {
-      return identityManager.createIdentity(commit)
-    },
-    async [type.IDENTITY_UNLOCK] ({commit}): Promise<void> {
-      await identityManager.unlockIdentity(commit, state)
-    }
-  }
-}
-
 function factory (tequilapi: TequilapiClient, dependenciesContainer: Container) {
   return {
     state,
     getters,
-    mutations: mutationsFactory(dependenciesContainer),
-    actions: actionsFactory(tequilapi)
+    mutations: mutationsFactory(dependenciesContainer)
   }
 }
 
 export {
   state,
   getters,
-  mutationsFactory,
-  actionsFactory
+  mutationsFactory
 }
 export type { State }
 export default factory

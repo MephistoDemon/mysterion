@@ -48,7 +48,7 @@ describe('VpnLoader', () => {
 
     const dependencies = new DIContainer(localVue)
     dependencies.constant('bugReporter', {setUser: function () {}})
-    dependencies.constant('vpnInitializer', new VpnInitializer())
+    dependencies.constant('vpnInitializer', new VpnInitializer(tequilapi))
 
     localVue.use(Router)
     const router = new Router({routes: []})

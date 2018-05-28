@@ -19,29 +19,42 @@
 
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import types from '../renderer/store/types'
+import IdentityManager from './identityManager'
+import type { TequilapiClient } from '../libraries/mysterium-tequilapi/client'
+import type { State as IdentityState } from '../renderer/store/modules/identity'
 
 /**
  * Creates or re-uses identity and unlocks it for future operations requiring identity.
  */
 class VpnInitializer {
-  async initialize (dispatch: Function, commit: Function): Promise<void> {
-    await this._prepareIdentity(dispatch, commit)
+  _tequilapi: TequilapiClient
+
+  constructor (tequilapi: TequilapiClient) {
+    this._tequilapi = tequilapi
+  }
+
+  async initialize (dispatch: Function, commit: Function, state: IdentityState): Promise<void> {
+    await this._prepareIdentity(commit, state)
     await dispatch(types.CLIENT_BUILD_INFO)
   }
 
-  async _prepareIdentity (dispatch: Function, commit: Function): Promise<void> {
-    const identity = await this._identityGet(dispatch, commit)
+  async _prepareIdentity (commit: Function, state: IdentityState): Promise<void> {
+    const identityManager = new IdentityManager(this._tequilapi)
+
+    const identity = await this._identityGet(identityManager, commit)
     commit(types.IDENTITY_GET_SUCCESS, identity)
-    await dispatch(types.IDENTITY_UNLOCK)
+
+    await identityManager.unlockIdentity(commit, state)
   }
 
-  async _identityGet (dispatch: Function, commit: Function): Promise<IdentityDTO> {
-    const identities = await dispatch(types.IDENTITY_LIST)
+  async _identityGet (identityManager: IdentityManager, commit: Function): Promise<IdentityDTO> {
+    const identities = await identityManager.listIdentities(commit)
+
     if (identities && identities.length > 0) {
       return identities[0]
     }
 
-    const newIdentity = await dispatch(types.IDENTITY_CREATE)
+    const newIdentity = await identityManager.createIdentity(commit)
     commit(types.INIT_NEW_USER)
     return newIdentity
   }

@@ -26,6 +26,7 @@ import {remote} from 'electron'
 import type {ApplicationInfo} from '../../../app/statistics/events'
 import {createEventFactory} from '../../../app/statistics/events'
 import VpnInitializer from '../../../app/vpnInitializer'
+import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 
 function bootstrap (container: Container) {
   const mysterionReleaseID = remote.getGlobal('__mysterionReleaseID')
@@ -67,8 +68,8 @@ function bootstrap (container: Container) {
   )
   container.service(
     'vpnInitializer',
-    [],
-    () => new VpnInitializer()
+    ['tequilapiClient'],
+    (tequilapiClient: TequilapiClient) => new VpnInitializer(tequilapiClient)
   )
 }
 

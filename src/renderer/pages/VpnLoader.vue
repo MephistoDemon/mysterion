@@ -32,7 +32,8 @@
         this.$store.dispatch(type.LOCATION)
         commit(type.INIT_PENDING)
 
-        await this.vpnInitializer.initialize(dispatch, commit)
+        const identityState = this.$store.state.identity
+        await this.vpnInitializer.initialize(dispatch, commit, identityState)
 
         await sleep(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)
