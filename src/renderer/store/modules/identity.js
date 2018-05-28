@@ -63,36 +63,48 @@ async function getPassword (): Promise<string> {
   return ''
 }
 
+async function listIdentities (tequilapi: TequilapiClient, commit: Function): Promise<Array<IdentityDTO>> {
+  try {
+    const identities = await tequilapi.identitiesList()
+    commit(type.IDENTITY_LIST_SUCCESS, identities)
+    return identities
+  } catch (err) {
+    commit(type.SHOW_ERROR, err)
+    throw (err)
+  }
+}
+
+async function createIdentity (tequilapi: TequilapiClient, commit: Function): Promise<IdentityDTO> {
+  try {
+    return await tequilapi.identityCreate(await getPassword())
+  } catch (err) {
+    commit(type.SHOW_ERROR, err)
+    throw (err)
+  }
+}
+
+async function unlockIdentity (tequilapi: TequilapiClient, commit: Function): Promise<void> {
+  try {
+    if (state.current == null) {
+      throw new Error('Identity is not available')
+    }
+    await tequilapi.identityUnlock(state.current.id, await getPassword())
+    commit(type.IDENTITY_UNLOCK_SUCCESS)
+  } catch (err) {
+    commit(type.SHOW_ERROR, err)
+  }
+}
+
 function actionsFactory (tequilapi: TequilapiClient) {
   return {
-    async [type.IDENTITY_CREATE] ({commit}) {
-      try {
-        return await tequilapi.identityCreate(await getPassword())
-      } catch (err) {
-        commit(type.SHOW_ERROR, err)
-        throw (err)
-      }
+    async [type.IDENTITY_LIST] ({commit}): Promise<Array<IdentityDTO>> {
+      return listIdentities(tequilapi, commit)
     },
-    async [type.IDENTITY_UNLOCK] ({commit}) {
-      try {
-        if (state.current == null) {
-          throw new Error('Identity is not available')
-        }
-        await tequilapi.identityUnlock(state.current.id, await getPassword())
-        commit(type.IDENTITY_UNLOCK_SUCCESS)
-      } catch (err) {
-        commit(type.SHOW_ERROR, err)
-      }
+    async [type.IDENTITY_CREATE] ({commit}): Promise<IdentityDTO> {
+      return createIdentity(tequilapi, commit)
     },
-    async [type.IDENTITY_LIST] ({commit}) {
-      try {
-        const identities = await tequilapi.identitiesList()
-        commit(type.IDENTITY_LIST_SUCCESS, identities)
-        return identities
-      } catch (err) {
-        commit(type.SHOW_ERROR, err)
-        throw (err)
-      }
+    async [type.IDENTITY_UNLOCK] ({commit}): Promise<void> {
+      await unlockIdentity(tequilapi, commit)
     }
   }
 }

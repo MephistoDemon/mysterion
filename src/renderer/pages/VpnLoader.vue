@@ -24,6 +24,13 @@
   import sleep from '../../libraries/sleep'
   import logger from '../../app/logger'
 
+  async function initialize ({dispatch, commit}) {
+    const identity = await identityGet({dispatch, commit})
+    commit(type.IDENTITY_GET_SUCCESS, identity)
+    await dispatch(type.IDENTITY_UNLOCK)
+    await dispatch(type.CLIENT_BUILD_INFO)
+  }
+
   async function identityGet ({dispatch, commit}) {
     const identities = await dispatch(type.IDENTITY_LIST)
     if (identities && identities.length > 0) {
@@ -42,10 +49,8 @@
       try {
         this.$store.dispatch(type.LOCATION)
         commit(type.INIT_PENDING)
-        const identity = await identityGet(this.$store)
-        commit(type.IDENTITY_GET_SUCCESS, identity)
-        await dispatch(type.IDENTITY_UNLOCK)
-        await dispatch(type.CLIENT_BUILD_INFO)
+
+        await initialize({dispatch, commit})
 
         await sleep(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)
@@ -60,7 +65,6 @@
     },
     computed: {
       ...mapState({
-        initStatus: state => state.main.init,
         error: state => state.main.error
       })
     },
