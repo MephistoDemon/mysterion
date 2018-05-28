@@ -24,33 +24,25 @@ import types from '../renderer/store/types'
  * Creates or re-uses identity and unlocks it for future operations requiring identity.
  */
 class VpnInitializer {
-  _dispatch: Function
-  _commit: Function
-
-  constructor (dispatch: Function, commit: Function) {
-    this._dispatch = dispatch
-    this._commit = commit
+  async initialize (dispatch: Function, commit: Function): Promise<void> {
+    await this._prepareIdentity(dispatch, commit)
+    await dispatch(types.CLIENT_BUILD_INFO)
   }
 
-  async initialize (): Promise<void> {
-    await this._prepareIdentity()
-    await this._dispatch(types.CLIENT_BUILD_INFO)
+  async _prepareIdentity (dispatch: Function, commit: Function): Promise<void> {
+    const identity = await this._identityGet(dispatch, commit)
+    commit(types.IDENTITY_GET_SUCCESS, identity)
+    await dispatch(types.IDENTITY_UNLOCK)
   }
 
-  async _prepareIdentity (): Promise<void> {
-    const identity = await this._identityGet()
-    this._commit(types.IDENTITY_GET_SUCCESS, identity)
-    await this._dispatch(types.IDENTITY_UNLOCK)
-  }
-
-  async _identityGet (): Promise<IdentityDTO> {
-    const identities = await this._dispatch(types.IDENTITY_LIST)
+  async _identityGet (dispatch: Function, commit: Function): Promise<IdentityDTO> {
+    const identities = await dispatch(types.IDENTITY_LIST)
     if (identities && identities.length > 0) {
       return identities[0]
     }
 
-    const newIdentity = await this._dispatch(types.IDENTITY_CREATE)
-    this._commit(types.INIT_NEW_USER)
+    const newIdentity = await dispatch(types.IDENTITY_CREATE)
+    commit(types.INIT_NEW_USER)
     return newIdentity
   }
 }

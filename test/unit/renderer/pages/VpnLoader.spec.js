@@ -38,6 +38,7 @@ import types from '@/store/types'
 import type { TequilapiClient } from '../../../../src/libraries/mysterium-tequilapi/client'
 
 import DIContainer from '../../../../src/app/di/vue-container'
+import VpnInitializer from '../../../../src/app/vpnInitializer'
 
 describe('VpnLoader', () => {
   let clock
@@ -47,6 +48,7 @@ describe('VpnLoader', () => {
 
     const dependencies = new DIContainer(localVue)
     dependencies.constant('bugReporter', {setUser: function () {}})
+    dependencies.constant('vpnInitializer', new VpnInitializer())
 
     localVue.use(Router)
     const router = new Router({routes: []})

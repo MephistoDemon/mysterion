@@ -25,6 +25,7 @@ import NullCollector from '../../../app/statistics/null-collector'
 import {remote} from 'electron'
 import type {ApplicationInfo} from '../../../app/statistics/events'
 import {createEventFactory} from '../../../app/statistics/events'
+import VpnInitializer from '../../../app/vpnInitializer'
 
 function bootstrap (container: Container) {
   const mysterionReleaseID = remote.getGlobal('__mysterionReleaseID')
@@ -63,6 +64,11 @@ function bootstrap (container: Container) {
 
       return new NullCollector()
     }
+  )
+  container.service(
+    'vpnInitializer',
+    [],
+    () => new VpnInitializer()
   )
 }
 

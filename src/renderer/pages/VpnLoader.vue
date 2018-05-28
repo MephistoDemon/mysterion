@@ -23,17 +23,16 @@
   import messages from '../../app/messages'
   import sleep from '../../libraries/sleep'
   import logger from '../../app/logger'
-  import VpnInitializer from '../../app/vpnInitializer'
 
   export default {
-    dependencies: ['bugReporter'],
+    dependencies: ['bugReporter', 'vpnInitializer'],
     async mounted () {
       const {commit, dispatch} = this.$store
       try {
         this.$store.dispatch(type.LOCATION)
         commit(type.INIT_PENDING)
 
-        await new VpnInitializer(dispatch, commit).initialize()
+        await this.vpnInitializer.initialize(dispatch, commit)
 
         await sleep(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)
