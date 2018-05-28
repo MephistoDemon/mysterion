@@ -43,10 +43,11 @@ class ConnectEventTracker {
     this._eventFactory = eventFactory
   }
 
-  connectStarted (connectDetails: ConnectDetails): void {
+  connectStarted (connectDetails: ConnectDetails, originalCountry: string): void {
     this._eventDetails = {
       startedAt: this._userTimeProvider(),
-      connectDetails: connectDetails
+      connectDetails,
+      originalCountry
     }
     this._connectStarted = true
   }

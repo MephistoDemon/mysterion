@@ -15,11 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default {
-  statusUpdateThreshold: 300,
-  statisticsUpdateThreshold: 300,
-  ipUpdateThreshold: 10000,
-  ipUpdateTimeout: 5000,
-  locationUpdateTimeout: 5000,
-  loadingScreenDelay: 300
+// @flow
+
+class ConsumerLocationDTO {
+  originalCountry: string
+  originalIP: string
+  currentCountry: string
+  currentIP: string
+
+  constructor (data: Object) {
+    this.originalCountry = data.original.country
+    this.originalIP = data.original.ip
+    this.currentCountry = data.current.country
+    this.currentIP = data.current.ip
+  }
 }
+
+export default ConsumerLocationDTO
