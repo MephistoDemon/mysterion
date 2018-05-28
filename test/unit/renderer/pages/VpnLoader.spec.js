@@ -22,6 +22,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import Router from 'vue-router'
 import lolex from 'lolex'
+import {createLocalVue, mount} from '@vue/test-utils'
 
 import idStoreFactory from '@/store/modules/identity'
 import mainStoreFactory from '@/store/modules/main'
@@ -38,16 +39,19 @@ import type { TequilapiClient } from '../../../../src/libraries/mysterium-tequil
 
 import DIContainer from '../../../../src/app/di/vue-container'
 
-Vue.use(Vuex)
-Vue.use(Router)
-
 describe('VpnLoader', () => {
   let clock
 
   async function mountComponent (tequilapi: TequilapiClient): Vue {
-    const router = new Router({routes: []})
-    const dependencies = new DIContainer(Vue)
+    const localVue = createLocalVue()
+
+    const dependencies = new DIContainer(localVue)
     dependencies.constant('bugReporter', {setUser: function () {}})
+
+    localVue.use(Router)
+    const router = new Router({routes: []})
+
+    localVue.use(Vuex)
     const store = new Vuex.Store({
       modules: {
         identity: idStoreFactory(tequilapi, dependencies),
@@ -62,16 +66,8 @@ describe('VpnLoader', () => {
       strict: false
     })
 
-    // TODO Migrate to createLocalVue() from package '@vue/test-utils'
-    const vm = new Vue({
-      template: '<div><test/></div>',
-      components: {'test': VpnLoader},
-      store,
-      router
-    })
-    await vm.$mount()
-
-    return vm
+    const wrapper = mount(VpnLoader, { localVue, store, router })
+    return wrapper.vm
   }
 
   async function mountAndPrepareLoadingScreen (tequilapi: TequilapiClient) {
