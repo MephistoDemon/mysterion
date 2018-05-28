@@ -28,6 +28,7 @@ import type {
   TermsAnsweredDTO,
   AppErrorDTO
 } from './dto'
+import type {UserSettings} from '../user-settings/user-settings'
 
 interface MainCommunication {
   onRendererBooted (callback: () => void): void,
@@ -52,13 +53,19 @@ interface MainCommunication {
 
   sendHealthCheck (data: HealthCheckDTO): void,
 
+  sendUserSettings (data: UserSettings): void,
+
   onConnectionStatusChange (callback: (ConnectionStatusChangeDTO) => void): void,
 
   onCurrentIdentityChange (callback: (CurrentIdentityChangeDTO) => void): void,
 
   onProposalUpdateRequest (callback: () => void): void,
 
-  onTermsAnswered (callback: (TermsAnsweredDTO) => void): void
+  onTermsAnswered (callback: (TermsAnsweredDTO) => void): void,
+
+  onUserSettingsUpdate (callback: (UserSettings) => void): void,
+
+  onUserSettingsRequest (callback: () => void): void
 }
 
 export type { MainCommunication }

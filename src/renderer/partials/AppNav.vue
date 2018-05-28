@@ -39,6 +39,9 @@
                     </a>
                 </li>
             </ul>
+          <div class="nav__settings">
+            <disconnect-notification-settings/>
+          </div>
             <div class="nav__logout">
                 <a class="nav__trigger" href="#" @click="quit()">
                     <icon-quit class="nav__icon nav__icon--quit"/>
@@ -58,6 +61,7 @@
   import IconIssue from '@/assets/img/icon--issue.svg'
   import IconEye from '@/assets/img/icon--eye.svg'
   import IconQuit from '@/assets/img/icon--quit.svg'
+  import DisconnectNotificationSettings from '@/components/DisconnectNotificationSetting'
 
   export default {
     name: 'AppNav',
@@ -65,7 +69,8 @@
     components: {
       IconEye,
       IconIssue,
-      IconQuit
+      IconQuit,
+      DisconnectNotificationSettings
     },
     computed: {
       // mix the getters into computed with object spread operator

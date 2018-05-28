@@ -31,6 +31,7 @@ import type {
 import messages from './messages'
 import type { MessageBus } from './messageBus'
 import type { MainCommunication } from './main-communication'
+import type {UserSettings} from '../user-settings/user-settings'
 
 /**
  * This allows main process communicating with renderer process.
@@ -93,6 +94,10 @@ class MainMessageBusCommunication implements MainCommunication {
     this._send(messages.HEALTHCHECK, data)
   }
 
+  sendUserSettings (data: UserSettings): void {
+    this._send(messages.USER_SETTINGS, data)
+  }
+
   onConnectionStatusChange (callback: (ConnectionStatusChangeDTO) => void): void {
     this._on(messages.CONNECTION_STATUS_CHANGED, callback)
   }
@@ -107,6 +112,14 @@ class MainMessageBusCommunication implements MainCommunication {
 
   onTermsAnswered (callback: (TermsAnsweredDTO) => void) {
     this._on(messages.TERMS_ANSWERED, callback)
+  }
+
+  onUserSettingsRequest (callback: () => void): void {
+    this._on(messages.USER_SETTINGS_REQUEST, callback)
+  }
+
+  onUserSettingsUpdate (callback: (UserSettings) => void): void {
+    this._on(messages.USER_SETTINGS_UPDATE, callback)
   }
 
   _send (channel: string, dto: mixed): void {

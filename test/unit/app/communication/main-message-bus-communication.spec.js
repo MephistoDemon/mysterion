@@ -19,8 +19,8 @@
 import MainMessageBusCommunication from '../../../../src/app/communication/main-message-bus-communication'
 import messages from '../../../../src/app/communication/messages'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
-import { describe, beforeEach, it, expect } from '../../../helpers/dependencies'
-import { CallbackRecorder } from '../../../helpers/utils'
+import {describe, beforeEach, it, expect} from '../../../helpers/dependencies'
+import {CallbackRecorder} from '../../../helpers/utils'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 
 describe('MainMessageBusCommunication', () => {
@@ -118,6 +118,16 @@ describe('MainMessageBusCommunication', () => {
     })
   })
 
+  describe('sendUserSettings', () => {
+    it('receives message from bus', () => {
+      const data = { showDisconnectNotifications: false }
+      communication.sendUserSettings(data)
+
+      expect(fakeMessageBus.lastChannel).to.eql(messages.USER_SETTINGS)
+      expect(fakeMessageBus.lastData).to.eql(data)
+    })
+  })
+
   describe('onConnectionStatusChange', () => {
     it('receives message from bus', () => {
       communication.onConnectionStatusChange(callbackRecorder.getCallback())
@@ -166,6 +176,30 @@ describe('MainMessageBusCommunication', () => {
 
       const data = { answer: true }
       fakeMessageBus.triggerOn(messages.TERMS_ANSWERED, data)
+
+      expect(callbackRecorder.invoked).to.eql(true)
+      expect(callbackRecorder.argument).to.eql(data)
+    })
+  })
+
+  describe('onUserSettingsRequest', () => {
+    it('receives message from bus', () => {
+      communication.onUserSettingsRequest(callbackRecorder.getCallback())
+
+      const data = { showDisconnectNotifications: true }
+      fakeMessageBus.triggerOn(messages.USER_SETTINGS_REQUEST, data)
+
+      expect(callbackRecorder.invoked).to.eql(true)
+      expect(callbackRecorder.argument).to.eql(data)
+    })
+  })
+
+  describe('onUserSettingsUpdate', () => {
+    it('receives message from bus', () => {
+      communication.onUserSettingsUpdate(callbackRecorder.getCallback())
+
+      const data = { showDisconnectNotifications: true }
+      fakeMessageBus.triggerOn(messages.USER_SETTINGS_UPDATE, data)
 
       expect(callbackRecorder.invoked).to.eql(true)
       expect(callbackRecorder.argument).to.eql(data)

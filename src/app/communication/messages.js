@@ -33,5 +33,9 @@ export default {
   RENDERER_SHOW_ERROR: 'renderer.show-error',
 
   HEALTHCHECK: 'healthcheck',
-  PROPOSALS_UPDATE: 'proposals.update'
+  PROPOSALS_UPDATE: 'proposals.update',
+
+  USER_SETTINGS: 'user.settings',
+  USER_SETTINGS_REQUEST: 'user.settings.request',
+  USER_SETTINGS_UPDATE: 'user.settings.update'
 }

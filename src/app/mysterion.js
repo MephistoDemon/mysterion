@@ -23,10 +23,11 @@ import MainMessageBusCommunication from './communication/main-message-bus-commun
 import MainMessageBus from './communication/mainMessageBus'
 import {onFirstEvent} from './communication/utils'
 import path from 'path'
+import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import logger from './logger'
 
 class Mysterion {
-  constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter}) {
+  constructor ({ browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, userSettingsStore, disconnectNotification }) {
     Object.assign(this, {
       browserWindowFactory,
       windowFactory,
@@ -36,7 +37,9 @@ class Mysterion {
       monitoring,
       process,
       proposalFetcher,
-      bugReporter
+      bugReporter,
+      userSettingsStore,
+      disconnectNotification
     })
   }
 
@@ -91,6 +94,8 @@ class Mysterion {
 
     await this._ensureDaemonInstallation()
     await this._startProcessAndMonitoring()
+
+    await this._loadUserSettings()
   }
 
   _getWindowSize (showTerms) {
@@ -160,6 +165,14 @@ class Mysterion {
         logger.error(e)
         return this.communication.sendRendererShowErrorMessage(translations.daemonInstallationError)
       }
+    }
+  }
+
+  async _loadUserSettings () {
+    try {
+      await this.userSettingsStore.load()
+    } catch (e) {
+      this.bugReporter.captureInfoException(e)
     }
   }
 
@@ -240,7 +253,7 @@ class Mysterion {
       setTimeout(() => updateRendererWithHealth(), 1500)
     }
     const cacheLogs = (level, data) => {
-      this.communication.sendMysteriumClientLog({level, data})
+      this.communication.sendMysteriumClientLog({ level, data })
       this.bugReporter.pushToLogCache(level, data)
     }
 
@@ -257,6 +270,9 @@ class Mysterion {
     this.communication.onCurrentIdentityChange((identity) => {
       this.bugReporter.setUser(identity)
     })
+
+    synchronizeUserSettings(this.userSettingsStore, this.communication)
+    showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
   }
 
   /**
@@ -282,6 +298,30 @@ class Mysterion {
       path.join(this.config.staticDirectory, 'icons')
     )
   }
+}
+
+function showNotificationOnDisconnect (userSettingsStore, communication, disconnectNotification) {
+  communication.onConnectionStatusChange(async (status) => {
+    const shouldShowNotification =
+      userSettingsStore.get().showDisconnectNotifications &&
+      (status.newStatus === ConnectionStatusEnum.NOT_CONNECTED &&
+        status.oldStatus === ConnectionStatusEnum.CONNECTED)
+
+    if (shouldShowNotification) {
+      disconnectNotification.show()
+    }
+  })
+}
+
+function synchronizeUserSettings (userSettingsStore, communication) {
+  communication.onUserSettingsRequest(async () => {
+    communication.sendUserSettings(userSettingsStore.get())
+  })
+
+  communication.onUserSettingsUpdate((userSettings) => {
+    userSettingsStore.set(userSettings)
+    userSettingsStore.save()
+  })
 }
 
 export default Mysterion

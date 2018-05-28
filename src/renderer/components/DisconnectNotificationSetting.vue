@@ -1,0 +1,50 @@
+<!--
+  - Copyright (C) 2018 The "MysteriumNetwork/mysterion" Authors.
+  -
+  - This program is free software: you can redistribute it and/or modify
+  - it under the terms of the GNU General Public License as published by
+  - the Free Software Foundation, either version 3 of the License, or
+  - (at your option) any later version.
+  -
+  - This program is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU General Public License for more details.
+  -
+  - You should have received a copy of the GNU General Public License
+  - along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<template>
+  <div class="round-checkbox">
+    <label class="outer" for="checkbox" @click="toggle">Notify on disconnect</label>
+    <input type="checkbox" id="checkbox" v-model="isDisconnectNotificationEnabled" />
+    <label class="inner" for="checkbox" @click="toggle" ></label>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'DisconnectNotificationSetting',
+    dependencies: ['rendererCommunication'],
+    data () {
+      return {
+        isDisconnectNotificationEnabled: true
+      }
+    },
+    mounted () {
+      this.rendererCommunication.onUserSettings((settings) => {
+        this.isDisconnectNotificationEnabled = settings.showDisconnectNotifications
+      })
+      this.rendererCommunication.sendUserSettingsRequest()
+    },
+    methods: {
+      toggle () {
+        this.isDisconnectNotificationEnabled = !this.isDisconnectNotificationEnabled
+        this.rendererCommunication.sendUserSettingsUpdate({
+          showDisconnectNotifications: this.isDisconnectNotificationEnabled
+        })
+      }
+    }
+  }
+</script>

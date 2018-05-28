@@ -17,13 +17,14 @@
 
 // @flow
 
-import type { MainCommunication } from '../../src/app/communication/main-communication'
+import type {MainCommunication} from '../../src/app/communication/main-communication'
 import type {
   AppErrorDTO, ConnectionStatusChangeDTO, CurrentIdentityChangeDTO, HealthCheckDTO,
   MysteriumClientLogDTO,
   ProposalUpdateDTO,
   RequestTermsDTO, TermsAnsweredDTO
 } from '../../src/app/communication/dto'
+import type {UserSettings} from '../../src/app/user-settings/user-settings'
 
 /**
  * Allows tracking method invocations.
@@ -85,6 +86,10 @@ class FakeMainCommunication implements MainCommunication {
     this._registerMethod(this.sendHealthCheck)
   }
 
+  sendUserSettings (data: UserSettings): void {
+    this._registerMethod(this.sendUserSettings)
+  }
+
   onConnectionStatusChange (callback: (ConnectionStatusChangeDTO) => void): void {
     this._registerMethod(this.onConnectionStatusChange)
   }
@@ -99,6 +104,14 @@ class FakeMainCommunication implements MainCommunication {
 
   onTermsAnswered (callback: (TermsAnsweredDTO) => void): void {
     this._registerMethod(this.onTermsAnswered)
+  }
+
+  onUserSettingsRequest (callback: () => void): void {
+    this._registerMethod(this.onUserSettingsRequest)
+  }
+
+  onUserSettingsUpdate (callback: (UserSettings) => void): void {
+    this._registerMethod(this.onUserSettingsUpdate)
   }
 
   _registerMethod (method: Function): void {
