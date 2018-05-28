@@ -23,24 +23,7 @@
   import messages from '../../app/messages'
   import sleep from '../../libraries/sleep'
   import logger from '../../app/logger'
-
-  async function initialize ({dispatch, commit}) {
-    const identity = await identityGet({dispatch, commit})
-    commit(type.IDENTITY_GET_SUCCESS, identity)
-    await dispatch(type.IDENTITY_UNLOCK)
-    await dispatch(type.CLIENT_BUILD_INFO)
-  }
-
-  async function identityGet ({dispatch, commit}) {
-    const identities = await dispatch(type.IDENTITY_LIST)
-    if (identities && identities.length > 0) {
-      return identities[0]
-    }
-
-    const newIdentity = await dispatch(type.IDENTITY_CREATE)
-    commit(type.INIT_NEW_USER)
-    return newIdentity
-  }
+  import VpnInitializer from '../../app/vpnInitializer'
 
   export default {
     dependencies: ['bugReporter'],
@@ -50,7 +33,7 @@
         this.$store.dispatch(type.LOCATION)
         commit(type.INIT_PENDING)
 
-        await initialize({dispatch, commit})
+        await new VpnInitializer(dispatch, commit).initialize()
 
         await sleep(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)
