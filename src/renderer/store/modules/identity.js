@@ -22,8 +22,14 @@ import RendererCommunication from '../../../app/communication/renderer-communica
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../../libraries/mysterium-tequilapi/dto/identity'
 import type {Container} from '../../../app/di'
+import IdentityManager from '../../../app/identityManager'
 
-const state = {
+type State = {
+  current: ?IdentityDTO,
+  unlocked: boolean
+}
+
+const state: State = {
   current: null,
   unlocked: false
 }
@@ -59,52 +65,17 @@ const getters = {
   }
 }
 
-async function getPassword (): Promise<string> {
-  return ''
-}
-
-async function listIdentities (tequilapi: TequilapiClient, commit: Function): Promise<Array<IdentityDTO>> {
-  try {
-    const identities = await tequilapi.identitiesList()
-    commit(type.IDENTITY_LIST_SUCCESS, identities)
-    return identities
-  } catch (err) {
-    commit(type.SHOW_ERROR, err)
-    throw (err)
-  }
-}
-
-async function createIdentity (tequilapi: TequilapiClient, commit: Function): Promise<IdentityDTO> {
-  try {
-    return await tequilapi.identityCreate(await getPassword())
-  } catch (err) {
-    commit(type.SHOW_ERROR, err)
-    throw (err)
-  }
-}
-
-async function unlockIdentity (tequilapi: TequilapiClient, commit: Function): Promise<void> {
-  try {
-    if (state.current == null) {
-      throw new Error('Identity is not available')
-    }
-    await tequilapi.identityUnlock(state.current.id, await getPassword())
-    commit(type.IDENTITY_UNLOCK_SUCCESS)
-  } catch (err) {
-    commit(type.SHOW_ERROR, err)
-  }
-}
-
 function actionsFactory (tequilapi: TequilapiClient) {
+  const identityManager = new IdentityManager(tequilapi)
   return {
     async [type.IDENTITY_LIST] ({commit}): Promise<Array<IdentityDTO>> {
-      return listIdentities(tequilapi, commit)
+      return identityManager.listIdentities(commit)
     },
     async [type.IDENTITY_CREATE] ({commit}): Promise<IdentityDTO> {
-      return createIdentity(tequilapi, commit)
+      return identityManager.createIdentity(commit)
     },
     async [type.IDENTITY_UNLOCK] ({commit}): Promise<void> {
-      await unlockIdentity(tequilapi, commit)
+      await identityManager.unlockIdentity(commit, state)
     }
   }
 }
@@ -124,4 +95,5 @@ export {
   mutationsFactory,
   actionsFactory
 }
+export type { State }
 export default factory
