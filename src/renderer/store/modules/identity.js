@@ -36,6 +36,7 @@ const state: State = {
 function mutationsFactory (dependencies: Container) {
   const bugReporter = dependencies.get('bugReporter')
   return {
+    // TODO: rename to SET_CURRENT_IDENTITY
     [type.IDENTITY_GET_SUCCESS] (state, identity: IdentityDTO) {
       state.current = identity
       bugReporter.setUser(identity)
@@ -43,6 +44,7 @@ function mutationsFactory (dependencies: Container) {
       const communication = new RendererCommunication(messageBus)
       communication.sendCurrentIdentityChange(identity)
     },
+    // TODO: rename to SET_IDENTITIES
     [type.IDENTITY_LIST_SUCCESS] (state, data) {
       state.identites = data
     },
@@ -52,6 +54,7 @@ function mutationsFactory (dependencies: Container) {
     [type.IDENTITY_UNLOCK_PENDING] (state) {
       state.unlocked = false
     },
+    // TODO: remove duplicated mutation
     [type.IDENTITY_UNLOCK_FAIL] (state) {
       state.unlocked = false
     }

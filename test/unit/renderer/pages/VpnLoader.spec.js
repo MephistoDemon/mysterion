@@ -33,22 +33,21 @@ import {nextTick} from '../../../helpers/utils'
 import {describe, it, before, after} from '../../../helpers/dependencies'
 import config from '@/config'
 import messages from '../../../../src/app/messages'
-import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
 import types from '@/store/types'
 import type { TequilapiClient } from '../../../../src/libraries/mysterium-tequilapi/client'
 
 import DIContainer from '../../../../src/app/di/vue-container'
-import VpnInitializer from '../../../../src/app/vpnInitializer'
 
 describe('VpnLoader', () => {
   let clock
+  const tequilapi: TequilapiClient = tequilapiMockCreate()
 
-  async function mountComponent (tequilapi: TequilapiClient): Vue {
+  async function mountComponent (tequilapi: TequilapiClient, vpnInitializer: Object): Vue {
     const localVue = createLocalVue()
 
     const dependencies = new DIContainer(localVue)
     dependencies.constant('bugReporter', {setUser: function () {}})
-    dependencies.constant('vpnInitializer', new VpnInitializer(tequilapi))
+    dependencies.constant('vpnInitializer', vpnInitializer)
 
     localVue.use(Router)
     const router = new Router({routes: []})
@@ -72,43 +71,15 @@ describe('VpnLoader', () => {
     return wrapper.vm
   }
 
-  async function mountAndPrepareLoadingScreen (tequilapi: TequilapiClient) {
-    const vm = await mountComponent(tequilapi)
+  async function mountAndPrepareLoadingScreen (tequilapi: TequilapiClient, vpnInitializer: Object) {
+    const vm = await mountComponent(tequilapi, vpnInitializer)
     await nextTick() // wait for delay inside loader callback
     clock.tick(config.loadingScreenDelay) // skip loader delay
     return vm
   }
 
-  function tequilapiMockCreate (version: string): Object {
-    const healtcheckResponse = {
-      version: {
-        commit: version
-      }
-    }
-
-    return {
-      healthCheck: () => Promise.resolve(healtcheckResponse)
-    }
-  }
-
-  function tequilapiMockIdentitiesList (tequilapi: Object, identities: Array<IdentityDTO>) {
-    tequilapi.identitiesList = () => Promise.resolve(identities)
-  }
-
-  function tequilapiMockIdentitiesListError (tequilapi: Object, error: Error) {
-    tequilapi.identitiesList = () => Promise.reject(error)
-  }
-
-  function tequilapiMockIdentityCreate (tequilapi: Object, identity: IdentityDTO) {
-    tequilapi.identityCreate = () => Promise.resolve(identity)
-  }
-
-  function tequilapiMockIdentityUnlock (tequilapi: Object) {
-    tequilapi.identityUnlock = () => Promise.resolve()
-  }
-
-  function tequilapiMockIdentityUnlockError (tequilapi: Object, error: Error) {
-    tequilapi.identityUnlock = () => Promise.reject(error)
+  function tequilapiMockCreate (): Object {
+    return {}
   }
 
   before(async () => {
@@ -119,86 +90,43 @@ describe('VpnLoader', () => {
     clock.uninstall()
   })
 
-  describe('has some identities', () => {
+  describe('when initialization succeeds', () => {
     let vm
-    before(async () => {
-      const tequilapi = tequilapiMockCreate('caed3112')
-      tequilapiMockIdentitiesList(tequilapi, [new IdentityDTO({id: '0xC001FACE'})])
-      tequilapiMockIdentityUnlock(tequilapi)
 
-      vm = await mountAndPrepareLoadingScreen(tequilapi)
+    before(async () => {
+      const vpnInitializer = {
+        async initialize (..._args: Array<any>): Promise<void> {}
+      }
+
+      vm = await mountAndPrepareLoadingScreen(tequilapi, vpnInitializer)
     })
 
     it('loads without errors', async () => {
       expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
       expect(vm.$store.state.main.showError).to.eql(false)
     })
-    it('assigns first fetched ID to state.tequilapi.currentId', () => {
-      expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACE'})
-    })
+
     it('routes to main', () => {
       expect(vm.$route.path).to.be.eql('/vpn')
     })
   })
 
-  describe('has not found preset identities', () => {
+  describe('when initialization fails', () => {
     let vm
+
     before(async () => {
-      const tequilapi = tequilapiMockCreate('caed3112')
-      tequilapiMockIdentitiesList(tequilapi, [])
-      tequilapiMockIdentityCreate(tequilapi, new IdentityDTO({id: '0xC001FACY'}))
-      tequilapiMockIdentityUnlock(tequilapi)
+      const vpnInitializer = {
+        async initialize (..._args: Array<any>): Promise<void> {
+          throw new Error('Mock initialization error')
+        }
+      }
 
-      vm = await mountAndPrepareLoadingScreen(tequilapi)
+      vm = await mountComponent(tequilapi, vpnInitializer)
     })
 
-    it('loads without errors', async () => {
-      expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
-      expect(vm.$store.state.main.showError).to.eql(false)
-    })
-    it('creates and unlocks identity', () => {
-      expect(vm.$store.state.identity.current).to.eql({id: '0xC001FACY'})
-      expect(vm.$store.state.identity.unlocked).to.be.true
-    })
-    it('sets store.main.newUser true', () => {
-      expect(vm.$store.state.main.newUser).to.be.true
-    })
-    it('routes to main', () => {
-      expect(vm.$route.path).to.be.eql('/vpn')
-    })
-  })
-
-  describe('identities error handling', () => {
-    describe('identity listing failed', () => {
-      let vm
-      before(async () => {
-        const tequilapi = tequilapiMockCreate('caed3112')
-        tequilapiMockIdentitiesListError(tequilapi, new Error('Failed'))
-
-        vm = await mountComponent(tequilapi)
-      })
-
-      it('should notify user with an overlay', () => {
-        expect(vm.$store.getters.overlayError).to.eql({
-          message: messages.initializationError.message
-        })
-      })
-    })
-
-    describe('identity unlocking failed', () => {
-      let vm
-      before(async () => {
-        const tequilapi = tequilapiMockCreate('caed3112')
-        tequilapiMockIdentitiesList(tequilapi, [new IdentityDTO({id: '0xC001FACE'})])
-        tequilapiMockIdentityUnlockError(tequilapi, new Error('Failed'))
-
-        vm = await mountComponent(tequilapi)
-      })
-
-      it('should notify user with an overlay', () => {
-        expect(vm.$store.getters.overlayError).to.eql({
-          message: messages.initializationError.message
-        })
+    it('notifies user with an overlay', () => {
+      expect(vm.$store.getters.overlayError).to.eql({
+        message: messages.initializationError.message
       })
     })
   })

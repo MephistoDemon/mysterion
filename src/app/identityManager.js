@@ -42,6 +42,7 @@ class IdentityManager {
       await this._tequilapi.identityUnlock(state.current.id, PASSWORD)
       commit(types.IDENTITY_UNLOCK_SUCCESS)
     } catch (err) {
+      // TODO: throw error here as well for consistency?
       commit(types.SHOW_ERROR, err)
     }
   }
