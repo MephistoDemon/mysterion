@@ -30,12 +30,14 @@ import type {ConnectionStatus} from '../../../libraries/mysterium-tequilapi/dto/
 import ConnectionStatusEnum from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatisticsDTO from '../../../libraries/mysterium-tequilapi/dto/connection-statistics'
 import ConnectionRequestDTO from '../../../libraries/mysterium-tequilapi/dto/connection-request'
+import ConsumerLocationDTO from '../../../libraries/mysterium-tequilapi/dto/consumer-location'
 import type {BugReporter} from '../../../app/bug-reporting/interface'
 import {isServiceUnavailableError, isTimeoutError, isRequestClosedError} from '../../../libraries/mysterium-tequilapi/client-error'
 import logger from '../../../app/logger'
 
 type ConnectionStore = {
   ip: ?string,
+  location: ?ConsumerLocationDTO,
   status: ConnectionStatus,
   statistics: Object,
   actionLoopers: { [string]: FunctionLooper }
@@ -66,6 +68,7 @@ const defaultStatistics = {
 
 const state: ConnectionStore = {
   ip: null,
+  location: null,
   status: ConnectionStatusEnum.NOT_CONNECTED,
   statistics: defaultStatistics,
   actionLoopers: {}
@@ -93,6 +96,9 @@ const mutations = {
   [type.CONNECTION_IP] (state: ConnectionStore, ip: string) {
     state.ip = ip
   },
+  [type.LOCATION] (state: ConnectionStore, location: ConsumerLocationDTO) {
+    state.location = location
+  },
   [type.CONNECTION_STATISTICS_RESET] (state: ConnectionStore) {
     state.statistics = defaultStatistics
   },
@@ -112,6 +118,17 @@ function actionsFactory (
   bugReporter: BugReporter
 ) {
   return {
+    async [type.LOCATION] ({commit}) {
+      try {
+        const locationDto = await tequilapi.location(config.locationUpdateTimeout)
+        commit(type.LOCATION, locationDto)
+      } catch (err) {
+        if (isTimeoutError(err) || isServiceUnavailableError(err)) {
+          return
+        }
+        bugReporter.captureException(err)
+      }
+    },
     async [type.CONNECTION_IP] ({commit}) {
       try {
         const ipModel = await tequilapi.connectionIP(config.ipUpdateTimeout)
@@ -176,16 +193,21 @@ function actionsFactory (
     },
     async [type.CONNECT] ({commit, dispatch, state}, connectionRequest: ConnectionRequestDTO) {
       let eventTracker = new ConnectEventTracker(statsCollector, currentUserTime, statsEventsFactory)
-      eventTracker.connectStarted({
-        consumerId: connectionRequest.consumerId,
-        providerId: connectionRequest.providerId
-      })
-
+      let originalCountry = ''
+      if (state.location != null && state.location.originalCountry != null) {
+        originalCountry = state.location.originalCountry
+      }
+      eventTracker.connectStarted(
+        {
+          consumerId: connectionRequest.consumerId,
+          providerId: connectionRequest.providerId
+        },
+        originalCountry
+      )
       const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
       if (looper) {
         await looper.stop()
       }
-
       await dispatch(type.SET_CONNECTION_STATUS, ConnectionStatusEnum.CONNECTING)
       commit(type.CONNECTION_STATISTICS_RESET)
 
@@ -198,7 +220,6 @@ function actionsFactory (
           eventTracker.connectCanceled()
           return
         }
-
         commit(type.SHOW_ERROR_MESSAGE, messages.connectFailed)
         const error: Object = new Error('Connection to node failed.')
         error.original = err

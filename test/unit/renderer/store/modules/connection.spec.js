@@ -497,7 +497,8 @@ describe('actions', () => {
   describe('CONNECT', () => {
     it('marks connecting status, resets statistics, hides error', async () => {
       const state = {
-        actionLoopers: {}
+        actionLoopers: {},
+        location: {originalCountry: ''}
       }
       const committed = await executeAction(type.CONNECT, state)
       expect(committed).to.eql([
@@ -524,7 +525,8 @@ describe('actions', () => {
       it('shows error', async () => {
         fakeTequilapi.setConnectFail(true)
         const state = {
-          actionLoopers: {}
+          actionLoopers: {},
+          location: {originalCountry: ''}
         }
         const committed = await executeAction(type.CONNECT, state)
         expect(committed[committed.length - 1]).to.eql({
@@ -541,7 +543,8 @@ describe('actions', () => {
 
       it('does not throw error and does not show error', async () => {
         const state = {
-          actionLoopers: {}
+          actionLoopers: {},
+          location: {originalCountry: ''}
         }
         const committed = await executeAction(type.CONNECT, state)
         committed.forEach((action) => {

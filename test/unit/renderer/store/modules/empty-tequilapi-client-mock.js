@@ -24,6 +24,7 @@ import NodeHealthcheckDTO from '../../../../../src/libraries/mysterium-tequilapi
 import IdentityDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/identity'
 import ProposalsFilter from '../../../../../src/libraries/mysterium-tequilapi/dto/proposals-filter'
 import ProposalDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/proposal'
+import ConsumerLocationDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/consumer-location'
 
 class EmptyTequilapiClientMock implements TequilapiClient {
   async healthCheck (_timeout: ?number): Promise<NodeHealthcheckDTO> {
@@ -65,6 +66,10 @@ class EmptyTequilapiClientMock implements TequilapiClient {
 
   async connectionStatistics (): Promise<ConnectionStatisticsDTO> {
     return new ConnectionStatisticsDTO({})
+  }
+
+  async location (): Promise<ConsumerLocationDTO> {
+    return new ConsumerLocationDTO({})
   }
 }
 
