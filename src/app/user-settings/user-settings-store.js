@@ -47,7 +47,6 @@ class UserSettingsStore {
   }
 
   async save (): Promise<void> {
-    if (!this._settings) throw new Error('Trying to save UserSettings, but UserSettingsStore.settings is missing')
     return saveSettings(this._path, this._settings)
   }
 
@@ -55,7 +54,7 @@ class UserSettingsStore {
     this._settings = settings
   }
 
-  get (): ?UserSettings {
+  get (): UserSettings {
     return this._settings
   }
 }

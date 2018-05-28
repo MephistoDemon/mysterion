@@ -27,7 +27,7 @@ import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connectio
 import logger from './logger'
 
 class Mysterion {
-  constructor ({browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, userSettingsStore, disconnectNotification}) {
+  constructor ({ browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, userSettingsStore, disconnectNotification }) {
     Object.assign(this, {
       browserWindowFactory,
       windowFactory,
@@ -244,7 +244,7 @@ class Mysterion {
   async _startProcessAndMonitoring () {
     const updateRendererWithHealth = () => {
       try {
-        this.communication.sendHealthCheck({isRunning: this.monitoring.isRunning()})
+        this.communication.sendHealthCheck({ isRunning: this.monitoring.isRunning() })
       } catch (e) {
         this.bugReporter.captureException(e)
         return
@@ -253,7 +253,7 @@ class Mysterion {
       setTimeout(() => updateRendererWithHealth(), 1500)
     }
     const cacheLogs = (level, data) => {
-      this.communication.sendMysteriumClientLog({level, data})
+      this.communication.sendMysteriumClientLog({ level, data })
       this.bugReporter.pushToLogCache(level, data)
     }
 
@@ -305,10 +305,7 @@ function showNotificationOnDisconnect (userSettingsStore, communication, disconn
     const shouldShowNotification =
       userSettingsStore.get().showDisconnectNotifications &&
       (status.newStatus === ConnectionStatusEnum.NOT_CONNECTED &&
-        (status.oldStatus === ConnectionStatusEnum.DISCONNECTING ||
-          status.oldStatus === ConnectionStatusEnum.CONNECTED
-        )
-      )
+        status.oldStatus === ConnectionStatusEnum.CONNECTED)
 
     if (shouldShowNotification) {
       disconnectNotification.show()
