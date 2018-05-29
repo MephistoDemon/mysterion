@@ -24,74 +24,76 @@ import IdentityDTO from '../../../src/libraries/mysterium-tequilapi/dto/identity
 import types from '../../../src/renderer/store/types'
 import { capturePromiseError } from '../../helpers/utils'
 
-function tequilapiMockCreate (version: string): Object {
-  const healtcheckResponse = {
-    version: {
-      commit: version
+class MockTequilapiManipulator {
+  _tequilapi: Object
+
+  constructor (version: string) {
+    const healtcheckResponse = {
+      version: {
+        commit: version
+      }
+    }
+
+    this._tequilapi = {
+      healthCheck: () => Promise.resolve(healtcheckResponse)
     }
   }
 
-  return {
-    healthCheck: () => Promise.resolve(healtcheckResponse)
+  getTequilapi (): Object {
+    return this._tequilapi
   }
-}
 
-// TODO: refactor to TequilapiManipulator class
-function tequilapiMockIdentitiesList (tequilapi: Object, identities: Array<IdentityDTO>) {
-  tequilapi.identitiesList = () => Promise.resolve(identities)
-}
+  tequilapiMockIdentitiesList (identities: Array<IdentityDTO>) {
+    this._tequilapi.identitiesList = () => Promise.resolve(identities)
+  }
 
-function tequilapiMockIdentityCreate (tequilapi: Object, identity: IdentityDTO) {
-  tequilapi.identityCreate = () => Promise.resolve(identity)
-}
+  tequilapiMockIdentityCreate (identity: IdentityDTO) {
+    this._tequilapi.identityCreate = () => Promise.resolve(identity)
+  }
 
-function tequilapiMockIdentityUnlock (tequilapi: Object) {
-  tequilapi.identityUnlock = () => Promise.resolve()
-}
+  tequilapiMockIdentityUnlock () {
+    this._tequilapi.identityUnlock = () => Promise.resolve()
+  }
 
-function tequilapiMockIdentitiesListError (tequilapi: Object, error: Error) {
-  tequilapi.identitiesList = () => Promise.reject(error)
-}
+  tequilapiMockIdentitiesListError (error: Error) {
+    this._tequilapi.identitiesList = () => Promise.reject(error)
+  }
 
-function tequilapiMockIdentityUnlockError (tequilapi: Object, error: Error) {
-  tequilapi.identityUnlock = () => Promise.reject(error)
+  tequilapiMockIdentityUnlockError (error: Error) {
+    this._tequilapi.identityUnlock = () => Promise.reject(error)
+  }
 }
 
 describe('VpnInitializer', () => {
   describe('initialize()', () => {
+    let tequilapiManipulator
     let tequilapi
 
     beforeEach(() => {
-      tequilapi = tequilapiMockCreate('test version')
+      tequilapiManipulator = new MockTequilapiManipulator('test version')
+      tequilapi = tequilapiManipulator.getTequilapi()
     })
 
     describe('has some identities', () => {
       const mockIdentity = new IdentityDTO({id: '0xC001FACE'})
 
       beforeEach(() => {
-        tequilapiMockIdentitiesList(tequilapi, [mockIdentity])
-        tequilapiMockIdentityUnlock(tequilapi)
+        tequilapiManipulator.tequilapiMockIdentitiesList([mockIdentity])
+        tequilapiManipulator.tequilapiMockIdentityUnlock()
       })
 
       it('stores first fetched identity', async () => {
-        const dispatched = []
-        const dispatch = (...args: Array<any>) => {
-          dispatched.push(args)
-        }
-        const committed = []
+        let storedIdentity = null
+        const dispatch = (...args: Array<any>) => {}
         const commit = (...args: Array<any>) => {
-          committed.push(args)
-          // TODO: think what to do with this mutation implementation
           if (args.length === 2 && args[0] === types.IDENTITY_GET_SUCCESS) {
-            state.current = args[1]
+            storedIdentity = args[1]
           }
         }
         const state: IdentityState = { current: null, unlocked: false }
         await new VpnInitializer(tequilapi).initialize(dispatch, commit, state)
 
-        expect(state.current).to.eql(mockIdentity)
-        console.log('dispatched:', dispatched)
-        console.log('committed:', committed)
+        expect(storedIdentity).to.eql(mockIdentity)
       })
     })
 
@@ -99,28 +101,22 @@ describe('VpnInitializer', () => {
       const mockCreatedIdentity = new IdentityDTO({id: '0xC001FACY'})
 
       beforeEach(() => {
-        tequilapiMockIdentitiesList(tequilapi, [])
-        tequilapiMockIdentityCreate(tequilapi, mockCreatedIdentity)
-        tequilapiMockIdentityUnlock(tequilapi)
+        tequilapiManipulator.tequilapiMockIdentitiesList([])
+        tequilapiManipulator.tequilapiMockIdentityCreate(mockCreatedIdentity)
+        tequilapiManipulator.tequilapiMockIdentityUnlock()
       })
 
       it('creates and unlocks identity', async () => {
-        const dispatched = []
-        const dispatch = (...args: Array<any>) => {
-          dispatched.push(args)
-        }
-        const committed = []
         let initNewUser = false
+        let unlocked = false
+        const dispatch = (...args: Array<any>) => {}
         const commit = (...args: Array<any>) => {
-          committed.push(args)
-          // TODO: think what to do with this mutation implementation
           if (args.length === 2 && args[0] === types.IDENTITY_GET_SUCCESS) {
-            console.log('identity', args[1])
             state.current = args[1]
           }
 
           if (args.length === 1 && args[0] === types.IDENTITY_UNLOCK_SUCCESS) {
-            state.unlocked = true
+            unlocked = true
           }
 
           if (args.length === 1 && args[0] === types.INIT_NEW_USER) {
@@ -130,32 +126,23 @@ describe('VpnInitializer', () => {
         const state: IdentityState = { current: null, unlocked: false }
         await new VpnInitializer(tequilapi).initialize(dispatch, commit, state)
 
-        console.log('dispatched:', dispatched)
-        console.log('committed:', committed)
-        console.log(state)
         expect(state.current).to.eql(mockCreatedIdentity)
-        expect(state.unlocked).to.eql(true)
+        expect(unlocked).to.be.true
         expect(initNewUser).to.be.true
       })
     })
 
     describe('identities error handling', () => {
-      const mockError = new Error('Failed')
+      const mockError = new Error('Mock error')
 
       describe('identity listing failed', () => {
         beforeEach(() => {
-          tequilapiMockIdentitiesListError(tequilapi, mockError)
+          tequilapiManipulator.tequilapiMockIdentitiesListError(mockError)
         })
 
         it('throws exception', async () => {
-          const dispatched = []
-          const dispatch = (...args: Array<any>) => {
-            dispatched.push(args)
-          }
-          const committed = []
-          const commit = (...args: Array<any>) => {
-            committed.push(args)
-          }
+          const dispatch = (...args: Array<any>) => {}
+          const commit = (...args: Array<any>) => {}
           const state: IdentityState = { current: null, unlocked: false }
           const err = await capturePromiseError(new VpnInitializer(tequilapi).initialize(dispatch, commit, state))
 
@@ -165,15 +152,12 @@ describe('VpnInitializer', () => {
 
       describe('identity unlocking failed', () => {
         beforeEach(() => {
-          tequilapiMockIdentitiesList(tequilapi, [new IdentityDTO({id: '0xC001FACE'})])
-          tequilapiMockIdentityUnlockError(tequilapi, mockError)
+          tequilapiManipulator.tequilapiMockIdentitiesList([new IdentityDTO({id: '0xC001FACE'})])
+          tequilapiManipulator.tequilapiMockIdentityUnlockError(mockError)
         })
 
         it('throws exception', async () => {
-          const dispatched = []
-          const dispatch = (...args: Array<any>) => {
-            dispatched.push(args)
-          }
+          const dispatch = (...args: Array<any>) => {}
           const committed = []
           const commit = (...args: Array<any>) => {
             committed.push(args)
