@@ -17,6 +17,10 @@
 
 // @flow
 
+/**
+ * Executes given function multiple times, until it succeeds.
+ * Delays between execution.
+ */
 class DelayedRetrier {
   _func: () => Promise<void>
   _delay: () => Promise<void>

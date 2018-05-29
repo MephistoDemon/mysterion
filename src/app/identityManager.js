@@ -7,6 +7,9 @@ import type { State as IdentityState } from '../renderer/store/modules/identity'
 
 const PASSWORD = ''
 
+/**
+ * Allows managing identities using TequilapiClient and persisting data in identities module.
+ */
 class IdentityManager {
   _tequilapi: TequilapiClient
 
