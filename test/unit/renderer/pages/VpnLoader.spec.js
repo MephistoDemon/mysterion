@@ -46,8 +46,12 @@ describe('VpnLoader', () => {
     const localVue = createLocalVue()
 
     const dependencies = new DIContainer(localVue)
+    const fakeSleeper = {
+      async sleep (_time: number): Promise<void> {}
+    }
     dependencies.constant('bugReporter', {setUser: function () {}})
     dependencies.constant('vpnInitializer', vpnInitializer)
+    dependencies.constant('sleeper', fakeSleeper)
 
     localVue.use(Router)
     const router = new Router({routes: []})

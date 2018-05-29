@@ -26,7 +26,7 @@
   import DelayedRetrier from '../../app/delayedRetrier'
 
   export default {
-    dependencies: ['bugReporter', 'vpnInitializer'],
+    dependencies: ['bugReporter', 'vpnInitializer', 'sleeper'],
     async mounted () {
       const {commit, dispatch} = this.$store
       try {
@@ -35,9 +35,11 @@
 
         const identityState = this.$store.state.identity
         const initialize = async () => this.vpnInitializer.initialize(dispatch, commit, identityState)
-        const initializeRetrier = new DelayedRetrier(initialize, () => {}, 3)
+        const delay = () => this.sleeper.sleep(3000)
+        const initializeRetrier = new DelayedRetrier(initialize, delay, 3)
         await initializeRetrier.retryWithDelay()
 
+        // TODO: use this.sleeper
         await sleep(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)
         this.$router.push('/vpn')
