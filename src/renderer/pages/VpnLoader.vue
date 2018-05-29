@@ -23,6 +23,7 @@
   import messages from '../../app/messages'
   import sleep from '../../libraries/sleep'
   import logger from '../../app/logger'
+  import DelayedRetrier from '../../app/delayedRetrier'
 
   export default {
     dependencies: ['bugReporter', 'vpnInitializer'],
@@ -33,7 +34,9 @@
         commit(type.INIT_PENDING)
 
         const identityState = this.$store.state.identity
-        await this.vpnInitializer.initialize(dispatch, commit, identityState)
+        const initialize = async () => this.vpnInitializer.initialize(dispatch, commit, identityState)
+        const initializeRetrier = new DelayedRetrier(initialize, () => {}, 3)
+        await initializeRetrier.retryWithDelay()
 
         await sleep(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)

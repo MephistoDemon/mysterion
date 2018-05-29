@@ -30,7 +30,7 @@ import errorStore from '@/store/modules/errors'
 import VpnLoader from '@/pages/VpnLoader'
 
 import {nextTick} from '../../../helpers/utils'
-import {describe, it, before, after} from '../../../helpers/dependencies'
+import { describe, it, before, after } from '../../../helpers/dependencies'
 import config from '@/config'
 import messages from '../../../../src/app/messages'
 import types from '@/store/types'
@@ -111,7 +111,34 @@ describe('VpnLoader', () => {
     })
   })
 
-  describe('when initialization fails', () => {
+  describe('when initialization fails two times', () => {
+    let vm
+    let invoked: number = 0
+
+    before(async () => {
+      const vpnInitializer = {
+        async initialize (..._args: Array<any>): Promise<void> {
+          invoked++
+          if (invoked <= 2) {
+            throw new Error('Mock initialization error')
+          }
+        }
+      }
+
+      vm = await mountAndPrepareLoadingScreen(tequilapi, vpnInitializer)
+    })
+
+    it('loads without errors', async () => {
+      expect(vm.$store.state.main.init).to.eql('INIT_SUCCESS')
+      expect(vm.$store.state.main.showError).to.eql(false)
+    })
+
+    it('routes to main', () => {
+      expect(vm.$route.path).to.be.eql('/vpn')
+    })
+  })
+
+  describe('when initialization fails always', () => {
     let vm
 
     before(async () => {
