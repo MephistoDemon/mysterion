@@ -26,7 +26,7 @@ type Subscriber = (Callback) => void
  *
  * @returns {Promise<any>}
  */
-function onFirstEvent (subscriber: Subscriber): Promise<void> {
+function onFirstEvent (subscriber: Subscriber): Promise<any> {
   return new Promise((resolve) => {
     subscriber((data) => {
       resolve(data)

@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {app} from 'electron'
+// @flow
+
+import { app, BrowserWindow } from 'electron'
 import trayFactory from '../main/tray/factory'
-import {logLevels as processLogLevels} from '../libraries/mysterium-client'
+import { Installer, logLevels as processLogLevels } from '../libraries/mysterium-client'
 import translations from './messages'
 import MainMessageBusCommunication from './communication/main-message-bus-communication'
 import MainMessageBus from './communication/mainMessageBus'
@@ -25,25 +27,66 @@ import {onFirstEvent, onFirstEventOrTimeout} from './communication/utils'
 import path from 'path'
 import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import logger from './logger'
+import type { Size } from './window'
+import type { MysterionConfig } from './mysterionConfig'
+import Window from './window'
+import Terms from './terms'
+import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
+import ProposalFetcher from './data-fetchers/proposal-fetcher'
+import type { BugReporter } from './bug-reporting/interface'
+import { UserSettingsStore } from './user-settings/user-settings-store'
+import Notification from './notification'
+import type { MessageBus } from './communication/messageBus'
+import type { MainCommunication } from './communication/main-communication'
+import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
+import type { CurrentIdentityChangeDTO } from './communication/dto'
+
+type MysterionParams = {
+  browserWindowFactory: () => BrowserWindow,
+  windowFactory: () => Window,
+  config: MysterionConfig,
+  terms: Terms,
+  installer: Installer,
+  monitoring: ProcessMonitoring,
+  process: Object,
+  proposalFetcher: ProposalFetcher,
+  bugReporter: BugReporter,
+  userSettingsStore: UserSettingsStore,
+  disconnectNotification: Notification
+}
 
 const LOG_PREFIX = '[Mysterion] '
 const MYSTERIUM_CLIENT_STARTUP_THRESHOLD = 10000
 
 class Mysterion {
-  constructor ({ browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, userSettingsStore, disconnectNotification }) {
-    Object.assign(this, {
-      browserWindowFactory,
-      windowFactory,
-      config,
-      terms,
-      installer,
-      monitoring,
-      process,
-      proposalFetcher,
-      bugReporter,
-      userSettingsStore,
-      disconnectNotification
-    })
+  browserWindowFactory: () => BrowserWindow
+  windowFactory: Function
+  config: MysterionConfig
+  terms: Terms
+  installer: Installer
+  monitoring: ProcessMonitoring
+  process: Object
+  proposalFetcher: ProposalFetcher
+  bugReporter: BugReporter
+  userSettingsStore: UserSettingsStore
+  disconnectNotification: Notification
+
+  window: Window
+  messageBus: MessageBus
+  communication: MainCommunication
+
+  constructor (params: MysterionParams) {
+    this.browserWindowFactory = params.browserWindowFactory
+    this.windowFactory = params.windowFactory
+    this.config = params.config
+    this.terms = params.terms
+    this.installer = params.installer
+    this.monitoring = params.monitoring
+    this.process = params.process
+    this.proposalFetcher = params.proposalFetcher
+    this.bugReporter = params.bugReporter
+    this.userSettingsStore = params.userSettingsStore
+    this.disconnectNotification = params.disconnectNotification
   }
 
   run () {
@@ -98,7 +141,8 @@ class Mysterion {
     const send = this._getSendFunction(browserWindow)
     this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
     this.communication = new MainMessageBusCommunication(this.messageBus)
-    this.communication.onCurrentIdentityChange((identity) => {
+    this.communication.onCurrentIdentityChange((identityChange: CurrentIdentityChangeDTO) => {
+      const identity = new IdentityDTO({ id: identityChange.id })
       this.bugReporter.setUser(identity)
     })
 
@@ -127,7 +171,7 @@ class Mysterion {
     await this._loadUserSettings()
   }
 
-  _getWindowSize (showTerms) {
+  _getWindowSize (showTerms: boolean) {
     if (showTerms) {
       return this.config.windows.terms
     } else {
@@ -135,7 +179,7 @@ class Mysterion {
     }
   }
 
-  _areTermsAccepted () {
+  _areTermsAccepted (): boolean {
     logInfo('Checking terms cache')
     try {
       this.terms.load()
@@ -146,7 +190,7 @@ class Mysterion {
     }
   }
 
-  _getSendFunction (browserWindow) {
+  _getSendFunction (browserWindow: Object) {
     return browserWindow.webContents.send.bind(browserWindow.webContents)
   }
 
@@ -159,7 +203,7 @@ class Mysterion {
     }
   }
 
-  _createWindow (size) {
+  _createWindow (size: Size) {
     logInfo('Opening window')
     try {
       const window = this.windowFactory()
@@ -259,7 +303,8 @@ class Mysterion {
       this.terms.accept()
     } catch (e) {
       const error = new Error(translations.termsAcceptError)
-      error.original = e
+      const errorObj = (error: Object)
+      errorObj.original = e
       throw error
     }
     return true
@@ -291,7 +336,7 @@ class Mysterion {
     this.monitoring.start()
   }
 
-  _onProcessReady (callback) {
+  _onProcessReady (callback: Function) {
     onFirstEventOrTimeout(this.monitoring.subscribeUp.bind(this.monitoring), MYSTERIUM_CLIENT_STARTUP_THRESHOLD)
       .then(callback)
       .catch(err => {
@@ -309,8 +354,10 @@ class Mysterion {
     })
     this.monitoring.subscribeDown(() => this.proposalFetcher.stop())
 
-    this.communication.onProposalUpdateRequest(async () => {
-      this.communication.sendProposals(await this.proposalFetcher.fetch())
+    this.communication.onProposalUpdateRequest(() => {
+      this.proposalFetcher.fetch().then((proposals) => {
+        this.communication.sendProposals(proposals)
+      })
     })
   }
 
@@ -326,7 +373,7 @@ class Mysterion {
 }
 
 function showNotificationOnDisconnect (userSettingsStore, communication, disconnectNotification) {
-  communication.onConnectionStatusChange(async (status) => {
+  communication.onConnectionStatusChange((status) => {
     const shouldShowNotification =
       userSettingsStore.get().showDisconnectNotifications &&
       (status.newStatus === ConnectionStatusEnum.NOT_CONNECTED &&
@@ -339,7 +386,7 @@ function showNotificationOnDisconnect (userSettingsStore, communication, disconn
 }
 
 function synchronizeUserSettings (userSettingsStore, communication) {
-  communication.onUserSettingsRequest(async () => {
+  communication.onUserSettingsRequest(() => {
     communication.sendUserSettings(userSettingsStore.get())
   })
 
