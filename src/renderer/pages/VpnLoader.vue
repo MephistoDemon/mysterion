@@ -35,7 +35,12 @@
 
         const identityState = this.$store.state.identity
         const initialize = async () => this.vpnInitializer.initialize(dispatch, commit, identityState)
-        const delay = () => this.sleeper.sleep(3000)
+        const delay = async () => {
+          const msg = 'Initialization failed, will retry.'
+          logger.info(msg)
+          this.bugReporter.captureInfoMessage(msg)
+          await this.sleeper.sleep(3000)
+        }
         const initializeRetrier = new DelayedRetrier(initialize, delay, 3)
         await initializeRetrier.retryWithDelay()
 
