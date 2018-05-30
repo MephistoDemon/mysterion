@@ -34,9 +34,11 @@ class BugReporterRenderer implements BugReporter {
   }
 
   captureMessage (message: string, context: ?any): void {
-    this.raven.captureMessage(message, {
-      extra: context
-    })
+    this._captureMessage(message, 'error', context)
+  }
+
+  captureInfoMessage (message: string, context: ?any): void {
+    this._captureMessage(message, 'info', context)
   }
 
   captureException (err: Error, context: ?any): void {
@@ -49,6 +51,10 @@ class BugReporterRenderer implements BugReporter {
 
   pushToLogCache (level: logLevels.LOG | logLevels.ERROR, data: string) {
     pushToLogCache(level, data)
+  }
+
+  _captureMessage (message: string, level: 'error' | 'info', context: ?any): void {
+    this.raven.captureMessage(message, { level, extra: context })
   }
 
   _captureException (err: Error, level: 'error' | 'info', context: ?any): void {
