@@ -25,6 +25,9 @@ import NullCollector from '../../../app/statistics/null-collector'
 import {remote} from 'electron'
 import type {ApplicationInfo} from '../../../app/statistics/events'
 import {createEventFactory} from '../../../app/statistics/events'
+import VpnInitializer from '../../../app/vpnInitializer'
+import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
+import realSleep from '../../../libraries/sleep'
 
 function bootstrap (container: Container) {
   const mysterionReleaseID = remote.getGlobal('__mysterionReleaseID')
@@ -62,6 +65,23 @@ function bootstrap (container: Container) {
       }
 
       return new NullCollector()
+    }
+  )
+  container.service(
+    'vpnInitializer',
+    ['tequilapiClient'],
+    (tequilapiClient: TequilapiClient) => new VpnInitializer(tequilapiClient)
+  )
+
+  container.service(
+    'sleeper',
+    [],
+    () => {
+      return {
+        async sleep (time: number): Promise<void> {
+          return realSleep(time)
+        }
+      }
     }
   )
 }

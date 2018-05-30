@@ -23,7 +23,12 @@ import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/cli
 import IdentityDTO from '../../../libraries/mysterium-tequilapi/dto/identity'
 import type {Container} from '../../../app/di'
 
-const state = {
+type State = {
+  current: ?IdentityDTO,
+  unlocked: boolean
+}
+
+const state: State = {
   current: null,
   unlocked: false
 }
@@ -31,6 +36,7 @@ const state = {
 function mutationsFactory (dependencies: Container) {
   const bugReporter = dependencies.get('bugReporter')
   return {
+    // TODO: rename to SET_CURRENT_IDENTITY
     [type.IDENTITY_GET_SUCCESS] (state, identity: IdentityDTO) {
       state.current = identity
       bugReporter.setUser(identity)
@@ -38,6 +44,7 @@ function mutationsFactory (dependencies: Container) {
       const communication = new RendererCommunication(messageBus)
       communication.sendCurrentIdentityChange(identity)
     },
+    // TODO: rename to SET_IDENTITIES
     [type.IDENTITY_LIST_SUCCESS] (state, data) {
       state.identites = data
     },
@@ -47,6 +54,7 @@ function mutationsFactory (dependencies: Container) {
     [type.IDENTITY_UNLOCK_PENDING] (state) {
       state.unlocked = false
     },
+    // TODO: remove duplicated mutation
     [type.IDENTITY_UNLOCK_FAIL] (state) {
       state.unlocked = false
     }
@@ -59,57 +67,18 @@ const getters = {
   }
 }
 
-async function getPassword (): Promise<string> {
-  return ''
-}
-
-function actionsFactory (tequilapi: TequilapiClient) {
-  return {
-    async [type.IDENTITY_CREATE] ({commit}) {
-      try {
-        return await tequilapi.identityCreate(await getPassword())
-      } catch (err) {
-        commit(type.SHOW_ERROR, err)
-        throw (err)
-      }
-    },
-    async [type.IDENTITY_UNLOCK] ({commit}) {
-      try {
-        if (state.current == null) {
-          throw new Error('Identity is not available')
-        }
-        await tequilapi.identityUnlock(state.current.id, await getPassword())
-        commit(type.IDENTITY_UNLOCK_SUCCESS)
-      } catch (err) {
-        commit(type.SHOW_ERROR, err)
-      }
-    },
-    async [type.IDENTITY_LIST] ({commit}) {
-      try {
-        const identities = await tequilapi.identitiesList()
-        commit(type.IDENTITY_LIST_SUCCESS, identities)
-        return identities
-      } catch (err) {
-        commit(type.SHOW_ERROR, err)
-        throw (err)
-      }
-    }
-  }
-}
-
 function factory (tequilapi: TequilapiClient, dependenciesContainer: Container) {
   return {
     state,
     getters,
-    mutations: mutationsFactory(dependenciesContainer),
-    actions: actionsFactory(tequilapi)
+    mutations: mutationsFactory(dependenciesContainer)
   }
 }
 
 export {
   state,
   getters,
-  mutationsFactory,
-  actionsFactory
+  mutationsFactory
 }
+export type { State }
 export default factory
