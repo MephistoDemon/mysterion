@@ -96,6 +96,7 @@
       this.rendererCommunication.onMysteriumClientUp(() => {
         this.$store.dispatch('setClientRunningState', true)
 
+        // TODO Such conditional behaviour should be dropped at all
         // do nothing while on terms page
         if (this.$route.name !== 'terms') {
           this.$store.dispatch(type.OVERLAY_ERROR, null)
@@ -105,6 +106,7 @@
       this.rendererCommunication.onMysteriumClientDown(() => {
         this.$store.dispatch('setClientRunningState', false)
 
+        // TODO Such conditional behaviour should be dropped at all
         // do nothing while on terms page
         if (this.$route.name !== 'terms') {
           this.$store.dispatch(type.OVERLAY_ERROR, {
