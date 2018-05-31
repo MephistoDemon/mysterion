@@ -334,15 +334,15 @@ class Mysterion {
   }
 
   _startProcessMonitoring () {
-    this.monitoring.subscribeUp(() => {
+    this.monitoring.onStatusUp(() => {
       logInfo("'mysterium_client' is up")
       this.communication.sendMysteriumClientUp()
     })
-    this.monitoring.subscribeDown(() => {
+    this.monitoring.onStatusDown(() => {
       logInfo("'mysterium_client' is down")
       this.communication.sendMysteriumClientDown()
     })
-    this.monitoring.subscribeStatus((status) => {
+    this.monitoring.onStatusChange((status) => {
       if (status === false) {
         logInfo("Starting 'mysterium_client' process, because it's currently down")
         this.process.start()
@@ -354,7 +354,7 @@ class Mysterion {
   }
 
   _onProcessReady (callback: () => void) {
-    onFirstEventOrTimeout(this.monitoring.subscribeUp.bind(this.monitoring), MYSTERIUM_CLIENT_STARTUP_THRESHOLD)
+    onFirstEventOrTimeout(this.monitoring.onStatusUp.bind(this.monitoring), MYSTERIUM_CLIENT_STARTUP_THRESHOLD)
       .then(callback)
       .catch(err => {
         this.communication.sendRendererShowErrorMessage(translations.processStartError)
@@ -368,11 +368,11 @@ class Mysterion {
       this.proposalFetcher.fetch()
     })
 
-    this.monitoring.subscribeUp(() => {
+    this.monitoring.onStatusUp(() => {
       logInfo('Starting proposal fetcher')
       this.proposalFetcher.start()
     })
-    this.monitoring.subscribeDown(() => this.proposalFetcher.stop())
+    this.monitoring.onStatusDown(() => this.proposalFetcher.stop())
   }
 
   _buildTray () {
