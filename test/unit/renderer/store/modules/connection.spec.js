@@ -159,6 +159,9 @@ class BugReporterMock implements BugReporter {
   captureMessage (_message, _context): void {
   }
 
+  captureInfoMessage (_message, _context): void {
+  }
+
   captureException (_err, _context): void {
   }
 
