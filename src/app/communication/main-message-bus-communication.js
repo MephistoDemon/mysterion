@@ -18,7 +18,6 @@
 // @flow
 
 import type {
-  HealthCheckDTO,
   RequestConnectionDTO,
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
@@ -70,6 +69,14 @@ class MainMessageBusCommunication implements MainCommunication {
     this._send(messages.MYSTERIUM_CLIENT_LOG, dto)
   }
 
+  sendMysteriumClientUp () {
+    this._send(messages.HEALTHCHECK_UP)
+  }
+
+  sendMysteriumClientDown () {
+    this._send(messages.HEALTHCHECK_DOWN)
+  }
+
   sendProposals (proposals: ProposalUpdateDTO) {
     this._send(messages.PROPOSALS_UPDATE, proposals)
   }
@@ -88,10 +95,6 @@ class MainMessageBusCommunication implements MainCommunication {
 
   sendTermsAccepted () {
     this._send(messages.TERMS_ACCEPTED)
-  }
-
-  sendHealthCheck (data: HealthCheckDTO) {
-    this._send(messages.HEALTHCHECK, data)
   }
 
   sendUserSettings (data: UserSettings): void {
