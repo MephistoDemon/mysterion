@@ -15,14 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default {
-  connectFailed: 'Connection failed. Try another country',
-  countryListIsEmpty: 'No countries available',
-  locationNotSelected: 'Please select location',
-  initializationError: {
-    message: 'Failed to load Mysterion'
-  },
-  processInstallationError: 'Failed to install mysterium_client daemon. Please restart the app and grant permissions.',
-  processStartError: 'Failed to start mysterium_client daemon. Please restart the app and try again.',
-  termsAcceptError: 'Failed to make a local copy of terms and conditions. Please restart the app and try again.'
-}
+import path from 'path'
+
+export const INVERSE_DOMAIN_PACKAGE_NAME = 'network.mysterium.mysteriumclient'
+export const PROPERTY_LIST_NAME = INVERSE_DOMAIN_PACKAGE_NAME + '.plist'
+export const PROPERTY_LIST_FILE = path.join('/Library/LaunchDaemons', PROPERTY_LIST_NAME)
