@@ -27,7 +27,7 @@ type DownCallback = () => void
 
 class Monitoring {
   api: TequilapiClient
-  _timer: ?number = null
+  _timer: TimeoutID
 
   _lastIsRunning: boolean = false
   _subscribersStatus: Array<StatusCallback> = []
@@ -60,7 +60,7 @@ class Monitoring {
     this._subscribersDown.push(callback)
   }
 
-  async _healthCheckLoop (): Promise<boolean> {
+  async _healthCheckLoop (): Promise<void> {
     let isRunning
     try {
       await this.api.healthCheck(healthCheckTimeout)

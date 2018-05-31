@@ -22,7 +22,7 @@ import Process from '../../../../../src/libraries/mysterium-client/standalone/pr
 import Monitoring from '../../../../../src/libraries/mysterium-client/monitoring'
 import processLogLevels from '../../../../../src/libraries/mysterium-client/log-levels'
 import tequilapiClientFactory from '../../../../../src/libraries/mysterium-tequilapi/client-factory'
-import {xdescribe, it, before, after, expect} from '../../../../helpers/dependencies'
+import {describe, xdescribe, it, before, after, expect} from '../../../../helpers/dependencies'
 import path from 'path'
 import os from 'os'
 
