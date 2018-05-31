@@ -271,7 +271,7 @@ class Mysterion {
     }
 
     logInfo("Starting 'mysterium_client' process")
-    await this.process.start()
+    this.process.start()
     this.process.onLog(processLogLevels.LOG, (data) => cacheLogs(processLogLevels.LOG, data))
     this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
   }
@@ -290,13 +290,9 @@ class Mysterion {
     this.monitoring.start()
   }
 
-  /**
-   * Blocking function until process is launched
-   */
-  async _onProcessReady (callback) {
-    await onFirstEvent(this.monitoring.subscribeUp.bind(this.monitoring))
-
-    callback()
+  _onProcessReady (callback) {
+    onFirstEvent(this.monitoring.subscribeUp.bind(this.monitoring))
+      .then(callback)
   }
 
   _subscribeProposals () {
