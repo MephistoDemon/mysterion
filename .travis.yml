@@ -55,7 +55,6 @@ deploy:
     api_key: "$GITHUB_API_TOKEN"
     on:
       tags: true
-      branch: master
 
 notifications:
   slack:
