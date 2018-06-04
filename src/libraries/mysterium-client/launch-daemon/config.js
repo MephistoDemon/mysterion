@@ -15,16 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// @flow
+import path from 'path'
 
-import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
-import {logLevels} from '../../libraries/mysterium-client'
-
-export interface BugReporter {
-  setUser (IdentityDTO): void,
-  captureMessage (message: string, context: ?any): void,
-  captureInfoMessage (message: string, context: ?any): void,
-  captureException (err: Error, context: ?any): void,
-  captureInfoException (err: Error, context: ?any): void,
-  pushToLogCache (logLevels.LOG | logLevels.ERROR, string): void
-}
+export const INVERSE_DOMAIN_PACKAGE_NAME = 'network.mysterium.mysteriumclient'
+export const PROPERTY_LIST_NAME = INVERSE_DOMAIN_PACKAGE_NAME + '.plist'
+export const PROPERTY_LIST_FILE = path.join('/Library/LaunchDaemons', PROPERTY_LIST_NAME)

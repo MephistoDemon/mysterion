@@ -46,7 +46,7 @@ function bootstrap (container: Container) {
   container.service(
     'mysteriumClientProcess',
     ['tequilapiClient', 'mysteriumClient.config'],
-    (tequilapiClient, mysteriumClientConfig) => new Process(tequilapiClient, mysteriumClientConfig.dataDir)
+    (tequilapiClient, mysteriumClientConfig) => new Process(tequilapiClient, mysteriumClientConfig.logDir)
   )
   container.service(
     'mysteriumClientMonitoring',

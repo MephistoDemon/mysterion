@@ -21,10 +21,13 @@ import {logLevels as processLogLevels} from '../libraries/mysterium-client'
 import translations from './messages'
 import MainMessageBusCommunication from './communication/main-message-bus-communication'
 import MainMessageBus from './communication/mainMessageBus'
-import {onFirstEvent} from './communication/utils'
+import {onFirstEvent, onFirstEventOrTimeout} from './communication/utils'
 import path from 'path'
 import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import logger from './logger'
+
+const LOG_PREFIX = '[Mysterion] '
+const MYSTERIUM_CLIENT_STARTUP_THRESHOLD = 10000
 
 class Mysterion {
   constructor ({ browserWindowFactory, windowFactory, config, terms, installer, monitoring, process, proposalFetcher, bugReporter, userSettingsStore, disconnectNotification }) {
@@ -48,8 +51,14 @@ class Mysterion {
 
     // fired when app has been launched
     app.on('ready', async () => {
-      await this.bootstrap()
-      this.buildTray()
+      try {
+        logInfo('Application launch')
+        await this.bootstrap()
+        this._buildTray()
+      } catch (e) {
+        logException('Application launch failed', e)
+        this.bugReporter.captureException(e)
+      }
     })
     // fired when all windows are closed
     app.on('window-all-closed', () => this.onWindowsClosed())
@@ -57,10 +66,17 @@ class Mysterion {
     app.on('will-quit', () => this.onWillQuit())
     // fired when app activated
     app.on('activate', () => {
-      if (!this.window.exists()) {
-        return this.bootstrap()
+      try {
+        logInfo('Application activation')
+        if (!this.window.exists()) {
+          this.bootstrap()
+          return
+        }
+        this.window.show()
+      } catch (e) {
+        logException('Application activation failed', e)
+        this.bugReporter.captureException(e)
       }
-      this.window.show()
     })
     app.on('before-quit', () => {
       this.window.willQuitApp = true
@@ -82,6 +98,9 @@ class Mysterion {
     const send = this._getSendFunction(browserWindow)
     this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
     this.communication = new MainMessageBusCommunication(this.messageBus)
+    this.communication.onCurrentIdentityChange((identity) => {
+      this.bugReporter.setUser(identity)
+    })
 
     await this._onRendererLoaded()
 
@@ -90,11 +109,21 @@ class Mysterion {
       if (!accepted) {
         return
       }
+      this.window.resize(this._getWindowSize(false))
     }
 
     await this._ensureDaemonInstallation()
-    await this._startProcessAndMonitoring()
+    this._startProcess()
+    this._startProcessMonitoring()
+    this._onProcessReady(() => {
+      logInfo(`Notify that 'mysterium_client' process is ready`)
+      this.communication.sendMysteriumClientIsReady()
+    })
 
+    this._subscribeProposals()
+
+    synchronizeUserSettings(this.userSettingsStore, this.communication)
+    showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
     await this._loadUserSettings()
   }
 
@@ -107,6 +136,7 @@ class Mysterion {
   }
 
   _areTermsAccepted () {
+    logInfo('Checking terms cache')
     try {
       this.terms.load()
       return this.terms.isAccepted()
@@ -124,33 +154,31 @@ class Mysterion {
     try {
       return this.browserWindowFactory()
     } catch (e) {
-      logger.error(e)
-      this.bugReporter.captureException(e)
-      throw new Error('Failed to open window.')
+      // TODO: add an error wrapper method
+      throw new Error('Failed to open browser window. ' + e)
     }
   }
 
   _createWindow (size) {
+    logInfo('Opening window')
     try {
       const window = this.windowFactory()
       window.resize(size)
       window.open()
       return window
     } catch (e) {
-      logger.error(e)
-      this.bugReporter.captureException(e)
-      throw new Error('Failed to open window.')
+      // TODO: add an error wrapper method
+      throw new Error('Failed to open window. ' + e)
     }
   }
 
   async _onRendererLoaded () {
+    logInfo('Waiting for window to be rendered')
     try {
       await onFirstEvent(this.communication.onRendererBooted.bind(this.communication))
     } catch (e) {
-      logger.error(e)
-      this.bugReporter.captureException(e)
       // TODO: add an error wrapper method
-      throw new Error('Failed to load app.')
+      throw new Error('Failed to load app. ' + e)
     }
   }
 
@@ -158,12 +186,12 @@ class Mysterion {
   // if the installation fails, it sends a message to the renderer window
   async _ensureDaemonInstallation () {
     if (this.installer.needsInstallation()) {
+      logInfo("Installing 'mysterium_client' process")
       try {
         await this.installer.install()
       } catch (e) {
-        this.bugReporter.captureInfoException(e)
-        logger.error(e)
-        return this.communication.sendRendererShowErrorMessage(translations.daemonInstallationError)
+        this.communication.sendRendererShowErrorMessage(translations.processInstallationError)
+        throw new Error("Failed to install 'mysterium_client' process. " + e)
       }
     }
   }
@@ -189,7 +217,7 @@ class Mysterion {
     try {
       await this.process.stop()
     } catch (e) {
-      logger.error('Failed to stop mysterium_client process')
+      logException("Failed to stop 'mysterium_client' process", e)
       this.bugReporter.captureException(e)
     }
   }
@@ -197,17 +225,17 @@ class Mysterion {
   // make sure terms are up to date and accepted
   // declining terms will quit the app
   async _acceptTermsOrQuit () {
+    logInfo('Accepting terms')
     try {
       const accepted = await this._acceptTerms()
       if (!accepted) {
-        logger.info('Terms were refused. Quitting.')
+        logInfo('Terms were refused. Quitting.')
         app.quit()
         return false
       }
     } catch (e) {
-      this.bugReporter.captureException(e)
       this.communication.sendRendererShowErrorMessage(e.message)
-      return false
+      throw new Error('Failed to accept terms. ' + e)
     }
     return true
   }
@@ -232,65 +260,62 @@ class Mysterion {
     } catch (e) {
       const error = new Error(translations.termsAcceptError)
       error.original = e
-      logger.error(error)
       throw error
     }
-
-    this.window.resize(this.config.windows.app)
-
     return true
   }
 
-  async _startProcessAndMonitoring () {
-    const updateRendererWithHealth = () => {
-      try {
-        this.communication.sendHealthCheck({ isRunning: this.monitoring.isRunning() })
-      } catch (e) {
-        this.bugReporter.captureException(e)
-        return
-      }
-
-      setTimeout(() => updateRendererWithHealth(), 1500)
-    }
+  _startProcess () {
     const cacheLogs = (level, data) => {
       this.communication.sendMysteriumClientLog({ level, data })
       this.bugReporter.pushToLogCache(level, data)
     }
 
+    logInfo("Starting 'mysterium_client' process")
     this.process.start()
     this.process.onLog(processLogLevels.LOG, (data) => cacheLogs(processLogLevels.LOG, data))
     this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
-
-    this.monitoring.start()
-    this.monitoring.onProcessReady(() => {
-      updateRendererWithHealth()
-      this.startApp()
-    })
-
-    this.communication.onCurrentIdentityChange((identity) => {
-      this.bugReporter.setUser(identity)
-    })
-
-    synchronizeUserSettings(this.userSettingsStore, this.communication)
-    showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
   }
 
-  /**
-   * notifies the renderer that we're good to go and sets up the system tray
-   */
-  startApp () {
+  _startProcessMonitoring () {
+    this.monitoring.subscribeUp(() => {
+      logInfo("'mysterium_client' is up")
+      this.communication.sendMysteriumClientUp()
+    })
+    this.monitoring.subscribeDown(() => {
+      logInfo("'mysterium_client' is down")
+      this.communication.sendMysteriumClientDown()
+    })
+
+    logInfo("Starting 'mysterium_client' monitoring")
+    this.monitoring.start()
+  }
+
+  _onProcessReady (callback) {
+    onFirstEventOrTimeout(this.monitoring.subscribeUp.bind(this.monitoring), MYSTERIUM_CLIENT_STARTUP_THRESHOLD)
+      .then(callback)
+      .catch(err => {
+        this.communication.sendRendererShowErrorMessage(translations.processStartError)
+        logException("Failed to start 'mysterium_client' process", err)
+      })
+  }
+
+  _subscribeProposals () {
     this.proposalFetcher.subscribe((proposals) => this.communication.sendProposals(proposals))
-    this.proposalFetcher.start()
+
+    this.monitoring.subscribeUp(() => {
+      logInfo('Starting proposal fetcher')
+      this.proposalFetcher.start()
+    })
+    this.monitoring.subscribeDown(() => this.proposalFetcher.stop())
 
     this.communication.onProposalUpdateRequest(async () => {
       this.communication.sendProposals(await this.proposalFetcher.fetch())
     })
-
-    logger.info(`Notify that 'mysterium_client' process is ready`)
-    this.communication.sendMysteriumClientIsReady()
   }
 
-  buildTray () {
+  _buildTray () {
+    logInfo('Building tray')
     trayFactory(
       this.communication,
       this.proposalFetcher,
@@ -322,6 +347,18 @@ function synchronizeUserSettings (userSettingsStore, communication) {
     userSettingsStore.set(userSettings)
     userSettingsStore.save()
   })
+}
+
+function logInfo (message) {
+  logger.info(LOG_PREFIX + message)
+}
+
+function logError (message) {
+  console.error(LOG_PREFIX + message)
+}
+
+function logException (message, err) {
+  logError(LOG_PREFIX + message + '. ' + err)
 }
 
 export default Mysterion

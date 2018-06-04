@@ -49,7 +49,10 @@ describe('VpnLoader', () => {
     const fakeSleeper = {
       async sleep (_time: number): Promise<void> {}
     }
-    dependencies.constant('bugReporter', {setUser: function () {}})
+    dependencies.constant('bugReporter', {
+      setUser: () => {},
+      captureInfoMessage: () => {}
+    })
     dependencies.constant('vpnInitializer', vpnInitializer)
     dependencies.constant('sleeper', fakeSleeper)
 

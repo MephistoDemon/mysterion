@@ -27,8 +27,7 @@ import type {
   ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO,
-  HealthCheckDTO
+  AppErrorDTO
 } from './dto'
 
 import type {UserSettings} from '../user-settings/user-settings'
@@ -99,16 +98,20 @@ class RendererCommunication {
     this._on(messages.MYSTERIUM_CLIENT_LOG, callback)
   }
 
+  onMysteriumClientUp (callback: () => void): void {
+    this._on(messages.HEALTHCHECK_UP, callback)
+  }
+
+  onMysteriumClientDown (callback: () => void): void {
+    this._on(messages.HEALTHCHECK_DOWN, callback)
+  }
+
   onTermsRequest (callback: (RequestTermsDTO) => void): void {
     this._on(messages.TERMS_REQUESTED, callback)
   }
 
   onTermsAccepted (callback: () => void): void {
     this._on(messages.TERMS_ACCEPTED, callback)
-  }
-
-  onHealthCheck (callback: (HealthCheckDTO) => void): void {
-    this._on(messages.HEALTHCHECK, callback)
   }
 
   _send (channel: string, dto: mixed): void {

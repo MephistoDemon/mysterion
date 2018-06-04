@@ -32,7 +32,9 @@ export default {
   RENDERER_BOOTED: 'renderer.booted',
   RENDERER_SHOW_ERROR: 'renderer.show-error',
 
-  HEALTHCHECK: 'healthcheck',
+  HEALTHCHECK_UP: 'healthcheck.up',
+  HEALTHCHECK_DOWN: 'healthcheck.down',
+
   PROPOSALS_UPDATE: 'proposals.update',
 
   USER_SETTINGS: 'user.settings',
