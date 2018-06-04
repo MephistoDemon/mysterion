@@ -64,7 +64,7 @@ class Installer {
                 <key>SockType</key>
                 <string>stream</string>
                 <key>SockServiceName</key>
-                <string>${this.config.tequilapiPort}</string>
+                <string>${this.config.tequilapiDaemonPort}</string>
               </dict>
             </dict>
           <key>inetdCompatibility</key>
