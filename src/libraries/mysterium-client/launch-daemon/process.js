@@ -39,7 +39,7 @@ class Process {
   }
 
   start () {
-    this._getAxiosInstance().get('')
+    axios.get('http://localhost:' + this.daemonPort)
       .then(() => {
         console.log('Touched the daemon, now it should be up')
       })
@@ -66,15 +66,6 @@ class Process {
   async stop () {
     await this.tequilapi.stop()
     console.log('Client Quit was successful')
-  }
-
-  _getAxiosInstance () {
-    if (!this._axiosInstance) {
-      this._axiosInstance = axios.create({
-        baseURL: 'http://127.0.0.1:' + this.daemonPort
-      })
-    }
-    return this._axiosInstance
   }
 }
 
