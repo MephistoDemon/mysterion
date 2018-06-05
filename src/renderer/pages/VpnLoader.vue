@@ -19,9 +19,7 @@
 <script>
   import {mapState} from 'vuex'
   import type from '@/store/types'
-  import config from '@/config'
   import messages from '../../app/messages'
-  import sleep from '../../libraries/sleep'
   import logger from '../../app/logger'
   import DelayedRetrier from '../../app/delayedRetrier'
 
@@ -44,8 +42,6 @@
         const initializeRetrier = new DelayedRetrier(initialize, delay, 3)
         await initializeRetrier.retryWithDelay()
 
-        // TODO: use this.sleeper
-        await sleep(config.loadingScreenDelay)
         commit(type.INIT_SUCCESS)
         this.$router.push('/vpn')
       } catch (err) {
