@@ -51,12 +51,7 @@ type ClientConfig = {
   /**
    * Port on which to launch Tequilapi requests
    */
-  tequilapiPort: number,
-
-  /**
-   * Port on which to launch daemon managing Tequilapi
-   */
-  tequilapiDaemonPort: number
+  tequilapiPort: number
 }
 
 export type {ClientConfig}

@@ -22,6 +22,7 @@ import {Installer, Process, Monitoring} from '../../../libraries/mysterium-clien
 import path from 'path'
 import type {ClientConfig} from '../../../libraries/mysterium-client/config'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
+import { LAUNCH_DAEMON_PORT } from '../../../libraries/mysterium-client/launch-daemon/config'
 
 function bootstrap (container: Container) {
   container.service(
@@ -35,8 +36,7 @@ function bootstrap (container: Container) {
         dataDir: mysterionConfig.userDataDirectory,
         runtimeDir: mysterionConfig.runtimeDirectory,
         logDir: mysterionConfig.userDataDirectory,
-        tequilapiPort: 4050,
-        tequilapiDaemonPort: 4051
+        tequilapiPort: 4050
       }
     }
   )
@@ -49,7 +49,7 @@ function bootstrap (container: Container) {
     'mysteriumClientProcess',
     ['tequilapiClient', 'mysteriumClient.config'],
     (tequilapiClient: TequilapiClient, mysteriumClientConfig: ClientConfig) => {
-      return new Process(tequilapiClient, mysteriumClientConfig.tequilapiDaemonPort, mysteriumClientConfig.logDir)
+      return new Process(tequilapiClient, LAUNCH_DAEMON_PORT, mysteriumClientConfig.logDir)
     }
   )
   container.service(

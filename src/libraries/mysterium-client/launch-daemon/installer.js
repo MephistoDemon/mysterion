@@ -19,7 +19,7 @@ import fs from 'fs'
 import sudo from 'sudo-prompt'
 import path from 'path'
 import md5 from 'md5'
-import {INVERSE_DOMAIN_PACKAGE_NAME, PROPERTY_LIST_NAME, PROPERTY_LIST_FILE} from './config'
+import { INVERSE_DOMAIN_PACKAGE_NAME, LAUNCH_DAEMON_PORT, PROPERTY_LIST_FILE, PROPERTY_LIST_NAME } from './config'
 
 function processInstalled () {
   return fs.existsSync(PROPERTY_LIST_FILE)
@@ -64,7 +64,7 @@ class Installer {
                 <key>SockType</key>
                 <string>stream</string>
                 <key>SockServiceName</key>
-                <string>${this.config.tequilapiDaemonPort}</string>
+                <string>${LAUNCH_DAEMON_PORT}</string>
               </dict>
             </dict>
           <key>inetdCompatibility</key>
