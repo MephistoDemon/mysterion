@@ -36,7 +36,7 @@ function bootstrap (container: Container) {
         runtimeDir: mysterionConfig.runtimeDirectory,
         logDir: mysterionConfig.userDataDirectory,
         tequilapiPort: 4050,
-        tequilapiDaemonPort: 4050
+        tequilapiDaemonPort: 4051
       }
     }
   )
