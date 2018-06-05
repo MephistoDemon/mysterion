@@ -39,7 +39,7 @@ class Process {
   }
 
   start () {
-    axios.get('http://127.0.0.1:' + this.daemonPort)
+    return axios.get('http://127.0.0.1:' + this.daemonPort)
       .then(() => {
         console.log('Touched the daemon, now it should be up')
       })
