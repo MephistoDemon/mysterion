@@ -190,7 +190,7 @@ class Mysterion {
     }
   }
 
-  _getSendFunction (browserWindow: Object) {
+  _getSendFunction (browserWindow: BrowserWindow) {
     return browserWindow.webContents.send.bind(browserWindow.webContents)
   }
 
@@ -336,7 +336,7 @@ class Mysterion {
     this.monitoring.start()
   }
 
-  _onProcessReady (callback: Function) {
+  _onProcessReady (callback: () => void) {
     onFirstEventOrTimeout(this.monitoring.subscribeUp.bind(this.monitoring), MYSTERIUM_CLIENT_STARTUP_THRESHOLD)
       .then(callback)
       .catch(err => {
