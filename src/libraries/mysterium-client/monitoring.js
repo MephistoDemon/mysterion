@@ -17,6 +17,7 @@
 
 // @flow
 import TequilapiClient from '../mysterium-tequilapi/client'
+import { Process } from './index'
 
 const healthCheckInterval = 1500
 const healthCheckTimeout = 500
@@ -27,6 +28,7 @@ type DownCallback = () => void
 
 class Monitoring {
   api: TequilapiClient
+  mysteriumClientProcess: Process
   _timer: TimeoutID
 
   _lastIsRunning: boolean = false
@@ -34,8 +36,9 @@ class Monitoring {
   _subscribersUp: Array<UpCallback> = []
   _subscribersDown: Array<DownCallback> = []
 
-  constructor (tequilapi: TequilapiClient) {
+  constructor (tequilapi: TequilapiClient, mysteriumClientProcess: Process) {
     this.api = tequilapi
+    this.mysteriumClientProcess = mysteriumClientProcess
   }
 
   start () {
@@ -67,6 +70,7 @@ class Monitoring {
       isRunning = true
     } catch (e) {
       isRunning = false
+      this.mysteriumClientProcess.start()
     }
 
     this._notifySubscribers(isRunning)

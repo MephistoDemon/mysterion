@@ -19,6 +19,7 @@ import {Tail} from 'tail'
 import path from 'path'
 import logLevels from '../log-levels'
 import {INVERSE_DOMAIN_PACKAGE_NAME} from './config'
+import axios from 'axios'
 
 const SYSTEM_LOG = '/var/log/system.log'
 
@@ -31,13 +32,14 @@ class Process {
    * @param {TequilapiClient} tequilapi - api to be used
    * @param {string} logDirectory - directory where it's looking for logs
    */
-  constructor (tequilapi, logDirectory) {
+  constructor (tequilapi, daemonPort, logDirectory) {
     this.tequilapi = tequilapi
+    this.daemonPort = daemonPort
     this.logDirectory = logDirectory
   }
 
   start () {
-    this.tequilapi.healthCheck()
+    this._getAxiosInstance().get('')
       .then(() => {
         console.log('Touched the daemon, now it should be up')
       })
@@ -64,6 +66,15 @@ class Process {
   async stop () {
     await this.tequilapi.stop()
     console.log('Client Quit was successful')
+  }
+
+  _getAxiosInstance () {
+    if (!this._axiosInstance) {
+      this._axiosInstance = axios.create({
+        baseURL: 'http://127.0.0.1:' + this.daemonPort
+      })
+    }
+    return this._axiosInstance
   }
 }
 
