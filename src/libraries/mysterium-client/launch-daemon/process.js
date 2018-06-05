@@ -24,7 +24,7 @@ import axios from 'axios'
 const SYSTEM_LOG = '/var/log/system.log'
 
 /**
- * Spawns 'mysterium_client' daemon on OSX by calling TequilapiClient.healthcheck()
+ * Spawns and stops 'mysterium_client' daemon on OSX
  */
 class Process {
   /**
