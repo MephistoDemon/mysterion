@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {describe, beforeEach, it} from '../../../helpers/dependencies'
 import HttpTequilapiClient from '../../../../src/libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
@@ -123,16 +124,18 @@ describe('HttpTequilapiClient', () => {
 
   describe('identitiesList()', () => {
     it('returns identity DTOs', async () => {
-      const response = [
-        {id: '0x1000FACE'},
-        {id: '0x2000FACE'}
-      ]
+      const response = {
+        identities: [
+          {id: '0x1000FACE'},
+          {id: '0x2000FACE'}
+        ]
+      }
       mock.onGet('identities').reply(200, response)
 
       const identities = await api.identitiesList()
       expect(identities).to.have.lengthOf(2)
-      expect(identities[0]).to.deep.equal(new IdentityDTO(response[0]))
-      expect(identities[1]).to.deep.equal(new IdentityDTO(response[1]))
+      expect(identities[0]).to.deep.equal(new IdentityDTO(response.identities[0]))
+      expect(identities[1]).to.deep.equal(new IdentityDTO(response.identities[1]))
     })
 
     it('handles error', async () => {
