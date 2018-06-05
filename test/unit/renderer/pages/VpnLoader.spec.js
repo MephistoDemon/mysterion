@@ -81,7 +81,6 @@ describe('VpnLoader', () => {
   async function mountAndPrepareLoadingScreen (tequilapi: TequilapiClient, vpnInitializer: Object) {
     const vm = await mountComponent(tequilapi, vpnInitializer)
     await nextTick() // wait for delay inside loader callback
-    clock.tick(config.loadingScreenDelay) // skip loader delay
     return vm
   }
 
