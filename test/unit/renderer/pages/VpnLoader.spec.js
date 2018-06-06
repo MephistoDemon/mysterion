@@ -28,7 +28,6 @@ import mainStoreFactory from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
 import VpnLoader from '@/pages/VpnLoader'
 
-import {nextTick} from '../../../helpers/utils'
 import { describe, it, before } from '../../../helpers/dependencies'
 import messages from '../../../../src/app/messages'
 import types from '@/store/types'
@@ -77,7 +76,6 @@ describe('VpnLoader', () => {
 
   async function mountAndPrepareLoadingScreen (tequilapi: TequilapiClient, vpnInitializer: Object) {
     const vm = await mountComponent(tequilapi, vpnInitializer)
-    await nextTick() // wait for delay inside loader callback
     return vm
   }
 
