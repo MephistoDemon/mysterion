@@ -21,7 +21,6 @@ import {expect} from 'chai'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Router from 'vue-router'
-import lolex from 'lolex'
 import {createLocalVue, mount} from '@vue/test-utils'
 
 import idStoreFactory from '@/store/modules/identity'
@@ -30,8 +29,7 @@ import errorStore from '@/store/modules/errors'
 import VpnLoader from '@/pages/VpnLoader'
 
 import {nextTick} from '../../../helpers/utils'
-import { describe, it, before, after } from '../../../helpers/dependencies'
-import config from '@/config'
+import { describe, it, before } from '../../../helpers/dependencies'
 import messages from '../../../../src/app/messages'
 import types from '@/store/types'
 import type { TequilapiClient } from '../../../../src/libraries/mysterium-tequilapi/client'
@@ -39,7 +37,6 @@ import type { TequilapiClient } from '../../../../src/libraries/mysterium-tequil
 import DIContainer from '../../../../src/app/di/vue-container'
 
 describe('VpnLoader', () => {
-  let clock
   const tequilapi: TequilapiClient = tequilapiMockCreate()
 
   async function mountComponent (tequilapi: TequilapiClient, vpnInitializer: Object): Vue {
@@ -87,14 +84,6 @@ describe('VpnLoader', () => {
   function tequilapiMockCreate (): Object {
     return {}
   }
-
-  before(async () => {
-    clock = lolex.install()
-  })
-
-  after(() => {
-    clock.uninstall()
-  })
 
   describe('when initialization succeeds', () => {
     let vm
