@@ -20,6 +20,10 @@ import sudo from 'sudo-prompt'
 import path from 'path'
 import md5 from 'md5'
 import { INVERSE_DOMAIN_PACKAGE_NAME, LAUNCH_DAEMON_PORT, PROPERTY_LIST_FILE, PROPERTY_LIST_NAME } from './config'
+import {promisify} from 'util'
+
+const writeFile = promisify(fs.writeFile)
+const sudoExec = promisify(sudo.exec)
 
 function processInstalled () {
   return fs.existsSync(PROPERTY_LIST_FILE)
@@ -92,7 +96,20 @@ class Installer {
     return !processInstalled() || this._pListChecksumMismatch()
   }
 
-  install () {
+  async _createLogFilesIfMissing () {
+    const logFilePath = path.join(this.config.logDir, 'stdout.log')
+    const errorFilePath = path.join(this.config.logDir, 'stderr.log')
+
+    if (!fs.existsSync(logFilePath)) {
+      await writeFile(logFilePath, null)
+    }
+
+    if (!fs.existsSync(errorFilePath)) {
+      await writeFile(errorFilePath, null)
+    }
+  }
+
+  async install () {
     let tempPlistFile = path.join(this.config.runtimeDir, PROPERTY_LIST_NAME)
     let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
     let script = `\
@@ -103,22 +120,11 @@ class Installer {
     if (processInstalled()) {
       script = `launchctl unload ${PROPERTY_LIST_FILE} && ` + script
     }
-    let command = `sh -c '${script}'`
+    let command = `sh -c '${script}'`.replace(/\n/, '')
 
-    return new Promise(async (resolve, reject) => {
-      await fs.writeFile(tempPlistFile, this.template(), (err) => {
-        if (err) {
-          reject(new Error('Could not create a temp plist file.'))
-        }
-
-        sudo.exec(command.replace(/\n/, ''), {name: 'Mysterion'}, (error, stdout, stderr) => {
-          if (error) {
-            return reject(error)
-          }
-          return resolve(stdout)
-        })
-      })
-    })
+    await writeFile(tempPlistFile, this.template())
+    await sudoExec(command, { name: 'Mysterion' })
+    await this._createLogFilesIfMissing()
   }
 }
 
