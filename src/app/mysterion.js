@@ -331,6 +331,12 @@ class Mysterion {
       logInfo("'mysterium_client' is down")
       this.communication.sendMysteriumClientDown()
     })
+    this.monitoring.subscribeStatus((status) => {
+      if (status === false) {
+        logInfo("Starting 'mysterium_client' process, because it's currently down")
+        this.process.start()
+      }
+    })
 
     logInfo("Starting 'mysterium_client' monitoring")
     this.monitoring.start()
