@@ -84,4 +84,5 @@ type Size = {
   height: number
 }
 
+export type { Size }
 export default Window
