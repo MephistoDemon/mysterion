@@ -26,6 +26,7 @@ import logLevels from './log-levels'
 let Installer, Process
 
 const platform = os.platform()
+// TODO: extract Installer interface, move this logic into function (i.e. getInstaller()) or DI
 switch (platform) {
   case 'darwin':
     Installer = LaunchDaemonInstaller
