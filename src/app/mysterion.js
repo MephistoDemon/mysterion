@@ -234,8 +234,12 @@ class Mysterion {
       try {
         await this.installer.install()
       } catch (e) {
-        this.communication.sendRendererShowErrorMessage(translations.processInstallationError)
-        throw new Error("Failed to install 'mysterium_client' process. " + e)
+        let messageForUser = translations.processInstallationError
+        if (e.message === 'User did not grant permission.') {
+          messageForUser = translations.processInstallationPermissionsError
+        }
+        this.communication.sendRendererShowErrorMessage(messageForUser)
+        throw new Error("Failed to install 'mysterium_client' process. " + e.message)
       }
     }
   }
