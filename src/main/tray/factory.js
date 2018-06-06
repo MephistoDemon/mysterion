@@ -16,13 +16,13 @@
  */
 
 // @flow
-import {app, Tray as ElectronTray, Menu} from 'electron'
+import { app, Tray as ElectronTray, Menu } from 'electron'
 import type { MainCommunication } from '../../app/communication/main-communication'
 import ProposalFetcher from '../../app/data-fetchers/proposal-fetcher'
 import Window from '../../app/window'
 import TrayMenuBuilder from './menu-builder'
 import Tray from './tray'
-import type {ConnectionStatusChangeDTO} from '../../app/communication/dto'
+import type { ConnectionStatusChangeDTO } from '../../app/communication/dto'
 
 const trayFactory = (
   communication: MainCommunication,

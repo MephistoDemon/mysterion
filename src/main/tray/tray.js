@@ -70,11 +70,12 @@ class Tray {
   }
 
   setProposals (proposals: Array<ProposalDTO>) {
+    this._menuBuilder.updateProposals(proposals)
+
     if (!this._canUpdateItems) {
       return
     }
 
-    this._menuBuilder.updateProposals(proposals)
     this._update()
   }
 
@@ -111,6 +112,7 @@ class Tray {
     this._electronTray.on('click', handler)
     this._electronTray.on('mouse-enter', handler)
     this._electronTray.on('mouse-leave', () => {
+      this._update()
       this._canUpdateItems = true
     })
   }

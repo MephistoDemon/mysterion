@@ -19,7 +19,7 @@
 
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 import type { TequilapiClient } from '../../libraries/mysterium-tequilapi/client'
-import {FunctionLooper} from '../../libraries/functionLooper'
+import { FunctionLooper } from '../../libraries/functionLooper'
 
 class ProposalFetcher {
   _api: TequilapiClient
@@ -34,7 +34,7 @@ class ProposalFetcher {
 
   start (): this {
     this._loop = new FunctionLooper(async () => {
-      this._notifySubscribers(await this.fetch())
+      await this.fetch()
     }, this._interval)
 
     this._loop.start()
@@ -42,8 +42,12 @@ class ProposalFetcher {
     return this
   }
 
-  fetch (): Promise<Array<ProposalDTO>> {
-    return this._api.findProposals()
+  async fetch (): Promise<Array<ProposalDTO>> {
+    const proposals = await this._api.findProposals()
+
+    this._notifySubscribers(proposals)
+
+    return proposals
   }
 
   stop () {

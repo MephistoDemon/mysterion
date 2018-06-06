@@ -27,6 +27,7 @@ import TrayMenu from './menu'
 import TrayMenuItem from './menu-item'
 import TrayMenuSeparator from './menu-item-separator'
 import translations from './translations'
+import messages from '../../app/messages'
 
 function getMenuItems (
   appQuit: Function,
@@ -50,6 +51,10 @@ function getMenuItems (
       communication.sendConnectionRequest({providerId: country.id})
     })
   })
+
+  if (countries.length === 0) {
+    connectSubmenu.add(messages.countryListIsEmpty).disable()
+  }
 
   const connect = new TrayMenuItem(
     translations.connect,

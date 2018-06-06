@@ -353,18 +353,15 @@ class Mysterion {
 
   _subscribeProposals () {
     this.proposalFetcher.subscribe((proposals) => this.communication.sendProposals(proposals))
+    this.communication.onProposalUpdateRequest(() => {
+      this.proposalFetcher.fetch()
+    })
 
     this.monitoring.subscribeUp(() => {
       logInfo('Starting proposal fetcher')
       this.proposalFetcher.start()
     })
     this.monitoring.subscribeDown(() => this.proposalFetcher.stop())
-
-    this.communication.onProposalUpdateRequest(() => {
-      this.proposalFetcher.fetch().then((proposals) => {
-        this.communication.sendProposals(proposals)
-      })
-    })
   }
 
   _buildTray () {
