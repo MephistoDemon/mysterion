@@ -21,16 +21,12 @@ install:
 - source ~/.bashrc
 - yarn global add xvfb-maybe
 - yarn
-- FORCE_DOWNLOAD=1 yarn download:bins
 script:
 - yarn ci
 - util_scripts/check-headers.sh
-#run e2e on Pull Requests env only
-- if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-    yarn test:integration;
-  fi
 before_deploy:
 - bash util_scripts/travis-number.sh
+- FORCE_DOWNLOAD=1 yarn download:bins
 - yarn build
 - mkdir binaries && mkdir releases
 - cp build/Mysterion-*.dmg binaries/Mysterion-latest.dmg

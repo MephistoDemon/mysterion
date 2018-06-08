@@ -35,6 +35,8 @@ switch (platform) {
 
   default:
     Installer = StandaloneInstaller
+    // TODO: fix this, because StandaloneProcess constructor differs from LaunchDaemonProcess constructor, but they are
+    // constructed with same parameters
     Process = StandaloneProcess
     break
 }

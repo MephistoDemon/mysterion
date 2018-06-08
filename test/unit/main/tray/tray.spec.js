@@ -152,10 +152,13 @@ describe('tray', () => {
         expect(calledUpdateProposals).to.equal(true)
       })
 
-      it('doesn\'t update proposals when tray is open', () => {
+      it('doesn\'t rerender tray, but updates proposals when tray is open', () => {
         let calledUpdateProposals = false
+        let calledSetContextMenu = 0
 
-        const factory = fakeTrayFactoryBuilder()
+        const factory = fakeTrayFactoryBuilder(null, null, () => {
+          calledSetContextMenu++
+        })
         const menuItemBuilder = {
           build () {
 
@@ -170,7 +173,9 @@ describe('tray', () => {
         tray.build()
         tray.setProposals([])
 
-        expect(calledUpdateProposals).to.equal(false)
+        // if calledSetContextMenu is larger than 1 it means tray._update() was called
+        expect(calledSetContextMenu).to.equal(1)
+        expect(calledUpdateProposals).to.equal(true)
       })
     })
   })

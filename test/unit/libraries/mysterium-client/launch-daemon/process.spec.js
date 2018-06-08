@@ -15,10 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import path from 'path'
+// @flow
 
-export const INVERSE_DOMAIN_PACKAGE_NAME = 'network.mysterium.mysteriumclient'
-export const PROPERTY_LIST_NAME = INVERSE_DOMAIN_PACKAGE_NAME + '.plist'
-export const PROPERTY_LIST_FILE = path.join('/Library/LaunchDaemons', PROPERTY_LIST_NAME)
-// Port on which to launch daemon managing Tequilapi
-export const LAUNCH_DAEMON_PORT = 4051
+import { describe, expect, it } from '../../../../helpers/dependencies'
+import Process from '../../../../../src/libraries/mysterium-client/launch-daemon/process'
+import MockAdapter from 'axios-mock-adapter'
+import axios from 'axios'
+
+describe('Process', () => {
+  describe('start()', () => {
+    it('makes a request to given localhost port', async () => {
+      const axiosMock = new MockAdapter(axios)
+      let invoked = false
+      axiosMock.onGet('http://127.0.0.1:1234').reply(() => {
+        invoked = true
+        return [200]
+      })
+      const process = new Process(null, 1234, '')
+      await process.start()
+
+      expect(invoked).to.be.true
+    })
+  })
+})
