@@ -244,7 +244,7 @@ function actionsFactory (
           await tequilapi.connectionCancel()
         } catch (err) {
           commit(type.SHOW_ERROR, err)
-          console.log('Connection cancelling failed:', err)
+          logger.info('Connection cancelling failed:', err)
           bugReporter.captureInfoException(err)
         }
         dispatch(type.FETCH_CONNECTION_STATUS)
