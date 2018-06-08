@@ -239,7 +239,7 @@ class Mysterion {
           messageForUser = translations.processInstallationPermissionsError
         }
         this.communication.sendRendererShowErrorMessage(messageForUser)
-        throw new Error("Failed to install 'mysterium_client' process. " + e.message)
+        throw new Error("Failed to install 'mysterium_client' process. " + e)
       }
     }
   }
