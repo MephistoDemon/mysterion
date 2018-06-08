@@ -25,13 +25,13 @@ import {TIMEOUT_DEFAULT} from './timeouts'
 const TEQUILAPI_URL = 'http://127.0.0.1:4050'
 
 function tequilapiClientFactory (baseUrl: string = TEQUILAPI_URL, defaultTimeout: number = TIMEOUT_DEFAULT) {
-  const axioInstance = axios.create({
+  const axiosInstance = axios.create({
     baseURL: baseUrl,
     headers: {
       'Cache-Control': 'no-cache, no-store'
     }
   })
-  const axiosAdapter = new AxiosAdapter(axioInstance, defaultTimeout)
+  const axiosAdapter = new AxiosAdapter(axiosInstance, defaultTimeout)
 
   return new HttpTequilapiClient(axiosAdapter)
 }

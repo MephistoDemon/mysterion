@@ -18,14 +18,14 @@
 // @flow
 import IdentityDTO from './identity'
 
-type ResponseMap = Array<Object>
+type IdentityListResponse = { identities: Array<Object> }
 
 class IdentitiesResponseDTO {
   identities: Array<IdentityDTO>
 
-  constructor (responseData: ResponseMap) {
-    if (typeof responseData !== 'undefined' && Array.isArray(responseData)) {
-      this.identities = responseData.map((identity) => new IdentityDTO(identity))
+  constructor (responseData: IdentityListResponse) {
+    if (responseData && Array.isArray(responseData.identities)) {
+      this.identities = responseData.identities.map((identity) => new IdentityDTO(identity))
     }
   }
 }

@@ -88,7 +88,7 @@
       })
 
       this.rendererCommunication.onShowRendererError((error) => {
-        logger.info('App error received from communication:', event)
+        logger.info('App error received from communication:', error)
         this.$store.dispatch(type.OVERLAY_ERROR, error)
       })
 

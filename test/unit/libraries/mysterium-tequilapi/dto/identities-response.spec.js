@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {describe, it} from '../../../../helpers/dependencies'
 import {expect} from 'chai'
 import IdentitiesResponseDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/identities-response'
 import IdentityDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/identity'
@@ -22,10 +23,12 @@ import IdentityDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/id
 describe('TequilapiClient DTO', () => {
   describe('IdentitiesResponseDTO', () => {
     it('sets properties', async () => {
-      const response = new IdentitiesResponseDTO([
-        {id: '0x1000FACE'},
-        {id: '0x2000FACE'}
-      ])
+      const response = new IdentitiesResponseDTO({
+        identities: [
+          { id: '0x1000FACE' },
+          { id: '0x2000FACE' }
+        ]
+      })
 
       expect(response.identities).to.have.lengthOf(2)
 

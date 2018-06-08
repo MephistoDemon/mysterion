@@ -19,11 +19,13 @@ import {Tail} from 'tail'
 import path from 'path'
 import logLevels from '../log-levels'
 import {INVERSE_DOMAIN_PACKAGE_NAME} from './config'
+import axios from 'axios'
+import logger from '../../../app/logger'
 
 const SYSTEM_LOG = '/var/log/system.log'
 
 /**
- * Spawns 'mysterium_client' daemon on OSX by calling TequilapiClient.healthcheck()
+ * Spawns and stops 'mysterium_client' daemon on OSX
  */
 class Process {
   /**
@@ -31,18 +33,19 @@ class Process {
    * @param {TequilapiClient} tequilapi - api to be used
    * @param {string} logDirectory - directory where it's looking for logs
    */
-  constructor (tequilapi, logDirectory) {
+  constructor (tequilapi, daemonPort, logDirectory) {
     this.tequilapi = tequilapi
+    this.daemonPort = daemonPort
     this.logDirectory = logDirectory
   }
 
   start () {
-    this.tequilapi.healthCheck()
+    return axios.get('http://127.0.0.1:' + this.daemonPort)
       .then(() => {
-        console.log('Touched the daemon, now it should be up')
+        logger.info('Touched the daemon, now it should be up')
       })
       .catch(() => {
-        console.log('Touched the daemon with error, anyway it should be up')
+        logger.info('Touched the daemon with error, anyway it should be up')
       })
   }
 
@@ -63,7 +66,7 @@ class Process {
 
   async stop () {
     await this.tequilapi.stop()
-    console.log('Client Quit was successful')
+    logger.info('Client Quit was successful')
   }
 }
 
@@ -71,7 +74,7 @@ function tailFile (filePath, cb) {
   const logTail = new Tail(filePath)
   logTail.on('line', cb)
   logTail.on('error', () => {
-    console.error(`log file watching failed. file probably doesn't exist: ${filePath}`)
+    logger.error(`log file watching failed. file probably doesn't exist: ${filePath}`)
   })
 }
 

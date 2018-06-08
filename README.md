@@ -8,27 +8,53 @@ Mysterion is desktop application to access Mysterion Network - decentralized VPN
 
 #### Build Setup
 
+##### Note that currently, the only supported development environment is OSX, Windows and linux are work in progress.
+
+Grab the latest `mysterium_client` binary for OSX from https://github.com/MysteriumNetwork/node/releases and put it into your project's `bin` directory (make sure to rename it to `mysterium_client`)
+
+Install `openvpn` from https://openvpn.net/ or for OSX with homebrew run `brew install openvpn`
+
+Once `openvpn` is installed you need to symlink it to your project's directory:
+
+##### Note: If installed via brew you can get the installation path using `brew info openvpn`, the binary should be in `<install dir>/sbin/openvpn`
+
 ```bash
-# install dependencies
-You need to specify GITHUB_API_TOKEN for the first run, as it will download
-required binaries: mysterium_client and openvpn. This token can be generated at:
-https://github.com/settings/tokens, it requires "repo" scope
-GITHUB_API_TOKEN=<yourtoken> yarn install
+ln -s <path to openvpn binary> <full path to project dir>/bin/openvpn
+```
 
-# serve with hot reload at localhost:9080
+Download `update-resolv-conf` and `GeoLite2-Country.mmdb` from https://github.com/MysteriumNetwork/node/tree/master/bin/client_package/config and paste it into your project's `bin/config` directory.
+
+Install `yarn` from https://yarnpkg.com/lang/en/docs/install/
+
+Once you're all set, cd into your project's root directory.
+
+#### Development
+
+Install dependencies
+```bash
+yarn install
+```
+
+Run with hot reload
+```bash
 yarn dev
+```
 
-# build electron application for production
-yarn build
-
-
-# run all continuous integration checks (linter, Flow checker, tests):
+Run all continuous integration checks (linter, Flow checker, tests):
+```bash
 yarn ci
+```
 
-#build from osx to linux
+Build for production
+
+```bash
+yarn build
+```
+
+Build from OSX to linux
+```bash
 docker run --rm -ti   --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_')   --env ELECTRON_CACHE="/root/.cache/electron"   --env ELECTRON_BUILDER_CACHE="/root/.cache/electron-builder"   -v ${PWD}:/project   -v ${PWD##*/}-node-modules:/project/node_modules   -v ~/.cache/electron:/root/.cache/electron   -v ~/.cache/electron-builder:/root/.cache/electron-builder   electronuserland/builder:wine
 yarn && yarn build
-
 ```
 
 #### Maintenance
