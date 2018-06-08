@@ -21,6 +21,7 @@ import path from 'path'
 import md5 from 'md5'
 import { INVERSE_DOMAIN_PACKAGE_NAME, LAUNCH_DAEMON_PORT, PROPERTY_LIST_FILE, PROPERTY_LIST_NAME } from './config'
 import {promisify} from 'util'
+import createFileIfMissing from '../../create-file-if-missing'
 
 const writeFile = promisify(fs.writeFile)
 const sudoExec = promisify(sudo.exec)
@@ -97,16 +98,8 @@ class Installer {
   }
 
   async _createLogFilesIfMissing () {
-    const logFilePath = path.join(this.config.logDir, 'stdout.log')
-    const errorFilePath = path.join(this.config.logDir, 'stderr.log')
-
-    if (!fs.existsSync(logFilePath)) {
-      await writeFile(logFilePath, null)
-    }
-
-    if (!fs.existsSync(errorFilePath)) {
-      await writeFile(errorFilePath, null)
-    }
+    await createFileIfMissing(path.join(this.config.logDir, 'stdout.log'))
+    await createFileIfMissing(path.join(this.config.logDir, 'stderr.log'))
   }
 
   async install () {
