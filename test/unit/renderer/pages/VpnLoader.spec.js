@@ -74,11 +74,6 @@ describe('VpnLoader', () => {
     return wrapper.vm
   }
 
-  async function mountAndPrepareLoadingScreen (tequilapi: TequilapiClient, vpnInitializer: Object) {
-    const vm = await mountComponent(tequilapi, vpnInitializer)
-    return vm
-  }
-
   function tequilapiMockCreate (): Object {
     return {}
   }
@@ -91,7 +86,7 @@ describe('VpnLoader', () => {
         async initialize (..._args: Array<any>): Promise<void> {}
       }
 
-      vm = await mountAndPrepareLoadingScreen(tequilapi, vpnInitializer)
+      vm = await mountComponent(tequilapi, vpnInitializer)
     })
 
     it('loads without errors', async () => {
@@ -118,7 +113,7 @@ describe('VpnLoader', () => {
         }
       }
 
-      vm = await mountAndPrepareLoadingScreen(tequilapi, vpnInitializer)
+      vm = await mountComponent(tequilapi, vpnInitializer)
     })
 
     it('loads without errors', async () => {
