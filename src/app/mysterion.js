@@ -404,7 +404,7 @@ function logInfo (message) {
 }
 
 function logError (message) {
-  console.error(LOG_PREFIX + message)
+  logger.error(LOG_PREFIX + message)
 }
 
 function logException (message, err) {
