@@ -26,6 +26,7 @@ script:
 - util_scripts/check-headers.sh
 before_deploy:
 - bash util_scripts/travis-number.sh
+- FORCE_DOWNLOAD=1 yarn download:bins
 - yarn build
 - mkdir binaries && mkdir releases
 - cp build/Mysterion-*.dmg binaries/Mysterion-latest.dmg
