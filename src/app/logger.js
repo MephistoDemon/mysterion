@@ -19,10 +19,12 @@
 
 class Logger {
   info (...data: Array<any>): void {
+    // eslint-disable-next-line no-console
     console.info(...data)
   }
 
   error (...data: Array<any>): void {
+    // eslint-disable-next-line no-console
     console.error(...data)
   }
 }
