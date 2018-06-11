@@ -21,7 +21,6 @@ import {expect} from 'chai'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Router from 'vue-router'
-import lolex from 'lolex'
 import {createLocalVue, mount} from '@vue/test-utils'
 
 import idStoreFactory from '@/store/modules/identity'
@@ -29,9 +28,7 @@ import mainStoreFactory from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
 import VpnLoader from '@/pages/VpnLoader'
 
-import {nextTick} from '../../../helpers/utils'
-import { describe, it, before, after } from '../../../helpers/dependencies'
-import config from '@/config'
+import { describe, it, before } from '../../../helpers/dependencies'
 import messages from '../../../../src/app/messages'
 import types from '@/store/types'
 import type { TequilapiClient } from '../../../../src/libraries/mysterium-tequilapi/client'
@@ -39,7 +36,6 @@ import type { TequilapiClient } from '../../../../src/libraries/mysterium-tequil
 import DIContainer from '../../../../src/app/di/vue-container'
 
 describe('VpnLoader', () => {
-  let clock
   const tequilapi: TequilapiClient = tequilapiMockCreate()
 
   async function mountComponent (tequilapi: TequilapiClient, vpnInitializer: Object): Vue {
@@ -78,24 +74,9 @@ describe('VpnLoader', () => {
     return wrapper.vm
   }
 
-  async function mountAndPrepareLoadingScreen (tequilapi: TequilapiClient, vpnInitializer: Object) {
-    const vm = await mountComponent(tequilapi, vpnInitializer)
-    await nextTick() // wait for delay inside loader callback
-    clock.tick(config.loadingScreenDelay) // skip loader delay
-    return vm
-  }
-
   function tequilapiMockCreate (): Object {
     return {}
   }
-
-  before(async () => {
-    clock = lolex.install()
-  })
-
-  after(() => {
-    clock.uninstall()
-  })
 
   describe('when initialization succeeds', () => {
     let vm
@@ -105,7 +86,7 @@ describe('VpnLoader', () => {
         async initialize (..._args: Array<any>): Promise<void> {}
       }
 
-      vm = await mountAndPrepareLoadingScreen(tequilapi, vpnInitializer)
+      vm = await mountComponent(tequilapi, vpnInitializer)
     })
 
     it('loads without errors', async () => {
@@ -132,7 +113,7 @@ describe('VpnLoader', () => {
         }
       }
 
-      vm = await mountAndPrepareLoadingScreen(tequilapi, vpnInitializer)
+      vm = await mountComponent(tequilapi, vpnInitializer)
     })
 
     it('loads without errors', async () => {

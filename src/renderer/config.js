@@ -20,6 +20,5 @@ export default {
   statisticsUpdateThreshold: 300,
   ipUpdateThreshold: 10000,
   ipUpdateTimeout: 5000,
-  locationUpdateTimeout: 5000,
-  loadingScreenDelay: 300
+  locationUpdateTimeout: 5000
 }
