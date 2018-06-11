@@ -94,8 +94,10 @@ describe('DataFetchers', () => {
         expect(proposals[0]).to.deep.equal(new ProposalDTO({id: '0x1'}))
         expect(proposals[1]).to.deep.equal(new ProposalDTO({id: '0x2'}))
       })
+    })
 
-      it('stops', async () => {
+    describe('.stop', () => {
+      it('stops fething of proposals', async () => {
         let counter = 0
 
         fetcher.onFetchedProposals(() => counter++)
