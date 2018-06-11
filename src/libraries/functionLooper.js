@@ -19,6 +19,8 @@
 import sleep from './sleep'
 import logger from '../app/logger'
 
+type EmptyAsyncFunction = () => Promise<any>
+
 /**
  * Executes given function infinitely.
  * Ensures that time between function executions is above given threshold.
@@ -27,7 +29,7 @@ import logger from '../app/logger'
  * @param {!number} threshold - Minimum sleep between function executions (in milliseconds).
  */
 class FunctionLooper {
-  func: Function
+  func: EmptyAsyncFunction
   threshold: number
   _running: boolean
   _stopping: boolean
@@ -35,8 +37,7 @@ class FunctionLooper {
   _currentPromise: Promise<void>
   _functionErrorCallbacks: Array<ErrorCallback>
 
-  // TODO: specify that `func` does not expect any parameters
-  constructor (func: Function, threshold: number) {
+  constructor (func: EmptyAsyncFunction, threshold: number) {
     this.func = func
     this.threshold = threshold
     this._running = false
@@ -92,12 +93,11 @@ type ErrorCallback = (Error) => void
  * If .cancel() is invoked, than sleep is skipped after function finishes.
  */
 class ThresholdExecutor {
-  _func: Function
+  _func: EmptyAsyncFunction
   _threshold: number
   _canceled: boolean
 
-  // TODO: specify that `func` does not expect any parameters
-  constructor (func: Function, threshold: number) {
+  constructor (func: EmptyAsyncFunction, threshold: number) {
     this._func = func
     this._threshold = threshold
     this._canceled = false
