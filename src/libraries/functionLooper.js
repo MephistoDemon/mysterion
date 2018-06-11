@@ -33,15 +33,17 @@ class FunctionLooper {
   _stopping: boolean
   _currentExecutor: ThresholdExecutor
   _currentPromise: Promise<void>
+  _functionErrorCallbacks: Array<ErrorCallback>
 
   // TODO: specify that `func` does not expect any parameters
   constructor (func: Function, threshold: number) {
     this.func = func
     this.threshold = threshold
     this._running = false
+    this._functionErrorCallbacks = []
   }
 
-  start () {
+  start (): void {
     if (this.isRunning()) {
       return
     }
@@ -55,6 +57,7 @@ class FunctionLooper {
           await this._currentPromise
         } catch (err) {
           logger.info('FunctionLooper got error while executing given function, error:', err)
+          this._functionErrorCallbacks.forEach((callback) => callback(err))
         }
       }
     }
@@ -63,7 +66,7 @@ class FunctionLooper {
     loop()
   }
 
-  async stop () {
+  async stop (): Promise<void> {
     this._stopping = true
 
     this._currentExecutor.cancel()
@@ -73,10 +76,16 @@ class FunctionLooper {
     this._stopping = false
   }
 
-  isRunning () {
+  isRunning (): boolean {
     return this._running
   }
+
+  onFunctionError (callback: ErrorCallback) {
+    this._functionErrorCallbacks.push(callback)
+  }
 }
+
+type ErrorCallback = (Error) => void
 
 /**
  * Executes given function and sleeps for remaining time.

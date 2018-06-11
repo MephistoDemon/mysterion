@@ -147,6 +147,59 @@ describe('utils', () => {
         expect(looper.isRunning()).to.eql(false)
       })
     })
+
+    describe('.onFunctionError', () => {
+      it('registers function error handler', async () => {
+        const mockError = new Error('mock error')
+        let counter = 0
+        async function throwError () {
+          counter++
+          throw mockError
+        }
+
+        const looper = new FunctionLooper(throwError, 1000)
+        let error = null
+        looper.onFunctionError((err) => {
+          error = err
+        })
+        expect(counter).to.eql(0)
+        expect(error).to.be.null
+
+        looper.start()
+        expect(counter).to.eql(1)
+        expect(error).to.be.null
+
+        await tickWithDelay(1000)
+        expect(counter).to.eql(2)
+        expect(error).to.eql(mockError)
+      })
+
+      it('registers multiple error handlers', async () => {
+        const mockError = new Error('mock error')
+
+        async function throwError () {
+          throw mockError
+        }
+
+        const looper = new FunctionLooper(throwError, 1000)
+        let error1 = null
+        let error2 = null
+        looper.onFunctionError((err) => {
+          error1 = err
+        })
+        looper.onFunctionError((err) => {
+          error2 = err
+        })
+
+        expect(error1).to.be.null
+        expect(error2).to.be.null
+
+        looper.start()
+        await tickWithDelay(1000)
+        expect(error1).to.eql(mockError)
+        expect(error2).to.eql(mockError)
+      })
+    })
   })
 
   describe('ThresholdExecutor', () => {
