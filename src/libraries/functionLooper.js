@@ -29,8 +29,8 @@ type EmptyAsyncFunction = () => Promise<any>
  * @param {!number} threshold - Minimum sleep between function executions (in milliseconds).
  */
 class FunctionLooper {
-  func: EmptyAsyncFunction
-  threshold: number
+  _func: EmptyAsyncFunction
+  _threshold: number
   _running: boolean
   _stopping: boolean
   _currentExecutor: ThresholdExecutor
@@ -38,8 +38,8 @@ class FunctionLooper {
   _functionErrorCallbacks: Array<ErrorCallback>
 
   constructor (func: EmptyAsyncFunction, threshold: number) {
-    this.func = func
-    this.threshold = threshold
+    this._func = func
+    this._threshold = threshold
     this._running = false
     this._functionErrorCallbacks = []
   }
@@ -52,7 +52,7 @@ class FunctionLooper {
     const loop = async () => {
       // eslint-disable-next-line no-unmodified-loop-condition
       while (this._running && !this._stopping) {
-        this._currentExecutor = new ThresholdExecutor(this.func, this.threshold)
+        this._currentExecutor = new ThresholdExecutor(this._func, this._threshold)
         this._currentPromise = this._currentExecutor.execute()
         try {
           await this._currentPromise
