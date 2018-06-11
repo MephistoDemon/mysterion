@@ -21,9 +21,18 @@ import fs from 'fs'
 import { promisify } from 'util'
 
 const writeFile = promisify(fs.writeFile)
+const openFile = promisify(fs.open)
+
+const READ_FILE_OR_FAIL_IF_NOT_EXIST = 'r'
 
 export default async function createFileIfMissing (path: string) {
-  if (!fs.existsSync(path)) {
-    await writeFile(path, '')
+  try {
+    await openFile(path, READ_FILE_OR_FAIL_IF_NOT_EXIST)
+  } catch (error) {
+    if (error.code && error.code === 'ENOENT') {
+      await writeFile(path, '')
+      return
+    }
+    throw error
   }
 }

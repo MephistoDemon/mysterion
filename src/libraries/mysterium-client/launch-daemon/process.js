@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Tail} from 'tail'
+import { Tail } from 'tail'
 import path from 'path'
 import logLevels from '../log-levels'
-import {INVERSE_DOMAIN_PACKAGE_NAME} from './config'
+import { INVERSE_DOMAIN_PACKAGE_NAME } from './config'
 import axios from 'axios'
 import logger from '../../../app/logger'
+import createFileIfMissing from '../../create-file-if-missing'
 
 const SYSTEM_LOG = '/var/log/system.log'
 
@@ -31,6 +32,7 @@ class Process {
   /**
    * @constructor
    * @param {TequilapiClient} tequilapi - api to be used
+   * @param {string} daemonPort - port at which tequilapi is listening
    * @param {string} logDirectory - directory where it's looking for logs
    */
   constructor (tequilapi, daemonPort, logDirectory) {
@@ -49,15 +51,23 @@ class Process {
       })
   }
 
-  onLog (level, cb) {
+  async onLog (level, cb) {
     if (level === logLevels.LOG) {
-      tailFile(path.join(this.logDirectory, 'stdout.log'), cb)
+      const filePath = path.join(this.logDirectory, 'stdout.log')
+      await createFileIfMissing(filePath)
+      tailFile(filePath, cb)
       return
     }
 
     if (level === logLevels.ERROR) {
-      tailFile(path.join(this.logDirectory, 'stderr.log'), cb)
-      tailFile(SYSTEM_LOG, filterLine(INVERSE_DOMAIN_PACKAGE_NAME, cb))
+      const filePath = path.join(this.logDirectory, 'stderr.log')
+      await createFileIfMissing(filePath)
+      tailFile(filePath, cb)
+      try {
+        tailFile(SYSTEM_LOG, filterLine(INVERSE_DOMAIN_PACKAGE_NAME, cb))
+      } catch (error) {
+        logger.error('Failed to tail System Log', error)
+      }
       return
     }
 

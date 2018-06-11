@@ -26,6 +26,8 @@ import createFileIfMissing from '../../create-file-if-missing'
 const writeFile = promisify(fs.writeFile)
 const sudoExec = promisify(sudo.exec)
 
+const SUDO_PROMT_PERMISSION_DENIED = 'User did not grant permission.'
+
 function processInstalled () {
   return fs.existsSync(PROPERTY_LIST_FILE)
 }
@@ -87,19 +89,8 @@ class Installer {
       </plist>`
   }
 
-  _pListChecksumMismatch () {
-    let templateChecksum = md5(this.template())
-    let plistChecksum = md5(fs.readFileSync(PROPERTY_LIST_FILE))
-    return templateChecksum !== plistChecksum
-  }
-
   needsInstallation () {
     return !processInstalled() || this._pListChecksumMismatch()
-  }
-
-  async _createLogFilesIfMissing () {
-    await createFileIfMissing(path.join(this.config.logDir, 'stdout.log'))
-    await createFileIfMissing(path.join(this.config.logDir, 'stderr.log'))
   }
 
   async install () {
@@ -119,6 +110,18 @@ class Installer {
     await sudoExec(command, { name: 'Mysterion' })
     await this._createLogFilesIfMissing()
   }
+
+  _pListChecksumMismatch () {
+    let templateChecksum = md5(this.template())
+    let plistChecksum = md5(fs.readFileSync(PROPERTY_LIST_FILE))
+    return templateChecksum !== plistChecksum
+  }
+
+  async _createLogFilesIfMissing () {
+    await createFileIfMissing(path.join(this.config.logDir, 'stdout.log'))
+    await createFileIfMissing(path.join(this.config.logDir, 'stderr.log'))
+  }
 }
 
 export default Installer
+export { SUDO_PROMT_PERMISSION_DENIED }

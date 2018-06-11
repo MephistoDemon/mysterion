@@ -20,6 +20,7 @@
 import { app, BrowserWindow } from 'electron'
 import trayFactory from '../main/tray/factory'
 import { Installer, logLevels as processLogLevels } from '../libraries/mysterium-client'
+import { SUDO_PROMT_PERMISSION_DENIED } from '../libraries/mysterium-client/launch-daemon/installer'
 import translations from './messages'
 import MainMessageBusCommunication from './communication/main-message-bus-communication'
 import MainMessageBus from './communication/mainMessageBus'
@@ -235,7 +236,7 @@ class Mysterion {
         await this.installer.install()
       } catch (e) {
         let messageForUser = translations.processInstallationError
-        if (e.message === 'User did not grant permission.') {
+        if (e.message === SUDO_PROMT_PERMISSION_DENIED) {
           messageForUser = translations.processInstallationPermissionsError
         }
         this.communication.sendRendererShowErrorMessage(messageForUser)
