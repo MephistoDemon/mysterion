@@ -17,6 +17,7 @@
 
 // @flow
 import sleep from './sleep'
+import logger from '../app/logger'
 
 /**
  * Executes given function infinitely.
@@ -33,6 +34,7 @@ class FunctionLooper {
   _currentExecutor: ThresholdExecutor
   _currentPromise: Promise<void>
 
+  // TODO: specify that `func` does not expect any parameters
   constructor (func: Function, threshold: number) {
     this.func = func
     this.threshold = threshold
@@ -49,7 +51,11 @@ class FunctionLooper {
       while (this._running && !this._stopping) {
         this._currentExecutor = new ThresholdExecutor(this.func, this.threshold)
         this._currentPromise = this._currentExecutor.execute()
-        await this._currentPromise
+        try {
+          await this._currentPromise
+        } catch (err) {
+          logger.info('FunctionLooper got error while executing given function, error:', err)
+        }
       }
     }
 

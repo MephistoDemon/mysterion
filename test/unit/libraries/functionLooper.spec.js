@@ -46,6 +46,8 @@ describe('utils', () => {
         }
 
         const looper = new FunctionLooper(increaseCounter, 1000)
+        expect(counter).to.eql(0)
+
         looper.start()
         expect(counter).to.eql(1)
 
@@ -69,6 +71,23 @@ describe('utils', () => {
         looper.start()
         looper.start()
         expect(counter).to.eql(1)
+      })
+
+      it('executes function multiple times when function throws exception', async () => {
+        let counter = 0
+        async function throwError () {
+          counter++
+          throw new Error('mock error')
+        }
+
+        const looper = new FunctionLooper(throwError, 1000)
+        expect(counter).to.eql(0)
+
+        looper.start()
+        expect(counter).to.eql(1)
+
+        await tickWithDelay(1000)
+        expect(counter).to.eql(2)
       })
     })
 
