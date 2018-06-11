@@ -219,5 +219,27 @@ describe('utils', () => {
         expect(thresholdDone).to.eql(true)
       })
     })
+
+    describe('with function trowing error', () => {
+      it('sleeps and throws error', async () => {
+        const mockError = new Error('Mock error')
+        const errorFunc = async () => {
+          throw mockError
+        }
+        const executor = new ThresholdExecutor(errorFunc, 1000)
+        let error = null
+        executor.execute().catch((err) => {
+          error = err
+          markThresholdDone()
+        })
+
+        expect(thresholdDone).to.be.false
+        expect(error).to.eql(null)
+
+        await tickWithDelay(1000)
+        expect(thresholdDone).to.be.true
+        expect(error).to.eql(mockError)
+      })
+    })
   })
 })
