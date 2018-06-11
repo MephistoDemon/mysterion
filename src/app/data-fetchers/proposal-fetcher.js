@@ -54,7 +54,7 @@ class ProposalFetcher {
     this._loop.stop()
   }
 
-  subscribe (callback: Function): this {
+  onFetchedProposals (callback: Function): this {
     this._subscribers.push(callback)
 
     return this

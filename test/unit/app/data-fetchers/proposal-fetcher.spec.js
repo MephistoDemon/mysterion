@@ -65,11 +65,11 @@ describe('DataFetchers', () => {
       fetcher = new ProposalFetcher(tequilapi, interval)
     })
 
-    describe('.run', () => {
+    describe('.start', () => {
       it('triggers subscriber callbacks', async () => {
         let counter = 0
 
-        fetcher.subscribe(() => counter++)
+        fetcher.onFetchedProposals(() => counter++)
         fetcher.start()
 
         await tickWithDelay(1000)
@@ -82,7 +82,7 @@ describe('DataFetchers', () => {
       it('triggers subscriber callbacks with proposals', async () => {
         let proposals = []
 
-        fetcher.subscribe((fetchedProposals) => {
+        fetcher.onFetchedProposals((fetchedProposals) => {
           proposals = fetchedProposals
         })
 
@@ -98,7 +98,7 @@ describe('DataFetchers', () => {
       it('stops', async () => {
         let counter = 0
 
-        fetcher.subscribe(() => counter++)
+        fetcher.onFetchedProposals(() => counter++)
         fetcher.start()
 
         await tickWithDelay(1000)
