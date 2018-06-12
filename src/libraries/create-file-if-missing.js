@@ -29,10 +29,14 @@ export default async function createFileIfMissing (path: string) {
   try {
     await openFile(path, READ_FILE_OR_FAIL_IF_NOT_EXIST)
   } catch (error) {
-    if (error.code && error.code === 'ENOENT') {
+    if (isFileDoesNotExistError(error)) {
       await writeFile(path, '')
       return
     }
     throw error
   }
+}
+
+function isFileDoesNotExistError (error: Object): boolean {
+  return (error.code && error.code === 'ENOENT')
 }

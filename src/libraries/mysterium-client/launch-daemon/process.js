@@ -17,13 +17,15 @@
 
 import { Tail } from 'tail'
 import path from 'path'
-import logLevels from '../log-levels'
+import processLogLevels from '../log-levels'
 import { INVERSE_DOMAIN_PACKAGE_NAME } from './config'
 import axios from 'axios'
 import logger from '../../../app/logger'
 import createFileIfMissing from '../../create-file-if-missing'
 
 const SYSTEM_LOG = '/var/log/system.log'
+const stdoutFileName = 'stdout.log'
+const stderrFileName = 'stderr.log'
 
 /**
  * Spawns and stops 'mysterium_client' daemon on OSX
@@ -38,7 +40,12 @@ class Process {
   constructor (tequilapi, daemonPort, logDirectory) {
     this.tequilapi = tequilapi
     this.daemonPort = daemonPort
-    this.logDirectory = logDirectory
+    this.stdoutPath = path.join(logDirectory, stdoutFileName)
+    this.stderrPath = path.join(logDirectory, stderrFileName)
+    this._subscribers = {
+      [processLogLevels.LOG]: [],
+      [processLogLevels.ERROR]: []
+    }
   }
 
   start () {
@@ -51,27 +58,26 @@ class Process {
       })
   }
 
-  async onLog (level, cb) {
-    if (level === logLevels.LOG) {
-      const filePath = path.join(this.logDirectory, 'stdout.log')
-      await createFileIfMissing(filePath)
-      tailFile(filePath, cb)
-      return
+  _logCallback (level, data) {
+    for (let sub of this._subscribers[level]) {
+      sub(data)
     }
+  }
 
-    if (level === logLevels.ERROR) {
-      const filePath = path.join(this.logDirectory, 'stderr.log')
-      await createFileIfMissing(filePath)
-      tailFile(filePath, cb)
-      try {
-        tailFile(SYSTEM_LOG, filterLine(INVERSE_DOMAIN_PACKAGE_NAME, cb))
-      } catch (error) {
-        logger.error('Failed to tail System Log', error)
-      }
-      return
-    }
+  async _prepareLogFiles () {
+    await createFileIfMissing(this.stdoutPath)
+    await createFileIfMissing(this.stderrPath)
+  }
 
-    throw new Error(`Unknown daemon logging level: ${level}`)
+  async setupLogging () {
+    await this._prepareLogFiles()
+    tailFile(this.stdoutPath, this._logCallback.bind(this, processLogLevels.LOG))
+    tailFile(this.stderrPath, this._logCallback.bind(this, processLogLevels.ERROR))
+    tailFile(SYSTEM_LOG, filterLine(INVERSE_DOMAIN_PACKAGE_NAME, this._logCallback.bind(this, processLogLevels.ERROR)))
+  }
+
+  onLog (level, cb) {
+    this._subscribers[level].push(cb)
   }
 
   async stop () {
