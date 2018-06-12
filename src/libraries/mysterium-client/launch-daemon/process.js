@@ -58,15 +58,9 @@ class Process {
       })
   }
 
-  _logCallback (level, data) {
-    for (let sub of this._subscribers[level]) {
-      sub(data)
-    }
-  }
-
-  async _prepareLogFiles () {
-    await createFileIfMissing(this._stdoutPath)
-    await createFileIfMissing(this._stderrPath)
+  async stop () {
+    await this.tequilapi.stop()
+    logger.info('Client Quit was successful')
   }
 
   async setupLogging () {
@@ -77,12 +71,19 @@ class Process {
   }
 
   onLog (level, cb) {
+    if (!this._subscribers[level]) throw new Error(`Unknown process logging level: ${level}`)
     this._subscribers[level].push(cb)
   }
 
-  async stop () {
-    await this.tequilapi.stop()
-    logger.info('Client Quit was successful')
+  _logCallback (level, data) {
+    for (let sub of this._subscribers[level]) {
+      sub(data)
+    }
+  }
+
+  async _prepareLogFiles () {
+    await createFileIfMissing(this._stdoutPath)
+    await createFileIfMissing(this._stderrPath)
   }
 }
 
