@@ -27,7 +27,7 @@ import logger from '../../../../src/app/logger'
 class IdentityTequilapiClientMock extends EmptyTequilapiClientMock {
   mockError: Error = new Error('Mock error')
   _proposals: Array<ProposalDTO>
-  _fail: boolean = false
+  _willFail: boolean = false
 
   constructor (proposals: Array<ProposalDTO>) {
     super()
@@ -35,18 +35,18 @@ class IdentityTequilapiClientMock extends EmptyTequilapiClientMock {
   }
 
   async findProposals (_filter): Promise<Array<ProposalDTO>> {
-    if (this._fail) {
+    if (this._willFail) {
       throw this.mockError
     }
     return this._proposals
   }
 
   markToFail () {
-    this._fail = true
+    this._willFail = true
   }
 
   markToSucceed () {
-    this._fail = false
+    this._willFail = false
   }
 }
 

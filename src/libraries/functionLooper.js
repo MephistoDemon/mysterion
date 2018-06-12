@@ -20,8 +20,6 @@ import sleep from './sleep'
 import logger from '../app/logger'
 import Subscriber from '../app/data-fetchers/subscriber'
 
-type EmptyAsyncFunction = () => Promise<any>
-
 /**
  * Executes given function infinitely.
  * Ensures that time between function executions is above given threshold.
@@ -80,12 +78,12 @@ class FunctionLooper {
     return this._running
   }
 
-  onFunctionError (callback: ErrorCallback) {
+  onFunctionError (callback: (Error) => void) {
     this._errorSubscriber.subscribe(callback)
   }
 }
 
-type ErrorCallback = (Error) => void
+type EmptyAsyncFunction = () => Promise<any>
 
 /**
  * Executes given function and sleeps for remaining time.
@@ -123,7 +121,7 @@ class ThresholdExecutor {
 
   async _executeFunction (): Promise<ExecutionResult> {
     const start = Date.now()
-    let error
+    let error = null
     try {
       await this._func()
     } catch (err) {

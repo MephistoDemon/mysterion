@@ -244,8 +244,9 @@ describe('utils', () => {
     })
 
     describe('with async function', () => {
+      const fastAsyncFunc = asyncFunc(5000)
+
       it('executes function', async () => {
-        const fastAsyncFunc = asyncFunc(5000)
         const executor = new ThresholdExecutor(fastAsyncFunc, 10000)
         executor.execute().then(markThresholdDone)
 
@@ -260,8 +261,7 @@ describe('utils', () => {
       })
 
       it('allows canceling sleep', async () => {
-        const slowAsyncFunc = asyncFunc(5000)
-        const executor = new ThresholdExecutor(slowAsyncFunc, 10000)
+        const executor = new ThresholdExecutor(fastAsyncFunc, 10000)
         executor.execute().then(markThresholdDone)
 
         executor.cancel()
@@ -275,29 +275,31 @@ describe('utils', () => {
     })
 
     describe('with slow async function', () => {
+      const slowAsyncFunc = asyncFunc(50000)
+
       it('executes function', async () => {
-        const slowAsyncFunc = asyncFunc(5000)
-        const executor = new ThresholdExecutor(slowAsyncFunc, 1000)
+        const executor = new ThresholdExecutor(slowAsyncFunc, 10000)
         executor.execute().then(markThresholdDone)
 
-        // not complete after 4s
-        await tickWithDelay(4000)
+        // not complete after 40s
+        await tickWithDelay(40000)
         expect(funcDone).to.eql(false)
         expect(thresholdDone).to.eql(false)
 
-        // complete after 10s
-        await tickWithDelay(6000)
+        // complete after 60s
+        await tickWithDelay(60000)
         expect(funcDone).to.eql(true)
         expect(thresholdDone).to.eql(true)
       })
     })
 
-    describe('with function trowing error', () => {
+    describe('with function throwing error', () => {
+      const mockError = new Error('Mock error')
+      async function errorFunc () {
+        throw mockError
+      }
+
       it('sleeps and throws error', async () => {
-        const mockError = new Error('Mock error')
-        const errorFunc = async () => {
-          throw mockError
-        }
         const executor = new ThresholdExecutor(errorFunc, 1000)
         let error = null
         executor.execute().catch((err) => {

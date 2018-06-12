@@ -152,7 +152,7 @@ function actionsFactory (
 
       const looper = new FunctionLooper(() => dispatch(event.action), event.threshold)
       looper.onFunctionError((err) => {
-        logger.error('Error while executing "' + event.action + '" action, error:', err)
+        logger.error(`Error while executing ${event.action} action, error:`, err)
         bugReporter.captureException(err)
       })
       looper.start()
