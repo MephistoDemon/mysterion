@@ -16,51 +16,66 @@
  */
 
 // @flow
-import { isNetworkError, isTimeoutError, isRequestClosedError, isServiceUnavailableError } from '../../../../src/libraries/mysterium-tequilapi/client-error'
+import {
+  isNetworkError,
+  isTimeoutError,
+  isRequestClosedError,
+  isServiceUnavailableError,
+  isHttpError, markErrorAsHttp
+} from '../../../../src/libraries/mysterium-tequilapi/client-error'
 import { describe, it, expect } from '../../../helpers/dependencies'
 
 describe('errors', () => {
-  // TODO: change `it` descriptions to declare behaviour, not method names
-  it('isNetworkError()', () => {
-    let error
+  describe('isHttpError', () => {
+    it('indicates marked errors as http error', () => {
+      const error = new Error('Mock error')
+      expect(isHttpError(error)).to.eql(false)
 
-    error = new Error('Network Error')
-    expect(isNetworkError(error)).to.be.true
-
-    error = new Error('Slow Network Error')
-    expect(isNetworkError(error)).to.be.false
+      markErrorAsHttp(error)
+      expect(isHttpError(error)).to.eql(true)
+    })
   })
 
-  it('isTimeoutError()', () => {
-    let error
+  describe('isNetworkError()', () => {
+    it('indicates network error', () => {
+      let error = new Error('Network Error')
+      expect(isNetworkError(error)).to.be.true
 
-    error = (new Error(): Object)
-    error.code = 'ECONNABORTED'
-    expect(isTimeoutError(error)).to.be.true
-
-    error = new Error()
-    expect(isTimeoutError(error)).to.be.false
+      error = new Error('Slow Network Error')
+      expect(isNetworkError(error)).to.be.false
+    })
   })
 
-  it('isRequestClosedError()', () => {
-    let error
+  describe('isTimeoutError()', () => {
+    it('indicates timeout error', () => {
+      let error = (new Error(): Object)
+      error.code = 'ECONNABORTED'
+      expect(isTimeoutError(error)).to.be.true
 
-    error = (new Error(): Object)
-    error.response = {status: 499}
-    expect(isRequestClosedError(error)).to.be.true
-
-    error = new Error()
-    expect(isRequestClosedError(error)).to.be.false
+      error = new Error()
+      expect(isTimeoutError(error)).to.be.false
+    })
   })
 
-  it('isServiceUnavailableError()', () => {
-    let error
+  describe('isRequestClosedError()', () => {
+    it('indicates request closed error', () => {
+      let error = (new Error(): Object)
+      error.response = {status: 499}
+      expect(isRequestClosedError(error)).to.be.true
 
-    error = (new Error(): Object)
-    error.response = {status: 503}
-    expect(isServiceUnavailableError(error)).to.be.true
+      error = new Error()
+      expect(isRequestClosedError(error)).to.be.false
+    })
+  })
 
-    error = new Error()
-    expect(isServiceUnavailableError(error)).to.be.false
+  describe('isServiceUnavailableError()', () => {
+    it('indicates service unavailable error', () => {
+      let error = (new Error(): Object)
+      error.response = {status: 503}
+      expect(isServiceUnavailableError(error)).to.be.true
+
+      error = new Error()
+      expect(isServiceUnavailableError(error)).to.be.false
+    })
   })
 })
