@@ -18,6 +18,7 @@
 // @flow
 import sleep from './sleep'
 import logger from '../app/logger'
+import Subscriber from '../app/data-fetchers/subscriber'
 
 type EmptyAsyncFunction = () => Promise<any>
 
@@ -31,17 +32,15 @@ type EmptyAsyncFunction = () => Promise<any>
 class FunctionLooper {
   _func: EmptyAsyncFunction
   _threshold: number
-  _running: boolean
-  _stopping: boolean
+  _running: boolean = false
+  _stopping: boolean = false
   _currentExecutor: ThresholdExecutor
   _currentPromise: Promise<void>
-  _functionErrorCallbacks: Array<ErrorCallback>
+  _errorSubscriber: Subscriber<Error> = new Subscriber()
 
   constructor (func: EmptyAsyncFunction, threshold: number) {
     this._func = func
     this._threshold = threshold
-    this._running = false
-    this._functionErrorCallbacks = []
   }
 
   start (): void {
@@ -58,7 +57,7 @@ class FunctionLooper {
           await this._currentPromise
         } catch (err) {
           logger.info('FunctionLooper got error while executing given function, error:', err)
-          this._functionErrorCallbacks.forEach((callback) => callback(err))
+          this._errorSubscriber.notify(err)
         }
       }
     }
@@ -82,7 +81,7 @@ class FunctionLooper {
   }
 
   onFunctionError (callback: ErrorCallback) {
-    this._functionErrorCallbacks.push(callback)
+    this._errorSubscriber.subscribe(callback)
   }
 }
 
