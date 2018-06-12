@@ -20,8 +20,8 @@
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 import type { TequilapiClient } from '../../libraries/mysterium-tequilapi/client'
 import { FunctionLooper } from '../../libraries/functionLooper'
-import type { Callback } from './subscriber'
-import Subscriber from './subscriber'
+import type { Callback } from '../../libraries/subscriber'
+import Subscriber from '../../libraries/subscriber'
 
 class ProposalFetcher {
   _api: TequilapiClient

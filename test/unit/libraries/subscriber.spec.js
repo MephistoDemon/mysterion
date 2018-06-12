@@ -17,8 +17,8 @@
 
 // @flow
 
-import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
-import Subscriber from '../../../../src/app/data-fetchers/subscriber'
+import { beforeEach, describe, expect, it } from '../../helpers/dependencies'
+import Subscriber from '../../../src/libraries/subscriber'
 
 describe('Subscriber', () => {
   let subscriber: Subscriber<string>

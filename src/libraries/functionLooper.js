@@ -18,7 +18,7 @@
 // @flow
 import sleep from './sleep'
 import logger from '../app/logger'
-import Subscriber from '../app/data-fetchers/subscriber'
+import Subscriber from './subscriber'
 
 /**
  * Executes given function infinitely.
