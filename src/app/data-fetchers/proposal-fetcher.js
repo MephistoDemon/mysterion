@@ -20,15 +20,14 @@
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 import type { TequilapiClient } from '../../libraries/mysterium-tequilapi/client'
 import { FunctionLooper } from '../../libraries/functionLooper'
-
-type ProposalSubscriber = (Array<ProposalDTO>) => any
-type ErrorSubscriber = (Error) => any
+import type { Callback } from './subscriber'
+import Subscriber from './subscriber'
 
 class ProposalFetcher {
   _api: TequilapiClient
   _loop: FunctionLooper
-  _proposalSubscribers: Array<ProposalSubscriber> = []
-  _errorSubscribers: Array<ErrorSubscriber> = []
+  _proposalSubscriber: Subscriber<Array<ProposalDTO>> = new Subscriber()
+  _errorSubscriber: Subscriber<Error> = new Subscriber()
   _interval: number
 
   constructor (api: TequilapiClient, interval: number = 5000) {
@@ -44,7 +43,9 @@ class ProposalFetcher {
     new FunctionLooper(async () => {
       await this.fetch()
     }, this._interval)
-    looper.onFunctionError((error) => this._notifyFetchingError(error))
+    looper.onFunctionError((error) => {
+      this._errorSubscriber.notify(error)
+    })
 
     looper.start()
     this._loop = looper
@@ -56,7 +57,7 @@ class ProposalFetcher {
   async fetch (): Promise<Array<ProposalDTO>> {
     const proposals = await this._api.findProposals()
 
-    this._notifyFetchedProposals(proposals)
+    this._proposalSubscriber.notify(proposals)
 
     return proposals
   }
@@ -66,24 +67,12 @@ class ProposalFetcher {
     this._loop.stop()
   }
 
-  onFetchedProposals (subscriber: ProposalSubscriber): void {
-    this._proposalSubscribers.push(subscriber)
+  onFetchedProposals (subscriber: Callback<Array<ProposalDTO>>): void {
+    this._proposalSubscriber.subscribe(subscriber)
   }
 
-  onFetchingError (subscriber: ErrorSubscriber): void {
-    this._errorSubscribers.push(subscriber)
-  }
-
-  _notifyFetchedProposals (proposals: Array<ProposalDTO>): void {
-    this._proposalSubscribers.forEach((callback) => {
-      callback(proposals)
-    })
-  }
-
-  _notifyFetchingError (error: Error): void {
-    this._errorSubscribers.forEach((callback) => {
-      callback(error)
-    })
+  onFetchingError (subscriber: Callback<Error>): void {
+    this._errorSubscriber.subscribe(subscriber)
   }
 }
 
