@@ -101,7 +101,7 @@ class Mysterion {
         this._buildTray()
       } catch (e) {
         logException('Application launch failed', e)
-        this.bugReporter.captureException(e)
+        this.bugReporter.captureErrorException(e)
       }
     })
     // fired when all windows are closed
@@ -119,7 +119,7 @@ class Mysterion {
         this.window.show()
       } catch (e) {
         logException('Application activation failed', e)
-        this.bugReporter.captureException(e)
+        this.bugReporter.captureErrorException(e)
       }
     })
     app.on('before-quit', () => {
@@ -140,7 +140,7 @@ class Mysterion {
     this.window = this._createWindow(windowSize)
 
     const send = this._getSendFunction(browserWindow)
-    this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
+    this.messageBus = new MainMessageBus(send, this.bugReporter.captureErrorException)
     this.communication = new MainMessageBusCommunication(this.messageBus)
     this.communication.onCurrentIdentityChange((identityChange: CurrentIdentityChangeDTO) => {
       const identity = new IdentityDTO({id: identityChange.id})
@@ -186,7 +186,7 @@ class Mysterion {
       this.terms.load()
       return this.terms.isAccepted()
     } catch (e) {
-      this.bugReporter.captureException(e)
+      this.bugReporter.captureErrorException(e)
       return false
     }
   }
@@ -267,7 +267,7 @@ class Mysterion {
       await this.process.stop()
     } catch (e) {
       logException("Failed to stop 'mysterium_client' process", e)
-      this.bugReporter.captureException(e)
+      this.bugReporter.captureErrorException(e)
     }
   }
 
@@ -329,7 +329,7 @@ class Mysterion {
       this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
     } catch (e) {
       logger.error('Failing to process logs. ', e)
-      this.bugReporter.captureException(e)
+      this.bugReporter.captureErrorException(e)
     }
   }
 

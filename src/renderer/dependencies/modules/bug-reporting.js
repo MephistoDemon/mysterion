@@ -32,7 +32,7 @@ function bootstrap (container: Container) {
     (raven, rendererCommunication) => {
       const bugReporter = new BugReporterRenderer(raven)
       window.addEventListener('unhandledrejection', (evt) => {
-        bugReporter.captureMessage(evt.reason, evt.reason.response ? evt.reason.response.data : evt.reason)
+        bugReporter.captureErrorMessage(evt.reason, evt.reason.response ? evt.reason.response.data : evt.reason)
       })
 
       rendererCommunication.onMysteriumClientLog(({ level, data }) => {

@@ -49,7 +49,7 @@ export default {
 
       commit(type.INIT_FAIL)
       commit(type.OVERLAY_ERROR, messages.initializationError)
-      this.bugReporter.captureException(err)
+      this.bugReporter.captureErrorException(err)
     }
   },
   computed: {

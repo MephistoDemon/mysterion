@@ -59,7 +59,7 @@ const communicationProposalsResponse = [
 ]
 
 const bugReporterMock = {
-  captureException: () => {}
+  captureErrorException: () => {}
 }
 
 function mountWith (rendererCommunication, store) {

@@ -103,7 +103,7 @@ export default {
         const error = new Error(messages.countryListIsEmpty)
 
         this.$store.commit(type.SHOW_ERROR, error)
-        this.bugReporter.captureException(error)
+        this.bugReporter.captureErrorException(error)
         return
       }
 

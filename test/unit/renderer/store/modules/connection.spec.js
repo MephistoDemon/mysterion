@@ -156,13 +156,13 @@ class BugReporterMock implements BugReporter {
   setUser (identity): void {
   }
 
-  captureMessage (_message, _context): void {
+  captureErrorMessage (_message, _context): void {
   }
 
   captureInfoMessage (_message, _context): void {
   }
 
-  captureException (_err, _context): void {
+  captureErrorException (_err, _context): void {
   }
 
   captureInfoException (_err, _context): void {
