@@ -22,11 +22,13 @@ import type { TequilapiClient } from '../../libraries/mysterium-tequilapi/client
 import { FunctionLooper } from '../../libraries/functionLooper'
 
 type ProposalSubscriber = (Array<ProposalDTO>) => any
+type ErrorSubscriber = (Error) => any
 
 class ProposalFetcher {
   _api: TequilapiClient
   _loop: FunctionLooper
-  _subscribers: Array<ProposalSubscriber> = []
+  _proposalSubscribers: Array<ProposalSubscriber> = []
+  _errorSubscribers: Array<ErrorSubscriber> = []
   _interval: number
 
   constructor (api: TequilapiClient, interval: number = 5000) {
@@ -38,11 +40,14 @@ class ProposalFetcher {
    * Starts periodic proposal fetching.
    */
   start (): void {
-    this._loop = new FunctionLooper(async () => {
+    const looper =
+    new FunctionLooper(async () => {
       await this.fetch()
     }, this._interval)
+    looper.onFunctionError((error) => this._notifyFetchingError(error))
 
-    this._loop.start()
+    looper.start()
+    this._loop = looper
   }
 
   /**
@@ -51,7 +56,7 @@ class ProposalFetcher {
   async fetch (): Promise<Array<ProposalDTO>> {
     const proposals = await this._api.findProposals()
 
-    this._notifySubscribers(proposals)
+    this._notifyFetchedProposals(proposals)
 
     return proposals
   }
@@ -62,12 +67,22 @@ class ProposalFetcher {
   }
 
   onFetchedProposals (subscriber: ProposalSubscriber): void {
-    this._subscribers.push(subscriber)
+    this._proposalSubscribers.push(subscriber)
   }
 
-  _notifySubscribers (proposals: Array<ProposalDTO>): void {
-    this._subscribers.forEach((callback) => {
+  onFetchingError (subscriber: ErrorSubscriber): void {
+    this._errorSubscribers.push(subscriber)
+  }
+
+  _notifyFetchedProposals (proposals: Array<ProposalDTO>): void {
+    this._proposalSubscribers.forEach((callback) => {
       callback(proposals)
+    })
+  }
+
+  _notifyFetchingError (error: Error): void {
+    this._errorSubscribers.forEach((callback) => {
+      callback(error)
     })
   }
 }
