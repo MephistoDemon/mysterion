@@ -34,14 +34,14 @@ class Process {
   /**
    * @constructor
    * @param {TequilapiClient} tequilapi - api to be used
-   * @param {string} daemonPort - port at which tequilapi is listening
+   * @param {string} daemonPort - port at which the daemon is spawned
    * @param {string} logDirectory - directory where it's looking for logs
    */
   constructor (tequilapi, daemonPort, logDirectory) {
     this.tequilapi = tequilapi
-    this.daemonPort = daemonPort
-    this.stdoutPath = path.join(logDirectory, stdoutFileName)
-    this.stderrPath = path.join(logDirectory, stderrFileName)
+    this._daemonPort = daemonPort
+    this._stdoutPath = path.join(logDirectory, stdoutFileName)
+    this._stderrPath = path.join(logDirectory, stderrFileName)
     this._subscribers = {
       [processLogLevels.LOG]: [],
       [processLogLevels.ERROR]: []
@@ -49,7 +49,7 @@ class Process {
   }
 
   start () {
-    return axios.get('http://127.0.0.1:' + this.daemonPort)
+    return axios.get('http://127.0.0.1:' + this._daemonPort)
       .then(() => {
         logger.info('Touched the daemon, now it should be up')
       })
@@ -65,14 +65,14 @@ class Process {
   }
 
   async _prepareLogFiles () {
-    await createFileIfMissing(this.stdoutPath)
-    await createFileIfMissing(this.stderrPath)
+    await createFileIfMissing(this._stdoutPath)
+    await createFileIfMissing(this._stderrPath)
   }
 
   async setupLogging () {
     await this._prepareLogFiles()
-    tailFile(this.stdoutPath, this._logCallback.bind(this, processLogLevels.LOG))
-    tailFile(this.stderrPath, this._logCallback.bind(this, processLogLevels.ERROR))
+    tailFile(this._stdoutPath, this._logCallback.bind(this, processLogLevels.LOG))
+    tailFile(this._stderrPath, this._logCallback.bind(this, processLogLevels.ERROR))
     tailFile(SYSTEM_LOG, filterLine(INVERSE_DOMAIN_PACKAGE_NAME, this._logCallback.bind(this, processLogLevels.ERROR)))
   }
 
