@@ -1,5 +1,9 @@
 'use strict'
 
+/**
+ * Webpack config used for renderer process in production (yarn build).
+ */
+
 process.env.BABEL_ENV = 'renderer'
 
 const path = require('path')
