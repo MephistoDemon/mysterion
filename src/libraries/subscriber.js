@@ -17,6 +17,8 @@
 
 // @flow
 
+import logger from '../app/logger'
+
 /**
  * Allows subscribing callbacks and notifying them with data.
  */
@@ -29,7 +31,11 @@ class Subscriber<T> {
 
   notify (data: T) {
     this._callbacks.forEach((callback: Callback<T>) => {
-      callback(data)
+      try {
+        callback(data)
+      } catch (err) {
+        logger.error('Callback call in Subscriber failed', err)
+      }
     })
   }
 }

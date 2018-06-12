@@ -53,4 +53,21 @@ describe('Subscriber', () => {
     expect(value1).to.eql('hey')
     expect(value2).to.eql('hey')
   })
+
+  it('notifies all subscribers when first is failing', () => {
+    let value1 = null
+    let value2 = null
+    subscriber.subscribe((value: string) => {
+      value1 = value
+      throw new Error('mock error')
+    })
+    subscriber.subscribe((value: string) => {
+      value2 = value
+    })
+
+    subscriber.notify('hey')
+
+    expect(value1).to.eql('hey')
+    expect(value2).to.eql('hey')
+  })
 })
