@@ -328,10 +328,12 @@ class Mysterion {
     this.monitoring.subscribeUp(() => {
       logInfo("'mysterium_client' is up")
       this.communication.sendMysteriumClientUp()
+      bugReporterMetrics.set(bugReporterMetrics.ClientStarted, true)
     })
     this.monitoring.subscribeDown(() => {
       logInfo("'mysterium_client' is down")
       this.communication.sendMysteriumClientDown()
+      bugReporterMetrics.set(bugReporterMetrics.ClientStarted, false)
     })
     this.monitoring.subscribeStatus((status) => {
       if (status === false) {

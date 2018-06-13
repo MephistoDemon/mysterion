@@ -19,7 +19,7 @@ import type {MessageBus} from '../communication/messageBus'
 import messages from '../communication/messages'
 import {MetricSyncDTO} from '../communication/dto'
 
-const UNKNOWN = 'unknown'
+const UNKNOWN = 'no'
 
 function isEquivalent (a, b) {
   if (typeof (a) !== typeof (b)) {
@@ -55,6 +55,7 @@ class BugReporterMetrics {
   ConnectionStatus = 'connection_status'
   ConnectionStatistics = 'connection_statistics'
   ConnectionIP = 'connection_ip'
+  ClientStarted = 'client_started'
 
   _tags: Map = new Map()
   _extra: Map = new Map()
@@ -65,6 +66,7 @@ class BugReporterMetrics {
     this.set(this.IdentityUnlocked, UNKNOWN, this._tags)
     this.set(this.ProposalsFetched, UNKNOWN, this._tags)
     this.set(this.ConnectionCreated, UNKNOWN, this._tags)
+    this.set(this.ClientStarted, UNKNOWN, this._tags)
     this.set(this.ConnectionStatus, UNKNOWN, this._extra)
     this.set(this.ConnectionStatistics, UNKNOWN, this._extra)
     this.set(this.ConnectionIP, UNKNOWN, this._extra)
