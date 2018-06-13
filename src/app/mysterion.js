@@ -20,10 +20,11 @@
 import { app, BrowserWindow } from 'electron'
 import trayFactory from '../main/tray/factory'
 import { Installer, logLevels as processLogLevels } from '../libraries/mysterium-client'
+import { SUDO_PROMT_PERMISSION_DENIED } from '../libraries/mysterium-client/launch-daemon/installer'
 import translations from './messages'
 import MainMessageBusCommunication from './communication/main-message-bus-communication'
 import MainMessageBus from './communication/mainMessageBus'
-import {onFirstEvent, onFirstEventOrTimeout} from './communication/utils'
+import { onFirstEvent, onFirstEventOrTimeout } from './communication/utils'
 import path from 'path'
 import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import logger from './logger'
@@ -142,7 +143,7 @@ class Mysterion {
     this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
     this.communication = new MainMessageBusCommunication(this.messageBus)
     this.communication.onCurrentIdentityChange((identityChange: CurrentIdentityChangeDTO) => {
-      const identity = new IdentityDTO({ id: identityChange.id })
+      const identity = new IdentityDTO({id: identityChange.id})
       this.bugReporter.setUser(identity)
     })
 
@@ -234,7 +235,11 @@ class Mysterion {
       try {
         await this.installer.install()
       } catch (e) {
-        this.communication.sendRendererShowErrorMessage(translations.processInstallationError)
+        let messageForUser = translations.processInstallationError
+        if (e.message === SUDO_PROMT_PERMISSION_DENIED) {
+          messageForUser = translations.processInstallationPermissionsError
+        }
+        this.communication.sendRendererShowErrorMessage(messageForUser)
         throw new Error("Failed to install 'mysterium_client' process. " + e)
       }
     }
@@ -312,14 +317,20 @@ class Mysterion {
 
   _startProcess () {
     const cacheLogs = (level, data) => {
-      this.communication.sendMysteriumClientLog({ level, data })
+      this.communication.sendMysteriumClientLog({level, data})
       this.bugReporter.pushToLogCache(level, data)
     }
 
     logInfo("Starting 'mysterium_client' process")
     this.process.start()
-    this.process.onLog(processLogLevels.LOG, (data) => cacheLogs(processLogLevels.LOG, data))
-    this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
+    try {
+      this.process.setupLogging()
+      this.process.onLog(processLogLevels.LOG, (data) => cacheLogs(processLogLevels.LOG, data))
+      this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
+    } catch (e) {
+      logger.error('Failing to process logs. ', e)
+      this.bugReporter.captureException(e)
+    }
   }
 
   _startProcessMonitoring () {
