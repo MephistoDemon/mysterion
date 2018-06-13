@@ -39,16 +39,14 @@ class ProposalFetcher {
    * Starts periodic proposal fetching.
    */
   start (): void {
-    const looper =
-    new FunctionLooper(async () => {
+    this._loop = new FunctionLooper(async () => {
       await this.fetch()
     }, this._interval)
-    looper.onFunctionError((error) => {
+    this._loop.onFunctionError((error) => {
       this._errorSubscriber.notify(error)
     })
 
-    looper.start()
-    this._loop = looper
+    this._loop.start()
   }
 
   /**

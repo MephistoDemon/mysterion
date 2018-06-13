@@ -28,7 +28,7 @@ import Subscriber from './subscriber'
  * @param {!number} threshold - Minimum sleep between function executions (in milliseconds).
  */
 class FunctionLooper {
-  _func: EmptyAsyncFunction
+  _func: AsyncFunctionWithoutParams
   _threshold: number
   _running: boolean = false
   _stopping: boolean = false
@@ -36,7 +36,7 @@ class FunctionLooper {
   _currentPromise: Promise<void>
   _errorSubscriber: Subscriber<Error> = new Subscriber()
 
-  constructor (func: EmptyAsyncFunction, threshold: number) {
+  constructor (func: AsyncFunctionWithoutParams, threshold: number) {
     this._func = func
     this._threshold = threshold
   }
@@ -83,18 +83,18 @@ class FunctionLooper {
   }
 }
 
-type EmptyAsyncFunction = () => Promise<any>
+type AsyncFunctionWithoutParams = () => Promise<any>
 
 /**
  * Executes given function and sleeps for remaining time.
  * If .cancel() is invoked, than sleep is skipped after function finishes.
  */
 class ThresholdExecutor {
-  _func: EmptyAsyncFunction
+  _func: AsyncFunctionWithoutParams
   _threshold: number
   _canceled: boolean
 
-  constructor (func: EmptyAsyncFunction, threshold: number) {
+  constructor (func: AsyncFunctionWithoutParams, threshold: number) {
     this._func = func
     this._threshold = threshold
     this._canceled = false
