@@ -28,7 +28,7 @@ module.exports = {
   extends: [
     'standard',
     'plugin:flowtype/recommended',
-    'plugin:vue/essential'
+    'plugin:vue/strongly-recommended'
   ],
   globals: {
     __static: true

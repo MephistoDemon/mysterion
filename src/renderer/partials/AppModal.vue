@@ -37,9 +37,11 @@ export default {
   },
   props: {
     size: {
+      type: String,
       default: null
     },
     close: {
+      type: Boolean,
       default: true
     }
   },

@@ -36,7 +36,8 @@ export default {
   name: 'ConnectionButton',
   props: {
     providerId: {
-      type: String
+      type: String,
+      required: true
     }
   },
   computed: {

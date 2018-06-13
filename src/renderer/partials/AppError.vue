@@ -42,7 +42,10 @@ export default {
     return {}
   },
   props: {
-    error: Object
+    error: {
+      type: Object,
+      required: true
+    }
   },
   computed: {},
   methods: {},
