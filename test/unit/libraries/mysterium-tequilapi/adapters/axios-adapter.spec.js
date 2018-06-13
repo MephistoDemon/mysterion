@@ -19,7 +19,11 @@ import axios from 'axios/index'
 import AxiosAdapter from '../../../../../src/libraries/mysterium-tequilapi/adapters/axios-adapter'
 import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../../helpers/utils'
-import { isNetworkError, isTimeoutError } from '../../../../../src/libraries/mysterium-tequilapi/client-error'
+import {
+  isHttpError,
+  isNetworkError,
+  isTimeoutError
+} from '../../../../../src/libraries/mysterium-tequilapi/client-error'
 
 describe('TequilapiClient AxiosAdapter', () => {
   let adapter
@@ -70,6 +74,7 @@ describe('TequilapiClient AxiosAdapter', () => {
     const err = await capturePromiseError(adapter.get('test-url'))
     expect(err).to.be.instanceOf(Error)
     expect(isNetworkError(err)).to.be.true
+    expect(isHttpError(err)).to.be.true
   })
 
   it('returns timeout error', async () => {
@@ -78,6 +83,7 @@ describe('TequilapiClient AxiosAdapter', () => {
     const err = await capturePromiseError(adapter.get('test-url'))
     expect(err).to.be.instanceOf(Error)
     expect(isTimeoutError(err)).to.be.true
+    expect(isHttpError(err)).to.be.true
   })
 
   it('returns 404 response error', async () => {

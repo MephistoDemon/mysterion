@@ -20,6 +20,7 @@
 import axios from 'axios'
 import type {HttpInterface, HttpQueryParams} from './interface'
 import {TIMEOUT_DEFAULT} from '../timeouts'
+import { markErrorAsHttp } from '../client-error'
 
 class AxiosAdapter implements HttpInterface {
   _axios: axios.Axios
@@ -65,7 +66,13 @@ class AxiosAdapter implements HttpInterface {
 }
 
 async function decorateResponse (promise: Promise<Object>): Promise<Object> {
-  const response = await promise
+  let response
+  try {
+    response = await promise
+  } catch (err) {
+    markErrorAsHttp(err)
+    throw err
+  }
   return response.data
 }
 
