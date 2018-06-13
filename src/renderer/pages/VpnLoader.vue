@@ -15,7 +15,9 @@
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<template></template>
+<template>
+  <div></div>
+</template>
 <script>
 import {mapState} from 'vuex'
 import type from '@/store/types'
