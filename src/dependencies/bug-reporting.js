@@ -20,6 +20,7 @@ import type {Container} from '../app/di'
 import os from 'os'
 import {logLevels} from '../libraries/mysterium-client'
 import {getLogCache} from '../app/bug-reporting/logsCache'
+import {bugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
 
 function bootstrap (container: Container) {
   const extendedProcess = (process: { type?: string })
@@ -43,6 +44,7 @@ function bootstrap (container: Container) {
             [logLevels.LOG]: getLogCache(logLevels.LOG),
             [logLevels.ERROR]: getLogCache(logLevels.ERROR)
           }
+          bugReporterMetrics.addMetricsTo(data)
           return data
         },
         autoBreadcrumbs: {

@@ -28,6 +28,7 @@ import {createEventFactory} from '../../../app/statistics/events'
 import VpnInitializer from '../../../app/vpnInitializer'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import realSleep from '../../../libraries/sleep'
+import {bugReporterMetrics} from '../../../app/bug-reporting/bug-reporter-metrics'
 
 function bootstrap (container: Container) {
   const mysterionReleaseID = remote.getGlobal('__mysterionReleaseID')
@@ -37,7 +38,9 @@ function bootstrap (container: Container) {
     'rendererCommunication',
     [],
     () => {
-      return new RendererCommunication(new RendererMessageBus())
+      const messageBus = new RendererMessageBus()
+      bugReporterMetrics.syncWith(messageBus)
+      return new RendererCommunication(messageBus)
     }
   )
 

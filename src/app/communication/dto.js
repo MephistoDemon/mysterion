@@ -52,3 +52,8 @@ export type AppErrorDTO = {
   hint: string,
   fatal: boolean
 }
+
+export type MetricSyncDTO = {
+  metric: string,
+  value: mixed
+}

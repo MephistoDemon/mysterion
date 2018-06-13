@@ -40,6 +40,7 @@ import type { MessageBus } from './communication/messageBus'
 import type { MainCommunication } from './communication/main-communication'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
+import {bugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -145,6 +146,7 @@ class Mysterion {
       const identity = new IdentityDTO({ id: identityChange.id })
       this.bugReporter.setUser(identity)
     })
+    bugReporterMetrics.syncWith(this.messageBus)
 
     await this._onRendererLoaded()
 
