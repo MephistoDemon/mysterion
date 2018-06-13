@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <div></div>
+  <div/>
 </template>
 <script>
 import {mapState} from 'vuex'
@@ -59,6 +59,6 @@ export default {
       error: state => state.main.error
     })
   },
-  name: 'loading-screen'
+  name: 'LoadingScreen'
 }
 </script>
