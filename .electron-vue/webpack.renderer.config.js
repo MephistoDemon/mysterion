@@ -1,5 +1,9 @@
 'use strict'
 
+/**
+ * Webpack config used for renderer process in production (yarn build).
+ */
+
 process.env.BABEL_ENV = 'renderer'
 
 const path = require('path')
@@ -37,7 +41,8 @@ let rendererConfig = {
         use: {
           loader: 'eslint-loader',
           options: {
-            formatter: require('eslint-friendly-formatter')
+            formatter: require('eslint-friendly-formatter'),
+            failOnError: true
           }
         }
       },
