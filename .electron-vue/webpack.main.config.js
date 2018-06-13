@@ -1,4 +1,9 @@
 'use strict'
+
+/**
+ * Webpack config used for main process.
+ */
+
 process.env.BABEL_ENV = 'main'
 
 const path = require('path')
