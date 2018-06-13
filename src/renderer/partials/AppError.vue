@@ -36,17 +36,17 @@
 </style>
 
 <script>
-  export default {
-    name: 'AppError',
-    data () {
-      return {}
-    },
-    props: {
-      error: Object
-    },
-    computed: {},
-    methods: {},
-    mounted () {
-    }
+export default {
+  name: 'AppError',
+  data () {
+    return {}
+  },
+  props: {
+    error: Object
+  },
+  computed: {},
+  methods: {},
+  mounted () {
   }
+}
 </script>

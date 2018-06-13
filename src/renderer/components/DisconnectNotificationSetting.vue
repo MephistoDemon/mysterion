@@ -24,27 +24,27 @@
 </template>
 
 <script>
-  export default {
-    name: 'DisconnectNotificationSetting',
-    dependencies: ['rendererCommunication'],
-    data () {
-      return {
-        isDisconnectNotificationEnabled: true
-      }
-    },
-    mounted () {
-      this.rendererCommunication.onUserSettings((settings) => {
-        this.isDisconnectNotificationEnabled = settings.showDisconnectNotifications
+export default {
+  name: 'DisconnectNotificationSetting',
+  dependencies: ['rendererCommunication'],
+  data () {
+    return {
+      isDisconnectNotificationEnabled: true
+    }
+  },
+  mounted () {
+    this.rendererCommunication.onUserSettings((settings) => {
+      this.isDisconnectNotificationEnabled = settings.showDisconnectNotifications
+    })
+    this.rendererCommunication.sendUserSettingsRequest()
+  },
+  methods: {
+    toggle () {
+      this.isDisconnectNotificationEnabled = !this.isDisconnectNotificationEnabled
+      this.rendererCommunication.sendUserSettingsUpdate({
+        showDisconnectNotifications: this.isDisconnectNotificationEnabled
       })
-      this.rendererCommunication.sendUserSettingsRequest()
-    },
-    methods: {
-      toggle () {
-        this.isDisconnectNotificationEnabled = !this.isDisconnectNotificationEnabled
-        this.rendererCommunication.sendUserSettingsUpdate({
-          showDisconnectNotifications: this.isDisconnectNotificationEnabled
-        })
-      }
     }
   }
+}
 </script>

@@ -44,54 +44,54 @@
 </template>
 
 <script>
-  import CountrySelect from '@/components/CountrySelect'
-  import type from '../store/types'
-  import {mapGetters, mapMutations} from 'vuex'
-  import StatsDisplay from '../components/StatsDisplay'
-  import ConnectionButton from '@/components/ConnectionButton'
-  import AppError from '@/partials/AppError'
-  import config from '../config'
-  import {ActionLooperConfig} from '../store/modules/connection'
+import CountrySelect from '@/components/CountrySelect'
+import type from '../store/types'
+import {mapGetters, mapMutations} from 'vuex'
+import StatsDisplay from '../components/StatsDisplay'
+import ConnectionButton from '@/components/ConnectionButton'
+import AppError from '@/partials/AppError'
+import config from '../config'
+import {ActionLooperConfig} from '../store/modules/connection'
 
-  export default {
-    name: 'Main',
-    components: {
-      CountrySelect,
-      ConnectionButton,
-      StatsDisplay,
-      AppError
-    },
-    data () {
-      return {
-        country: null
-      }
-    },
-    computed: {
-      ...mapGetters(['connection', 'status', 'ip', 'errorMessage', 'showError']),
-      statusCode () {
-        switch (this.status) {
-          case 'NotConnected': return -1
-          case 'Connecting': return 0
-          case 'Connected': return 1
-        }
-      },
-      statusTitle () {
-        switch (this.status) {
-          case 'NotConnected': return 'Disconnected'
-          default: return this.status
-        }
-      },
-      providerIdentity () {
-        return this.country ? this.country.id : ''
-      }
-    },
-    methods: {
-      ...mapMutations({ hideErr: type.HIDE_ERROR }),
-      setCountry (data) { this.country = data }
-    },
-    async mounted () {
-      this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.CONNECTION_IP, config.ipUpdateThreshold))
-      this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.FETCH_CONNECTION_STATUS, config.statusUpdateThreshold))
+export default {
+  name: 'Main',
+  components: {
+    CountrySelect,
+    ConnectionButton,
+    StatsDisplay,
+    AppError
+  },
+  data () {
+    return {
+      country: null
     }
+  },
+  computed: {
+    ...mapGetters(['connection', 'status', 'ip', 'errorMessage', 'showError']),
+    statusCode () {
+      switch (this.status) {
+        case 'NotConnected': return -1
+        case 'Connecting': return 0
+        case 'Connected': return 1
+      }
+    },
+    statusTitle () {
+      switch (this.status) {
+        case 'NotConnected': return 'Disconnected'
+        default: return this.status
+      }
+    },
+    providerIdentity () {
+      return this.country ? this.country.id : ''
+    }
+  },
+  methods: {
+    ...mapMutations({ hideErr: type.HIDE_ERROR }),
+    setCountry (data) { this.country = data }
+  },
+  async mounted () {
+    this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.CONNECTION_IP, config.ipUpdateThreshold))
+    this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.FETCH_CONNECTION_STATUS, config.statusUpdateThreshold))
   }
+}
 </script>

@@ -25,22 +25,22 @@
 </template>
 
 <script>
-  export default {
-    name: 'AppModal',
-    data () {
-      return {}
+export default {
+  name: 'AppModal',
+  data () {
+    return {}
+  },
+  props: {
+    size: {
+      default: null
     },
-    props: {
-      size: {
-        default: null
-      },
-      close: {
-        default: true
-      }
-    },
-    computed: {},
-    methods: {},
-    mounted () {
+    close: {
+      default: true
     }
+  },
+  computed: {},
+  methods: {},
+  mounted () {
   }
+}
 </script>
