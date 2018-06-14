@@ -63,7 +63,7 @@ class HttpTequilapiClient implements TequilapiClient {
       throw new Error('Healthcheck response body is missing')
     }
 
-    bugReporterMetrics.set(bugReporterMetrics.HealthCheckTime, (new Date()).toUTCString())
+    bugReporterMetrics.set(bugReporterMetrics.HealthCheckTime, bugReporterMetrics.dateTimeString())
     return new NodeHealthcheckDTO(response)
   }
 

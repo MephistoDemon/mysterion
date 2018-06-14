@@ -14,14 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+// @flow
 
 import type {MessageBus} from '../communication/messageBus'
 import messages from '../communication/messages'
-import {MetricSyncDTO} from '../communication/dto'
+import type {MetricSyncDTO} from '../communication/dto'
 
 const UNKNOWN = 'no'
 
-function isEquivalent (a, b) {
+function isEquivalent (a: any, b: any): boolean {
   if (typeof (a) !== typeof (b)) {
     return false
   }
@@ -46,7 +47,6 @@ function isEquivalent (a, b) {
   return true
 }
 
-// @flow
 class BugReporterMetrics {
   IdentityUnlocked = 'identity_unlocked'
   ProposalsFetched = 'proposals_fetched'
@@ -56,9 +56,10 @@ class BugReporterMetrics {
   ConnectionStatistics = 'connection_statistics'
   ConnectionIP = 'connection_ip'
   ClientStarted = 'client_started'
+  StartTime = 'start_time'
 
-  _tags: Map = new Map()
-  _extra: Map = new Map()
+  _tags: Map<string, any> = new Map()
+  _extra: Map<string, any> = new Map()
   _messageBus: MessageBus
 
   constructor () {
@@ -67,6 +68,7 @@ class BugReporterMetrics {
     this.set(this.ProposalsFetched, UNKNOWN, this._tags)
     this.set(this.ConnectionCreated, UNKNOWN, this._tags)
     this.set(this.ClientStarted, UNKNOWN, this._tags)
+    this.set(this.StartTime, UNKNOWN, this._tags)
     this.set(this.ConnectionStatus, UNKNOWN, this._extra)
     this.set(this.ConnectionStatistics, UNKNOWN, this._extra)
     this.set(this.ConnectionIP, UNKNOWN, this._extra)
@@ -75,15 +77,13 @@ class BugReporterMetrics {
 
   syncWith (messageBus: MessageBus) {
     this._messageBus = messageBus
-    this._messageBus.on(messages.METRIC_SYNC, (data: MetricSyncDTO) => {
-      this.set(data.metric, data.value)
+    this._messageBus.on(messages.METRIC_SYNC, (data: any) => {
+      const dto: MetricSyncDTO = (data: MetricSyncDTO)
+      this.set(dto.metric, dto.value)
     })
-
-    // eslint-disable-next-line
-    console.log("metric sync enabled")
   }
 
-  set (metric: string, value, metricStorage: Map = null) {
+  set (metric: string, value: mixed, metricStorage: ?Map<string, any> = null) {
     // detect default storage for metric (tags or extra)
     if (!metricStorage) {
       if (this._tags.has(metric)) {
@@ -111,7 +111,7 @@ class BugReporterMetrics {
     }
   }
 
-  addMetricsTo (data) {
+  addMetricsTo (data: any) {
     this._tags.forEach((value, metric) => {
       data.tags[metric] = value
     })
@@ -119,8 +119,12 @@ class BugReporterMetrics {
       data.extra[metric] = value
     })
   }
+
+  dateTimeString (): string {
+    return (new Date()).toUTCString()
+  }
 }
 
 const bugReporterMetrics = new BugReporterMetrics()
 
-export { bugReporterMetrics }
+export {bugReporterMetrics}
