@@ -19,6 +19,7 @@
     <div class="appError">
         <h4>{{ error.message }}</h4>
         <div>{{ error.hint }}</div>
+        <a class="report-issue" @click="reportIssue()">report issue</a>
     </div>
 </template>
 
@@ -32,20 +33,30 @@
             font-weight: 600;
             font-size: x-large;
         }
+        .report-issue {
+            font-weight: 500;
+            font-size: large;
+            text-decoration: underline;
+            cursor: pointer;
+        }
     }
 </style>
 
 <script>
 export default {
   name: 'AppError',
+  dependencies: ['feedbackForm'],
   data () {
     return {}
   },
   props: {
     error: Object
   },
-  computed: {},
-  methods: {},
+  methods: {
+    reportIssue () {
+      this.feedbackForm.show()
+    }
+  },
   mounted () {
   }
 }
