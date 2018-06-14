@@ -22,60 +22,47 @@ import type {MetricSyncDTO} from '../communication/dto'
 
 const UNKNOWN = 'no'
 
-function isEquivalent (a: any, b: any): boolean {
-  if (typeof (a) !== typeof (b)) {
-    return false
-  }
-  if (typeof (a) !== 'object') {
-    return a === b
-  }
-
-  // Create arrays of property names
-  const aProps = Object.getOwnPropertyNames(a)
-  const bProps = Object.getOwnPropertyNames(b)
-
-  if (aProps.length !== bProps.length) {
-    return false
-  }
-
-  for (let i = 0; i < aProps.length; i++) {
-    const propName = aProps[i]
-    if (a[propName] !== b[propName]) {
-      return false
-    }
-  }
-  return true
+const TAGS = {
+  IdentityUnlocked: 'identity_unlocked',
+  ProposalsFetched: 'proposals_fetched',
+  ConnectionCreated: 'connection_created',
+  ClientStarted: 'client_started',
+  StartTime: 'start_time'
 }
 
-class BugReporterMetrics {
-  IdentityUnlocked = 'identity_unlocked'
-  ProposalsFetched = 'proposals_fetched'
-  HealthCheckTime = 'last_health_check'
-  ConnectionCreated = 'connection_created'
-  ConnectionStatus = 'connection_status'
-  ConnectionStatistics = 'connection_statistics'
-  ConnectionIP = 'connection_ip'
-  ClientStarted = 'client_started'
-  StartTime = 'start_time'
+const EXTRA = {
+  HealthCheckTime: 'last_health_check',
+  ConnectionStatus: 'connection_status',
+  ConnectionStatistics: 'connection_statistics',
+  ConnectionIP: 'connection_ip'
+}
 
-  _tags: Map<string, any> = new Map()
-  _extra: Map<string, any> = new Map()
+type MetricTags = $Values<typeof TAGS>
+type MetricExtra = $Values<typeof EXTRA>
+type Metric = MetricTags | MetricExtra
+
+/**
+ * Collects and synchronizes data used in BugReporter
+ */
+class BugReporterMetrics {
+  Tags = TAGS
+  Extra = EXTRA
+
+  _tags: Map<MetricTags, any> = new Map()
+  _extra: Map<MetricExtra, any> = new Map()
   _messageBus: MessageBus
 
   constructor () {
     // set initial values for metrics
-    this.set(this.IdentityUnlocked, UNKNOWN, this._tags)
-    this.set(this.ProposalsFetched, UNKNOWN, this._tags)
-    this.set(this.ConnectionCreated, UNKNOWN, this._tags)
-    this.set(this.ClientStarted, UNKNOWN, this._tags)
-    this.set(this.StartTime, UNKNOWN, this._tags)
-    this.set(this.ConnectionStatus, UNKNOWN, this._extra)
-    this.set(this.ConnectionStatistics, UNKNOWN, this._extra)
-    this.set(this.ConnectionIP, UNKNOWN, this._extra)
-    this.set(this.HealthCheckTime, UNKNOWN, this._extra)
+    for (let tagKey of Object.keys(this.Tags)) {
+      this.set(this.Tags[tagKey], UNKNOWN, this._tags)
+    }
+    for (let tagKey of Object.keys(this.Extra)) {
+      this.set(this.Extra[tagKey], UNKNOWN, this._extra)
+    }
   }
 
-  syncWith (messageBus: MessageBus) {
+  syncWith (messageBus: MessageBus): void {
     this._messageBus = messageBus
     this._messageBus.on(messages.METRIC_SYNC, (data: any) => {
       const dto: MetricSyncDTO = (data: MetricSyncDTO)
@@ -83,7 +70,7 @@ class BugReporterMetrics {
     })
   }
 
-  set (metric: string, value: mixed, metricStorage: ?Map<string, any> = null) {
+  set (metric: Metric, value: mixed, metricStorage: ?Map<Metric, any> = null): void {
     // detect default storage for metric (tags or extra)
     if (!metricStorage) {
       if (this._tags.has(metric)) {
@@ -95,7 +82,7 @@ class BugReporterMetrics {
     }
 
     const oldValue = metricStorage.get(metric)
-    if (isEquivalent(oldValue, value)) {
+    if (JSON.stringify(oldValue) === JSON.stringify(value)) {
       // metric's value was not updated
       return
     }
@@ -111,7 +98,16 @@ class BugReporterMetrics {
     }
   }
 
-  addMetricsTo (data: any) {
+  get (metric: Metric): any {
+    if (this._tags.has(metric)) {
+      return this._tags.get(metric)
+    } else if (this._extra.has(metric)) {
+      return this._extra.get(metric)
+    }
+    return null
+  }
+
+  addMetricsTo (data: any): void {
     this._tags.forEach((value, metric) => {
       data.tags[metric] = value
     })
@@ -127,4 +123,4 @@ class BugReporterMetrics {
 
 const bugReporterMetrics = new BugReporterMetrics()
 
-export {bugReporterMetrics}
+export {bugReporterMetrics, UNKNOWN}

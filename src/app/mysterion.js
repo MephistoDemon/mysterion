@@ -91,7 +91,7 @@ class Mysterion {
   }
 
   run () {
-    bugReporterMetrics.set(bugReporterMetrics.StartTime, bugReporterMetrics.dateTimeString())
+    bugReporterMetrics.set(bugReporterMetrics.Tags.StartTime, bugReporterMetrics.dateTimeString())
 
     this.logUnhandledRejections()
 
@@ -330,12 +330,12 @@ class Mysterion {
     this.monitoring.subscribeUp(() => {
       logInfo("'mysterium_client' is up")
       this.communication.sendMysteriumClientUp()
-      bugReporterMetrics.set(bugReporterMetrics.ClientStarted, true)
+      bugReporterMetrics.set(bugReporterMetrics.Tags.ClientStarted, true)
     })
     this.monitoring.subscribeDown(() => {
       logInfo("'mysterium_client' is down")
       this.communication.sendMysteriumClientDown()
-      bugReporterMetrics.set(bugReporterMetrics.ClientStarted, false)
+      bugReporterMetrics.set(bugReporterMetrics.Tags.ClientStarted, false)
     })
     this.monitoring.subscribeStatus((status) => {
       if (status === false) {
