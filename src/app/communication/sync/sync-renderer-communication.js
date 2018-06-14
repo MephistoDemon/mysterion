@@ -16,34 +16,30 @@
  */
 
 // @flow
-import {ipcMain} from 'electron'
 
-import type { MessageBus } from './messageBus'
+import logger from '../../logger'
+import messages from '../messages'
+import type { SyncSender } from './sync'
+import type { SyncRendererCommunication } from './sync-communication'
 
-type Sender = (channel: string, data?: mixed) => void
+/**
+ * Performs synchronous calls from renderer to main.
+ */
+class SyncSenderRendererCommunication implements SyncRendererCommunication {
+  _syncSender: SyncSender
 
-class MainMessageBus implements MessageBus {
-  _send: Sender
-  _captureException: (Error) => void
-
-  constructor (send: Sender, captureException: (Error) => void) {
-    this._send = send
-    this._captureException = captureException
+  constructor (syncSender: SyncSender) {
+    this._syncSender = syncSender
   }
 
-  send (channel: string, data?: mixed): void {
-    try {
-      this._send(channel, data)
-    } catch (err) {
-      this._captureException(err)
+  getSessionId (): ?string {
+    const result = this._syncSender.send(messages.GET_SESSION_ID)
+    if (typeof result !== 'string') {
+      logger.error(`Wrong result for sessionId received, result: ${String(result)}`)
+      return null
     }
-  }
-
-  on (channel: string, callback: (data?: mixed) => any): void {
-    ipcMain.on(channel, (event, data) => {
-      callback(data)
-    })
+    return result
   }
 }
 
-export default MainMessageBus
+export default SyncSenderRendererCommunication

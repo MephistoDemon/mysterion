@@ -40,6 +40,9 @@ import type { MessageBus } from './communication/messageBus'
 import type { MainCommunication } from './communication/main-communication'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
+import type { EnvironmentCollector } from './bug-reporting/environment/environment-collector'
+import { SyncIpcReceiver } from './communication/sync/sync-ipc'
+import SyncReceiverMainCommunication from './communication/sync/sync-main-communication'
 import BackendLogBootstrapper from './logging/backend-log-bootstrapper'
 import LogCache from './logging/log-cache'
 
@@ -53,6 +56,7 @@ type MysterionParams = {
   process: Object,
   proposalFetcher: ProposalFetcher,
   bugReporter: BugReporter,
+  environmentCollector: EnvironmentCollector,
   backendLogBootstrapper: BackendLogBootstrapper,
   mysteriumProcessLogCache: LogCache,
   userSettingsStore: UserSettingsStore,
@@ -72,6 +76,7 @@ class Mysterion {
   process: Object
   proposalFetcher: ProposalFetcher
   bugReporter: BugReporter
+  environmentCollector: EnvironmentCollector
   backendLogBootstrapper: BackendLogBootstrapper
   mysteriumProcessLogCache: LogCache
   userSettingsStore: UserSettingsStore
@@ -91,6 +96,7 @@ class Mysterion {
     this.process = params.process
     this.proposalFetcher = params.proposalFetcher
     this.bugReporter = params.bugReporter
+    this.environmentCollector = params.environmentCollector
     this.backendLogBootstrapper = params.backendLogBootstrapper
     this.mysteriumProcessLogCache = params.mysteriumProcessLogCache
     this.userSettingsStore = params.userSettingsStore
@@ -98,6 +104,7 @@ class Mysterion {
   }
 
   run () {
+    this._setupSyncCallbacks()
     this.backendLogBootstrapper.init()
     this.logUnhandledRejections()
 
@@ -133,6 +140,12 @@ class Mysterion {
     app.on('before-quit', () => {
       this.window.willQuitApp = true
     })
+  }
+
+  _setupSyncCallbacks () {
+    const receiver = new SyncIpcReceiver()
+    const communication = new SyncReceiverMainCommunication(receiver)
+    communication.onGetSessionId(() => this.environmentCollector.getSessionId())
   }
 
   logUnhandledRejections () {
@@ -271,6 +284,7 @@ class Mysterion {
 
   async onWillQuit () {
     this.monitoring.stop()
+    // TODO: fix - proposalFetcher can still be undefined at this point
     this.proposalFetcher.stop()
 
     try {

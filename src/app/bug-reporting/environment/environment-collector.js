@@ -16,34 +16,14 @@
  */
 
 // @flow
-import {ipcMain} from 'electron'
 
-import type { MessageBus } from './messageBus'
+import type { SerializedLogCache } from '../../logging/log-cache'
 
-type Sender = (channel: string, data?: mixed) => void
-
-class MainMessageBus implements MessageBus {
-  _send: Sender
-  _captureException: (Error) => void
-
-  constructor (send: Sender, captureException: (Error) => void) {
-    this._send = send
-    this._captureException = captureException
-  }
-
-  send (channel: string, data?: mixed): void {
-    try {
-      this._send(channel, data)
-    } catch (err) {
-      this._captureException(err)
-    }
-  }
-
-  on (channel: string, callback: (data?: mixed) => any): void {
-    ipcMain.on(channel, (event, data) => {
-      callback(data)
-    })
-  }
+interface EnvironmentCollector {
+  getSessionId (): string,
+  getMysterionReleaseId (): string,
+  getSerializedBackendLogCache (): SerializedLogCache,
+  getSerializedMysteriumProcessLogCache (): SerializedLogCache,
 }
 
-export default MainMessageBus
+export type { EnvironmentCollector }

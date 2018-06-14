@@ -41,5 +41,6 @@ export default {
 
   USER_SETTINGS: 'user.settings',
   USER_SETTINGS_REQUEST: 'user.settings.request',
-  USER_SETTINGS_UPDATE: 'user.settings.update'
+  USER_SETTINGS_UPDATE: 'user.settings.update',
+  GET_SESSION_ID: 'GET_SESSION_ID'
 }

@@ -19,6 +19,7 @@
 import type { Container } from '../app/di'
 import os from 'os'
 import LogCache from '../app/logging/log-cache'
+import type { EnvironmentCollector } from '../app/bug-reporting/environment/environment-collector'
 
 function bootstrap (container: Container) {
   container.factory(
@@ -40,23 +41,25 @@ function bootstrap (container: Container) {
   const extendedProcess = (process: { type?: string })
   container.service(
     'bugReporter.config',
-    ['mysterionReleaseID', 'mysteriumProcessLogCache', 'backendLogCache'],
-    (mysterionReleaseID, mysteriumProcessLogCache, backendLogCache): RavenOptions => {
+    // TODO: get rid of backendLogCache
+    ['environmentCollector', 'backendLogCache'],
+    (environmentCollector: EnvironmentCollector, backendLogCache: LogCache): RavenOptions => {
       return {
         captureUnhandledRejections: true,
-        release: mysterionReleaseID,
+        release: environmentCollector.getMysterionReleaseId(),
         tags: {
           environment: process.env.NODE_ENV || '',
           process: extendedProcess.type || '',
           electron: process.versions.electron || '',
           chrome: process.versions.chrome || '',
           platform: os.platform(),
-          platform_release: os.release()
+          platform_release: os.release(),
+          session_id: environmentCollector.getSessionId()
         },
         dataCallback: (data) => {
           data.extra.logs = {
-            mysterium_process: mysteriumProcessLogCache.getSerialized(),
-            backend: backendLogCache.getSerialized()
+            mysterium_process: environmentCollector.getSerializedMysteriumProcessLogCache(),
+            backend: backendLogCache.getSerialized() // TODO: use environmentCollector
           }
           return data
         },

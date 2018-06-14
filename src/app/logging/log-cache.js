@@ -23,6 +23,11 @@ type LogCacheStore = {
   error: LimitedLinkedList
 }
 
+type SerializedLogCache = {
+  info: string,
+  error: string
+}
+
 class LogCache {
   _logs: LogCacheStore = {
     info: new LimitedLinkedList(300),
@@ -40,7 +45,7 @@ class LogCache {
     }
   }
 
-  getSerialized (): { info: string, error: string } {
+  getSerialized (): SerializedLogCache {
     return {
       info: this._logs.info.toArray().reverse().join('\n'),
       error: this._logs.error.toArray().reverse().join('\n')
@@ -48,4 +53,5 @@ class LogCache {
   }
 }
 
+export type { SerializedLogCache }
 export default LogCache

@@ -76,6 +76,7 @@ function bootstrap (container: Container) {
       'mysteriumClientMonitoring',
       'proposalFetcher',
       'bugReporter',
+      'environmentCollector',
       'backendLogBootstrapper',
       'mysteriumProcessLogCache',
       'userSettingsStore',
@@ -88,6 +89,8 @@ function bootstrap (container: Container) {
       mysteriumClientMonitoring,
       proposalFetcher,
       bugReporter,
+      // TODO: rename
+      bugReporterEnvironmentManager,
       backendLogBootstrapper,
       mysteriumProcessLogCache,
       userSettingsStore,
@@ -102,9 +105,10 @@ function bootstrap (container: Container) {
         process: mysteriumClientProcess,
         monitoring: mysteriumClientMonitoring,
         proposalFetcher: proposalFetcher,
+        bugReporter: bugReporter,
+        environmentCollector: bugReporterEnvironmentManager,
         backendLogBootstrapper,
         mysteriumProcessLogCache,
-        bugReporter,
         userSettingsStore,
         disconnectNotification
       })

@@ -22,6 +22,11 @@ import {FeedbackForm} from '../../../app/bug-reporting/feedback-form'
 import RavenJs from 'raven-js'
 import Vue from 'vue'
 import RavenVue from 'raven-js/plugins/vue'
+import RendererEnvironmentCollector from '../../../app/bug-reporting/environment/renderer-environment-collector'
+import type { EnvironmentCollector } from '../../../app/bug-reporting/environment/environment-collector'
+import LogCache from '../../../app/logging/log-cache'
+import SyncSenderRendererCommunication from '../../../app/communication/sync/sync-renderer-communication'
+import { SyncIpcSender } from '../../../app/communication/sync/sync-ipc'
 
 function bootstrap (container: Container) {
   container.constant('bugReporter.sentryURL', 'https://f1e63dd563c34c35a56e98aa02518d40@sentry.io/300978')
@@ -55,6 +60,16 @@ function bootstrap (container: Container) {
         .config(sentryURL, config)
         .install()
         .addPlugin(RavenVue, Vue)
+    }
+  )
+
+  container.service(
+    'environmentCollector',
+    ['backendLogCache', 'mysteriumProcessLogCache', 'mysterionReleaseID'],
+    (backendLogCache: LogCache, mysteriumProcessLogCache: LogCache, mysterionReleaseID: string): EnvironmentCollector => {
+      const sender = new SyncIpcSender()
+      const communication = new SyncSenderRendererCommunication(sender)
+      return new RendererEnvironmentCollector(backendLogCache, mysteriumProcessLogCache, mysterionReleaseID, communication)
     }
   )
 
