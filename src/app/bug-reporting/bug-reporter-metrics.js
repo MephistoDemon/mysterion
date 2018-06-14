@@ -120,7 +120,7 @@ class BugReporterMetrics {
     })
   }
 
-  static dateTimeString (): string {
+  dateTimeString (): string {
     return (new Date()).toUTCString()
   }
 }
