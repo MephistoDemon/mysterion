@@ -103,14 +103,14 @@ class HttpTequilapiClient implements TequilapiClient {
       throw new Error('Proposals response body is missing')
     }
     const responseDto = new ProposalsResponseDTO(response)
+    const proposals = responseDto.proposals
 
-    if (!responseDto.proposals) {
+    if (!proposals) {
       bugReporterMetrics.set(bugReporterMetrics.ProposalsFetched, false)
       return []
     }
     bugReporterMetrics.set(bugReporterMetrics.ProposalsFetched, true)
-    // $FlowFixMe
-    return responseDto.proposals
+    return proposals
   }
 
   async connectionCreate (request: ConnectionRequestDTO, timeout: ?number = TIMEOUT_DISABLED): Promise<ConnectionStatusDTO> {
