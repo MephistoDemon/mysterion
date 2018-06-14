@@ -107,9 +107,9 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!responseDto.proposals) {
       bugReporterMetrics.set(bugReporterMetrics.ProposalsFetched, false)
       return []
-    } else {
-      bugReporterMetrics.set(bugReporterMetrics.ProposalsFetched, true)
     }
+    bugReporterMetrics.set(bugReporterMetrics.ProposalsFetched, true)
+    // $FlowFixMe
     return responseDto.proposals
   }
 
