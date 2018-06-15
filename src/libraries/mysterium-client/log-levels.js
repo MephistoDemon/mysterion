@@ -16,7 +16,7 @@
  */
 
 const logLevels = {
-  LOG: 'info',
+  INFO: 'info',
   ERROR: 'error'
 }
 

@@ -46,7 +46,7 @@ function bootstrap (container: Container) {
           platform_release: os.release()
         },
         dataCallback: (data) => {
-          data.extra.logs = logCache.serializeAllLogs()
+          data.extra.logs = logCache.getSerialized()
           return data
         },
         autoBreadcrumbs: {

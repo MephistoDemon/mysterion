@@ -43,7 +43,7 @@ class Process {
     this._stdoutPath = path.join(logDirectory, stdoutFileName)
     this._stderrPath = path.join(logDirectory, stderrFileName)
     this._subscribers = {
-      [processLogLevels.LOG]: [],
+      [processLogLevels.INFO]: [],
       [processLogLevels.ERROR]: []
     }
   }
@@ -65,7 +65,7 @@ class Process {
 
   async setupLogging () {
     await this._prepareLogFiles()
-    tailFile(this._stdoutPath, this._logCallback.bind(this, processLogLevels.LOG))
+    tailFile(this._stdoutPath, this._logCallback.bind(this, processLogLevels.INFO))
     tailFile(this._stderrPath, this._logCallback.bind(this, processLogLevels.ERROR))
     tailFile(SYSTEM_LOG, filterLine(INVERSE_DOMAIN_PACKAGE_NAME, this._logCallback.bind(this, processLogLevels.ERROR)))
   }

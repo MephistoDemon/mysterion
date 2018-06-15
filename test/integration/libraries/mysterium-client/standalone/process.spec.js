@@ -44,7 +44,7 @@ xdescribe('Standalone Process', () => {
       tequilapiPort: tequilapiPort
     })
     process.start()
-    process.onLog(processLogLevels.LOG, data => logs.push(data))
+    process.onLog(processLogLevels.INFO, data => logs.push(data))
 
     tequilapi = tequilapiClientFactory(`http://127.0.0.1:${tequilapiPort}`)
 

@@ -51,8 +51,8 @@ class BugReporterRenderer implements BugReporter {
     this._captureException(err, 'info', context)
   }
 
-  pushToLogCache (level: logLevels.LOG | logLevels.ERROR, data: string) {
-    this.logCache.pushToCache(level, data)
+  pushToLogCache (level: logLevels.INFO | logLevels.ERROR, data: string) {
+    this.logCache.pushToLevel(level, data)
   }
 
   _captureMessage (message: string, level: 'error' | 'info', context: ?any): void {

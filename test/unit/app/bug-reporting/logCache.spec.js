@@ -25,22 +25,22 @@ describe('LogCache', () => {
   beforeEach(() => {
     logCache = new LogCache()
     error = new Error('err message')
-    logCache.pushToCache('info', 'something')
-    logCache.pushToCache('info', 'log2')
-    logCache.pushToCache('error', error)
+    logCache.pushToLevel('info', 'something')
+    logCache.pushToLevel('info', 'log2')
+    logCache.pushToLevel('error', error)
   })
 
   describe('.getLogCache', () => {
     it('returns what was pushed', () => {
-      expect(logCache.getLogCache().info).to.eql(['something', 'log2'])
-      expect(logCache.getLogCache().error).to.eql([error])
+      expect(logCache.get().info).to.eql(['something', 'log2'])
+      expect(logCache.get().error).to.eql([error])
     })
   })
 
   describe('.serializeAllLogs', () => {
     it('serializes caches to string in reverse order', () => {
-      expect(logCache.serializeAllLogs().info).to.eql('log2\nsomething')
-      expect(logCache.serializeAllLogs().error).to.eql(error.toString())
+      expect(logCache.getSerialized().info).to.eql('log2\nsomething')
+      expect(logCache.getSerialized().error).to.eql(error.toString())
     })
   })
 })

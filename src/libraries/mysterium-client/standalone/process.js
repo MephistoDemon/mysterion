@@ -64,7 +64,7 @@ class Process {
    */
   _getStreamForLevel (level) {
     switch (level) {
-      case logLevels.LOG:
+      case logLevels.INFO:
         return this.child.stdout
       case logLevels.ERROR:
         return this.child.stderr

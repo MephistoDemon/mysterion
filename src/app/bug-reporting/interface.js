@@ -26,5 +26,5 @@ export interface BugReporter {
   captureInfoMessage (message: string, context: ?any): void,
   captureException (err: Error, context: ?any): void,
   captureInfoException (err: Error, context: ?any): void,
-  pushToLogCache (logLevels.LOG | logLevels.ERROR, string): void
+  pushToLogCache (logLevels.INFO | logLevels.ERROR, string): void
 }

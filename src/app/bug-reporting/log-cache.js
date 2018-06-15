@@ -18,29 +18,29 @@
 // @flow
 import LimitedLinkedList from '../../libraries/limited-linked-list'
 
-type LogCaches = {
+type LogCacheStore = {
   info: LimitedLinkedList,
   error: LimitedLinkedList
 }
 
 class LogCache {
-  _logs: LogCaches = {
+  _logs: LogCacheStore = {
     info: new LimitedLinkedList(300),
     error: new LimitedLinkedList(300)
   }
 
-  pushToCache (level: 'info' | 'error', data: any) {
+  pushToLevel (level: 'info' | 'error', data: any) {
     this._logs[level].insert(data)
   }
 
-  getLogCache (): {info: Array<any>, error: Array<any>} { // maybe getLogCacheForLevel
+  get (): {info: Array<any>, error: Array<any>} {
     return {
       info: this._logs.info.toArray(),
       error: this._logs.error.toArray()
     }
   }
 
-  serializeAllLogs (): {info: string, error: string} {
+  getSerialized (): {info: string, error: string} {
     return {
       info: this._logs.info.toArray().reverse().join('\n'),
       error: this._logs.error.toArray().reverse().join('\n')
