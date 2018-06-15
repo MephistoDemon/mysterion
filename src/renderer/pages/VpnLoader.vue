@@ -15,7 +15,9 @@
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<template></template>
+<template>
+  <div/>
+</template>
 <script>
 import {mapState} from 'vuex'
 import type from '@/store/types'
@@ -57,6 +59,6 @@ export default {
       error: state => state.main.error
     })
   },
-  name: 'loading-screen'
+  name: 'LoadingScreen'
 }
 </script>

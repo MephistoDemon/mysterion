@@ -16,13 +16,13 @@
   -->
 
 <template>
-    <div>
-        <div class="control__action btn"
-             :class="{'btn--transparent':buttonTransparent}"
-             @click="buttonPressed"
-             v-text="buttonText">
-        </div>
-    </div>
+  <div>
+    <div
+      class="control__action btn"
+      :class="{'btn--transparent':buttonTransparent}"
+      @click="buttonPressed"
+      v-text="buttonText"/>
+  </div>
 </template>
 
 <script>
@@ -33,10 +33,11 @@ import messages from '../../app/messages'
 import ConnectionRequestDTO from '../../libraries/mysterium-tequilapi/dto/connection-request'
 
 export default {
-  name: 'connection-button',
+  name: 'ConnectionButton',
   props: {
     providerId: {
-      type: String
+      type: String,
+      required: true
     }
   },
   computed: {
