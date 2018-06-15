@@ -16,22 +16,30 @@
   -->
 
 <template>
-    <div id="app" class="app">
-        <div id="content">
-            <div class="control__version">{{version}}</div>
-            <app-modal v-if="overlayError" :close="false">
-                <app-error :error="overlayError"></app-error>
-            </app-modal>
+  <div
+    id="app"
+    class="app">
+    <div id="content">
+      <div class="control__version">{{ version }}</div>
+      <app-modal
+        v-if="overlayError"
+        :close="false">
+        <app-error :error="overlayError"/>
+      </app-modal>
 
-            <app-nav class="app__nav" v-if="navVisible"/>
+      <app-nav
+        class="app__nav"
+        v-if="navVisible"/>
 
-            <router-view class="app__page"/>
+      <router-view class="app__page"/>
 
-            <transition name="fade" v-if="visual">
-                <app-visual class="app__visual"/>
-            </transition>
-        </div>
+      <transition
+        name="fade"
+        v-if="visual">
+        <app-visual class="app__visual"/>
+      </transition>
     </div>
+  </div>
 </template>
 
 <script>
