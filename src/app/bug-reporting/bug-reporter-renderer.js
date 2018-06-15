@@ -35,7 +35,7 @@ class BugReporterRenderer implements BugReporter {
     this.raven.setUserContext(userData)
   }
 
-  captureMessage (message: string, context: ?any): void {
+  captureErrorMessage (message: string, context: ?any): void {
     this._captureMessage(message, 'error', context)
   }
 
@@ -43,7 +43,7 @@ class BugReporterRenderer implements BugReporter {
     this._captureMessage(message, 'info', context)
   }
 
-  captureException (err: Error, context: ?any): void {
+  captureErrorException (err: Error, context: ?any): void {
     this._captureException(err, 'error', context)
   }
 
@@ -60,7 +60,7 @@ class BugReporterRenderer implements BugReporter {
   }
 
   _captureException (err: Error, level: 'error' | 'info', context: ?any): void {
-    this.raven.captureException(err, { level, extra: context })
+    this.raven.captureErrorException(err, { level, extra: context })
   }
 }
 

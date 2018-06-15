@@ -16,10 +16,10 @@
   -->
 
 <template>
-    <div class="appError">
-        <h4>{{ error.message }}</h4>
-        <div>{{ error.hint }}</div>
-    </div>
+  <div class="appError">
+    <h4>{{ error.message }}</h4>
+    <div>{{ error.hint }}</div>
+  </div>
 </template>
 
 <style lang="scss">
@@ -42,7 +42,10 @@ export default {
     return {}
   },
   props: {
-    error: Object
+    error: {
+      type: Object,
+      required: true
+    }
   },
   computed: {},
   methods: {},

@@ -129,7 +129,7 @@ function actionsFactory (
         if (isHttpError(err)) {
           return
         }
-        bugReporter.captureException(err)
+        bugReporter.captureErrorException(err)
       }
     },
     async [type.CONNECTION_IP] ({commit}) {
@@ -140,7 +140,7 @@ function actionsFactory (
         if (isHttpError(err)) {
           return
         }
-        bugReporter.captureException(err)
+        bugReporter.captureErrorException(err)
       }
     },
     [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperConfig): FunctionLooper {

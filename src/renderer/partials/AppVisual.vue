@@ -16,26 +16,36 @@
   -->
 
 <template>
-    <div class="visual">
-        <div class="visual__container">
-            <div class="visual__object" :class="visualClass">
-                <div class="visual__circles">
-                    <i class="visual__circle visual__circle--dark" :class="visualClass"></i>
-                    <i class="visual__circle visual__circle--default" :class="visualClass"></i>
-                    <i class="visual__circle visual__circle--light" :class="visualClass"></i>
-                </div>
-                <div class="visual__media" :class="visualClass">
-                    <keep-alive>
-                        <component
-                                :is="visual+'Visual'"
-                                class="visual__image"
-                                :class="['visual__image--'+visual]"
-                        />
-                    </keep-alive>
-                </div>
-            </div>
+  <div class="visual">
+    <div class="visual__container">
+      <div
+        class="visual__object"
+        :class="visualClass">
+        <div class="visual__circles">
+          <i
+            class="visual__circle visual__circle--dark"
+            :class="visualClass"/>
+          <i
+            class="visual__circle visual__circle--default"
+            :class="visualClass"/>
+          <i
+            class="visual__circle visual__circle--light"
+            :class="visualClass"/>
         </div>
+        <div
+          class="visual__media"
+          :class="visualClass">
+          <keep-alive>
+            <component
+              :is="visual+'Visual'"
+              class="visual__image"
+              :class="['visual__image--'+visual]"
+            />
+          </keep-alive>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
