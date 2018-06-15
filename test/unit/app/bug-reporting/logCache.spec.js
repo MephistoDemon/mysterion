@@ -30,14 +30,7 @@ describe('LogCache', () => {
     logCache.pushToLevel('error', error)
   })
 
-  describe('.getLogCache', () => {
-    it('returns what was pushed', () => {
-      expect(logCache.get().info).to.eql(['something', 'log2'])
-      expect(logCache.get().error).to.eql([error])
-    })
-  })
-
-  describe('.serializeAllLogs', () => {
+  describe('.getSerialized', () => {
     it('serializes caches to string in reverse order', () => {
       expect(logCache.getSerialized().info).to.eql('log2\nsomething')
       expect(logCache.getSerialized().error).to.eql(error.toString())

@@ -33,13 +33,6 @@ class LogCache {
     this._logs[level].insert(data)
   }
 
-  get (): {info: Array<any>, error: Array<any>} {
-    return {
-      info: this._logs.info.toArray(),
-      error: this._logs.error.toArray()
-    }
-  }
-
   getSerialized (): {info: string, error: string} {
     return {
       info: this._logs.info.toArray().reverse().join('\n'),
