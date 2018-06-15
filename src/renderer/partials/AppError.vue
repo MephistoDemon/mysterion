@@ -16,11 +16,13 @@
   -->
 
 <template>
-    <div class="appError">
-        <h4>{{ error.message }}</h4>
-        <div>{{ error.hint }}</div>
-        <a class="report-issue" @click="reportIssue()">report issue</a>
-    </div>
+
+  <div class="appError">
+    <h4>{{ error.message }}</h4>
+    <div>{{ error.hint }}</div>
+    <a class="report-issue" @click="reportIssue()">report issue</a>
+  </div>
+
 </template>
 
 <style lang="scss">
@@ -50,7 +52,10 @@ export default {
     return {}
   },
   props: {
-    error: Object
+    error: {
+      type: Object,
+      required: true
+    }
   },
   methods: {
     reportIssue () {

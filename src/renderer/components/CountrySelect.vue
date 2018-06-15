@@ -16,31 +16,43 @@
   -->
 
 <template>
-    <div class="countries">
-        <multiselect class="countries__multiselect"
-                     :max-height="120"
-                     v-model="country"
-                     :custom-label="selectedCountryLabel"
-                     placeholder="Choose country"
-                     :options="countryList"
-                     :loading="countriesAreLoading"
-                     :searchable="true"
-                     :show-labels="false"
-                     @open="fetchCountries"
-                     @input="onChange">
-            <template slot="option" slot-scope="props">
-                <div class="multiselect__flag">
-                    <img :src="imagePath(props.option.code)" class="multiselect__flag-svg"/>
-                </div>
-                <div class="multiselect__option-title" v-text="countryLabel(props.option)"></div>
-            </template>
-        </multiselect>
+  <div class="countries">
+    <multiselect
+      class="countries__multiselect"
+      :max-height="120"
+      v-model="country"
+      :custom-label="selectedCountryLabel"
+      placeholder="Choose country"
+      :options="countryList"
+      :loading="countriesAreLoading"
+      :searchable="true"
+      :show-labels="false"
+      @open="fetchCountries"
+      @input="onChange">
+      <template
+        slot="option"
+        slot-scope="props">
+        <div class="multiselect__flag">
+          <img
+            :src="imagePath(props.option.code)"
+            class="multiselect__flag-svg">
+        </div>
+        <div
+          class="multiselect__option-title"
+          v-text="countryLabel(props.option)"/>
+      </template>
+    </multiselect>
 
-        <i class="countries__flag dropdown-image">
-            <img :src="imagePath(country.code)" v-if="country" class="countries__flag-svg"/>
-            <icon-world class="countries__flag-svg" v-if="!country"/>
-        </i>
-    </div>
+    <i class="countries__flag dropdown-image">
+      <img
+        :src="imagePath(country.code)"
+        v-if="country"
+        class="countries__flag-svg">
+      <icon-world
+        class="countries__flag-svg"
+        v-if="!country"/>
+    </i>
+  </div>
 </template>
 
 <script>

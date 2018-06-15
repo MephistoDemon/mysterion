@@ -18,14 +18,22 @@
 <template>
   <div class="terms">
     <div class="terms-content">
-      <div style="height:10vh;border-bottom:1px solid #eee"></div>
+      <div style="height:10vh;border-bottom:1px solid #eee"/>
       <div class="terms-box">
-        <div style="padding:1rem 8rem;" v-html="termsAndConditions.htmlContent"></div>
+        <div
+          style="padding:1rem 8rem;"
+          v-html="termsAndConditions.htmlContent"/>
       </div>
     </div>
     <div class="terms-actions">
-      <a href="#" class="control__action btn" @click.prevent="accept">Accept and launch Mysterion</a>
-      <a href="#" class="control__action btn btn-danger" @click.prevent="decline">Decline</a>
+      <a
+        href="#"
+        class="control__action btn"
+        @click.prevent="accept">Accept and launch Mysterion</a>
+      <a
+        href="#"
+        class="control__action btn btn-danger"
+        @click.prevent="decline">Decline</a>
     </div>
   </div>
 </template>
@@ -33,7 +41,7 @@
 import {mapGetters} from 'vuex'
 
 export default {
-  name: 'terms',
+  name: 'Terms',
   dependencies: ['rendererCommunication'],
   methods: {
     accept () {
