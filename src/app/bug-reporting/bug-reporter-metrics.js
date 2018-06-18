@@ -35,9 +35,12 @@ const EXTRA = {
   ConnectionIP: 'connection_ip'
 }
 
-type MetricTags = $Values<typeof TAGS>
-type MetricExtra = $Values<typeof EXTRA>
-type Metric = MetricTags | MetricExtra
+const METRICS = {}
+Object.assign(METRICS, TAGS)
+Object.assign(METRICS, EXTRA)
+
+type Metric = $Values<typeof METRICS>
+
 type RavenData = {
   tags: {
     [id: string]: mixed
@@ -102,4 +105,4 @@ class BugReporterMetrics {
 
 const bugReporterMetrics = new BugReporterMetrics()
 
-export { bugReporterMetrics, TAGS, EXTRA }
+export { bugReporterMetrics, METRICS, TAGS, EXTRA }

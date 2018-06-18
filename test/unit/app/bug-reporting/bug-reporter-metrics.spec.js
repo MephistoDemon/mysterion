@@ -17,13 +17,13 @@
 
 // @flow
 import {describe, it, expect} from '../../../helpers/dependencies'
-import {bugReporterMetrics, TAGS, EXTRA} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
+import {bugReporterMetrics, EXTRA, METRICS, TAGS} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
 import type {MetricSyncDTO} from '../../../../src/app/communication/dto'
 
 describe('BugReporterMetrics', () => {
   it('sets tag metric', () => {
-    const metricKey = TAGS.IdentityUnlocked
+    const metricKey = METRICS.IdentityUnlocked
     const metricValue = true
 
     expect(bugReporterMetrics.get(metricKey)).to.be.eql(undefined)
@@ -32,7 +32,7 @@ describe('BugReporterMetrics', () => {
   })
 
   it('sets extra metric', () => {
-    const metricKey = EXTRA.HealthCheckTime
+    const metricKey = METRICS.HealthCheckTime
     const metricValue = bugReporterMetrics.dateTimeString()
 
     expect(bugReporterMetrics.get(metricKey)).to.eql(undefined)
@@ -49,8 +49,7 @@ describe('BugReporterMetrics', () => {
     const tagKeys = Object.keys(data.tags)
     const extraKeys = Object.keys(data.extra)
 
-    expect(tagKeys.length).to.eql(Object.values(TAGS).length)
-    expect(extraKeys.length).to.eql(Object.values(EXTRA).length)
+    expect(tagKeys.length + extraKeys.length).to.eql(Object.values(METRICS).length)
 
     for (let tagKey of Object.values(TAGS)) {
       expect(tagKeys).contains(tagKey)
@@ -64,7 +63,7 @@ describe('BugReporterMetrics', () => {
     const messageBus = new FakeMessageBus()
     bugReporterMetrics.syncWith(messageBus)
 
-    const metricKey = EXTRA.ConnectionIP
+    const metricKey = METRICS.ConnectionIP
     const metricValue = '{ip: "127.0.0.1"}'
     bugReporterMetrics.set(metricKey, metricValue)
 

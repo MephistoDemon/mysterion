@@ -40,7 +40,7 @@ import type { MessageBus } from './communication/messageBus'
 import type { MainCommunication } from './communication/main-communication'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
-import {bugReporterMetrics, TAGS} from '../app/bug-reporting/bug-reporter-metrics'
+import {bugReporterMetrics, METRICS} from '../app/bug-reporting/bug-reporter-metrics'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -91,7 +91,7 @@ class Mysterion {
   }
 
   run () {
-    bugReporterMetrics.set(TAGS.StartTime, bugReporterMetrics.dateTimeString())
+    bugReporterMetrics.set(METRICS.StartTime, bugReporterMetrics.dateTimeString())
 
     this.logUnhandledRejections()
 
@@ -330,12 +330,12 @@ class Mysterion {
     this.monitoring.subscribeUp(() => {
       logInfo("'mysterium_client' is up")
       this.communication.sendMysteriumClientUp()
-      bugReporterMetrics.set(TAGS.ClientStarted, true)
+      bugReporterMetrics.set(METRICS.ClientStarted, true)
     })
     this.monitoring.subscribeDown(() => {
       logInfo("'mysterium_client' is down")
       this.communication.sendMysteriumClientDown()
-      bugReporterMetrics.set(TAGS.ClientStarted, false)
+      bugReporterMetrics.set(METRICS.ClientStarted, false)
     })
     this.monitoring.subscribeStatus((status) => {
       if (status === false) {

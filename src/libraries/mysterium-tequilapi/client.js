@@ -29,7 +29,7 @@ import ConnectionStatusDTO from './dto/connection-status'
 import ConnectionRequestDTO from './dto/connection-request'
 import ConsumerLocationDTO from './dto/consumer-location'
 import {TIMEOUT_DISABLED} from './timeouts'
-import {bugReporterMetrics, EXTRA, TAGS} from '../../app/bug-reporting/bug-reporter-metrics'
+import {bugReporterMetrics, METRICS} from '../../app/bug-reporting/bug-reporter-metrics'
 
 interface TequilapiClient {
   healthCheck (timeout: ?number): Promise<NodeHealthcheckDTO>,
@@ -63,7 +63,7 @@ class HttpTequilapiClient implements TequilapiClient {
       throw new Error('Healthcheck response body is missing')
     }
 
-    bugReporterMetrics.set(EXTRA.HealthCheckTime, bugReporterMetrics.dateTimeString())
+    bugReporterMetrics.set(METRICS.HealthCheckTime, bugReporterMetrics.dateTimeString())
     return new NodeHealthcheckDTO(response)
   }
 
@@ -91,9 +91,9 @@ class HttpTequilapiClient implements TequilapiClient {
   }
 
   async identityUnlock (id: string, passphrase: string): Promise<void> {
-    bugReporterMetrics.set(TAGS.IdentityUnlocked, false)
+    bugReporterMetrics.set(METRICS.IdentityUnlocked, false)
     await this.http.put('identities/' + id + '/unlock', {passphrase})
-    bugReporterMetrics.set(TAGS.IdentityUnlocked, true)
+    bugReporterMetrics.set(METRICS.IdentityUnlocked, true)
   }
 
   async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {
@@ -106,15 +106,15 @@ class HttpTequilapiClient implements TequilapiClient {
     const proposals = responseDto.proposals
 
     if (!proposals) {
-      bugReporterMetrics.set(TAGS.ProposalsFetched, false)
+      bugReporterMetrics.set(METRICS.ProposalsFetched, false)
       return []
     }
-    bugReporterMetrics.set(TAGS.ProposalsFetched, true)
+    bugReporterMetrics.set(METRICS.ProposalsFetched, true)
     return proposals
   }
 
   async connectionCreate (request: ConnectionRequestDTO, timeout: ?number = TIMEOUT_DISABLED): Promise<ConnectionStatusDTO> {
-    bugReporterMetrics.set(TAGS.ConnectionCreated, false)
+    bugReporterMetrics.set(METRICS.ConnectionCreated, false)
     const response = await this.http.put(
       'connection',
       {
@@ -126,7 +126,7 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Connection creation response body is missing')
     }
-    bugReporterMetrics.set(TAGS.ConnectionCreated, true)
+    bugReporterMetrics.set(METRICS.ConnectionCreated, true)
     return new ConnectionStatusDTO(response)
   }
 
@@ -135,13 +135,13 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Connection status response body is missing')
     }
-    bugReporterMetrics.set(EXTRA.ConnectionStatus, response)
+    bugReporterMetrics.set(METRICS.ConnectionStatus, response)
     return new ConnectionStatusDTO(response)
   }
 
   async connectionCancel (): Promise<void> {
     await this.http.delete('connection')
-    bugReporterMetrics.set(TAGS.ConnectionCreated, false)
+    bugReporterMetrics.set(METRICS.ConnectionCreated, false)
   }
 
   async connectionIP (timeout: ?number): Promise<ConnectionIPDTO> {
@@ -149,7 +149,7 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Connection IP response body is missing')
     }
-    bugReporterMetrics.set(EXTRA.ConnectionIP, response)
+    bugReporterMetrics.set(METRICS.ConnectionIP, response)
     return new ConnectionIPDTO(response)
   }
 
@@ -158,7 +158,7 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Connection statistics response body is missing')
     }
-    bugReporterMetrics.set(EXTRA.ConnectionStatistics, response)
+    bugReporterMetrics.set(METRICS.ConnectionStatistics, response)
     return new ConnectionStatisticsDTO(response)
   }
 
