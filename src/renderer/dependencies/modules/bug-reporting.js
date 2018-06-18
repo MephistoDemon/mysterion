@@ -28,9 +28,9 @@ function bootstrap (container: Container) {
 
   container.factory(
     'bugReporter',
-    ['bugReporter.raven', 'rendererCommunication'],
-    (raven, rendererCommunication) => {
-      const bugReporter = new BugReporterRenderer(raven)
+    ['bugReporter.raven', 'rendererCommunication', 'logCache'],
+    (raven, rendererCommunication, logCache) => {
+      const bugReporter = new BugReporterRenderer(raven, logCache)
       window.addEventListener('unhandledrejection', (evt) => {
         bugReporter.captureErrorMessage(evt.reason, evt.reason.response ? evt.reason.response.data : evt.reason)
       })
