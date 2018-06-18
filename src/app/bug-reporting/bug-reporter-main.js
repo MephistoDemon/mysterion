@@ -35,7 +35,7 @@ class BugReporterMain implements BugReporter {
     })
   }
 
-  captureMessage (message: string, context: ?any): void {
+  captureErrorMessage (message: string, context: ?any): void {
     this._captureMessage(message, 'error', context)
   }
 
@@ -43,7 +43,7 @@ class BugReporterMain implements BugReporter {
     this._captureMessage(message, 'info', context)
   }
 
-  captureException (err: Error, context: ?any): void {
+  captureErrorException (err: Error, context: ?any): void {
     this._captureException(err, 'error', context)
   }
 
