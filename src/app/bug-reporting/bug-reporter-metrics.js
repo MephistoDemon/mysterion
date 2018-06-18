@@ -25,7 +25,7 @@ import type {MetricSyncDTO} from '../communication/dto'
  * Later metric value will be replaces using method 'set'
  * @type {string}
  */
-const NOT_SET = 'no'
+const NOT_SET = 'N/A'
 
 const TAGS = {
   IdentityUnlocked: 'identity_unlocked',

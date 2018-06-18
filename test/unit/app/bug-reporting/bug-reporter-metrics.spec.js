@@ -26,7 +26,7 @@ describe('BugReporterMetrics', () => {
     const metricKey = METRICS.IdentityUnlocked
     const metricValue = true
 
-    expect(bugReporterMetrics.get(metricKey)).to.be.eql(undefined)
+    expect(bugReporterMetrics.get(metricKey)).to.be.undefined
     bugReporterMetrics.set(metricKey, metricValue)
     expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
   })
@@ -35,7 +35,7 @@ describe('BugReporterMetrics', () => {
     const metricKey = METRICS.HealthCheckTime
     const metricValue = bugReporterMetrics.dateTimeString()
 
-    expect(bugReporterMetrics.get(metricKey)).to.eql(undefined)
+    expect(bugReporterMetrics.get(metricKey)).to.be.undefined
     bugReporterMetrics.set(metricKey, metricValue)
     expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
   })
@@ -71,7 +71,7 @@ describe('BugReporterMetrics', () => {
     const metricValue = '{ip: "127.0.0.1"}'
     bugReporterMetrics.set(metricKey, metricValue)
 
-    expect(messageBus.lastData).to.not.be.eql(null)
+    expect(messageBus.lastData).to.be.not.null
     const dto: MetricSyncDTO = (messageBus.lastData: any)
     expect(dto.metric).to.eql(metricKey)
     expect(dto.value).to.eql(metricValue)
@@ -87,7 +87,7 @@ describe('BugReporterMetrics', () => {
       const updatedValue = bugReporterMetrics.get(metricKey)
       expect(updatedValue).to.be.eql(newValue)
     } else {
-      expect(messageBus.lastChannel).to.not.be.eql(null)
+      expect(messageBus.lastChannel).to.not.be.null
     }
   })
 })
