@@ -15,20 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// @flow
 import LimitedLinkedList from '../../libraries/limited-linked-list'
-import {logLevels} from '../../libraries/mysterium-client'
 
-const logsBuffer = {
-  [logLevels.LOG]: new LimitedLinkedList(300),
-  [logLevels.ERROR]: new LimitedLinkedList(300)
+type LogCacheStore = {
+  info: LimitedLinkedList,
+  error: LimitedLinkedList
 }
 
-const pushToLogCache = (level, data) => {
-  logsBuffer[level].insert(data)
+class LogCache {
+  _logs: LogCacheStore = {
+    info: new LimitedLinkedList(300),
+    error: new LimitedLinkedList(300)
+  }
+
+  pushToLevel (level: 'info' | 'error', data: any) {
+    this._logs[level].insert(data)
+  }
+
+  getSerialized (): {info: string, error: string} {
+    return {
+      info: this._logs.info.toArray().reverse().join('\n'),
+      error: this._logs.error.toArray().reverse().join('\n')
+    }
+  }
 }
 
-const getLogCache = (level) => {
-  return logsBuffer[level].toArray().reverse().join('\n')
-}
-
-export { pushToLogCache, getLogCache }
+export default LogCache

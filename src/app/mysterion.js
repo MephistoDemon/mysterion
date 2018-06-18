@@ -325,7 +325,7 @@ class Mysterion {
     this.process.start()
     try {
       this.process.setupLogging()
-      this.process.onLog(processLogLevels.LOG, (data) => cacheLogs(processLogLevels.LOG, data))
+      this.process.onLog(processLogLevels.INFO, (data) => cacheLogs(processLogLevels.INFO, data))
       this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
     } catch (e) {
       logger.error('Failing to process logs. ', e)
