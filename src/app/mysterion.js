@@ -369,7 +369,7 @@ class Mysterion {
     })
     this.proposalFetcher.onFetchingError((error: Error) => {
       logException('Proposal fetching failed', error)
-      this.bugReporter.captureException(error)
+      this.bugReporter.captureErrorException(error)
     })
 
     this.monitoring.subscribeUp(() => {
