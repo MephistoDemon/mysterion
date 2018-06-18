@@ -93,7 +93,9 @@
     "vue-inject": "^2.0.1",
     "vue-multiselect": "^2.0.8",
     "vue-router": "^2.5.3",
-    "vuex": "^2.3.1"
+    "vuex": "^2.3.1",
+    "winston": "^3.0.0",
+    "winston-transport": "^4.2.0"
   },
   "devDependencies": {
     "@vue/test-utils": "^1.0.0-beta.13",
