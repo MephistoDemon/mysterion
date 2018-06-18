@@ -20,6 +20,13 @@ import type {MessageBus} from '../communication/messageBus'
 import messages from '../communication/messages'
 import type {MetricSyncDTO} from '../communication/dto'
 
+/**
+ * Used as default metric value in Sentry
+ * Later metric value will be replaces using method 'set'
+ * @type {string}
+ */
+const NOT_SET = 'no'
+
 const TAGS = {
   IdentityUnlocked: 'identity_unlocked',
   ProposalsFetched: 'proposals_fetched',
@@ -87,12 +94,6 @@ class BugReporterMetrics {
     return this._metrics.get(metric)
   }
 
-  _setValues (metrics: Array<Metric>, dest: any) {
-    for (let metric of metrics) {
-      dest[metric] = this.get(metric) || 'no'
-    }
-  }
-
   addMetricsTo (data: RavenData): void {
     this._setValues((Object.values(TAGS): any), data.tags)
     this._setValues((Object.values(EXTRA): any), data.extra)
@@ -101,8 +102,14 @@ class BugReporterMetrics {
   dateTimeString (): string {
     return (new Date()).toUTCString()
   }
+
+  _setValues (metrics: Array<Metric>, dest: any) {
+    for (let metric of metrics) {
+      dest[metric] = this.get(metric) || NOT_SET
+    }
+  }
 }
 
 const bugReporterMetrics = new BugReporterMetrics()
 
-export { bugReporterMetrics, METRICS, TAGS, EXTRA }
+export { bugReporterMetrics, METRICS, TAGS, EXTRA, NOT_SET }

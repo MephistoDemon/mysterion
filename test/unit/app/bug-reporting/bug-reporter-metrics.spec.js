@@ -17,7 +17,7 @@
 
 // @flow
 import {describe, it, expect} from '../../../helpers/dependencies'
-import {bugReporterMetrics, EXTRA, METRICS, TAGS} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
+import {bugReporterMetrics, EXTRA, METRICS, NOT_SET, TAGS} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
 import type {MetricSyncDTO} from '../../../../src/app/communication/dto'
 
@@ -40,7 +40,7 @@ describe('BugReporterMetrics', () => {
     expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
   })
 
-  it('add metrics to object', () => {
+  it('adds metrics to object', () => {
     const data = {
       tags: {},
       extra: {}
@@ -53,13 +53,17 @@ describe('BugReporterMetrics', () => {
 
     for (let tagKey of Object.values(TAGS)) {
       expect(tagKeys).contains(tagKey)
+      // $FlowFixMe
+      expect(data.tags[tagKey]).to.be.eql(bugReporterMetrics.get(tagKey) || NOT_SET)
     }
     for (let extraKey of Object.values(EXTRA)) {
       expect(extraKeys).contains(extraKey)
+      // $FlowFixMe
+      expect(data.extra[extraKey]).to.be.eql(bugReporterMetrics.get(extraKey) || NOT_SET)
     }
   })
 
-  it('send/receive metric via message bus', () => {
+  it('sends/receives metric via message bus', () => {
     const messageBus = new FakeMessageBus()
     bugReporterMetrics.syncWith(messageBus)
 
@@ -69,7 +73,6 @@ describe('BugReporterMetrics', () => {
 
     expect(messageBus.lastData).to.not.be.eql(null)
     const dto: MetricSyncDTO = (messageBus.lastData: any)
-    expect(dto).to.not.be.eql(null)
     expect(dto.metric).to.eql(metricKey)
     expect(dto.value).to.eql(metricValue)
 
