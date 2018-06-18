@@ -67,8 +67,7 @@ class FunctionLooper {
   async stop (): Promise<void> {
     this._stopping = true
 
-    this._currentExecutor.cancel()
-    await this._currentPromise
+    await this._waitForStartedPromise()
 
     this._running = false
     this._stopping = false
@@ -80,6 +79,11 @@ class FunctionLooper {
 
   onFunctionError (callback: (Error) => void) {
     this._errorSubscriber.subscribe(callback)
+  }
+
+  async _waitForStartedPromise (): Promise<void> {
+    this._currentExecutor.cancel()
+    await this._currentPromise
   }
 }
 
