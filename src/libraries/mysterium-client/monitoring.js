@@ -48,7 +48,7 @@ class Monitoring {
     }
   }
 
-  onStatusChange (callback: StatusCallback) {
+  onStatus (callback: StatusCallback) {
     this._subscribersStatus.push(callback)
   }
 
