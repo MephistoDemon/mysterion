@@ -41,6 +41,7 @@ import type { MessageBus } from './communication/messageBus'
 import type { MainCommunication } from './communication/main-communication'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
+import BackendLogger from './logging/backend-logger'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -52,6 +53,7 @@ type MysterionParams = {
   process: Object,
   proposalFetcher: ProposalFetcher,
   bugReporter: BugReporter,
+  backendLogger: BackendLogger,
   userSettingsStore: UserSettingsStore,
   disconnectNotification: Notification
 }
@@ -69,6 +71,7 @@ class Mysterion {
   process: Object
   proposalFetcher: ProposalFetcher
   bugReporter: BugReporter
+  backendLogger: BackendLogger
   userSettingsStore: UserSettingsStore
   disconnectNotification: Notification
 
@@ -86,6 +89,7 @@ class Mysterion {
     this.process = params.process
     this.proposalFetcher = params.proposalFetcher
     this.bugReporter = params.bugReporter
+    this.backendLogger = params.backendLogger
     this.userSettingsStore = params.userSettingsStore
     this.disconnectNotification = params.disconnectNotification
   }
@@ -166,6 +170,9 @@ class Mysterion {
     })
 
     this._subscribeProposals()
+
+    this.backendLogger.addMainCommunicationTransport(this.communication)
+    this.backendLogger.sendCachedViaCommunication(this.communication)
 
     synchronizeUserSettings(this.userSettingsStore, this.communication)
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
@@ -318,7 +325,7 @@ class Mysterion {
   _startProcess () {
     const cacheLogs = (level, data) => {
       this.communication.sendMysteriumClientLog({level, data})
-      this.bugReporter.pushToLogCache(level, data)
+      this.backendLogger.mysteriumProcessLogCache.pushToLevel(level, data)
     }
 
     logInfo("Starting 'mysterium_client' process")
