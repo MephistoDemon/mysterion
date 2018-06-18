@@ -17,23 +17,25 @@
 
 // @flow
 import {describe, it, expect} from '../../../helpers/dependencies'
-import {bugReporterMetrics, UNKNOWN} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
+import {bugReporterMetrics, TAGS, EXTRA} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
+import FakeMessageBus from '../../../helpers/fakeMessageBus'
+import type {MetricSyncDTO} from '../../../../src/app/communication/dto'
 
 describe('BugReporterMetrics', () => {
   it('sets tag metric', () => {
-    const metricKey = bugReporterMetrics.Tags.IdentityUnlocked
+    const metricKey = TAGS.IdentityUnlocked
     const metricValue = true
 
-    expect(bugReporterMetrics.get(metricKey)).to.eql(UNKNOWN)
+    expect(bugReporterMetrics.get(metricKey)).to.be.eql(undefined)
     bugReporterMetrics.set(metricKey, metricValue)
     expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
   })
 
   it('sets extra metric', () => {
-    const metricKey = bugReporterMetrics.Extra.HealthCheckTime
+    const metricKey = EXTRA.HealthCheckTime
     const metricValue = bugReporterMetrics.dateTimeString()
 
-    expect(bugReporterMetrics.get(metricKey)).to.eql(UNKNOWN)
+    expect(bugReporterMetrics.get(metricKey)).to.eql(undefined)
     bugReporterMetrics.set(metricKey, metricValue)
     expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
   })
@@ -47,14 +49,43 @@ describe('BugReporterMetrics', () => {
     const tagKeys = Object.keys(data.tags)
     const extraKeys = Object.keys(data.extra)
 
-    expect(tagKeys.length).to.eql(Object.values(bugReporterMetrics.Tags).length)
-    expect(extraKeys.length).to.eql(Object.values(bugReporterMetrics.Extra).length)
+    expect(tagKeys.length).to.eql(Object.values(TAGS).length)
+    expect(extraKeys.length).to.eql(Object.values(EXTRA).length)
 
-    for (let tagKey of Object.values(bugReporterMetrics.Tags)) {
+    for (let tagKey of Object.values(TAGS)) {
       expect(tagKeys).contains(tagKey)
     }
-    for (let extraKey of Object.values(bugReporterMetrics.Extra)) {
+    for (let extraKey of Object.values(EXTRA)) {
       expect(extraKeys).contains(extraKey)
+    }
+  })
+
+  it('send/receive metric via message bus', () => {
+    const messageBus = new FakeMessageBus()
+    bugReporterMetrics.syncWith(messageBus)
+
+    const metricKey = EXTRA.ConnectionIP
+    const metricValue = '{ip: "127.0.0.1"}'
+    bugReporterMetrics.set(metricKey, metricValue)
+
+    expect(messageBus.lastData).to.not.be.eql(null)
+    const dto: MetricSyncDTO = (messageBus.lastData: any)
+    expect(dto).to.not.be.eql(null)
+    expect(dto.metric).to.eql(metricKey)
+    expect(dto.value).to.eql(metricValue)
+
+    if (messageBus.lastChannel) {
+      const newValue = '{ip: "192.168.1.1"}'
+      const updateDto: MetricSyncDTO = {
+        metric: metricKey,
+        value: newValue
+      }
+      messageBus.triggerOn(messageBus.lastChannel, updateDto)
+
+      const updatedValue = bugReporterMetrics.get(metricKey)
+      expect(updatedValue).to.be.eql(newValue)
+    } else {
+      expect(messageBus.lastChannel).to.not.be.eql(null)
     }
   })
 })

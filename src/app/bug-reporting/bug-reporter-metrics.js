@@ -20,8 +20,6 @@ import type {MessageBus} from '../communication/messageBus'
 import messages from '../communication/messages'
 import type {MetricSyncDTO} from '../communication/dto'
 
-const UNKNOWN = 'no'
-
 const TAGS = {
   IdentityUnlocked: 'identity_unlocked',
   ProposalsFetched: 'proposals_fetched',
@@ -40,27 +38,21 @@ const EXTRA = {
 type MetricTags = $Values<typeof TAGS>
 type MetricExtra = $Values<typeof EXTRA>
 type Metric = MetricTags | MetricExtra
+type RavenData = {
+  tags: {
+    [id: string]: mixed
+  },
+  extra: {
+    [id: string]: mixed
+  },
+}
 
 /**
  * Collects and synchronizes data used in BugReporter
  */
 class BugReporterMetrics {
-  Tags = TAGS
-  Extra = EXTRA
-
-  _tags: Map<MetricTags, any> = new Map()
-  _extra: Map<MetricExtra, any> = new Map()
-  _messageBus: MessageBus
-
-  constructor () {
-    // set initial values for metrics
-    for (let tagKey of Object.keys(this.Tags)) {
-      this.set(this.Tags[tagKey], UNKNOWN, this._tags)
-    }
-    for (let tagKey of Object.keys(this.Extra)) {
-      this.set(this.Extra[tagKey], UNKNOWN, this._extra)
-    }
-  }
+  _metrics: Map<Metric, any> = new Map()
+  _messageBus: ?MessageBus = null
 
   syncWith (messageBus: MessageBus): void {
     this._messageBus = messageBus
@@ -70,24 +62,14 @@ class BugReporterMetrics {
     })
   }
 
-  set (metric: Metric, value: mixed, metricStorage: ?Map<Metric, any> = null): void {
-    // detect default storage for metric (tags or extra)
-    if (!metricStorage) {
-      if (this._tags.has(metric)) {
-        this.set(metric, value, this._tags)
-      } else {
-        this.set(metric, value, this._extra)
-      }
-      return
-    }
-
-    const oldValue = metricStorage.get(metric)
+  set (metric: Metric, value: mixed): void {
+    const oldValue = this._metrics.get(metric)
     if (JSON.stringify(oldValue) === JSON.stringify(value)) {
       // metric's value was not updated
       return
     }
 
-    metricStorage.set(metric, value)
+    this._metrics.set(metric, value)
 
     if (this._messageBus) {
       const data: MetricSyncDTO = {
@@ -99,21 +81,18 @@ class BugReporterMetrics {
   }
 
   get (metric: Metric): any {
-    if (this._tags.has(metric)) {
-      return this._tags.get(metric)
-    } else if (this._extra.has(metric)) {
-      return this._extra.get(metric)
-    }
-    return null
+    return this._metrics.get(metric)
   }
 
-  addMetricsTo (data: any): void {
-    this._tags.forEach((value, metric) => {
-      data.tags[metric] = value
-    })
-    this._extra.forEach((value, metric) => {
-      data.extra[metric] = value
-    })
+  _setValues (metrics: Array<Metric>, dest: any) {
+    for (let metric of metrics) {
+      dest[metric] = this.get(metric) || 'no'
+    }
+  }
+
+  addMetricsTo (data: RavenData): void {
+    this._setValues((Object.values(TAGS): any), data.tags)
+    this._setValues((Object.values(EXTRA): any), data.extra)
   }
 
   dateTimeString (): string {
@@ -123,4 +102,4 @@ class BugReporterMetrics {
 
 const bugReporterMetrics = new BugReporterMetrics()
 
-export {bugReporterMetrics, UNKNOWN}
+export { bugReporterMetrics, TAGS, EXTRA }
