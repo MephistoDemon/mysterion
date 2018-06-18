@@ -65,7 +65,7 @@ class Process {
   async setupLogging () {
     await this._prepareLogFiles()
     tailFile(this._stdoutPath, this._logCallback.bind(this, processLogLevels.INFO))
-    tailFile(this._stderrPath, this._logCallback.bind(this, processLogLevels.ERROR))
+    tailFile(this._stderrPath, prependWithTimestamp(this._logCallback.bind(this, processLogLevels.ERROR)))
     tailFile(SYSTEM_LOG, filterLine(INVERSE_DOMAIN_PACKAGE_NAME, this._logCallback.bind(this, processLogLevels.ERROR)))
   }
 
@@ -102,6 +102,12 @@ function filterLine (filter, cb) {
       return
     }
     cb(data)
+  }
+}
+
+function prependWithTimestamp (next) {
+  return (data) => {
+    next(`${new Date(Date.now())}: ${data}`)
   }
 }
 
