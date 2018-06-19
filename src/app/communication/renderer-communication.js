@@ -108,7 +108,7 @@ class RendererCommunication {
   }
 
   onMysterionBackendLog (callback: (log: MysterionBackendLogDTO) => void): void {
-    this._on(messages.MYSTERION_MAIN_LOG, callback)
+    this._on(messages.MYSTERION_BACKEND_LOG, callback)
   }
 
   onTermsRequest (callback: (RequestTermsDTO) => void): void {

@@ -25,7 +25,8 @@ import type {
   ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO
+  AppErrorDTO,
+  MysterionBackendLogDTO
 } from './dto'
 import messages from './messages'
 import type { MessageBus } from './messageBus'
@@ -77,8 +78,8 @@ class MainMessageBusCommunication implements MainCommunication {
     this._send(messages.HEALTHCHECK_DOWN)
   }
 
-  sendMysterionBackendLog (log: Object) {
-    this._send(messages.MYSTERION_MAIN_LOG, log)
+  sendMysterionBackendLog (log: MysterionBackendLogDTO) {
+    this._send(messages.MYSTERION_BACKEND_LOG, log)
   }
 
   sendProposals (proposals: ProposalUpdateDTO) {
