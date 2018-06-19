@@ -76,18 +76,18 @@ describe('BugReporterMetrics', () => {
     expect(dto.metric).to.eql(metricKey)
     expect(dto.value).to.eql(metricValue)
 
-    if (messageBus.lastChannel) {
-      const newValue = '{ip: "192.168.1.1"}'
-      const updateDto: MetricSyncDTO = {
-        metric: metricKey,
-        value: newValue
-      }
-      messageBus.triggerOn(messageBus.lastChannel, updateDto)
-
-      const updatedValue = bugReporterMetrics.get(metricKey)
-      expect(updatedValue).to.be.eql(newValue)
-    } else {
-      expect(messageBus.lastChannel).to.not.be.null
+    if (!messageBus.lastChannel) {
+      throw new Error('No last channel')
     }
+
+    const newValue = '{ip: "192.168.1.1"}'
+    const updateDto: MetricSyncDTO = {
+      metric: metricKey,
+      value: newValue
+    }
+    messageBus.triggerOn(messageBus.lastChannel, updateDto)
+
+    const updatedValue = bugReporterMetrics.get(metricKey)
+    expect(updatedValue).to.be.eql(newValue)
   })
 })
