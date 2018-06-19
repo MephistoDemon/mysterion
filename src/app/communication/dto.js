@@ -53,7 +53,7 @@ export type AppErrorDTO = {
   fatal: boolean
 }
 
-export type MetricSyncDTO = {
-  metric: string,
+export type MapSyncDTO<T: string> = {
+  metric: T,
   value: mixed
 }

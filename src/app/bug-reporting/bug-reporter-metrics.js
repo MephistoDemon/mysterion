@@ -14,11 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-// @flow
 
-import type {MessageBus} from '../communication/messageBus'
-import messages from '../communication/messages'
-import type {MetricSyncDTO} from '../communication/dto'
+// @flow
+import MapSync from '../../libraries/map-sync'
 
 /**
  * Used as default metric value in Sentry
@@ -46,9 +44,9 @@ const METRICS = {}
 Object.assign(METRICS, TAGS)
 Object.assign(METRICS, EXTRA)
 
-type Metric = $Values<typeof METRICS>
+export type Metric = $Values<typeof METRICS>
 
-type RavenData = {
+export type RavenData = {
   tags: {
     [id: string]: mixed
   },
@@ -60,45 +58,7 @@ type RavenData = {
 /**
  * Collects and synchronizes data used in BugReporter
  */
-class BugReporterMetrics {
-  _metrics: Map<Metric, any> = new Map()
-  _messageBus: ?MessageBus = null
-
-  syncWith (messageBus: MessageBus): void {
-    this._messageBus = messageBus
-    this._messageBus.on(messages.METRIC_SYNC, data => {
-      const maybeDto = (data: any)
-      if (maybeDto.metric && maybeDto.value) {
-        const dto: MetricSyncDTO = (maybeDto: MetricSyncDTO)
-        this.set(dto.metric, dto.value)
-      } else {
-        throw new Error('Unknown METRIC_SYNC data: ' + JSON.stringify(data))
-      }
-    })
-  }
-
-  set (metric: Metric, value: mixed): void {
-    const oldValue = this._metrics.get(metric)
-    if (JSON.stringify(oldValue) === JSON.stringify(value)) {
-      // metric's value was not updated
-      return
-    }
-
-    this._metrics.set(metric, value)
-
-    if (this._messageBus) {
-      const data: MetricSyncDTO = {
-        metric: metric,
-        value: value
-      }
-      this._messageBus.send(messages.METRIC_SYNC, data)
-    }
-  }
-
-  get (metric: Metric): any {
-    return this._metrics.get(metric)
-  }
-
+class BugReporterMetrics extends MapSync<Metric> {
   dateTimeString (): string {
     return (new Date()).toUTCString()
   }

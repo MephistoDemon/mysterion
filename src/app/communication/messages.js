@@ -41,5 +41,5 @@ export default {
   USER_SETTINGS_REQUEST: 'user.settings.request',
   USER_SETTINGS_UPDATE: 'user.settings.update',
 
-  METRIC_SYNC: 'metric.sync'
+  MAP_SYNC: 'metric.sync'
 }

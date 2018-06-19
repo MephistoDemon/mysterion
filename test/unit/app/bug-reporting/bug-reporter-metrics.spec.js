@@ -19,7 +19,8 @@
 import {describe, it, expect} from '../../../helpers/dependencies'
 import {bugReporterMetrics, EXTRA, METRICS, NOT_SET, TAGS} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
-import type {MetricSyncDTO} from '../../../../src/app/communication/dto'
+import type {MapSyncDTO} from '../../../../src/app/communication/dto'
+import type {Metric} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 
 describe('BugReporterMetrics', () => {
   describe('get/set', () => {
@@ -73,7 +74,7 @@ describe('BugReporterMetrics', () => {
       bugReporterMetrics.set(metricKey, metricValue)
 
       expect(messageBus.lastData).to.be.not.null
-      const dto: MetricSyncDTO = (messageBus.lastData: any)
+      const dto: MapSyncDTO<Metric> = (messageBus.lastData: any)
       expect(dto.metric).to.eql(metricKey)
       expect(dto.value).to.eql(metricValue)
 
@@ -82,7 +83,7 @@ describe('BugReporterMetrics', () => {
       }
 
       const newValue = '{ip: "192.168.1.1"}'
-      const updateDto: MetricSyncDTO = {
+      const updateDto: MapSyncDTO<Metric> = {
         metric: metricKey,
         value: newValue
       }
