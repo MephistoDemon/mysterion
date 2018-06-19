@@ -238,13 +238,13 @@ describe('mutations', () => {
       const state = {
         actionLoopers: {}
       }
-      const actionLooper1 = new ActionLooper(type.CONNECTION_IP, new FunctionLooper(() => {}, 1000))
+      const actionLooper1 = new ActionLooper(type.CONNECTION_IP, new FunctionLooper(async () => {}, 1000))
       mutations[type.SET_ACTION_LOOPER](state, actionLooper1)
       expect(state.actionLoopers).to.eql({
         [actionLooper1.action]: actionLooper1.looper
       })
 
-      const actionLooper2 = new ActionLooper(type.FETCH_CONNECTION_STATUS, new FunctionLooper(() => {}, 1000))
+      const actionLooper2 = new ActionLooper(type.FETCH_CONNECTION_STATUS, new FunctionLooper(async () => {}, 1000))
       mutations[type.SET_ACTION_LOOPER](state, actionLooper2)
       expect(state.actionLoopers).to.eql({
         [actionLooper1.action]: actionLooper1.looper,
@@ -255,7 +255,7 @@ describe('mutations', () => {
 
   describe('REMOVE_ACTION_LOOPER', () => {
     it('removes single action looper', () => {
-      const noop = () => {}
+      const noop = async () => {}
       const ipLooper = new FunctionLooper(noop, 1000)
       const statusLooper = new FunctionLooper(noop, 1000)
       const state = {
@@ -303,7 +303,7 @@ describe('actions', () => {
     })
 
     it('does not start second looper if it already exists', async () => {
-      const noop = () => {}
+      const noop = async () => {}
       const looper = new FunctionLooper(noop, 1000)
       const state = {
         actionLoopers: {
@@ -322,7 +322,7 @@ describe('actions', () => {
 
   describe('STOP_ACTION_LOOPING', () => {
     it('stops and cleans update looper', async () => {
-      const actionLooper = new FunctionLooper(() => {}, 0)
+      const actionLooper = new FunctionLooper(async () => {}, 0)
       actionLooper.start()
       const state = {
         actionLoopers: {
@@ -439,7 +439,7 @@ describe('actions', () => {
     })
 
     it('stops looping statistics when changing state from connected', async () => {
-      const noop = () => {}
+      const noop = async () => {}
       const looper = new FunctionLooper(noop, 1000)
       looper.start()
       const state = {
@@ -464,7 +464,7 @@ describe('actions', () => {
     })
 
     it('does nothing when changing state from connected to connected', async () => {
-      const noop = () => {}
+      const noop = async () => {}
       const looper = new FunctionLooper(noop, 1000)
       const state = {
         status: ConnectionStatusEnum.CONNECTED,
