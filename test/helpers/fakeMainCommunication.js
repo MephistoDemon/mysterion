@@ -17,20 +17,21 @@
 
 // @flow
 
-import type {MainCommunication} from '../../src/app/communication/main-communication'
+import type { MainCommunication } from '../../src/app/communication/main-communication'
 import type {
   AppErrorDTO, ConnectionStatusChangeDTO, CurrentIdentityChangeDTO, MysterionBackendLogDTO,
   MysteriumClientLogDTO,
   ProposalUpdateDTO,
   RequestTermsDTO, TermsAnsweredDTO
 } from '../../src/app/communication/dto'
-import type {UserSettings} from '../../src/app/user-settings/user-settings'
+import type { UserSettings } from '../../src/app/user-settings/user-settings'
 
 /**
  * Allows tracking method invocations.
  */
 class FakeMainCommunication implements MainCommunication {
   _invokedMethods: Set<string> = new Set()
+  _invokedMethodPayloads: Object = {}
 
   /**
    * Returns whether given instance method was invoked.
@@ -40,6 +41,14 @@ class FakeMainCommunication implements MainCommunication {
    */
   wasInvoked (method: Function): boolean {
     return this._invokedMethods.has(method.name)
+  }
+
+  getLastPayload (method: Function): Array<any> {
+    return this.getAllInvocationPayloads(method)[this._invokedMethodPayloads[method.name].length - 1]
+  }
+
+  getAllInvocationPayloads (method: Function): Array<any> {
+    return this._invokedMethodPayloads[method.name]
   }
 
   onRendererBooted (callback: () => void): void {
@@ -71,7 +80,7 @@ class FakeMainCommunication implements MainCommunication {
   }
 
   sendMysterionBackendLog (dto: MysterionBackendLogDTO) {
-    this._registerMethod(this.sendMysterionBackendLog)
+    this._registerMethod(this.sendMysterionBackendLog, dto)
   }
 
   sendProposals (proposals: ProposalUpdateDTO): void {
@@ -122,8 +131,12 @@ class FakeMainCommunication implements MainCommunication {
     this._registerMethod(this.onUserSettingsUpdate)
   }
 
-  _registerMethod (method: Function): void {
+  _registerMethod (method: Function, ...payload: Array<any>): void {
     this._invokedMethods.add(method.name)
+    if (!this._invokedMethodPayloads[method.name]) {
+      this._invokedMethodPayloads[method.name] = []
+    }
+    this._invokedMethodPayloads[method.name].push(payload)
   }
 }
 
