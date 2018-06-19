@@ -27,7 +27,6 @@ import MainMessageBus from './communication/mainMessageBus'
 import { onFirstEvent, onFirstEventOrTimeout } from './communication/utils'
 import path from 'path'
 import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
-import logger from './logger'
 import type { Size } from './window'
 import type { MysterionConfig } from './mysterionConfig'
 import Window from './window'
@@ -95,6 +94,7 @@ class Mysterion {
   }
 
   run () {
+    this.backendLogSetup.init()
     this.logUnhandledRejections()
 
     // fired when app has been launched
@@ -133,7 +133,7 @@ class Mysterion {
 
   logUnhandledRejections () {
     process.on('unhandledRejection', error => {
-      logger.info('Received unhandled rejection:', error)
+      logException('Received unhandled rejection:', error)
     })
   }
 
@@ -334,7 +334,7 @@ class Mysterion {
       this.process.onLog(processLogLevels.INFO, (data) => cacheLogs(processLogLevels.INFO, data))
       this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
     } catch (e) {
-      logger.error('Failing to process logs. ', e)
+      logException('Failing to process logs. ', e)
       this.bugReporter.captureErrorException(e)
     }
   }
@@ -421,11 +421,11 @@ function synchronizeUserSettings (userSettingsStore, communication) {
 }
 
 function logInfo (message: string) {
-  logger.info(LOG_PREFIX + message)
+  console.info(LOG_PREFIX + message)
 }
 
 function logException (message: string, err: Error) {
-  logger.error(LOG_PREFIX + message, err)
+  console.error(LOG_PREFIX + message, err)
 }
 
 export default Mysterion

@@ -18,25 +18,41 @@
 // @flow
 
 import winston from 'winston'
+import Transport from 'winston-transport'
 import LogCache from './log-cache'
 import { BackendLogCachingTransport, BackendLogCommunicationTransport } from './backend-logging-transports'
 import type { MainCommunication } from '../communication/main-communication'
 
+interface Logger {
+  info (string): void,
+
+  warn (string): void,
+
+  error (string): void,
+
+  debug (string): void,
+
+  add (Transport): void
+}
+
 export default class BackendLogSetup {
-  winstonLogger: $winstonLogger<$winstonNpmLogLevels>
+  winstonLogger: Logger
   backendLogCache: LogCache
   mysteriumProcessLogCache: LogCache
 
   constructor (backendLogCache: LogCache, mysteriumProcessLogCache: LogCache) {
     this.backendLogCache = backendLogCache
     this.mysteriumProcessLogCache = mysteriumProcessLogCache
+  }
 
+  init () {
     this.winstonLogger = winston.createLogger({
       transports: [
         new winston.transports.Console(),
         new BackendLogCachingTransport(this.backendLogCache)
       ]
     })
+    overrideConsoleLogs(this.winstonLogger)
   }
 
   startSendingLogsViaCommunication (com: MainCommunication) {
@@ -58,7 +74,7 @@ export default class BackendLogSetup {
   }
 }
 
-function overrideConsoleLogs (logger: Object) {
+function overrideConsoleLogs (logger: Logger) {
   // $FlowFixMe
   console.log = (...args) => logger.info(args.join(' '))
   // $FlowFixMe
@@ -70,5 +86,3 @@ function overrideConsoleLogs (logger: Object) {
   // $FlowFixMe
   console.debug = (...args) => logger.debug(args.join(' '))
 }
-
-export { overrideConsoleLogs }

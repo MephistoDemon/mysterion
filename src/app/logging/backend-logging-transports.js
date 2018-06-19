@@ -27,25 +27,27 @@ type LogEntry = {
 }
 
 export class BackendLogCommunicationTransport extends Transport {
+  _communication: MainCommunication
   constructor (com: MainCommunication) {
     super()
-    this.communication = com
+    this._communication = com
   }
 
   log (info: LogEntry, callback: Function) {
-    this.communication.sendMysterionBackendLog({ level: mapToCacheLevel(info.level), message: info.message })
+    this._communication.sendMysterionBackendLog({ level: mapToCacheLevel(info.level), message: info.message })
     callback()
   }
 }
 
 export class BackendLogCachingTransport extends Transport {
+  _logCache: LogCache
   constructor (logCache: LogCache) {
     super()
-    this.logCache = logCache
+    this._logCache = logCache
   }
 
-  log (info: LogEntry, callback: Function) {
-    this.logCache.pushToLevel(mapToCacheLevel(info.level), info.message)
+  log (info: LogEntry, callback: () => any) {
+    this._logCache.pushToLevel(mapToCacheLevel(info.level), info.message)
     callback()
   }
 }
