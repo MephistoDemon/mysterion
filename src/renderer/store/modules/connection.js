@@ -32,7 +32,10 @@ import ConnectionStatisticsDTO from '../../../libraries/mysterium-tequilapi/dto/
 import ConnectionRequestDTO from '../../../libraries/mysterium-tequilapi/dto/connection-request'
 import ConsumerLocationDTO from '../../../libraries/mysterium-tequilapi/dto/consumer-location'
 import type {BugReporter} from '../../../app/bug-reporting/interface'
-import {isServiceUnavailableError, isTimeoutError, isRequestClosedError} from '../../../libraries/mysterium-tequilapi/client-error'
+import {
+  isRequestClosedError,
+  isHttpError
+} from '../../../libraries/mysterium-tequilapi/client-error'
 import logger from '../../../app/logger'
 
 type ConnectionStore = {
@@ -123,10 +126,10 @@ function actionsFactory (
         const locationDto = await tequilapi.location(config.locationUpdateTimeout)
         commit(type.LOCATION, locationDto)
       } catch (err) {
-        if (isTimeoutError(err) || isServiceUnavailableError(err)) {
+        if (isHttpError(err)) {
           return
         }
-        bugReporter.captureException(err)
+        bugReporter.captureErrorException(err)
       }
     },
     async [type.CONNECTION_IP] ({commit}) {
@@ -134,10 +137,10 @@ function actionsFactory (
         const ipModel = await tequilapi.connectionIP(config.ipUpdateTimeout)
         commit(type.CONNECTION_IP, ipModel.ip)
       } catch (err) {
-        if (isTimeoutError(err) || isServiceUnavailableError(err)) {
+        if (isHttpError(err)) {
           return
         }
-        bugReporter.captureException(err)
+        bugReporter.captureErrorException(err)
       }
     },
     [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperConfig): FunctionLooper {

@@ -17,8 +17,8 @@
 
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
   parserOptions: {
+    parser: 'babel-eslint',
     sourceType: 'module'
   },
   env: {
@@ -27,13 +27,13 @@ module.exports = {
   },
   extends: [
     'standard',
-    'plugin:flowtype/recommended'
+    'plugin:flowtype/recommended',
+    'plugin:vue/strongly-recommended'
   ],
   globals: {
     __static: true
   },
   plugins: [
-    'html',
     'eslint-plugin-flowtype',
     'flowtype'
   ],

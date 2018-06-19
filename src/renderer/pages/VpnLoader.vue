@@ -15,48 +15,50 @@
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<template></template>
+<template>
+  <div/>
+</template>
 <script>
-  import {mapState} from 'vuex'
-  import type from '@/store/types'
-  import messages from '../../app/messages'
-  import logger from '../../app/logger'
-  import DelayedRetrier from '../../app/delayedRetrier'
+import {mapState} from 'vuex'
+import type from '@/store/types'
+import messages from '../../app/messages'
+import logger from '../../app/logger'
+import DelayedRetrier from '../../app/delayedRetrier'
 
-  export default {
-    dependencies: ['bugReporter', 'vpnInitializer', 'sleeper'],
-    async mounted () {
-      const {commit, dispatch} = this.$store
-      try {
-        this.$store.dispatch(type.LOCATION)
-        commit(type.INIT_PENDING)
+export default {
+  dependencies: ['bugReporter', 'vpnInitializer', 'sleeper'],
+  async mounted () {
+    const {commit, dispatch} = this.$store
+    try {
+      this.$store.dispatch(type.LOCATION)
+      commit(type.INIT_PENDING)
 
-        const identityState = this.$store.state.identity
-        const initialize = async () => this.vpnInitializer.initialize(dispatch, commit, identityState)
-        const delay = async () => {
-          const msg = 'Initialization failed, will retry.'
-          logger.info(msg)
-          this.bugReporter.captureInfoMessage(msg)
-          await this.sleeper.sleep(3000)
-        }
-        const initializeRetrier = new DelayedRetrier(initialize, delay, 3)
-        await initializeRetrier.retryWithDelay()
-
-        commit(type.INIT_SUCCESS)
-        this.$router.push('/vpn')
-      } catch (err) {
-        logger.error('Application init failed', err.stack)
-
-        commit(type.INIT_FAIL)
-        commit(type.OVERLAY_ERROR, messages.initializationError)
-        this.bugReporter.captureException(err)
+      const identityState = this.$store.state.identity
+      const initialize = async () => this.vpnInitializer.initialize(dispatch, commit, identityState)
+      const delay = async () => {
+        const msg = 'Initialization failed, will retry.'
+        logger.info(msg)
+        this.bugReporter.captureInfoMessage(msg)
+        await this.sleeper.sleep(3000)
       }
-    },
-    computed: {
-      ...mapState({
-        error: state => state.main.error
-      })
-    },
-    name: 'loading-screen'
-  }
+      const initializeRetrier = new DelayedRetrier(initialize, delay, 3)
+      await initializeRetrier.retryWithDelay()
+
+      commit(type.INIT_SUCCESS)
+      this.$router.push('/vpn')
+    } catch (err) {
+      logger.error('Application init failed', err.stack)
+
+      commit(type.INIT_FAIL)
+      commit(type.OVERLAY_ERROR, messages.initializationError)
+      this.bugReporter.captureErrorException(err)
+    }
+  },
+  computed: {
+    ...mapState({
+      error: state => state.main.error
+    })
+  },
+  name: 'LoadingScreen'
+}
 </script>

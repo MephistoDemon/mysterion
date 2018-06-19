@@ -18,38 +18,46 @@
 <template>
   <div class="terms">
     <div class="terms-content">
-      <div style="height:10vh;border-bottom:1px solid #eee"></div>
+      <div style="height:10vh;border-bottom:1px solid #eee"/>
       <div class="terms-box">
-        <div style="padding:1rem 8rem;" v-html="termsAndConditions.htmlContent"></div>
+        <div
+          style="padding:1rem 8rem;"
+          v-html="termsAndConditions.htmlContent"/>
       </div>
     </div>
     <div class="terms-actions">
-      <a href="#" class="control__action btn" @click.prevent="accept">Accept and launch Mysterion</a>
-      <a href="#" class="control__action btn btn-danger" @click.prevent="decline">Decline</a>
+      <a
+        href="#"
+        class="control__action btn"
+        @click.prevent="accept">Accept and launch Mysterion</a>
+      <a
+        href="#"
+        class="control__action btn btn-danger"
+        @click.prevent="decline">Decline</a>
     </div>
   </div>
 </template>
 <script>
-  import {mapGetters} from 'vuex'
+import {mapGetters} from 'vuex'
 
-  export default {
-    name: 'terms',
-    dependencies: ['rendererCommunication'],
-    methods: {
-      accept () {
-        this._answerTerms(true)
-      },
-      decline () {
-        this._answerTerms(false)
-      },
-      _answerTerms (answer) {
-        this.rendererCommunication.sendTermsAnswered({isAccepted: answer})
-      }
+export default {
+  name: 'Terms',
+  dependencies: ['rendererCommunication'],
+  methods: {
+    accept () {
+      this._answerTerms(true)
     },
-    computed: {
-      ...mapGetters(['termsAndConditions'])
+    decline () {
+      this._answerTerms(false)
+    },
+    _answerTerms (answer) {
+      this.rendererCommunication.sendTermsAnswered({isAccepted: answer})
     }
+  },
+  computed: {
+    ...mapGetters(['termsAndConditions'])
   }
+}
 </script>
 
 <style lang="less">

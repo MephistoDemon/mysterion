@@ -20,10 +20,11 @@
 import { app, BrowserWindow } from 'electron'
 import trayFactory from '../main/tray/factory'
 import { Installer, logLevels as processLogLevels } from '../libraries/mysterium-client'
+import { SUDO_PROMT_PERMISSION_DENIED } from '../libraries/mysterium-client/launch-daemon/installer'
 import translations from './messages'
 import MainMessageBusCommunication from './communication/main-message-bus-communication'
 import MainMessageBus from './communication/mainMessageBus'
-import {onFirstEvent, onFirstEventOrTimeout} from './communication/utils'
+import { onFirstEvent, onFirstEventOrTimeout } from './communication/utils'
 import path from 'path'
 import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import logger from './logger'
@@ -103,7 +104,7 @@ class Mysterion {
         this._buildTray()
       } catch (e) {
         logException('Application launch failed', e)
-        this.bugReporter.captureException(e)
+        this.bugReporter.captureErrorException(e)
       }
     })
     // fired when all windows are closed
@@ -121,7 +122,7 @@ class Mysterion {
         this.window.show()
       } catch (e) {
         logException('Application activation failed', e)
-        this.bugReporter.captureException(e)
+        this.bugReporter.captureErrorException(e)
       }
     })
     app.on('before-quit', () => {
@@ -142,10 +143,10 @@ class Mysterion {
     this.window = this._createWindow(windowSize)
 
     const send = this._getSendFunction(browserWindow)
-    this.messageBus = new MainMessageBus(send, this.bugReporter.captureException)
+    this.messageBus = new MainMessageBus(send, this.bugReporter.captureErrorException)
     this.communication = new MainMessageBusCommunication(this.messageBus)
     this.communication.onCurrentIdentityChange((identityChange: CurrentIdentityChangeDTO) => {
-      const identity = new IdentityDTO({ id: identityChange.id })
+      const identity = new IdentityDTO({id: identityChange.id})
       this.bugReporter.setUser(identity)
     })
     bugReporterMetrics.syncWith(this.messageBus)
@@ -189,7 +190,7 @@ class Mysterion {
       this.terms.load()
       return this.terms.isAccepted()
     } catch (e) {
-      this.bugReporter.captureException(e)
+      this.bugReporter.captureErrorException(e)
       return false
     }
   }
@@ -238,7 +239,11 @@ class Mysterion {
       try {
         await this.installer.install()
       } catch (e) {
-        this.communication.sendRendererShowErrorMessage(translations.processInstallationError)
+        let messageForUser = translations.processInstallationError
+        if (e.message === SUDO_PROMT_PERMISSION_DENIED) {
+          messageForUser = translations.processInstallationPermissionsError
+        }
+        this.communication.sendRendererShowErrorMessage(messageForUser)
         throw new Error("Failed to install 'mysterium_client' process. " + e)
       }
     }
@@ -266,7 +271,7 @@ class Mysterion {
       await this.process.stop()
     } catch (e) {
       logException("Failed to stop 'mysterium_client' process", e)
-      this.bugReporter.captureException(e)
+      this.bugReporter.captureErrorException(e)
     }
   }
 
@@ -316,14 +321,20 @@ class Mysterion {
 
   _startProcess () {
     const cacheLogs = (level, data) => {
-      this.communication.sendMysteriumClientLog({ level, data })
+      this.communication.sendMysteriumClientLog({level, data})
       this.bugReporter.pushToLogCache(level, data)
     }
 
     logInfo("Starting 'mysterium_client' process")
     this.process.start()
-    this.process.onLog(processLogLevels.LOG, (data) => cacheLogs(processLogLevels.LOG, data))
-    this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
+    try {
+      this.process.setupLogging()
+      this.process.onLog(processLogLevels.LOG, (data) => cacheLogs(processLogLevels.LOG, data))
+      this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
+    } catch (e) {
+      logger.error('Failing to process logs. ', e)
+      this.bugReporter.captureErrorException(e)
+    }
   }
 
   _startProcessMonitoring () {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ * Copyright (C) 2018 The "MysteriumNetwork/mysterion" Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,26 @@
 
 // @flow
 
-import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
-import {logLevels} from '../../libraries/mysterium-client'
+import fs from 'fs'
+import { promisify } from 'util'
 
-export interface BugReporter {
-  setUser (IdentityDTO): void,
-  captureErrorMessage (message: string, context: ?any): void,
-  captureInfoMessage (message: string, context: ?any): void,
-  captureErrorException (err: Error, context: ?any): void,
-  captureInfoException (err: Error, context: ?any): void,
-  pushToLogCache (logLevels.LOG | logLevels.ERROR, string): void
+const writeFile = promisify(fs.writeFile)
+const openFile = promisify(fs.open)
+
+const READ_FILE_OR_FAIL_IF_NOT_EXIST = 'r'
+
+export default async function createFileIfMissing (path: string) {
+  try {
+    await openFile(path, READ_FILE_OR_FAIL_IF_NOT_EXIST)
+  } catch (error) {
+    if (isFileDoesNotExistError(error)) {
+      await writeFile(path, '')
+      return
+    }
+    throw error
+  }
+}
+
+function isFileDoesNotExistError (error: Object): boolean {
+  return (error.code && error.code === 'ENOENT')
 }

@@ -15,14 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Tail} from 'tail'
+import { Tail } from 'tail'
 import path from 'path'
-import logLevels from '../log-levels'
-import {INVERSE_DOMAIN_PACKAGE_NAME} from './config'
+import processLogLevels from '../log-levels'
+import { INVERSE_DOMAIN_PACKAGE_NAME } from './config'
 import axios from 'axios'
 import logger from '../../../app/logger'
+import createFileIfMissing from '../../create-file-if-missing'
 
 const SYSTEM_LOG = '/var/log/system.log'
+const stdoutFileName = 'stdout.log'
+const stderrFileName = 'stderr.log'
 
 /**
  * Spawns and stops 'mysterium_client' daemon on OSX
@@ -31,16 +34,22 @@ class Process {
   /**
    * @constructor
    * @param {TequilapiClient} tequilapi - api to be used
+   * @param {string} daemonPort - port at which the daemon is spawned
    * @param {string} logDirectory - directory where it's looking for logs
    */
   constructor (tequilapi, daemonPort, logDirectory) {
     this.tequilapi = tequilapi
-    this.daemonPort = daemonPort
-    this.logDirectory = logDirectory
+    this._daemonPort = daemonPort
+    this._stdoutPath = path.join(logDirectory, stdoutFileName)
+    this._stderrPath = path.join(logDirectory, stderrFileName)
+    this._subscribers = {
+      [processLogLevels.LOG]: [],
+      [processLogLevels.ERROR]: []
+    }
   }
 
   start () {
-    return axios.get('http://127.0.0.1:' + this.daemonPort)
+    return axios.get('http://127.0.0.1:' + this._daemonPort)
       .then(() => {
         logger.info('Touched the daemon, now it should be up')
       })
@@ -49,24 +58,32 @@ class Process {
       })
   }
 
-  onLog (level, cb) {
-    if (level === logLevels.LOG) {
-      tailFile(path.join(this.logDirectory, 'stdout.log'), cb)
-      return
-    }
-
-    if (level === logLevels.ERROR) {
-      tailFile(path.join(this.logDirectory, 'stderr.log'), cb)
-      tailFile(SYSTEM_LOG, filterLine(INVERSE_DOMAIN_PACKAGE_NAME, cb))
-      return
-    }
-
-    throw new Error(`Unknown daemon logging level: ${level}`)
-  }
-
   async stop () {
     await this.tequilapi.stop()
     logger.info('Client Quit was successful')
+  }
+
+  async setupLogging () {
+    await this._prepareLogFiles()
+    tailFile(this._stdoutPath, this._logCallback.bind(this, processLogLevels.LOG))
+    tailFile(this._stderrPath, this._logCallback.bind(this, processLogLevels.ERROR))
+    tailFile(SYSTEM_LOG, filterLine(INVERSE_DOMAIN_PACKAGE_NAME, this._logCallback.bind(this, processLogLevels.ERROR)))
+  }
+
+  onLog (level, cb) {
+    if (!this._subscribers[level]) throw new Error(`Unknown process logging level: ${level}`)
+    this._subscribers[level].push(cb)
+  }
+
+  _logCallback (level, data) {
+    for (let sub of this._subscribers[level]) {
+      sub(data)
+    }
+  }
+
+  async _prepareLogFiles () {
+    await createFileIfMissing(this._stdoutPath)
+    await createFileIfMissing(this._stderrPath)
   }
 }
 
