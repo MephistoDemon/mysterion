@@ -16,18 +16,25 @@
  */
 
 // @flow
-import type {Container} from '../app/di'
+import type { Container } from '../app/di'
 import os from 'os'
-import {logLevels} from '../libraries/mysterium-client'
-import {getLogCache} from '../app/bug-reporting/logsCache'
 import {bugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
+import LogCache from '../app/bug-reporting/log-cache'
 
 function bootstrap (container: Container) {
+  container.factory(
+    'logCache',
+    [],
+    (): LogCache => {
+      return new LogCache()
+    }
+  )
+
   const extendedProcess = (process: { type?: string })
   container.service(
     'bugReporter.config',
-    ['mysterionReleaseID'],
-    (mysterionReleaseID): RavenOptions => {
+    ['mysterionReleaseID', 'logCache'],
+    (mysterionReleaseID, logCache): RavenOptions => {
       return {
         captureUnhandledRejections: true,
         release: mysterionReleaseID,
@@ -40,10 +47,7 @@ function bootstrap (container: Container) {
           platform_release: os.release()
         },
         dataCallback: (data) => {
-          data.extra.logs = {
-            [logLevels.LOG]: getLogCache(logLevels.LOG),
-            [logLevels.ERROR]: getLogCache(logLevels.ERROR)
-          }
+          data.extra.logs = logCache.getSerialized()
           bugReporterMetrics.addMetricsTo(data)
           return data
         },

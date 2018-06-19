@@ -16,15 +16,29 @@
  */
 
 // @flow
+import LimitedLinkedList from '../../libraries/limited-linked-list'
 
-import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
-import {logLevels} from '../../libraries/mysterium-client'
-
-export interface BugReporter {
-  setUser (IdentityDTO): void,
-  captureErrorMessage (message: string, context: ?any): void,
-  captureInfoMessage (message: string, context: ?any): void,
-  captureErrorException (err: Error, context: ?any): void,
-  captureInfoException (err: Error, context: ?any): void,
-  pushToLogCache (logLevels.INFO | logLevels.ERROR, string): void
+type LogCacheStore = {
+  info: LimitedLinkedList,
+  error: LimitedLinkedList
 }
+
+class LogCache {
+  _logs: LogCacheStore = {
+    info: new LimitedLinkedList(300),
+    error: new LimitedLinkedList(300)
+  }
+
+  pushToLevel (level: 'info' | 'error', data: any) {
+    this._logs[level].insert(data)
+  }
+
+  getSerialized (): {info: string, error: string} {
+    return {
+      info: this._logs.info.toArray().reverse().join('\n'),
+      error: this._logs.error.toArray().reverse().join('\n')
+    }
+  }
+}
+
+export default LogCache

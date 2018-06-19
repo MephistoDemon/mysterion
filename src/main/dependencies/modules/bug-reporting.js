@@ -28,10 +28,10 @@ function bootstrap (container: Container) {
 
   container.factory(
     'bugReporter',
-    ['bugReporter.sentryURL', 'bugReporter.config'],
-    (sentryURL, config) => {
+    ['bugReporter.sentryURL', 'bugReporter.config', 'logCache'],
+    (sentryURL, config, logCache) => {
       const raven = Raven.config(sentryURL, config).install()
-      return new BugReporterMain(raven)
+      return new BugReporterMain(raven, logCache)
     }
   )
 

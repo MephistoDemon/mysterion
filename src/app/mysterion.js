@@ -329,7 +329,7 @@ class Mysterion {
     this.process.start()
     try {
       this.process.setupLogging()
-      this.process.onLog(processLogLevels.LOG, (data) => cacheLogs(processLogLevels.LOG, data))
+      this.process.onLog(processLogLevels.INFO, (data) => cacheLogs(processLogLevels.INFO, data))
       this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
     } catch (e) {
       logger.error('Failing to process logs. ', e)
@@ -369,9 +369,13 @@ class Mysterion {
   }
 
   _subscribeProposals () {
-    this.proposalFetcher.subscribe((proposals) => this.communication.sendProposals(proposals))
+    this.proposalFetcher.onFetchedProposals((proposals) => this.communication.sendProposals(proposals))
     this.communication.onProposalUpdateRequest(() => {
       this.proposalFetcher.fetch()
+    })
+    this.proposalFetcher.onFetchingError((error: Error) => {
+      logException('Proposal fetching failed', error)
+      this.bugReporter.captureErrorException(error)
     })
 
     this.monitoring.subscribeUp(() => {
@@ -416,16 +420,12 @@ function synchronizeUserSettings (userSettingsStore, communication) {
   })
 }
 
-function logInfo (message) {
+function logInfo (message: string) {
   logger.info(LOG_PREFIX + message)
 }
 
-function logError (message) {
-  logger.error(LOG_PREFIX + message)
-}
-
-function logException (message, err) {
-  logError(LOG_PREFIX + message + '. ' + err)
+function logException (message: string, err: Error) {
+  logger.error(LOG_PREFIX + message, err)
 }
 
 export default Mysterion

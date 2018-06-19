@@ -15,20 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import LimitedLinkedList from '../../libraries/limited-linked-list'
-import {logLevels} from '../../libraries/mysterium-client'
+// @flow
 
-const logsBuffer = {
-  [logLevels.LOG]: new LimitedLinkedList(300),
-  [logLevels.ERROR]: new LimitedLinkedList(300)
+import logger from '../app/logger'
+
+/**
+ * Allows subscribing callbacks and notifying them with data.
+ */
+class Subscriber<T> {
+  _callbacks: Array<Callback<T>> = []
+
+  subscribe (callback: Callback<T>) {
+    this._callbacks.push(callback)
+  }
+
+  notify (data: T) {
+    this._callbacks.forEach((callback: Callback<T>) => {
+      try {
+        callback(data)
+      } catch (err) {
+        logger.error('Callback call in Subscriber failed', err)
+      }
+    })
+  }
 }
 
-const pushToLogCache = (level, data) => {
-  logsBuffer[level].insert(data)
-}
+type Callback<T> = (T) => any
 
-const getLogCache = (level) => {
-  return logsBuffer[level].toArray().reverse().join('\n')
-}
+export type { Callback }
 
-export { pushToLogCache, getLogCache }
+export default Subscriber

@@ -16,28 +16,40 @@
   -->
 
 <template>
+
   <div class="appError">
     <h4>{{ error.message }}</h4>
     <div>{{ error.hint }}</div>
+    <a
+      class="report-issue"
+      @click="reportIssue()">report issue</a>
   </div>
+
 </template>
 
 <style lang="scss">
-    .appError {
-        font-size: medium;
-        line-height: 1.43;
-        text-align: center;
-        h4 {
-            color: red;
-            font-weight: 600;
-            font-size: x-large;
-        }
+  .appError {
+    font-size: medium;
+    line-height: 1.43;
+    text-align: center;
+    h4 {
+      color: red;
+      font-weight: 600;
+      font-size: x-large;
     }
+    .report-issue {
+      font-weight: 500;
+      font-size: large;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
 </style>
 
 <script>
 export default {
   name: 'AppError',
+  dependencies: ['feedbackForm'],
   data () {
     return {}
   },
@@ -47,8 +59,11 @@ export default {
       required: true
     }
   },
-  computed: {},
-  methods: {},
+  methods: {
+    reportIssue () {
+      this.feedbackForm.show()
+    }
+  },
   mounted () {
   }
 }

@@ -16,8 +16,8 @@
  */
 
 const logLevels = {
-  LOG: 'LOG',
-  ERROR: 'ERROR'
+  INFO: 'info',
+  ERROR: 'error'
 }
 
 export default logLevels
