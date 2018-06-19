@@ -46,6 +46,8 @@ describe('utils', () => {
         }
 
         const looper = new FunctionLooper(increaseCounter, 1000)
+        expect(counter).to.eql(0)
+
         looper.start()
         expect(counter).to.eql(1)
 
@@ -69,6 +71,23 @@ describe('utils', () => {
         looper.start()
         looper.start()
         expect(counter).to.eql(1)
+      })
+
+      it('executes function multiple times when function throws exception', async () => {
+        let counter = 0
+        async function throwError () {
+          counter++
+          throw new Error('mock error')
+        }
+
+        const looper = new FunctionLooper(throwError, 1000)
+        expect(counter).to.eql(0)
+
+        looper.start()
+        expect(counter).to.eql(1)
+
+        await tickWithDelay(1000)
+        expect(counter).to.eql(2)
       })
     })
 
@@ -128,6 +147,59 @@ describe('utils', () => {
         expect(looper.isRunning()).to.eql(false)
       })
     })
+
+    describe('.onFunctionError', () => {
+      it('registers function error handler', async () => {
+        const mockError = new Error('mock error')
+        let counter = 0
+        async function throwError () {
+          counter++
+          throw mockError
+        }
+
+        const looper = new FunctionLooper(throwError, 1000)
+        let error = null
+        looper.onFunctionError((err) => {
+          error = err
+        })
+        expect(counter).to.eql(0)
+        expect(error).to.be.null
+
+        looper.start()
+        expect(counter).to.eql(1)
+        expect(error).to.be.null
+
+        await tickWithDelay(1000)
+        expect(counter).to.eql(2)
+        expect(error).to.eql(mockError)
+      })
+
+      it('registers multiple error handlers', async () => {
+        const mockError = new Error('mock error')
+
+        async function throwError () {
+          throw mockError
+        }
+
+        const looper = new FunctionLooper(throwError, 1000)
+        let error1 = null
+        let error2 = null
+        looper.onFunctionError((err) => {
+          error1 = err
+        })
+        looper.onFunctionError((err) => {
+          error2 = err
+        })
+
+        expect(error1).to.be.null
+        expect(error2).to.be.null
+
+        looper.start()
+        await tickWithDelay(1000)
+        expect(error1).to.eql(mockError)
+        expect(error2).to.eql(mockError)
+      })
+    })
   })
 
   describe('ThresholdExecutor', () => {
@@ -172,8 +244,9 @@ describe('utils', () => {
     })
 
     describe('with async function', () => {
+      const fastAsyncFunc = asyncFunc(5000)
+
       it('executes function', async () => {
-        const fastAsyncFunc = asyncFunc(5000)
         const executor = new ThresholdExecutor(fastAsyncFunc, 10000)
         executor.execute().then(markThresholdDone)
 
@@ -188,8 +261,7 @@ describe('utils', () => {
       })
 
       it('allows canceling sleep', async () => {
-        const slowAsyncFunc = asyncFunc(5000)
-        const executor = new ThresholdExecutor(slowAsyncFunc, 10000)
+        const executor = new ThresholdExecutor(fastAsyncFunc, 10000)
         executor.execute().then(markThresholdDone)
 
         executor.cancel()
@@ -203,20 +275,44 @@ describe('utils', () => {
     })
 
     describe('with slow async function', () => {
+      const slowAsyncFunc = asyncFunc(50000)
+
       it('executes function', async () => {
-        const slowAsyncFunc = asyncFunc(5000)
-        const executor = new ThresholdExecutor(slowAsyncFunc, 1000)
+        const executor = new ThresholdExecutor(slowAsyncFunc, 10000)
         executor.execute().then(markThresholdDone)
 
-        // not complete after 4s
-        await tickWithDelay(4000)
+        // not complete after 40s
+        await tickWithDelay(40000)
         expect(funcDone).to.eql(false)
         expect(thresholdDone).to.eql(false)
 
-        // complete after 10s
-        await tickWithDelay(6000)
+        // complete after 60s
+        await tickWithDelay(60000)
         expect(funcDone).to.eql(true)
         expect(thresholdDone).to.eql(true)
+      })
+    })
+
+    describe('with function throwing error', () => {
+      const mockError = new Error('Mock error')
+      async function errorFunc () {
+        throw mockError
+      }
+
+      it('sleeps and throws error', async () => {
+        const executor = new ThresholdExecutor(errorFunc, 1000)
+        let error = null
+        executor.execute().catch((err) => {
+          error = err
+          markThresholdDone()
+        })
+
+        expect(thresholdDone).to.be.false
+        expect(error).to.eql(null)
+
+        await tickWithDelay(1000)
+        expect(thresholdDone).to.be.true
+        expect(error).to.eql(mockError)
       })
     })
   })

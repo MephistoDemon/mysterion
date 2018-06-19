@@ -20,11 +20,14 @@
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 import type { TequilapiClient } from '../../libraries/mysterium-tequilapi/client'
 import { FunctionLooper } from '../../libraries/functionLooper'
+import type { Callback } from '../../libraries/subscriber'
+import Subscriber from '../../libraries/subscriber'
 
 class ProposalFetcher {
   _api: TequilapiClient
   _loop: FunctionLooper
-  _subscribers: Array<Function> = []
+  _proposalSubscriber: Subscriber<Array<ProposalDTO>> = new Subscriber()
+  _errorSubscriber: Subscriber<Error> = new Subscriber()
   _interval: number
 
   constructor (api: TequilapiClient, interval: number = 5000) {
@@ -32,38 +35,42 @@ class ProposalFetcher {
     this._interval = interval
   }
 
-  start (): this {
+  /**
+   * Starts periodic proposal fetching.
+   */
+  start (): void {
     this._loop = new FunctionLooper(async () => {
       await this.fetch()
     }, this._interval)
+    this._loop.onFunctionError((error) => {
+      this._errorSubscriber.notify(error)
+    })
 
     this._loop.start()
-
-    return this
   }
 
+  /**
+   * Forces proposals to be fetched without delaying.
+   */
   async fetch (): Promise<Array<ProposalDTO>> {
     const proposals = await this._api.findProposals()
 
-    this._notifySubscribers(proposals)
+    this._proposalSubscriber.notify(proposals)
 
     return proposals
   }
 
-  stop () {
+  // TODO: handle case when .stop() is invoked without .start()
+  stop (): void {
     this._loop.stop()
   }
 
-  subscribe (callback: Function): this {
-    this._subscribers.push(callback)
-
-    return this
+  onFetchedProposals (subscriber: Callback<Array<ProposalDTO>>): void {
+    this._proposalSubscriber.subscribe(subscriber)
   }
 
-  _notifySubscribers (proposals: Array<ProposalDTO>) {
-    this._subscribers.forEach((callback) => {
-      callback(proposals)
-    })
+  onFetchingError (subscriber: Callback<Error>): void {
+    this._errorSubscriber.subscribe(subscriber)
   }
 }
 

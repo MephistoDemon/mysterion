@@ -17,6 +17,8 @@
 
 // @flow
 import sleep from './sleep'
+import logger from '../app/logger'
+import Subscriber from './subscriber'
 
 /**
  * Executes given function infinitely.
@@ -26,20 +28,20 @@ import sleep from './sleep'
  * @param {!number} threshold - Minimum sleep between function executions (in milliseconds).
  */
 class FunctionLooper {
-  func: Function
-  threshold: number
-  _running: boolean
-  _stopping: boolean
+  _func: AsyncFunctionWithoutParams
+  _threshold: number
+  _running: boolean = false
+  _stopping: boolean = false
   _currentExecutor: ThresholdExecutor
   _currentPromise: Promise<void>
+  _errorSubscriber: Subscriber<Error> = new Subscriber()
 
-  constructor (func: Function, threshold: number) {
-    this.func = func
-    this.threshold = threshold
-    this._running = false
+  constructor (func: AsyncFunctionWithoutParams, threshold: number) {
+    this._func = func
+    this._threshold = threshold
   }
 
-  start () {
+  start (): void {
     if (this.isRunning()) {
       return
     }
@@ -47,9 +49,14 @@ class FunctionLooper {
     const loop = async () => {
       // eslint-disable-next-line no-unmodified-loop-condition
       while (this._running && !this._stopping) {
-        this._currentExecutor = new ThresholdExecutor(this.func, this.threshold)
+        this._currentExecutor = new ThresholdExecutor(this._func, this._threshold)
         this._currentPromise = this._currentExecutor.execute()
-        await this._currentPromise
+        try {
+          await this._currentPromise
+        } catch (err) {
+          logger.info('FunctionLooper got error while executing given function, error:', err)
+          this._errorSubscriber.notify(err)
+        }
       }
     }
 
@@ -57,31 +64,41 @@ class FunctionLooper {
     loop()
   }
 
-  async stop () {
+  async stop (): Promise<void> {
     this._stopping = true
 
-    this._currentExecutor.cancel()
-    await this._currentPromise
+    await this._waitForStartedPromise()
 
     this._running = false
     this._stopping = false
   }
 
-  isRunning () {
+  isRunning (): boolean {
     return this._running
   }
+
+  onFunctionError (callback: (Error) => void) {
+    this._errorSubscriber.subscribe(callback)
+  }
+
+  async _waitForStartedPromise (): Promise<void> {
+    this._currentExecutor.cancel()
+    await this._currentPromise
+  }
 }
+
+type AsyncFunctionWithoutParams = () => Promise<any>
 
 /**
  * Executes given function and sleeps for remaining time.
  * If .cancel() is invoked, than sleep is skipped after function finishes.
  */
 class ThresholdExecutor {
-  _func: Function
+  _func: AsyncFunctionWithoutParams
   _threshold: number
   _canceled: boolean
 
-  constructor (func: Function, threshold: number) {
+  constructor (func: AsyncFunctionWithoutParams, threshold: number) {
     this._func = func
     this._threshold = threshold
     this._canceled = false
@@ -92,11 +109,11 @@ class ThresholdExecutor {
    * @returns {Promise<void>}
    */
   async execute (): Promise<void> {
-    const elapsed = await this._executeAndGetDuration()
-    if (this._canceled || elapsed >= this._threshold) {
-      return
+    const executionResult = await this._executeFunction()
+    await this._sleepRemainingTime(executionResult.duration)
+    if (executionResult.error) {
+      throw executionResult.error
     }
-    await sleep(this._threshold - elapsed)
   }
 
   /**
@@ -106,12 +123,37 @@ class ThresholdExecutor {
     this._canceled = true
   }
 
-  async _executeAndGetDuration (): Promise<number> {
+  async _executeFunction (): Promise<ExecutionResult> {
     const start = Date.now()
-    await this._func()
+    let error = null
+    try {
+      await this._func()
+    } catch (err) {
+      error = err
+    }
     const end = Date.now()
-    return end - start
+    return { duration: end - start, error }
   }
+
+  async _sleepRemainingTime (duration: number): Promise<void> {
+    const sleepTime = this._remainingSleepTime(duration)
+    if (sleepTime > 0) {
+      await sleep(sleepTime)
+    }
+  }
+
+  _remainingSleepTime (duration: number): number {
+    if (this._canceled || duration >= this._threshold) {
+      return 0
+    }
+    return this._threshold - duration
+  }
+}
+
+// Internal type for capturing duration and error of function
+type ExecutionResult = {
+  error: ?Error,
+  duration: number
 }
 
 export { FunctionLooper, ThresholdExecutor }
