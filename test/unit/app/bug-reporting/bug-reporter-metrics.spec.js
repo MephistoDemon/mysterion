@@ -22,72 +22,74 @@ import FakeMessageBus from '../../../helpers/fakeMessageBus'
 import type {MetricSyncDTO} from '../../../../src/app/communication/dto'
 
 describe('BugReporterMetrics', () => {
-  it('sets tag metric', () => {
-    const metricKey = METRICS.IdentityUnlocked
-    const metricValue = true
+  describe('get/set', () => {
+    it('sets tag metric', () => {
+      const metricKey = METRICS.IdentityUnlocked
+      const metricValue = true
 
-    expect(bugReporterMetrics.get(metricKey)).to.be.undefined
-    bugReporterMetrics.set(metricKey, metricValue)
-    expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
-  })
+      expect(bugReporterMetrics.get(metricKey)).to.be.undefined
+      bugReporterMetrics.set(metricKey, metricValue)
+      expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
+    })
 
-  it('sets extra metric', () => {
-    const metricKey = METRICS.HealthCheckTime
-    const metricValue = bugReporterMetrics.dateTimeString()
+    it('sets extra metric', () => {
+      const metricKey = METRICS.HealthCheckTime
+      const metricValue = bugReporterMetrics.dateTimeString()
 
-    expect(bugReporterMetrics.get(metricKey)).to.be.undefined
-    bugReporterMetrics.set(metricKey, metricValue)
-    expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
-  })
+      expect(bugReporterMetrics.get(metricKey)).to.be.undefined
+      bugReporterMetrics.set(metricKey, metricValue)
+      expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
+    })
 
-  it('adds metrics to object', () => {
-    const data = {
-      tags: {},
-      extra: {}
-    }
-    bugReporterMetrics.addMetricsTo(data)
-    const tagKeys = Object.keys(data.tags)
-    const extraKeys = Object.keys(data.extra)
+    it('adds metrics to object', () => {
+      const data = {
+        tags: {},
+        extra: {}
+      }
+      bugReporterMetrics.addMetricsTo(data)
+      const tagKeys = Object.keys(data.tags)
+      const extraKeys = Object.keys(data.extra)
 
-    expect(tagKeys.length + extraKeys.length).to.eql(Object.values(METRICS).length)
+      expect(tagKeys.length + extraKeys.length).to.eql(Object.values(METRICS).length)
 
-    for (let tagKey of Object.values(TAGS)) {
-      expect(tagKeys).contains(tagKey)
-      // $FlowFixMe
-      expect(data.tags[tagKey]).to.be.eql(bugReporterMetrics.get(tagKey) || NOT_SET)
-    }
-    for (let extraKey of Object.values(EXTRA)) {
-      expect(extraKeys).contains(extraKey)
-      // $FlowFixMe
-      expect(data.extra[extraKey]).to.be.eql(bugReporterMetrics.get(extraKey) || NOT_SET)
-    }
-  })
+      for (let tagKey of Object.values(TAGS)) {
+        expect(tagKeys).to.contain(tagKey)
+        // $FlowFixMe
+        expect(data.tags[tagKey]).to.be.eql(bugReporterMetrics.get(tagKey) || NOT_SET)
+      }
+      for (let extraKey of Object.values(EXTRA)) {
+        expect(extraKeys).to.contain(extraKey)
+        // $FlowFixMe
+        expect(data.extra[extraKey]).to.be.eql(bugReporterMetrics.get(extraKey) || NOT_SET)
+      }
+    })
 
-  it('sends/receives metric via message bus', () => {
-    const messageBus = new FakeMessageBus()
-    bugReporterMetrics.syncWith(messageBus)
+    it('sends/receives metric via message bus', () => {
+      const messageBus = new FakeMessageBus()
+      bugReporterMetrics.syncWith(messageBus)
 
-    const metricKey = METRICS.ConnectionIP
-    const metricValue = '{ip: "127.0.0.1"}'
-    bugReporterMetrics.set(metricKey, metricValue)
+      const metricKey = METRICS.ConnectionIP
+      const metricValue = '{ip: "127.0.0.1"}'
+      bugReporterMetrics.set(metricKey, metricValue)
 
-    expect(messageBus.lastData).to.be.not.null
-    const dto: MetricSyncDTO = (messageBus.lastData: any)
-    expect(dto.metric).to.eql(metricKey)
-    expect(dto.value).to.eql(metricValue)
+      expect(messageBus.lastData).to.be.not.null
+      const dto: MetricSyncDTO = (messageBus.lastData: any)
+      expect(dto.metric).to.eql(metricKey)
+      expect(dto.value).to.eql(metricValue)
 
-    if (!messageBus.lastChannel) {
-      throw new Error('No last channel')
-    }
+      if (!messageBus.lastChannel) {
+        throw new Error('No last channel')
+      }
 
-    const newValue = '{ip: "192.168.1.1"}'
-    const updateDto: MetricSyncDTO = {
-      metric: metricKey,
-      value: newValue
-    }
-    messageBus.triggerOn(messageBus.lastChannel, updateDto)
+      const newValue = '{ip: "192.168.1.1"}'
+      const updateDto: MetricSyncDTO = {
+        metric: metricKey,
+        value: newValue
+      }
+      messageBus.triggerOn(messageBus.lastChannel, updateDto)
 
-    const updatedValue = bugReporterMetrics.get(metricKey)
-    expect(updatedValue).to.be.eql(newValue)
+      const updatedValue = bugReporterMetrics.get(metricKey)
+      expect(updatedValue).to.be.eql(newValue)
+    })
   })
 })
