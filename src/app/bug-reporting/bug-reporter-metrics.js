@@ -66,9 +66,14 @@ class BugReporterMetrics {
 
   syncWith (messageBus: MessageBus): void {
     this._messageBus = messageBus
-    this._messageBus.on(messages.METRIC_SYNC, (data: any) => {
-      const dto: MetricSyncDTO = (data: MetricSyncDTO)
-      this.set(dto.metric, dto.value)
+    this._messageBus.on(messages.METRIC_SYNC, data => {
+      const maybeDto = (data: any)
+      if (maybeDto.metric && maybeDto.value) {
+        const dto: MetricSyncDTO = (maybeDto: MetricSyncDTO)
+        this.set(dto.metric, dto.value)
+      } else {
+        throw new Error('Unknown METRIC_SYNC data: ' + JSON.stringify(data))
+      }
     })
   }
 
@@ -94,13 +99,13 @@ class BugReporterMetrics {
     return this._metrics.get(metric)
   }
 
+  dateTimeString (): string {
+    return (new Date()).toUTCString()
+  }
+
   addMetricsTo (data: RavenData): void {
     this._setValues((Object.values(TAGS): any), data.tags)
     this._setValues((Object.values(EXTRA): any), data.extra)
-  }
-
-  dateTimeString (): string {
-    return (new Date()).toUTCString()
   }
 
   _setValues (metrics: Array<Metric>, dest: any) {
