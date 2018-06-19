@@ -90,7 +90,7 @@ xdescribe('Standalone Process', () => {
     })
 
     it('sends status UP', (done) => {
-      processMonitoring.subscribeUp(() => done())
+      processMonitoring.onStatusUp(() => done())
     })
   })
 })
