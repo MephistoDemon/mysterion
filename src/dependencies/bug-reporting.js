@@ -55,7 +55,7 @@ function bootstrap (container: Container) {
         },
         dataCallback: (data) => {
           data.extra.logs = {
-            process: mysteriumProcessLogCache.getSerialized(),
+            mysterium_process: mysteriumProcessLogCache.getSerialized(),
             backend: backendLogCache.getSerialized()
           }
           return data

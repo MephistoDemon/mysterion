@@ -77,7 +77,7 @@ class MainMessageBusCommunication implements MainCommunication {
     this._send(messages.HEALTHCHECK_DOWN)
   }
 
-  sendMysterionMainLog (log: Object) {
+  sendMysterionBackendLog (log: Object) {
     this._send(messages.MYSTERION_MAIN_LOG, log)
   }
 

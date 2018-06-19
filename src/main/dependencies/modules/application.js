@@ -16,10 +16,10 @@
  */
 
 // @flow
-import {app, BrowserWindow} from 'electron'
-import type {Container} from '../../../app/di'
+import { app, BrowserWindow } from 'electron'
+import type { Container } from '../../../app/di'
 import Mysterion from '../../../app/mysterion'
-import type {MysterionConfig} from '../../../app/mysterionConfig'
+import type { MysterionConfig } from '../../../app/mysterionConfig'
 import path from 'path'
 import Window from '../../../app/window'
 import Terms from '../../../app/terms'
@@ -76,7 +76,7 @@ function bootstrap (container: Container) {
       'mysteriumClientMonitoring',
       'proposalFetcher',
       'bugReporter',
-      'backendLogger',
+      'backendLogSetup',
       'userSettingsStore',
       'disconnectNotification'
     ],
@@ -87,7 +87,7 @@ function bootstrap (container: Container) {
       mysteriumClientMonitoring,
       proposalFetcher,
       bugReporter,
-      backendLogger,
+      backendLogSetup,
       userSettingsStore,
       disconnectNotification
     ) => {
@@ -100,7 +100,7 @@ function bootstrap (container: Container) {
         process: mysteriumClientProcess,
         monitoring: mysteriumClientMonitoring,
         proposalFetcher: proposalFetcher,
-        backendLogger: backendLogger,
+        backendLogSetup: backendLogSetup,
         bugReporter: bugReporter,
         userSettingsStore,
         disconnectNotification

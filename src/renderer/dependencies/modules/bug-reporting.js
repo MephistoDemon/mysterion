@@ -39,7 +39,7 @@ function bootstrap (container: Container) {
         mysteriumProcessLogCache.pushToLevel(level, data)
       })
 
-      rendererCommunication.onMysterionMainLog(({ level, message }) => {
+      rendererCommunication.onMysterionBackendLog(({ level, message }) => {
         backendLogCache.pushToLevel(level, message)
       })
 

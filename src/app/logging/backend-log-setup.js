@@ -19,19 +19,11 @@
 
 import winston from 'winston'
 import LogCache from './log-cache'
-import { MainLogCachingTransport, MainLogCommunicationTransport } from './backend-logging-transports'
+import { BackendLogCachingTransport, BackendLogCommunicationTransport } from './backend-logging-transports'
 import type { MainCommunication } from '../communication/main-communication'
 
-interface WinstonLogger {
-  info: Function,
-  warn: Function,
-  error: Function,
-  debug: Function,
-  add: Function
-}
-
-export default class BackendLogger {
-  _logger: WinstonLogger
+export default class BackendLogSetup {
+  winstonLogger: $winstonLogger<$winstonNpmLogLevels>
   backendLogCache: LogCache
   mysteriumProcessLogCache: LogCache
 
@@ -39,37 +31,44 @@ export default class BackendLogger {
     this.backendLogCache = backendLogCache
     this.mysteriumProcessLogCache = mysteriumProcessLogCache
 
-    this._logger = winston.createLogger({
+    this.winstonLogger = winston.createLogger({
       transports: [
         new winston.transports.Console(),
-        new MainLogCachingTransport(this.backendLogCache)
+        new BackendLogCachingTransport(this.backendLogCache)
       ]
     })
   }
 
-  overrideConsoleLogs () {
-    // $FlowFixMe
-    console.log = (...args) => this._logger.info(args.join(' '))
-    // $FlowFixMe
-    console.info = (...args) => this._logger.info(args.join(' '))
-    // $FlowFixMe
-    console.warn = (...args) => this._logger.warn(args.join(' '))
-    // $FlowFixMe
-    console.error = (...args) => this._logger.error(args.join(' '))
-    // $FlowFixMe
-    console.debug = (...args) => this._logger.debug(args.join(' '))
+  startSendingLogsViaCommunication (com: MainCommunication) {
+    this._sendCachedViaCommunication(com)
+    this._addBackendCommunicationTransport(com)
   }
 
-  sendCachedViaCommunication (com: MainCommunication) {
+  _sendCachedViaCommunication (com: MainCommunication) {
     for (const infoEntry of this.backendLogCache.get().info) {
-      com.sendMysterionMainLog(infoEntry)
+      com.sendMysterionBackendLog(infoEntry)
     }
     for (const errorEntry of this.backendLogCache.get().error) {
-      com.sendMysterionMainLog(errorEntry)
+      com.sendMysterionBackendLog(errorEntry)
     }
   }
 
-  addMainCommunicationTransport (com: MainCommunication) {
-    this._logger.add(new MainLogCommunicationTransport(com))
+  _addBackendCommunicationTransport (com: MainCommunication) {
+    this.winstonLogger.add(new BackendLogCommunicationTransport(com))
   }
 }
+
+function overrideConsoleLogs (logger: Object) {
+  // $FlowFixMe
+  console.log = (...args) => logger.info(args.join(' '))
+  // $FlowFixMe
+  console.info = (...args) => logger.info(args.join(' '))
+  // $FlowFixMe
+  console.warn = (...args) => logger.warn(args.join(' '))
+  // $FlowFixMe
+  console.error = (...args) => logger.error(args.join(' '))
+  // $FlowFixMe
+  console.debug = (...args) => logger.debug(args.join(' '))
+}
+
+export { overrideConsoleLogs }

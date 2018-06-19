@@ -107,7 +107,7 @@ class RendererCommunication {
     this._on(messages.HEALTHCHECK_DOWN, callback)
   }
 
-  onMysterionMainLog (callback: (log: MysterionBackendLogDTO) => void): void {
+  onMysterionBackendLog (callback: (log: MysterionBackendLogDTO) => void): void {
     this._on(messages.MYSTERION_MAIN_LOG, callback)
   }
 

@@ -19,15 +19,15 @@
 import Raven from 'raven'
 import BugReporterMain from '../../../app/bug-reporting/bug-reporter-main'
 import type {Container} from '../../../app/di'
-import BackendLogger from '../../../app/logging/backend-logger'
+import BackendLogSetup, { overrideConsoleLogs } from '../../../app/logging/backend-log-setup'
 
 function bootstrap (container: Container) {
   container.factory(
     'backendLogger',
     ['backendLogCache', 'mysteriumProcessLogCache'],
     (backendLogCache, mysteriumProcessLogCache) => {
-      const backendLogger = new BackendLogger(backendLogCache, mysteriumProcessLogCache)
-      backendLogger.overrideConsoleLogs()
+      const backendLogger = new BackendLogSetup(backendLogCache, mysteriumProcessLogCache)
+      overrideConsoleLogs(backendLogger.winstonLogger)
       return backendLogger
     }
   )

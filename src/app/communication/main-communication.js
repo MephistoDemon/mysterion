@@ -45,7 +45,7 @@ interface MainCommunication {
 
   sendMysteriumClientDown (): void,
 
-  sendMysterionMainLog (log: MysterionBackendLogDTO): void,
+  sendMysterionBackendLog (log: MysterionBackendLogDTO): void,
 
   sendProposals (proposals: ProposalUpdateDTO): void,
 

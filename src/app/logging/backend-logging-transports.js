@@ -26,19 +26,19 @@ type LogEntry = {
   message: string
 }
 
-export class MainLogCommunicationTransport extends Transport {
+export class BackendLogCommunicationTransport extends Transport {
   constructor (com: MainCommunication) {
     super()
     this.communication = com
   }
 
   log (info: LogEntry, callback: Function) {
-    this.communication.sendMysterionMainLog(info)
+    this.communication.sendMysterionBackendLog(info)
     callback()
   }
 }
 
-export class MainLogCachingTransport extends Transport {
+export class BackendLogCachingTransport extends Transport {
   constructor (logCache: LogCache) {
     super()
     this.logCache = logCache

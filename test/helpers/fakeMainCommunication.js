@@ -70,8 +70,8 @@ class FakeMainCommunication implements MainCommunication {
     this._registerMethod(this.sendMysteriumClientDown)
   }
 
-  sendMysterionMainLog (dto: MysterionBackendLogDTO) {
-    this._registerMethod(this.sendMysterionMainLog)
+  sendMysterionBackendLog (dto: MysterionBackendLogDTO) {
+    this._registerMethod(this.sendMysterionBackendLog)
   }
 
   sendProposals (proposals: ProposalUpdateDTO): void {
