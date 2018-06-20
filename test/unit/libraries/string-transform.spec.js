@@ -18,37 +18,49 @@
 // @flow
 
 import { describe, it, expect } from '../../helpers/dependencies'
-import { applyTransformation, filterByString, prependWith } from '../../../src/libraries/string-transform'
+import { applyTransformation, filterByString, prependWithFn } from '../../../src/libraries/string-transform'
 
-describe('prependWith', () => {
-  it('constructs function that prepends', () => {
-    expect(prependWith('pre')('data')).to.eql('predata')
+describe('prependWithFn', () => {
+  it('prepends each time with fn execution result', () => {
+    let calledTimes = 0
+    const prependFn = () => {
+      calledTimes += 1
+      return calledTimes.toString()
+    }
+    expect(prependWithFn(prependFn)('data')).to.eql('1data')
+    expect(prependWithFn(prependFn)('data')).to.eql('2data')
   })
 })
 
 describe('filterByString', () => {
-  describe('constructs function that returns strings', () => {
-    it('same string if filter matches', () => {
-      expect(filterByString('a')('bald')).to.eql('bald')
-    })
-    it('returns nothing if filter doesn\'t match', () => {
-      expect(filterByString('a')('bold')).to.be.undefined
-    })
+  it('returns same string if filter matches', () => {
+    expect(filterByString('a')('bald')).to.eql('bald')
+  })
+  it('returns nothing if filter doesn\'t match', () => {
+    expect(filterByString('a')('bold')).to.be.undefined
   })
 })
 
 describe('applyTransformation', () => {
   let called
-  const transformFn = (data) => {
-    called = true
-    return data + '+'
+  const transformOnceThenStopReturnUndefined = (data) => {
+    if (!called) {
+      called = true
+      return data + '+'
+    }
   }
+
   const cb = (data) => {
     expect(called).to.be.true
     expect(data).to.eql('data+')
   }
 
+  const cb2 = () => {
+    throw new Error('cb2 was called')
+  }
+
   it('runs transformation function and pipes its output to callback', () => {
-    applyTransformation(transformFn, cb)('data')
+    applyTransformation(transformOnceThenStopReturnUndefined, cb)('data')
+    applyTransformation(transformOnceThenStopReturnUndefined, cb2)('data')
   })
 })

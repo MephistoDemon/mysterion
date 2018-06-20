@@ -17,19 +17,21 @@
 
 // @flow
 
-type TransformFn = (string) => string
+type TransformFn = (string) => ?string
 type Callback = (string) => void
 
 export function applyTransformation (transform: TransformFn, next: Callback): (string) => void {
   return (data) => {
-    if (!data) return
-    next(transform(data))
+    const transformed = transform(data)
+    if (transformed !== null && transformed !== undefined) {
+      next(transformed)
+    }
   }
 }
 
-export function prependWith (prep: string) {
+export function prependWithFn (fn: () => string) {
   return (data: string) => {
-    return prep + data
+    return fn() + data
   }
 }
 

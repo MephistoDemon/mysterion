@@ -66,8 +66,9 @@ class Process {
   async setupLogging () {
     await this._prepareLogFiles()
     const boundErrorCb = this._logCallback.bind(this, processLogLevels.ERROR)
+    const getTimeFn = () => new Date(Date.now()).toString()
     tailFile(this._stdoutPath, this._logCallback.bind(this, processLogLevels.INFO))
-    tailFile(this._stderrPath, applyTransformation(prependWith(new Date(Date.now()).toString()), boundErrorCb))
+    tailFile(this._stderrPath, applyTransformation(prependWith(getTimeFn), boundErrorCb))
     tailFile(SYSTEM_LOG, applyTransformation(filterByString(INVERSE_DOMAIN_PACKAGE_NAME), boundErrorCb))
   }
 
