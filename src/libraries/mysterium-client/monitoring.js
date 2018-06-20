@@ -48,15 +48,15 @@ class Monitoring {
     }
   }
 
-  subscribeStatus (callback: StatusCallback) {
+  onStatus (callback: StatusCallback) {
     this._subscribersStatus.push(callback)
   }
 
-  subscribeUp (callback: UpCallback) {
+  onStatusUp (callback: UpCallback) {
     this._subscribersUp.push(callback)
   }
 
-  subscribeDown (callback: DownCallback) {
+  onStatusDown (callback: DownCallback) {
     this._subscribersDown.push(callback)
   }
 
