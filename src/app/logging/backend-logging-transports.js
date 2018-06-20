@@ -33,7 +33,7 @@ export class BackendLogCommunicationTransport extends Transport {
     this._communication = com
   }
 
-  log (info: LogEntry, callback: Function) {
+  log (info: LogEntry, callback: () => any) {
     this._communication.sendMysterionBackendLog({ level: mapToLogLevel(info.level), message: info.message })
     callback()
   }
