@@ -83,6 +83,7 @@ class RendererCommunication {
     this._on(messages.CONNECTION_REQUEST, callback)
   }
 
+  // TODO: unify naming 'disconnection' and 'connection cancel'
   onDisconnectionRequest (callback: () => void) {
     this._on(messages.CONNECTION_CANCEL, callback)
   }
