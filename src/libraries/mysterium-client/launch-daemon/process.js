@@ -21,6 +21,7 @@ import processLogLevels from '../log-levels'
 import { INVERSE_DOMAIN_PACKAGE_NAME } from './config'
 import axios from 'axios'
 import createFileIfMissing from '../../create-file-if-missing'
+import { applyTransformation, filterByString, prependWith } from '../../string-transform'
 
 const SYSTEM_LOG = '/var/log/system.log'
 const stdoutFileName = 'stdout.log'
@@ -64,9 +65,10 @@ class Process {
 
   async setupLogging () {
     await this._prepareLogFiles()
+    const boundErrorCb = this._logCallback.bind(this, processLogLevels.ERROR)
     tailFile(this._stdoutPath, this._logCallback.bind(this, processLogLevels.INFO))
-    tailFile(this._stderrPath, prependWithTimestamp(this._logCallback.bind(this, processLogLevels.ERROR)))
-    tailFile(SYSTEM_LOG, filterLine(INVERSE_DOMAIN_PACKAGE_NAME, this._logCallback.bind(this, processLogLevels.ERROR)))
+    tailFile(this._stderrPath, applyTransformation(prependWith(new Date(Date.now()).toString()), boundErrorCb))
+    tailFile(SYSTEM_LOG, applyTransformation(filterByString(INVERSE_DOMAIN_PACKAGE_NAME), boundErrorCb))
   }
 
   onLog (level, cb) {
@@ -92,23 +94,6 @@ function tailFile (filePath, cb) {
   logTail.on('error', () => {
     console.error(`log file watching failed. file probably doesn't exist: ${filePath}`)
   })
-}
-
-function filterLine (filter, cb) {
-  const regex = new RegExp(filter)
-
-  return (data) => {
-    if (!regex.test(data)) {
-      return
-    }
-    cb(data)
-  }
-}
-
-function prependWithTimestamp (next) {
-  return (data) => {
-    next(`${new Date(Date.now())}: ${data}`)
-  }
 }
 
 export default Process
