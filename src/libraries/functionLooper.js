@@ -17,7 +17,6 @@
 
 // @flow
 import sleep from './sleep'
-import logger from '../app/logger'
 import Subscriber from './subscriber'
 
 /**
@@ -54,7 +53,7 @@ class FunctionLooper {
         try {
           await this._currentPromise
         } catch (err) {
-          logger.info('FunctionLooper got error while executing given function, error:', err)
+          console.info('FunctionLooper got error while executing given function, error:', err)
           this._errorSubscriber.notify(err)
         }
       }

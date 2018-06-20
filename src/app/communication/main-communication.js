@@ -25,7 +25,8 @@ import type {
   ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO
+  AppErrorDTO,
+  MysterionBackendLogDTO
 } from './dto'
 import type {UserSettings} from '../user-settings/user-settings'
 
@@ -43,6 +44,8 @@ interface MainCommunication {
   sendMysteriumClientUp (): void,
 
   sendMysteriumClientDown (): void,
+
+  sendMysterionBackendLog (log: MysterionBackendLogDTO): void,
 
   sendProposals (proposals: ProposalUpdateDTO): void,
 

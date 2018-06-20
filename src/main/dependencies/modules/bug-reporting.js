@@ -19,8 +19,17 @@
 import Raven from 'raven'
 import BugReporterMain from '../../../app/bug-reporting/bug-reporter-main'
 import type {Container} from '../../../app/di'
+import BackendLogBootstrapper from '../../../app/logging/backend-log-bootstrapper'
 
 function bootstrap (container: Container) {
+  container.factory(
+    'backendLogBootstrapper',
+    ['backendLogCache'],
+    (backendLogCache) => {
+      return new BackendLogBootstrapper(backendLogCache)
+    }
+  )
+
   container.constant(
     'bugReporter.sentryURL',
     'https://f1e63dd563c34c35a56e98aa02518d40:0104611dab3d492eae3c28936c34505f@sentry.io/300978'
@@ -28,10 +37,10 @@ function bootstrap (container: Container) {
 
   container.factory(
     'bugReporter',
-    ['bugReporter.sentryURL', 'bugReporter.config', 'logCache'],
-    (sentryURL, config, logCache) => {
+    ['bugReporter.sentryURL', 'bugReporter.config'],
+    (sentryURL, config) => {
       const raven = Raven.config(sentryURL, config).install()
-      return new BugReporterMain(raven, logCache)
+      return new BugReporterMain(raven)
     }
   )
 

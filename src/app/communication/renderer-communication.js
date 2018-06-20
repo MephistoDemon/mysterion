@@ -27,7 +27,8 @@ import type {
   ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO
+  AppErrorDTO,
+  MysterionBackendLogDTO
 } from './dto'
 
 import type {UserSettings} from '../user-settings/user-settings'
@@ -104,6 +105,10 @@ class RendererCommunication {
 
   onMysteriumClientDown (callback: () => void): void {
     this._on(messages.HEALTHCHECK_DOWN, callback)
+  }
+
+  onMysterionBackendLog (callback: (log: MysterionBackendLogDTO) => void): void {
+    this._on(messages.MYSTERION_BACKEND_LOG, callback)
   }
 
   onTermsRequest (callback: (RequestTermsDTO) => void): void {

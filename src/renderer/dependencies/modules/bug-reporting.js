@@ -28,15 +28,19 @@ function bootstrap (container: Container) {
 
   container.factory(
     'bugReporter',
-    ['bugReporter.raven', 'rendererCommunication', 'logCache'],
-    (raven, rendererCommunication, logCache) => {
-      const bugReporter = new BugReporterRenderer(raven, logCache)
+    ['bugReporter.raven', 'rendererCommunication', 'mysteriumProcessLogCache', 'backendLogCache'],
+    (raven, rendererCommunication, mysteriumProcessLogCache, backendLogCache) => {
+      const bugReporter = new BugReporterRenderer(raven)
       window.addEventListener('unhandledrejection', (evt) => {
         bugReporter.captureErrorMessage(evt.reason, evt.reason.response ? evt.reason.response.data : evt.reason)
       })
 
       rendererCommunication.onMysteriumClientLog(({ level, data }) => {
-        bugReporter.pushToLogCache(level, data)
+        mysteriumProcessLogCache.pushToLevel(level, data)
+      })
+
+      rendererCommunication.onMysterionBackendLog(({ level, message }) => {
+        backendLogCache.pushToLevel(level, message)
       })
 
       return bugReporter

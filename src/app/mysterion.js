@@ -27,7 +27,6 @@ import MainMessageBus from './communication/mainMessageBus'
 import { onFirstEvent, onFirstEventOrTimeout } from './communication/utils'
 import path from 'path'
 import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
-import logger from './logger'
 import type { Size } from './window'
 import type { MysterionConfig } from './mysterionConfig'
 import Window from './window'
@@ -41,6 +40,8 @@ import type { MessageBus } from './communication/messageBus'
 import type { MainCommunication } from './communication/main-communication'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
+import BackendLogBootstrapper from './logging/backend-log-bootstrapper'
+import LogCache from './logging/log-cache'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -52,6 +53,8 @@ type MysterionParams = {
   process: Object,
   proposalFetcher: ProposalFetcher,
   bugReporter: BugReporter,
+  backendLogBootstrapper: BackendLogBootstrapper,
+  mysteriumProcessLogCache: LogCache,
   userSettingsStore: UserSettingsStore,
   disconnectNotification: Notification
 }
@@ -69,6 +72,8 @@ class Mysterion {
   process: Object
   proposalFetcher: ProposalFetcher
   bugReporter: BugReporter
+  backendLogBootstrapper: BackendLogBootstrapper
+  mysteriumProcessLogCache: LogCache
   userSettingsStore: UserSettingsStore
   disconnectNotification: Notification
 
@@ -86,11 +91,14 @@ class Mysterion {
     this.process = params.process
     this.proposalFetcher = params.proposalFetcher
     this.bugReporter = params.bugReporter
+    this.backendLogBootstrapper = params.backendLogBootstrapper
+    this.mysteriumProcessLogCache = params.mysteriumProcessLogCache
     this.userSettingsStore = params.userSettingsStore
     this.disconnectNotification = params.disconnectNotification
   }
 
   run () {
+    this.backendLogBootstrapper.init()
     this.logUnhandledRejections()
 
     // fired when app has been launched
@@ -129,7 +137,7 @@ class Mysterion {
 
   logUnhandledRejections () {
     process.on('unhandledRejection', error => {
-      logger.info('Received unhandled rejection:', error)
+      logException('Received unhandled rejection:', error)
     })
   }
 
@@ -166,6 +174,8 @@ class Mysterion {
     })
 
     this._subscribeProposals()
+
+    this.backendLogBootstrapper.startSendingLogsViaCommunication(this.communication)
 
     synchronizeUserSettings(this.userSettingsStore, this.communication)
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
@@ -318,7 +328,7 @@ class Mysterion {
   _startProcess () {
     const cacheLogs = (level, data) => {
       this.communication.sendMysteriumClientLog({level, data})
-      this.bugReporter.pushToLogCache(level, data)
+      this.mysteriumProcessLogCache.pushToLevel(level, data)
     }
 
     logInfo("Starting 'mysterium_client' process")
@@ -328,7 +338,7 @@ class Mysterion {
       this.process.onLog(processLogLevels.INFO, (data) => cacheLogs(processLogLevels.INFO, data))
       this.process.onLog(processLogLevels.ERROR, (data) => cacheLogs(processLogLevels.ERROR, data))
     } catch (e) {
-      logger.error('Failing to process logs. ', e)
+      logException('Failing to process logs. ', e)
       this.bugReporter.captureErrorException(e)
     }
   }
@@ -415,11 +425,11 @@ function synchronizeUserSettings (userSettingsStore, communication) {
 }
 
 function logInfo (message: string) {
-  logger.info(LOG_PREFIX + message)
+  console.info(LOG_PREFIX + message)
 }
 
 function logException (message: string, err: Error) {
-  logger.error(LOG_PREFIX + message, err)
+  console.error(LOG_PREFIX + message, err)
 }
 
 export default Mysterion
