@@ -32,7 +32,7 @@ function bootstrap (container: Container) {
 
   container.factory(
     'bugReporterMetrics',
-    [''],
+    [],
     (): BugReporterMetrics => new BugReporterMetrics()
   )
 
