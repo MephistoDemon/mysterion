@@ -324,7 +324,7 @@ class Mysterion {
   _startProcess () {
     const cacheLogs = (level, data) => {
       this.communication.sendMysteriumClientLog({level, data})
-      this.backendLogSetup.mysteriumProcessLogCache.pushToLevel(level, data)
+      this.backendLogSetup._mysteriumProcessLogCache.pushToLevel(level, data)
     }
 
     logInfo("Starting 'mysterium_client' process")

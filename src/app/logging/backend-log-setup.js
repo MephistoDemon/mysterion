@@ -36,23 +36,23 @@ interface Logger {
 }
 
 export default class BackendLogSetup {
-  winstonLogger: Logger
-  backendLogCache: LogCache
-  mysteriumProcessLogCache: LogCache
+  _winstonLogger: Logger
+  _backendLogCache: LogCache
+  _mysteriumProcessLogCache: LogCache
 
   constructor (backendLogCache: LogCache, mysteriumProcessLogCache: LogCache) {
-    this.backendLogCache = backendLogCache
-    this.mysteriumProcessLogCache = mysteriumProcessLogCache
+    this._backendLogCache = backendLogCache
+    this._mysteriumProcessLogCache = mysteriumProcessLogCache
   }
 
   init () {
-    this.winstonLogger = winston.createLogger({
+    this._winstonLogger = winston.createLogger({
       transports: [
         new winston.transports.Console(),
-        new BackendLogCachingTransport(this.backendLogCache)
+        new BackendLogCachingTransport(this._backendLogCache)
       ]
     })
-    overrideConsoleLogs(this.winstonLogger)
+    overrideConsoleLogs(this._winstonLogger)
   }
 
   startSendingLogsViaCommunication (com: MainCommunication) {
@@ -61,16 +61,16 @@ export default class BackendLogSetup {
   }
 
   _sendCachedViaCommunication (com: MainCommunication) {
-    for (const infoEntry of this.backendLogCache.get().info) {
-      com.sendMysterionBackendLog(infoEntry)
+    for (const infoEntry of this._backendLogCache.get().info) {
+      com.sendMysterionBackendLog({ message: infoEntry, level: 'info' })
     }
-    for (const errorEntry of this.backendLogCache.get().error) {
-      com.sendMysterionBackendLog(errorEntry)
+    for (const errorEntry of this._backendLogCache.get().error) {
+      com.sendMysterionBackendLog({ message: errorEntry, level: 'error' })
     }
   }
 
   _addBackendCommunicationTransport (com: MainCommunication) {
-    this.winstonLogger.add(new BackendLogCommunicationTransport(com))
+    this._winstonLogger.add(new BackendLogCommunicationTransport(com))
   }
 }
 

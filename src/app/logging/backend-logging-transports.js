@@ -34,7 +34,7 @@ export class BackendLogCommunicationTransport extends Transport {
   }
 
   log (info: LogEntry, callback: Function) {
-    this._communication.sendMysterionBackendLog({ level: mapToCacheLevel(info.level), message: info.message })
+    this._communication.sendMysterionBackendLog({ level: mapToLogLevel(info.level), message: info.message })
     callback()
   }
 }
@@ -47,20 +47,18 @@ export class BackendLogCachingTransport extends Transport {
   }
 
   log (info: LogEntry, callback: () => any) {
-    this._logCache.pushToLevel(mapToCacheLevel(info.level), info.message)
+    this._logCache.pushToLevel(mapToLogLevel(info.level), info.message)
     callback()
   }
 }
 
-function mapToCacheLevel (level: string): 'info' | 'error' {
+function mapToLogLevel (level: string): 'info' | 'error' {
   switch (level) {
     case 'error':
       return 'error'
     case 'info':
     case 'warn':
-    case 'verbose':
     case 'debug':
-    case 'silly':
     default:
       return 'info'
   }
