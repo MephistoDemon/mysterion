@@ -40,7 +40,8 @@ import type { MessageBus } from './communication/messageBus'
 import type { MainCommunication } from './communication/main-communication'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
-import BackendLogSetup from './logging/backend-log-setup'
+import BackendLogBootstrapper from './logging/backend-log-bootstrapper'
+import LogCache from './logging/log-cache'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -52,7 +53,8 @@ type MysterionParams = {
   process: Object,
   proposalFetcher: ProposalFetcher,
   bugReporter: BugReporter,
-  backendLogSetup: BackendLogSetup,
+  backendLogBootstrapper: BackendLogBootstrapper,
+  mysteriumProcessLogCache: LogCache,
   userSettingsStore: UserSettingsStore,
   disconnectNotification: Notification
 }
@@ -70,7 +72,8 @@ class Mysterion {
   process: Object
   proposalFetcher: ProposalFetcher
   bugReporter: BugReporter
-  backendLogSetup: BackendLogSetup
+  backendLogBootstrapper: BackendLogBootstrapper
+  mysteriumProcessLogCache: LogCache
   userSettingsStore: UserSettingsStore
   disconnectNotification: Notification
 
@@ -88,13 +91,14 @@ class Mysterion {
     this.process = params.process
     this.proposalFetcher = params.proposalFetcher
     this.bugReporter = params.bugReporter
-    this.backendLogSetup = params.backendLogSetup
+    this.backendLogBootstrapper = params.backendLogBootstrapper
+    this.mysteriumProcessLogCache = params.mysteriumProcessLogCache
     this.userSettingsStore = params.userSettingsStore
     this.disconnectNotification = params.disconnectNotification
   }
 
   run () {
-    this.backendLogSetup.init()
+    this.backendLogBootstrapper.init()
     this.logUnhandledRejections()
 
     // fired when app has been launched
@@ -171,7 +175,7 @@ class Mysterion {
 
     this._subscribeProposals()
 
-    this.backendLogSetup.startSendingLogsViaCommunication(this.communication)
+    this.backendLogBootstrapper.startSendingLogsViaCommunication(this.communication)
 
     synchronizeUserSettings(this.userSettingsStore, this.communication)
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
@@ -324,7 +328,7 @@ class Mysterion {
   _startProcess () {
     const cacheLogs = (level, data) => {
       this.communication.sendMysteriumClientLog({level, data})
-      this.backendLogSetup._mysteriumProcessLogCache.pushToLevel(level, data)
+      this.mysteriumProcessLogCache.pushToLevel(level, data)
     }
 
     logInfo("Starting 'mysterium_client' process")

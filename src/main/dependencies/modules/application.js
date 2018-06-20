@@ -76,7 +76,8 @@ function bootstrap (container: Container) {
       'mysteriumClientMonitoring',
       'proposalFetcher',
       'bugReporter',
-      'backendLogSetup',
+      'backendLogBootstrapper',
+      'mysteriumProcessLogCache',
       'userSettingsStore',
       'disconnectNotification'
     ],
@@ -87,7 +88,8 @@ function bootstrap (container: Container) {
       mysteriumClientMonitoring,
       proposalFetcher,
       bugReporter,
-      backendLogSetup,
+      backendLogBootstrapper,
+      mysteriumProcessLogCache,
       userSettingsStore,
       disconnectNotification
     ) => {
@@ -100,8 +102,9 @@ function bootstrap (container: Container) {
         process: mysteriumClientProcess,
         monitoring: mysteriumClientMonitoring,
         proposalFetcher: proposalFetcher,
-        backendLogSetup: backendLogSetup,
-        bugReporter: bugReporter,
+        backendLogBootstrapper,
+        mysteriumProcessLogCache,
+        bugReporter,
         userSettingsStore,
         disconnectNotification
       })

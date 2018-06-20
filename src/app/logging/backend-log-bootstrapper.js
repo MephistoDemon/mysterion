@@ -35,14 +35,12 @@ interface Logger {
   add (Transport): void
 }
 
-export default class BackendLogSetup {
+export default class BackendLogBootstrapper {
   _winstonLogger: Logger
   _backendLogCache: LogCache
-  _mysteriumProcessLogCache: LogCache
 
-  constructor (backendLogCache: LogCache, mysteriumProcessLogCache: LogCache) {
+  constructor (backendLogCache: LogCache) {
     this._backendLogCache = backendLogCache
-    this._mysteriumProcessLogCache = mysteriumProcessLogCache
   }
 
   init () {
