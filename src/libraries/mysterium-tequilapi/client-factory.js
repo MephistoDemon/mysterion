@@ -21,10 +21,11 @@ import axios from 'axios'
 import AxiosAdapter from './adapters/axios-adapter'
 import HttpTequilapiClient from './client'
 import {TIMEOUT_DEFAULT} from './timeouts'
+import {BugReporterMetrics} from '../../app/bug-reporting/bug-reporter-metrics'
 
 const TEQUILAPI_URL = 'http://127.0.0.1:4050'
 
-function tequilapiClientFactory (baseUrl: string = TEQUILAPI_URL, defaultTimeout: number = TIMEOUT_DEFAULT) {
+function tequilapiClientFactory (bugReporterMetrics: ?BugReporterMetrics = null, baseUrl: string = TEQUILAPI_URL, defaultTimeout: number = TIMEOUT_DEFAULT) {
   const axiosInstance = axios.create({
     baseURL: baseUrl,
     headers: {
@@ -33,7 +34,7 @@ function tequilapiClientFactory (baseUrl: string = TEQUILAPI_URL, defaultTimeout
   })
   const axiosAdapter = new AxiosAdapter(axiosInstance, defaultTimeout)
 
-  return new HttpTequilapiClient(axiosAdapter)
+  return new HttpTequilapiClient(axiosAdapter, bugReporterMetrics)
 }
 
 export default tequilapiClientFactory

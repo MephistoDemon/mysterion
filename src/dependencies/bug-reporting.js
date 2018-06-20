@@ -18,7 +18,7 @@
 // @flow
 import type { Container } from '../app/di'
 import os from 'os'
-import {bugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
+import {BugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
 import LogCache from '../app/bug-reporting/log-cache'
 
 function bootstrap (container: Container) {
@@ -30,11 +30,17 @@ function bootstrap (container: Container) {
     }
   )
 
+  container.factory(
+    'bugReporterMetrics',
+    [''],
+    (): BugReporterMetrics => new BugReporterMetrics()
+  )
+
   const extendedProcess = (process: { type?: string })
   container.service(
     'bugReporter.config',
-    ['mysterionReleaseID', 'logCache'],
-    (mysterionReleaseID, logCache): RavenOptions => {
+    ['mysterionReleaseID', 'logCache', 'bugReporterMetrics'],
+    (mysterionReleaseID, logCache, bugReporterMetrics): RavenOptions => {
       return {
         captureUnhandledRejections: true,
         release: mysterionReleaseID,

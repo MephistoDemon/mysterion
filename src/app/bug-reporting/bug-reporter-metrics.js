@@ -16,7 +16,7 @@
  */
 
 // @flow
-import MapSync from '../../libraries/map-sync'
+import {MapSync, MapSyncCommunication} from '../../libraries/map-sync'
 
 /**
  * Used as default metric value in Sentry
@@ -58,7 +58,14 @@ export type RavenData = {
 /**
  * Collects and synchronizes data used in BugReporter
  */
-class BugReporterMetrics extends MapSync<Metric> {
+export class BugReporterMetrics extends MapSync<Metric> {
+  constructor (communication: ?MapSyncCommunication<Metric> = null) {
+    super()
+    if (communication) {
+      super.syncWith(communication)
+    }
+  }
+
   dateTimeString (): string {
     return (new Date()).toUTCString()
   }
@@ -75,6 +82,4 @@ class BugReporterMetrics extends MapSync<Metric> {
   }
 }
 
-const bugReporterMetrics = new BugReporterMetrics()
-
-export { bugReporterMetrics, METRICS, TAGS, EXTRA, NOT_SET }
+export { METRICS, TAGS, EXTRA, NOT_SET }

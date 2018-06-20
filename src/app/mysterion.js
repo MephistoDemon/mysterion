@@ -41,7 +41,7 @@ import type { MessageBus } from './communication/messageBus'
 import type { MainCommunication } from './communication/main-communication'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
-import {bugReporterMetrics, METRICS} from '../app/bug-reporting/bug-reporter-metrics'
+import {BugReporterMetrics, METRICS} from '../app/bug-reporting/bug-reporter-metrics'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -53,6 +53,7 @@ type MysterionParams = {
   process: Object,
   proposalFetcher: ProposalFetcher,
   bugReporter: BugReporter,
+  bugReporterMetrics: BugReporterMetrics,
   userSettingsStore: UserSettingsStore,
   disconnectNotification: Notification
 }
@@ -70,6 +71,7 @@ class Mysterion {
   process: Object
   proposalFetcher: ProposalFetcher
   bugReporter: BugReporter
+  bugReporterMetrics: BugReporterMetrics
   userSettingsStore: UserSettingsStore
   disconnectNotification: Notification
 
@@ -87,13 +89,12 @@ class Mysterion {
     this.process = params.process
     this.proposalFetcher = params.proposalFetcher
     this.bugReporter = params.bugReporter
+    this.bugReporterMetrics = params.bugReporterMetrics
     this.userSettingsStore = params.userSettingsStore
     this.disconnectNotification = params.disconnectNotification
   }
 
   run () {
-    bugReporterMetrics.set(METRICS.StartTime, bugReporterMetrics.dateTimeString())
-
     this.logUnhandledRejections()
 
     // fired when app has been launched
@@ -144,12 +145,14 @@ class Mysterion {
 
     const send = this._getSendFunction(browserWindow)
     this.messageBus = new MainMessageBus(send, this.bugReporter.captureErrorException)
-    this.communication = new MainMessageBusCommunication(this.messageBus)
+    const mainMessageBusCommunication = new MainMessageBusCommunication(this.messageBus)
+    this.communication = mainMessageBusCommunication
     this.communication.onCurrentIdentityChange((identityChange: CurrentIdentityChangeDTO) => {
       const identity = new IdentityDTO({id: identityChange.id})
       this.bugReporter.setUser(identity)
     })
-    bugReporterMetrics.syncWith(this.messageBus)
+    this.bugReporterMetrics.syncWith(mainMessageBusCommunication)
+    this.bugReporterMetrics.set(METRICS.StartTime, this.bugReporterMetrics.dateTimeString())
 
     await this._onRendererLoaded()
 
@@ -341,12 +344,12 @@ class Mysterion {
     this.monitoring.subscribeUp(() => {
       logInfo("'mysterium_client' is up")
       this.communication.sendMysteriumClientUp()
-      bugReporterMetrics.set(METRICS.ClientStarted, true)
+      this.bugReporterMetrics.set(METRICS.ClientStarted, true)
     })
     this.monitoring.subscribeDown(() => {
       logInfo("'mysterium_client' is down")
       this.communication.sendMysteriumClientDown()
-      bugReporterMetrics.set(METRICS.ClientStarted, false)
+      this.bugReporterMetrics.set(METRICS.ClientStarted, false)
     })
     this.monitoring.subscribeStatus((status) => {
       if (status === false) {

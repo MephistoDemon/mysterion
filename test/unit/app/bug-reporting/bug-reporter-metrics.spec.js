@@ -16,13 +16,19 @@
  */
 
 // @flow
-import {describe, it, expect} from '../../../helpers/dependencies'
-import {bugReporterMetrics, EXTRA, METRICS, NOT_SET, TAGS} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
-import FakeMessageBus from '../../../helpers/fakeMessageBus'
-import type {MapSyncDTO} from '../../../../src/app/communication/dto'
+import {describe, it, expect, beforeEach} from '../../../helpers/dependencies'
+import {BugReporterMetrics, EXTRA, METRICS, NOT_SET, TAGS} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import type {Metric} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
+import type {MapSyncDTO} from '../../../../src/libraries/map-sync'
+import FakeMainCommunication from '../../../helpers/fakeMainCommunication'
 
 describe('BugReporterMetrics', () => {
+  let bugReporterMetrics : BugReporterMetrics
+
+  beforeEach(() => {
+    bugReporterMetrics = new BugReporterMetrics()
+  })
+
   describe('get/set', () => {
     it('sets tag metric', () => {
       const metricKey = METRICS.IdentityUnlocked
@@ -66,28 +72,30 @@ describe('BugReporterMetrics', () => {
     })
 
     it('sends/receives metric via message bus', () => {
-      const messageBus = new FakeMessageBus()
-      bugReporterMetrics.syncWith(messageBus)
+      const communication = new FakeMainCommunication()
+      bugReporterMetrics.syncWith(communication)
+
+      let lastUpdate: ?MapSyncDTO<Metric> = null
+      communication.onMapUpdate(update => {
+        lastUpdate = update
+      })
 
       const metricKey = METRICS.ConnectionIP
       const metricValue = '{ip: "127.0.0.1"}'
       bugReporterMetrics.set(metricKey, metricValue)
 
-      expect(messageBus.lastData).to.be.not.null
-      const dto: MapSyncDTO<Metric> = (messageBus.lastData: any)
-      expect(dto.metric).to.eql(metricKey)
-      expect(dto.value).to.eql(metricValue)
-
-      if (!messageBus.lastChannel) {
-        throw new Error('No last channel')
+      if (lastUpdate == null) {
+        throw new Error('Map have been not updated')
       }
+      expect(lastUpdate).to.not.be.null
+      expect(lastUpdate.metric).to.eql(metricKey)
+      expect(lastUpdate.value).to.eql(metricValue)
 
       const newValue = '{ip: "192.168.1.1"}'
-      const updateDto: MapSyncDTO<Metric> = {
+      communication.sendMapUpdate({
         metric: metricKey,
         value: newValue
-      }
-      messageBus.triggerOn(messageBus.lastChannel, updateDto)
+      })
 
       const updatedValue = bugReporterMetrics.get(metricKey)
       expect(updatedValue).to.be.eql(newValue)

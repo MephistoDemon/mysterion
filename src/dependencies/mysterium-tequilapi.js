@@ -18,6 +18,7 @@
 // @flow
 import type {Container} from '../app/di'
 import tequilapiClientFactory from '../libraries/mysterium-tequilapi/client-factory'
+import {BugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
 
 function bootstrap (container: Container) {
   container.constant(
@@ -28,9 +29,9 @@ function bootstrap (container: Container) {
   )
   container.service(
     'tequilapiClient',
-    ['tequilapiClient.config'],
-    (config: Object) => {
-      return tequilapiClientFactory(config.baseURL)
+    ['bugReporterMetrics', 'tequilapiClient.config'],
+    (bugReporterMetrics: BugReporterMetrics, config: Object) => {
+      return tequilapiClientFactory(bugReporterMetrics, config.baseURL)
     }
   )
 }

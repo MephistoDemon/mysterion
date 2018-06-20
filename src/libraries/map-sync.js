@@ -1,47 +1,44 @@
 // @flow
 
-import type {MessageBus} from '../app/communication/messageBus'
-import type {MapSyncDTO} from '../app/communication/dto'
-import messages from '../app/communication/messages'
+export type MapSyncDTO<T: string> = {
+  metric: T,
+  value: mixed
+}
 
-class MapSync<T: string> {
+export interface MapSyncCommunication<T: string> {
+  sendMapUpdate (update: MapSyncDTO<T>): void,
+  onMapUpdate (callback: (MapSyncDTO<T>) => void): void
+}
+
+export class MapSync<T: string> {
   _metrics: Map<T, any> = new Map()
-  _messageBus: ?MessageBus = null
+  _communication: ?MapSyncCommunication<T> = null
 
-  syncWith (messageBus: MessageBus): void {
-    this._messageBus = messageBus
-    this._messageBus.on(messages.MAP_SYNC, data => {
-      const maybeDto = (data: any)
-      if (maybeDto.metric && maybeDto.value) {
-        const dto: MapSyncDTO<T> = (maybeDto: MapSyncDTO<T>)
-        this.set(dto.metric, dto.value)
-      } else {
-        throw new Error('Unknown MAP_SYNC data: ' + JSON.stringify(data))
-      }
+  syncWith (communication: MapSyncCommunication<T>): void {
+    this._communication = communication
+    this._communication.onMapUpdate(dto => {
+      this.set(dto.metric, dto.value)
     })
   }
 
-  set (metric: T, value: mixed): void {
-    const oldValue = this._metrics.get(metric)
+  set (key: T, value: mixed): void {
+    const oldValue = this._metrics.get(key)
     if (JSON.stringify(oldValue) === JSON.stringify(value)) {
       // metric's value was not updated
       return
     }
 
-    this._metrics.set(metric, value)
+    this._metrics.set(key, value)
 
-    if (this._messageBus) {
-      const data: MapSyncDTO<T> = {
-        metric: metric,
+    if (this._communication) {
+      this._communication.sendMapUpdate({
+        metric: key,
         value: value
-      }
-      this._messageBus.send(messages.MAP_SYNC, data)
+      })
     }
   }
 
-  get (metric: T): any {
-    return this._metrics.get(metric)
+  get (key: T): any {
+    return this._metrics.get(key)
   }
 }
-
-export default MapSync

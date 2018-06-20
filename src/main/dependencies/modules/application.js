@@ -76,6 +76,7 @@ function bootstrap (container: Container) {
       'mysteriumClientMonitoring',
       'proposalFetcher',
       'bugReporter',
+      'bugReporterMetrics',
       'userSettingsStore',
       'disconnectNotification'
     ],
@@ -86,6 +87,7 @@ function bootstrap (container: Container) {
       mysteriumClientMonitoring,
       proposalFetcher,
       bugReporter,
+      bugReporterMetrics,
       userSettingsStore,
       disconnectNotification
     ) => {
@@ -99,6 +101,7 @@ function bootstrap (container: Container) {
         monitoring: mysteriumClientMonitoring,
         proposalFetcher: proposalFetcher,
         bugReporter: bugReporter,
+        bugReporterMetrics: bugReporterMetrics,
         userSettingsStore,
         disconnectNotification
       })

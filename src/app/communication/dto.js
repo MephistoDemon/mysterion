@@ -52,8 +52,3 @@ export type AppErrorDTO = {
   hint: string,
   fatal: boolean
 }
-
-export type MapSyncDTO<T: string> = {
-  metric: T,
-  value: mixed
-}
