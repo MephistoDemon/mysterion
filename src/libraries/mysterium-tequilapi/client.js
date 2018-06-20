@@ -29,7 +29,6 @@ import ConnectionStatusDTO from './dto/connection-status'
 import ConnectionRequestDTO from './dto/connection-request'
 import ConsumerLocationDTO from './dto/consumer-location'
 import {TIMEOUT_DISABLED} from './timeouts'
-import {BugReporterMetrics, METRICS} from '../../app/bug-reporting/bug-reporter-metrics'
 
 interface TequilapiClient {
   healthCheck (timeout: ?number): Promise<NodeHealthcheckDTO>,
@@ -51,22 +50,15 @@ interface TequilapiClient {
 
 class HttpTequilapiClient implements TequilapiClient {
   http: HttpInterface
-  bugReporterMetrics: ?BugReporterMetrics
 
-  constructor (http: HttpInterface, bugReporterMetrics: ?BugReporterMetrics = null) {
+  constructor (http: HttpInterface) {
     this.http = http
-    this.bugReporterMetrics = bugReporterMetrics
   }
 
   async healthCheck (timeout: ?number): Promise<NodeHealthcheckDTO> {
     const response = await this.http.get('healthcheck', null, timeout)
-
     if (!response) {
       throw new Error('Healthcheck response body is missing')
-    }
-
-    if (this.bugReporterMetrics) {
-      this.bugReporterMetrics.set(METRICS.HealthCheckTime, this.bugReporterMetrics.dateTimeString())
     }
     return new NodeHealthcheckDTO(response)
   }
@@ -90,18 +82,11 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Identities creation response body is missing')
     }
-
     return new IdentityDTO(response)
   }
 
   async identityUnlock (id: string, passphrase: string): Promise<void> {
-    if (this.bugReporterMetrics) {
-      this.bugReporterMetrics.set(METRICS.IdentityUnlocked, false)
-    }
     await this.http.put('identities/' + id + '/unlock', {passphrase})
-    if (this.bugReporterMetrics) {
-      this.bugReporterMetrics.set(METRICS.IdentityUnlocked, true)
-    }
   }
 
   async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {
@@ -114,21 +99,12 @@ class HttpTequilapiClient implements TequilapiClient {
     const proposals = responseDto.proposals
 
     if (!proposals) {
-      if (this.bugReporterMetrics) {
-        this.bugReporterMetrics.set(METRICS.ProposalsFetched, false)
-      }
       return []
-    }
-    if (this.bugReporterMetrics) {
-      this.bugReporterMetrics.set(METRICS.ProposalsFetched, true)
     }
     return proposals
   }
 
   async connectionCreate (request: ConnectionRequestDTO, timeout: ?number = TIMEOUT_DISABLED): Promise<ConnectionStatusDTO> {
-    if (this.bugReporterMetrics) {
-      this.bugReporterMetrics.set(METRICS.ConnectionCreated, false)
-    }
     const response = await this.http.put(
       'connection',
       {
@@ -140,9 +116,6 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Connection creation response body is missing')
     }
-    if (this.bugReporterMetrics) {
-      this.bugReporterMetrics.set(METRICS.ConnectionCreated, true)
-    }
     return new ConnectionStatusDTO(response)
   }
 
@@ -151,26 +124,17 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Connection status response body is missing')
     }
-    if (this.bugReporterMetrics) {
-      this.bugReporterMetrics.set(METRICS.ConnectionStatus, response)
-    }
     return new ConnectionStatusDTO(response)
   }
 
   async connectionCancel (): Promise<void> {
     await this.http.delete('connection')
-    if (this.bugReporterMetrics) {
-      this.bugReporterMetrics.set(METRICS.ConnectionCreated, false)
-    }
   }
 
   async connectionIP (timeout: ?number): Promise<ConnectionIPDTO> {
     const response = await this.http.get('connection/ip', null, timeout)
     if (!response) {
       throw new Error('Connection IP response body is missing')
-    }
-    if (this.bugReporterMetrics) {
-      this.bugReporterMetrics.set(METRICS.ConnectionIP, response)
     }
     return new ConnectionIPDTO(response)
   }
@@ -188,7 +152,6 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Location response body is missing')
     }
-
     return new ConsumerLocationDTO(response)
   }
 }
