@@ -17,9 +17,8 @@
 
 // @flow
 
-import type { EnvironmentCollector } from './environment-collector'
+import type { EnvironmentCollector, LogCaches } from './environment-collector'
 import LogCache from '../../logging/log-cache'
-import type { SerializedLogCache } from '../../logging/log-cache'
 
 class MainEnvironmentCollector implements EnvironmentCollector {
   _backendLogCache: LogCache
@@ -42,12 +41,11 @@ class MainEnvironmentCollector implements EnvironmentCollector {
     return this._sessionId
   }
 
-  getSerializedBackendLogCache (): SerializedLogCache {
-    return this._backendLogCache.getSerialized()
-  }
-
-  getSerializedMysteriumProcessLogCache (): SerializedLogCache {
-    return this._mysteriumProcessLogCache.getSerialized()
+  getSerializedCaches (): LogCaches {
+    return {
+      backend: this._backendLogCache.getSerialized(),
+      mysterium_process: this._mysteriumProcessLogCache.getSerialized()
+    }
   }
 }
 

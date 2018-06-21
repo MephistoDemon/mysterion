@@ -45,26 +45,16 @@ describe('MainEnvironmentCollector', () => {
     })
   })
 
-  describe('getSerializedMysteriumProcessLogCache', () => {
+  describe('getSerializedCaches', () => {
     it('returns logs from cache', () => {
-      mysteriumProcessLogCache.pushToLevel('info', 'info value')
-      mysteriumProcessLogCache.pushToLevel('error', 'error value')
+      mysteriumProcessLogCache.pushToLevel('info', 'mysterium info')
+      mysteriumProcessLogCache.pushToLevel('error', 'mysterium error')
+      backendLogCache.pushToLevel('info', 'backend info')
+      backendLogCache.pushToLevel('error', 'backend error')
 
-      expect(collector.getSerializedMysteriumProcessLogCache()).to.eql({
-        info: 'info value',
-        error: 'error value'
-      })
-    })
-  })
-
-  describe('getSerializedBackendLogCache', () => {
-    it('returns logs from cache', () => {
-      backendLogCache.pushToLevel('info', 'info value')
-      backendLogCache.pushToLevel('error', 'error value')
-
-      expect(collector.getSerializedBackendLogCache()).to.eql({
-        info: 'info value',
-        error: 'error value'
+      expect(collector.getSerializedCaches()).to.eql({
+        backend: { info: 'backend info', error: 'backend error' },
+        mysterium_process: { info: 'mysterium info', error: 'mysterium error' }
       })
     })
   })

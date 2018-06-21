@@ -17,9 +17,8 @@
 
 // @flow
 
-import type { EnvironmentCollector } from './environment-collector'
+import type { EnvironmentCollector, LogCaches } from './environment-collector'
 import type { SyncRendererCommunication } from '../../communication/sync/sync-communication'
-import type { SerializedLogCache } from '../../logging/log-cache'
 import LogCache from '../../logging/log-cache'
 
 class RendererEnvironmentCollector implements EnvironmentCollector {
@@ -43,12 +42,11 @@ class RendererEnvironmentCollector implements EnvironmentCollector {
     return this._syncRendererCommunication.getSessionId() || ''
   }
 
-  getSerializedBackendLogCache (): SerializedLogCache {
-    return this._backendLogCache.getSerialized()
-  }
-
-  getSerializedMysteriumProcessLogCache (): SerializedLogCache {
-    return this._mysteriumProcessLogCache.getSerialized()
+  getSerializedCaches (): LogCaches {
+    return {
+      backend: this._backendLogCache.getSerialized(),
+      mysterium_process: this._mysteriumProcessLogCache.getSerialized()
+    }
   }
 }
 

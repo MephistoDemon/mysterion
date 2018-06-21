@@ -57,10 +57,7 @@ function bootstrap (container: Container) {
           session_id: environmentCollector.getSessionId()
         },
         dataCallback: (data) => {
-          data.extra.logs = {
-            mysterium_process: environmentCollector.getSerializedMysteriumProcessLogCache(),
-            backend: backendLogCache.getSerialized() // TODO: use environmentCollector
-          }
+          data.extra.logs = environmentCollector.getSerializedCaches()
           return data
         },
         autoBreadcrumbs: {
