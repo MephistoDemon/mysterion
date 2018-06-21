@@ -43,10 +43,11 @@ class RendererEnvironmentCollector implements EnvironmentCollector {
   }
 
   getSerializedCaches (): LogCaches {
-    return {
-      backend: this._backendLogCache.getSerialized(),
-      mysterium_process: this._mysteriumProcessLogCache.getSerialized()
+    const defaultCaches = {
+      backend: { info: '', error: '' },
+      mysterium_process: { info: '', error: '' }
     }
+    return this._syncRendererCommunication.getSerializedCaches() || defaultCaches
   }
 }
 

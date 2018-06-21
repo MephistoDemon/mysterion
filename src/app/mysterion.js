@@ -146,6 +146,7 @@ class Mysterion {
     const receiver = new SyncIpcReceiver()
     const communication = new SyncReceiverMainCommunication(receiver)
     communication.onGetSessionId(() => this.environmentCollector.getSessionId())
+    communication.onGetSerializedCaches(() => this.environmentCollector.getSerializedCaches())
   }
 
   logUnhandledRejections () {

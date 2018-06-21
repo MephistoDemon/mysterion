@@ -22,6 +22,9 @@ import SyncSenderRendererCommunication from '../../../../../src/app/communicatio
 import messages from '../../../../../src/app/communication/messages'
 import type { SyncReceiver, SyncSender } from '../../../../../src/app/communication/sync/sync'
 import SyncReceiverMainCommunication from '../../../../../src/app/communication/sync/sync-main-communication'
+import type { LogCaches } from '../../../../../src/app/bug-reporting/environment/environment-collector'
+
+// TODO: rename file to sync-renderer-communication
 
 class MockSyncReceiver implements SyncReceiver {
   _subscribers: { [string]: () => mixed } = new Map()
@@ -31,7 +34,11 @@ class MockSyncReceiver implements SyncReceiver {
   }
 
   invoke (channel: string): mixed {
-    return this._subscribers[channel]()
+    const subscriber = this._subscribers[channel]
+    if (subscriber == null) {
+      return
+    }
+    return subscriber()
   }
 }
 
@@ -70,6 +77,27 @@ describe('SyncSenderRendererCommunication', () => {
 
       receiver.on(messages.GET_SESSION_ID, () => 123)
       expect(rendererCommunication.getSessionId()).to.be.null
+    })
+  })
+
+  describe('.getSerializedCaches', () => {
+    it('gets value from listener', () => {
+      const mainCommunication = new SyncReceiverMainCommunication(receiver)
+      const rendererCommunication = new SyncSenderRendererCommunication(sender)
+
+      const mockLogs: LogCaches = {
+        backend: {info: 'backend info', error: 'backend error'},
+        mysterium_process: {info: 'mysterium info', error: 'mysterium error'}
+      }
+      mainCommunication.onGetSerializedCaches(() => mockLogs)
+      expect(rendererCommunication.getSerializedCaches()).to.eql(mockLogs)
+    })
+
+    it('returns empty logs when listener returns null', () => {
+      const rendererCommunication = new SyncSenderRendererCommunication(sender)
+
+      receiver.on(messages.GET_SERIALIZED_CACHES, () => null)
+      expect(rendererCommunication.getSerializedCaches()).to.eql(null)
     })
   })
 })

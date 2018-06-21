@@ -17,12 +17,15 @@
 
 // @flow
 
+import type { LogCaches } from '../../bug-reporting/environment/environment-collector'
+
 interface SyncMainCommunication {
   onGetSessionId (callback: () => string): void
 }
 
 interface SyncRendererCommunication {
-  getSessionId (): ?string
+  getSessionId (): ?string,
+  getSerializedCaches (): ?LogCaches,
 }
 
 export type { SyncMainCommunication, SyncRendererCommunication }
