@@ -17,10 +17,8 @@
 
 // @flow
 
-import HttpTequilapiClient from './mysterium-tequilapi/client'
 import ConnectionStatusDTO from './mysterium-tequilapi/dto/connection-status'
 import {BugReporterMetrics, METRICS} from '../app/bug-reporting/bug-reporter-metrics'
-import type {HttpInterface} from './mysterium-tequilapi/adapters/interface'
 import NodeHealthcheckDTO from './mysterium-tequilapi/dto/node-healthcheck'
 import ProposalDTO from './mysterium-tequilapi/dto/proposal'
 import ProposalsFilter from './mysterium-tequilapi/dto/proposals-filter'
@@ -28,33 +26,45 @@ import {TIMEOUT_DISABLED} from './mysterium-tequilapi/timeouts'
 import ConnectionRequestDTO from './mysterium-tequilapi/dto/connection-request'
 import ConnectionStatisticsDTO from './mysterium-tequilapi/dto/connection-statistics'
 import ConnectionIPDTO from './mysterium-tequilapi/dto/connection-ip'
+import type {TequilapiClient} from './mysterium-tequilapi/client'
+import IdentityDTO from './mysterium-tequilapi/dto/identity'
+import ConsumerLocationDTO from './mysterium-tequilapi/dto/consumer-location'
 
-class HttpTequilapiClientWithMetrics extends HttpTequilapiClient {
+class TequilapiClientWithMetrics implements TequilapiClient {
   bugReporterMetrics: BugReporterMetrics
-  base: HttpTequilapiClient
+  client: TequilapiClient
 
-  constructor (http: HttpInterface, bugReporterMetrics: BugReporterMetrics) {
-    super(http)
+  constructor (client: TequilapiClient, bugReporterMetrics: BugReporterMetrics) {
+    this.client = client
     this.bugReporterMetrics = bugReporterMetrics
+  }
 
-    // FIX: this is workaround to pass karma tests (super. is not supported)
-    this.base = Object.getPrototypeOf(this)
+  async stop (): Promise<void> {
+    return this.client.stop()
+  }
+
+  async identitiesList (): Promise<Array<IdentityDTO>> {
+    return this.client.identitiesList()
+  }
+
+  async identityCreate (passphrase: string): Promise<IdentityDTO> {
+    return this.client.identityCreate(passphrase)
   }
 
   async healthCheck (timeout: ?number): Promise<NodeHealthcheckDTO> {
-    const result = await this.base.healthCheck(timeout)
+    const result = await this.client.healthCheck(timeout)
     this.bugReporterMetrics.set(METRICS.HealthCheckTime, this.bugReporterMetrics.dateTimeString())
     return result
   }
 
   async identityUnlock (id: string, passphrase: string): Promise<void> {
     this.bugReporterMetrics.set(METRICS.IdentityUnlocked, false)
-    await this.base.identityUnlock(id, passphrase)
+    await this.client.identityUnlock(id, passphrase)
     this.bugReporterMetrics.set(METRICS.IdentityUnlocked, true)
   }
 
   async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {
-    const result = await this.base.findProposals(filter)
+    const result = await this.client.findProposals(filter)
     if (!result || result.length === 0) {
       this.bugReporterMetrics.set(METRICS.ProposalsFetched, false)
     } else {
@@ -65,33 +75,37 @@ class HttpTequilapiClientWithMetrics extends HttpTequilapiClient {
 
   async connectionCreate (request: ConnectionRequestDTO, timeout: ?number = TIMEOUT_DISABLED): Promise<ConnectionStatusDTO> {
     this.bugReporterMetrics.set(METRICS.ConnectionCreated, false)
-    const result = await this.base.connectionCreate(request, timeout)
+    const result = await this.client.connectionCreate(request, timeout)
     this.bugReporterMetrics.set(METRICS.ConnectionCreated, true)
     return result
   }
 
   async connectionStatus (): Promise<ConnectionStatusDTO> {
-    const result = await this.base.connectionStatus()
+    const result = await this.client.connectionStatus()
     this.bugReporterMetrics.set(METRICS.ConnectionStatus, result)
     return result
   }
 
   async connectionCancel (): Promise<void> {
-    await this.base.connectionCancel()
+    await this.client.connectionCancel()
     this.bugReporterMetrics.set(METRICS.ConnectionCreated, false)
   }
 
   async connectionIP (timeout: ?number): Promise<ConnectionIPDTO> {
-    const result = await this.base.connectionIP(timeout)
+    const result = await this.client.connectionIP(timeout)
     this.bugReporterMetrics.set(METRICS.ConnectionIP, result)
     return result
   }
 
   async connectionStatistics (): Promise<ConnectionStatisticsDTO> {
-    const result = await this.base.connectionStatistics()
+    const result = await this.client.connectionStatistics()
     this.bugReporterMetrics.set(METRICS.ConnectionStatistics, result)
     return result
   }
+
+  async location (timeout: ?number): Promise<ConsumerLocationDTO> {
+    return this.client.location(timeout)
+  }
 }
 
-export default HttpTequilapiClientWithMetrics
+export default TequilapiClientWithMetrics
