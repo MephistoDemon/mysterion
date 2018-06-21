@@ -23,14 +23,16 @@ import LogCache from '../../../../../src/app/logging/log-cache'
 
 describe('MainEnvironmentCollector', () => {
   const releaseID = 'id of release'
-  let mysteriumProcessLogCache: LogCache
   let backendLogCache: LogCache
+  let frontendLogCache: LogCache
+  let mysteriumProcessLogCache: LogCache
   let collector: MainEnvironmentCollector
 
   beforeEach(() => {
-    mysteriumProcessLogCache = new LogCache()
     backendLogCache = new LogCache()
-    collector = new MainEnvironmentCollector(backendLogCache, mysteriumProcessLogCache, releaseID)
+    frontendLogCache = new LogCache()
+    mysteriumProcessLogCache = new LogCache()
+    collector = new MainEnvironmentCollector(backendLogCache, frontendLogCache, mysteriumProcessLogCache, releaseID)
   })
 
   describe('getMysterionReleaseId', () => {
@@ -47,13 +49,16 @@ describe('MainEnvironmentCollector', () => {
 
   describe('getSerializedCaches', () => {
     it('returns logs from cache', () => {
-      mysteriumProcessLogCache.pushToLevel('info', 'mysterium info')
-      mysteriumProcessLogCache.pushToLevel('error', 'mysterium error')
       backendLogCache.pushToLevel('info', 'backend info')
       backendLogCache.pushToLevel('error', 'backend error')
+      frontendLogCache.pushToLevel('info', 'frontend info')
+      frontendLogCache.pushToLevel('error', 'frontend error')
+      mysteriumProcessLogCache.pushToLevel('info', 'mysterium info')
+      mysteriumProcessLogCache.pushToLevel('error', 'mysterium error')
 
       expect(collector.getSerializedCaches()).to.eql({
         backend: { info: 'backend info', error: 'backend error' },
+        frontend: { info: 'frontend info', error: 'frontend error' },
         mysterium_process: { info: 'mysterium info', error: 'mysterium error' }
       })
     })

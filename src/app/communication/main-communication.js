@@ -21,12 +21,10 @@ import type {
   RequestConnectionDTO,
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
-  MysteriumClientLogDTO,
   ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO,
-  MysterionBackendLogDTO
+  AppErrorDTO
 } from './dto'
 import type {UserSettings} from '../user-settings/user-settings'
 
@@ -39,13 +37,9 @@ interface MainCommunication {
 
   sendMysteriumClientIsReady (): void,
 
-  sendMysteriumClientLog (dto: MysteriumClientLogDTO): void,
-
   sendMysteriumClientUp (): void,
 
   sendMysteriumClientDown (): void,
-
-  sendMysterionBackendLog (log: MysterionBackendLogDTO): void,
 
   sendProposals (proposals: ProposalUpdateDTO): void,
 

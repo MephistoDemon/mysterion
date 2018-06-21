@@ -22,12 +22,14 @@ import LogCache from '../../logging/log-cache'
 
 class MainEnvironmentCollector implements EnvironmentCollector {
   _backendLogCache: LogCache
+  _frontendLogCache: LogCache
   _mysteriumProcessLogCache: LogCache
   _mysterionReleaseId: string
   _sessionId: string
 
-  constructor (backendLogCache: LogCache, mysteriumProcessLogCache: LogCache, mysterionReleaseId: string) {
+  constructor (backendLogCache: LogCache, frontendLogCache: LogCache, mysteriumProcessLogCache: LogCache, mysterionReleaseId: string) {
     this._backendLogCache = backendLogCache
+    this._frontendLogCache = frontendLogCache
     this._mysteriumProcessLogCache = mysteriumProcessLogCache
     this._mysterionReleaseId = mysterionReleaseId
     this._sessionId = generateSessionId()
@@ -44,6 +46,7 @@ class MainEnvironmentCollector implements EnvironmentCollector {
   getSerializedCaches (): LogCaches {
     return {
       backend: this._backendLogCache.getSerialized(),
+      frontend: this._frontendLogCache.getSerialized(),
       mysterium_process: this._mysteriumProcessLogCache.getSerialized()
     }
   }

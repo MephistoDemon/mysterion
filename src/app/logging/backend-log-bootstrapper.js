@@ -20,8 +20,7 @@
 import winston from 'winston'
 import Transport from 'winston-transport'
 import LogCache from './log-cache'
-import { BackendLogCachingTransport, BackendLogCommunicationTransport } from './backend-logging-transports'
-import type { MainCommunication } from '../communication/main-communication'
+import { BackendLogCachingTransport } from './backend-logging-transports'
 
 interface Logger {
   info (string): void,
@@ -55,24 +54,6 @@ export default class BackendLogBootstrapper {
       ]
     })
     overrideConsoleLogs(this._winstonLogger)
-  }
-
-  startSendingLogsViaCommunication (com: MainCommunication) {
-    this._sendCachedViaCommunication(com)
-    this._addBackendCommunicationTransport(com)
-  }
-
-  _sendCachedViaCommunication (com: MainCommunication) {
-    for (const infoEntry of this._backendLogCache.get().info) {
-      com.sendMysterionBackendLog({ message: infoEntry, level: 'info' })
-    }
-    for (const errorEntry of this._backendLogCache.get().error) {
-      com.sendMysterionBackendLog({ message: errorEntry, level: 'error' })
-    }
-  }
-
-  _addBackendCommunicationTransport (com: MainCommunication) {
-    this._winstonLogger.add(new BackendLogCommunicationTransport(com))
   }
 }
 

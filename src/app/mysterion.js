@@ -189,8 +189,6 @@ class Mysterion {
 
     this._subscribeProposals()
 
-    this.backendLogBootstrapper.startSendingLogsViaCommunication(this.communication)
-
     synchronizeUserSettings(this.userSettingsStore, this.communication)
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
     await this._loadUserSettings()
@@ -342,7 +340,6 @@ class Mysterion {
 
   _startProcess () {
     const cacheLogs = (level, data) => {
-      this.communication.sendMysteriumClientLog({level, data})
       this.mysteriumProcessLogCache.pushToLevel(level, data)
     }
 

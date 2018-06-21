@@ -49,11 +49,33 @@ function bootstrap (container: Container) {
     }
   )
 
+  container.factory(
+    'backendLogCache',
+    [],
+    (): LogCache => new LogCache()
+  )
+
+  container.factory(
+    'frontendLogCache',
+    [],
+    (): LogCache => new LogCache()
+  )
+
+  container.factory(
+    'mysteriumProcessLogCache',
+    [],
+    (): LogCache => new LogCache()
+  )
+
   container.service(
     'environmentCollector',
-    ['backendLogCache', 'mysteriumProcessLogCache', 'mysterionReleaseID'],
-    (backendLogCache: LogCache, mysteriumProcessLogCache: LogCache, mysterionReleaseID: string): EnvironmentCollector => {
-      return new MainEnvironmentCollector(backendLogCache, mysteriumProcessLogCache, mysterionReleaseID)
+    ['backendLogCache', 'frontendLogCache', 'mysteriumProcessLogCache', 'mysterionReleaseID'],
+    (
+      backendLogCache: LogCache,
+      frontendLogCache: LogCache,
+      mysteriumProcessLogCache: LogCache,
+      mysterionReleaseID: string): EnvironmentCollector => {
+      return new MainEnvironmentCollector(backendLogCache, frontendLogCache, mysteriumProcessLogCache, mysterionReleaseID)
     }
   )
 

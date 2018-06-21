@@ -18,25 +18,11 @@
 // @flow
 
 import Transport from 'winston-transport'
-import type { MainCommunication } from '../communication/main-communication'
 import LogCache from './log-cache'
 
 type LogEntry = {
   level: string,
   message: string
-}
-
-export class BackendLogCommunicationTransport extends Transport {
-  _communication: MainCommunication
-  constructor (com: MainCommunication) {
-    super()
-    this._communication = com
-  }
-
-  log (info: LogEntry, callback: () => any) {
-    this._communication.sendMysterionBackendLog({ level: mapToLogLevel(info.level), message: info.message })
-    callback()
-  }
 }
 
 export class BackendLogCachingTransport extends Transport {

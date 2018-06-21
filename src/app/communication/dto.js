@@ -24,16 +24,6 @@ export type ConnectionStatusChangeDTO = {
   newStatus: ConnectionStatus
 }
 
-export type MysterionBackendLogDTO = {
-  level: string,
-  message: string
-}
-
-export type MysteriumClientLogDTO = {
-  level: string,
-  data: mixed
-}
-
 export type CurrentIdentityChangeDTO = {
   id: string
 }

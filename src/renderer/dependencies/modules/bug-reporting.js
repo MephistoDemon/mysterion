@@ -24,7 +24,6 @@ import Vue from 'vue'
 import RavenVue from 'raven-js/plugins/vue'
 import RendererEnvironmentCollector from '../../../app/bug-reporting/environment/renderer-environment-collector'
 import type { EnvironmentCollector } from '../../../app/bug-reporting/environment/environment-collector'
-import LogCache from '../../../app/logging/log-cache'
 import SyncSenderRendererCommunication from '../../../app/communication/sync/sync-renderer-communication'
 import { SyncIpcSender } from '../../../app/communication/sync/sync-ipc'
 
@@ -33,21 +32,12 @@ function bootstrap (container: Container) {
 
   container.factory(
     'bugReporter',
-    ['bugReporter.raven', 'rendererCommunication', 'mysteriumProcessLogCache', 'backendLogCache'],
-    (raven, rendererCommunication, mysteriumProcessLogCache, backendLogCache) => {
+    ['bugReporter.raven'],
+    (raven) => {
       const bugReporter = new BugReporterRenderer(raven)
       window.addEventListener('unhandledrejection', (evt) => {
         bugReporter.captureErrorMessage(evt.reason, evt.reason.response ? evt.reason.response.data : evt.reason)
       })
-
-      rendererCommunication.onMysteriumClientLog(({ level, data }) => {
-        mysteriumProcessLogCache.pushToLevel(level, data)
-      })
-
-      rendererCommunication.onMysterionBackendLog(({ level, message }) => {
-        backendLogCache.pushToLevel(level, message)
-      })
-
       return bugReporter
     }
   )
@@ -65,11 +55,11 @@ function bootstrap (container: Container) {
 
   container.service(
     'environmentCollector',
-    ['backendLogCache', 'mysteriumProcessLogCache', 'mysterionReleaseID'],
-    (backendLogCache: LogCache, mysteriumProcessLogCache: LogCache, mysterionReleaseID: string): EnvironmentCollector => {
+    ['mysterionReleaseID'],
+    (mysterionReleaseID: string): EnvironmentCollector => {
       const sender = new SyncIpcSender()
       const communication = new SyncSenderRendererCommunication(sender)
-      return new RendererEnvironmentCollector(backendLogCache, mysteriumProcessLogCache, mysterionReleaseID, communication)
+      return new RendererEnvironmentCollector(mysterionReleaseID, communication)
     }
   )
 

@@ -19,17 +19,12 @@
 
 import type { EnvironmentCollector, LogCaches } from './environment-collector'
 import type { SyncRendererCommunication } from '../../communication/sync/sync-communication'
-import LogCache from '../../logging/log-cache'
 
 class RendererEnvironmentCollector implements EnvironmentCollector {
-  _backendLogCache: LogCache
-  _mysteriumProcessLogCache: LogCache
   _mysterionReleaseId: string
   _syncRendererCommunication: SyncRendererCommunication
 
-  constructor (backendLogCache: LogCache, mysteriumProcessLogCache: LogCache, mysterionReleaseId: string, syncRendererCommunication: SyncRendererCommunication) {
-    this._backendLogCache = backendLogCache
-    this._mysteriumProcessLogCache = mysteriumProcessLogCache
+  constructor (mysterionReleaseId: string, syncRendererCommunication: SyncRendererCommunication) {
     this._mysterionReleaseId = mysterionReleaseId
     this._syncRendererCommunication = syncRendererCommunication
   }
@@ -43,10 +38,8 @@ class RendererEnvironmentCollector implements EnvironmentCollector {
   }
 
   getSerializedCaches (): LogCaches {
-    const defaultCaches = {
-      backend: { info: '', error: '' },
-      mysterium_process: { info: '', error: '' }
-    }
+    const defaultCache = { info: '', error: '' }
+    const defaultCaches = { backend: defaultCache, mysterium_process: defaultCache, frontend: defaultCache }
     return this._syncRendererCommunication.getSerializedCaches() || defaultCaches
   }
 }

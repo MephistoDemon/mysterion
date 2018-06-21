@@ -22,13 +22,11 @@ import type {MessageBus} from './messageBus'
 import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
-  MysteriumClientLogDTO,
   RequestConnectionDTO,
   ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO,
-  MysterionBackendLogDTO
+  AppErrorDTO
 } from './dto'
 
 import type {UserSettings} from '../user-settings/user-settings'
@@ -96,20 +94,12 @@ class RendererCommunication {
     this._on(messages.MYSTERIUM_CLIENT_READY, callback)
   }
 
-  onMysteriumClientLog (callback: (MysteriumClientLogDTO) => void): void {
-    this._on(messages.MYSTERIUM_CLIENT_LOG, callback)
-  }
-
   onMysteriumClientUp (callback: () => void): void {
     this._on(messages.HEALTHCHECK_UP, callback)
   }
 
   onMysteriumClientDown (callback: () => void): void {
     this._on(messages.HEALTHCHECK_DOWN, callback)
-  }
-
-  onMysterionBackendLog (callback: (log: MysterionBackendLogDTO) => void): void {
-    this._on(messages.MYSTERION_BACKEND_LOG, callback)
   }
 
   onTermsRequest (callback: (RequestTermsDTO) => void): void {

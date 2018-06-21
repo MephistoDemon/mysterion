@@ -18,32 +18,14 @@
 // @flow
 import type { Container } from '../app/di'
 import os from 'os'
-import LogCache from '../app/logging/log-cache'
 import type { EnvironmentCollector } from '../app/bug-reporting/environment/environment-collector'
 
 function bootstrap (container: Container) {
-  container.factory(
-    'mysteriumProcessLogCache',
-    [],
-    (): LogCache => {
-      return new LogCache()
-    }
-  )
-
-  container.factory(
-    'backendLogCache',
-    [],
-    (): LogCache => {
-      return new LogCache()
-    }
-  )
-
   const extendedProcess = (process: { type?: string })
   container.service(
     'bugReporter.config',
-    // TODO: get rid of backendLogCache
-    ['environmentCollector', 'backendLogCache'],
-    (environmentCollector: EnvironmentCollector, backendLogCache: LogCache): RavenOptions => {
+    ['environmentCollector'],
+    (environmentCollector: EnvironmentCollector): RavenOptions => {
       return {
         captureUnhandledRejections: true,
         release: environmentCollector.getMysterionReleaseId(),

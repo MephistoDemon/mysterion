@@ -18,7 +18,6 @@
 // @flow
 
 import { beforeEach, describe, expect, it } from '../../../../helpers/dependencies'
-import LogCache from '../../../../../src/app/logging/log-cache'
 import RendererEnvironmentCollector
   from '../../../../../src/app/bug-reporting/environment/renderer-environment-collector'
 import type { SyncRendererCommunication } from '../../../../../src/app/communication/sync/sync-communication'
@@ -27,7 +26,8 @@ import type { LogCaches } from '../../../../../src/app/bug-reporting/environment
 class FakeSyncRendererCommunication implements SyncRendererCommunication {
   mockedSerializedCaches: ?LogCaches = {
     backend: { info: 'backend info', error: 'backend error' },
-    mysterium_process: { info: 'mysterium info', error: 'mysterium error' }
+    mysterium_process: { info: 'mysterium info', error: 'mysterium error' },
+    frontend: { info: 'frontend info', error: 'frontend error' }
   }
   mockedSessionId: ?string = 'mock session id'
 
@@ -42,16 +42,12 @@ class FakeSyncRendererCommunication implements SyncRendererCommunication {
 
 describe('RendererEnvironmentCollector', () => {
   const releaseID = 'id of release'
-  let mysteriumProcessLogCache: LogCache
-  let backendLogCache: LogCache
   let communication: FakeSyncRendererCommunication
   let collector: RendererEnvironmentCollector
 
   beforeEach(() => {
-    mysteriumProcessLogCache = new LogCache()
-    backendLogCache = new LogCache()
     communication = new FakeSyncRendererCommunication()
-    collector = new RendererEnvironmentCollector(backendLogCache, mysteriumProcessLogCache, releaseID, communication)
+    collector = new RendererEnvironmentCollector(releaseID, communication)
   })
 
   describe('getMysterionReleaseId', () => {
@@ -74,10 +70,7 @@ describe('RendererEnvironmentCollector', () => {
 
   describe('getSerializedCaches', () => {
     it('returns logs using sync communication', () => {
-      expect(collector.getSerializedCaches()).to.eql({
-        backend: { info: 'backend info', error: 'backend error' },
-        mysterium_process: { info: 'mysterium info', error: 'mysterium error' }
-      })
+      expect(collector.getSerializedCaches()).to.eql(communication.mockedSerializedCaches)
     })
 
     it('returns empty logs when communication returns null logs', () => {
@@ -85,6 +78,7 @@ describe('RendererEnvironmentCollector', () => {
 
       expect(collector.getSerializedCaches()).to.eql({
         backend: { info: '', error: '' },
+        frontend: { info: '', error: '' },
         mysterium_process: { info: '', error: '' }
       })
     })
