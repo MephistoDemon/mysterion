@@ -31,26 +31,30 @@ import ConnectionIPDTO from './mysterium-tequilapi/dto/connection-ip'
 
 class HttpTequilapiClientWithMetrics extends HttpTequilapiClient {
   bugReporterMetrics: BugReporterMetrics
+  base: HttpTequilapiClient
 
   constructor (http: HttpInterface, bugReporterMetrics: BugReporterMetrics) {
     super(http)
     this.bugReporterMetrics = bugReporterMetrics
+
+    // FIX: this is workaround to pass karma tests (super. is not supported)
+    this.base = Object.getPrototypeOf(this)
   }
 
   async healthCheck (timeout: ?number): Promise<NodeHealthcheckDTO> {
-    const result = await super.healthCheck(timeout)
+    const result = await this.base.healthCheck(timeout)
     this.bugReporterMetrics.set(METRICS.HealthCheckTime, this.bugReporterMetrics.dateTimeString())
     return result
   }
 
   async identityUnlock (id: string, passphrase: string): Promise<void> {
     this.bugReporterMetrics.set(METRICS.IdentityUnlocked, false)
-    await super.identityUnlock(id, passphrase)
+    await this.base.identityUnlock(id, passphrase)
     this.bugReporterMetrics.set(METRICS.IdentityUnlocked, true)
   }
 
   async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {
-    const result = await super.findProposals(filter)
+    const result = await this.base.findProposals(filter)
     if (!result || result.length === 0) {
       this.bugReporterMetrics.set(METRICS.ProposalsFetched, false)
     } else {
@@ -61,30 +65,30 @@ class HttpTequilapiClientWithMetrics extends HttpTequilapiClient {
 
   async connectionCreate (request: ConnectionRequestDTO, timeout: ?number = TIMEOUT_DISABLED): Promise<ConnectionStatusDTO> {
     this.bugReporterMetrics.set(METRICS.ConnectionCreated, false)
-    const result = await super.connectionCreate(request, timeout)
+    const result = await this.base.connectionCreate(request, timeout)
     this.bugReporterMetrics.set(METRICS.ConnectionCreated, true)
     return result
   }
 
   async connectionStatus (): Promise<ConnectionStatusDTO> {
-    const result = await super.connectionStatus()
+    const result = await this.base.connectionStatus()
     this.bugReporterMetrics.set(METRICS.ConnectionStatus, result)
     return result
   }
 
   async connectionCancel (): Promise<void> {
-    await super.connectionCancel()
+    await this.base.connectionCancel()
     this.bugReporterMetrics.set(METRICS.ConnectionCreated, false)
   }
 
   async connectionIP (timeout: ?number): Promise<ConnectionIPDTO> {
-    const result = await super.connectionIP(timeout)
+    const result = await this.base.connectionIP(timeout)
     this.bugReporterMetrics.set(METRICS.ConnectionIP, result)
     return result
   }
 
   async connectionStatistics (): Promise<ConnectionStatisticsDTO> {
-    const result = await super.connectionStatistics()
+    const result = await this.base.connectionStatistics()
     this.bugReporterMetrics.set(METRICS.ConnectionStatistics, result)
     return result
   }
