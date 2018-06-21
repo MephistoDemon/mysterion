@@ -29,13 +29,13 @@ export function applyTransformation (transform: TransformFn, next: Callback): (s
   }
 }
 
-export function prependWithFn (fn: () => string) {
+export function prependWithFn (fn: () => string): TransformFn {
   return (data: string) => {
     return fn() + data
   }
 }
 
-export function filterByString (filter: string) {
+export function filterByString (filter: string): TransformFn {
   const regex = new RegExp(filter)
 
   return (data: string) => {

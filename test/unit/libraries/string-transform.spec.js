@@ -19,6 +19,7 @@
 
 import { describe, it, expect } from '../../helpers/dependencies'
 import { applyTransformation, filterByString, prependWithFn } from '../../../src/libraries/string-transform'
+import { CallbackRecorder } from '../../helpers/utils'
 
 describe('prependWithFn', () => {
   it('prepends each time with fn execution result', () => {
@@ -27,8 +28,9 @@ describe('prependWithFn', () => {
       calledTimes += 1
       return calledTimes.toString()
     }
-    expect(prependWithFn(prependFn)('data')).to.eql('1data')
-    expect(prependWithFn(prependFn)('data')).to.eql('2data')
+    const transform = prependWithFn(prependFn)
+    expect(transform('data')).to.eql('1data')
+    expect(transform('data')).to.eql('2data')
   })
 })
 
@@ -43,24 +45,25 @@ describe('filterByString', () => {
 
 describe('applyTransformation', () => {
   let called
-  const transformOnceThenStopReturnUndefined = (data) => {
+  const cbRec1 = new CallbackRecorder()
+  const cbRec2 = new CallbackRecorder()
+  const transform = (data) => {
     if (!called) {
       called = true
       return data + '+'
     }
   }
-
-  const cb = (data) => {
-    expect(called).to.be.true
-    expect(data).to.eql('data+')
-  }
-
-  const cb2 = () => {
-    throw new Error('cb2 was called')
+  const transformReturnNull = () => {
   }
 
   it('runs transformation function and pipes its output to callback', () => {
-    applyTransformation(transformOnceThenStopReturnUndefined, cb)('data')
-    applyTransformation(transformOnceThenStopReturnUndefined, cb2)('data')
+    applyTransformation(transform, cbRec1.getCallback())('data')
+    expect(cbRec1.invoked).to.be.true
+    expect(cbRec1.argument).to.eql('data+')
+  })
+
+  it('does not call callback if transformation returns undefined or null', () => {
+    applyTransformation(transformReturnNull, cbRec2.getCallback())('data')
+    expect(cbRec2.invoked).to.be.false
   })
 })
