@@ -24,8 +24,6 @@ import type { SyncReceiver, SyncSender } from '../../../../../src/app/communicat
 import SyncReceiverMainCommunication from '../../../../../src/app/communication/sync/sync-main-communication'
 import type { LogCaches } from '../../../../../src/app/bug-reporting/environment/environment-collector'
 
-// TODO: rename file to sync-renderer-communication
-
 class MockSyncReceiver implements SyncReceiver {
   _subscribers: { [string]: () => mixed } = new Map()
 
