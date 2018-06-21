@@ -63,14 +63,20 @@ export class BugReporterMetrics extends MapSync<Metric> {
     return (new Date()).toUTCString()
   }
 
-  addMetricsTo (data: RavenData): void {
+  getMetrics (): RavenData {
+    const data = { tags: {}, extra: {} }
+    this.addMetricsTo(data)
+    return data
+  }
+
+  addMetricsTo (data: RavenData) {
     this._setValues((Object.values(TAGS): any), data.tags)
     this._setValues((Object.values(EXTRA): any), data.extra)
   }
 
   _setValues (metrics: Array<Metric>, dest: any) {
     for (let metric of metrics) {
-      dest[metric] = this.get(metric) || NOT_SET
+      dest[metric] = this._get(metric) || NOT_SET
     }
   }
 }

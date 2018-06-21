@@ -34,18 +34,18 @@ describe('BugReporterMetrics', () => {
       const metricKey = METRICS.IdentityUnlocked
       const metricValue = true
 
-      expect(bugReporterMetrics.get(metricKey)).to.be.undefined
+      expect(bugReporterMetrics._get(metricKey)).to.be.undefined
       bugReporterMetrics.set(metricKey, metricValue)
-      expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
+      expect(bugReporterMetrics._get(metricKey)).to.eql(metricValue)
     })
 
     it('sets extra metric', () => {
       const metricKey = METRICS.HealthCheckTime
       const metricValue = bugReporterMetrics.dateTimeString()
 
-      expect(bugReporterMetrics.get(metricKey)).to.be.undefined
+      expect(bugReporterMetrics._get(metricKey)).to.be.undefined
       bugReporterMetrics.set(metricKey, metricValue)
-      expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
+      expect(bugReporterMetrics._get(metricKey)).to.eql(metricValue)
     })
 
     it('adds metrics to object', () => {
@@ -62,13 +62,15 @@ describe('BugReporterMetrics', () => {
       for (let tagKey of Object.values(TAGS)) {
         expect(tagKeys).to.contain(tagKey)
         // $FlowFixMe
-        expect(data.tags[tagKey]).to.be.eql(bugReporterMetrics.get(tagKey) || NOT_SET)
+        expect(data.tags[tagKey]).to.be.eql(bugReporterMetrics._get(tagKey) || NOT_SET)
       }
       for (let extraKey of Object.values(EXTRA)) {
         expect(extraKeys).to.contain(extraKey)
         // $FlowFixMe
-        expect(data.extra[extraKey]).to.be.eql(bugReporterMetrics.get(extraKey) || NOT_SET)
+        expect(data.extra[extraKey]).to.be.eql(bugReporterMetrics._get(extraKey) || NOT_SET)
       }
+
+      expect(data).to.deep.equal(bugReporterMetrics.getMetrics())
     })
 
     it('sends/receives metric via message bus', () => {
@@ -97,7 +99,7 @@ describe('BugReporterMetrics', () => {
         value: newValue
       })
 
-      const updatedValue = bugReporterMetrics.get(metricKey)
+      const updatedValue = bugReporterMetrics._get(metricKey)
       expect(updatedValue).to.be.eql(newValue)
     })
   })

@@ -54,7 +54,9 @@ function bootstrap (container: Container) {
         },
         dataCallback: (data) => {
           data.extra.logs = logCache.getSerialized()
-          bugReporterMetrics.addMetricsTo(data)
+          const metrics = bugReporterMetrics.getMetrics()
+          Object.assign(data.tags, metrics.tags)
+          Object.assign(data.extra, metrics.extra)
           return data
         },
         autoBreadcrumbs: {
