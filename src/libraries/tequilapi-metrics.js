@@ -38,7 +38,7 @@ class HttpTequilapiClientWithMetrics extends HttpTequilapiClient {
   }
 
   async healthCheck (timeout: ?number): Promise<NodeHealthcheckDTO> {
-    const result = await super.healthCheck()
+    const result = await super.healthCheck(timeout)
     this.bugReporterMetrics.set(METRICS.HealthCheckTime, this.bugReporterMetrics.dateTimeString())
     return result
   }
