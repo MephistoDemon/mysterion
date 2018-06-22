@@ -26,24 +26,25 @@ import {MapSync} from '../../libraries/map-sync'
 const NOT_SET = 'N/A'
 
 const TAGS = {
-  IdentityUnlocked: 'identity_unlocked',
-  ProposalsFetched: 'proposals_fetched',
-  ConnectionCreated: 'connection_created',
-  ClientStarted: 'client_started',
-  StartTime: 'start_time'
+  IDENTITY_UNLOCKED: 'identity_unlocked',
+  PROPOSALS_FETCHED: 'proposals_fetched',
+  CONNECTION_CREATED: 'connection_created',
+  CLIENT_STARTED: 'client_started',
+  START_TIME: 'start_time'
 }
 
 const EXTRA = {
-  HealthCheckTime: 'last_health_check',
-  ConnectionStatus: 'connection_status',
-  ConnectionStatistics: 'connection_statistics',
-  ConnectionIP: 'connection_ip'
+  HEALTH_CHECK_TIME: 'last_health_check',
+  CONNECTION_STATUS: 'connection_status',
+  CONNECTION_STATISTICS: 'connection_statistics',
+  CONNECTION_IP: 'connection_ip'
 }
 
 const METRICS = {}
 Object.assign(METRICS, TAGS)
 Object.assign(METRICS, EXTRA)
 
+// alternative to: type Metric = 'identity_unlocked' | 'proposals_fetched' | 'last_health_check' ...
 export type Metric = $Values<typeof METRICS>
 
 export type RavenData = {

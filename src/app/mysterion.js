@@ -152,7 +152,7 @@ class Mysterion {
       this.bugReporter.setUser(identity)
     })
     this.bugReporterMetrics.syncWith(mainMessageBusCommunication)
-    this.bugReporterMetrics.set(METRICS.StartTime, this.bugReporterMetrics.dateTimeString())
+    this.bugReporterMetrics.set(METRICS.START_TIME, this.bugReporterMetrics.dateTimeString())
 
     await this._onRendererLoaded()
 
@@ -344,12 +344,12 @@ class Mysterion {
     this.monitoring.onStatusUp(() => {
       logInfo("'mysterium_client' is up")
       this.communication.sendMysteriumClientUp()
-      this.bugReporterMetrics.set(METRICS.ClientStarted, true)
+      this.bugReporterMetrics.set(METRICS.CLIENT_STARTED, true)
     })
     this.monitoring.onStatusDown(() => {
       logInfo("'mysterium_client' is down")
       this.communication.sendMysteriumClientDown()
-      this.bugReporterMetrics.set(METRICS.ClientStarted, false)
+      this.bugReporterMetrics.set(METRICS.CLIENT_STARTED, false)
     })
     this.monitoring.onStatus((status) => {
       if (status === false) {

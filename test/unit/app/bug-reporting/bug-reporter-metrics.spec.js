@@ -31,7 +31,7 @@ describe('BugReporterMetrics', () => {
 
   describe('get/set', () => {
     it('sets tag metric', () => {
-      const metricKey = METRICS.IdentityUnlocked
+      const metricKey = METRICS.IDENTITY_UNLOCKED
       const metricValue = true
 
       expect(bugReporterMetrics._get(metricKey)).to.be.undefined
@@ -40,7 +40,7 @@ describe('BugReporterMetrics', () => {
     })
 
     it('sets extra metric', () => {
-      const metricKey = METRICS.HealthCheckTime
+      const metricKey = METRICS.HEALTH_CHECK_TIME
       const metricValue = bugReporterMetrics.dateTimeString()
 
       expect(bugReporterMetrics._get(metricKey)).to.be.undefined
@@ -82,7 +82,7 @@ describe('BugReporterMetrics', () => {
         lastUpdate = update
       })
 
-      const metricKey = METRICS.ConnectionIP
+      const metricKey = METRICS.CONNECTION_IP
       const metricValue = '{ip: "127.0.0.1"}'
       bugReporterMetrics.set(metricKey, metricValue)
 
