@@ -49,11 +49,7 @@ describe('BugReporterMetrics', () => {
     })
 
     it('adds metrics to object', () => {
-      const data = {
-        tags: {},
-        extra: {}
-      }
-      bugReporterMetrics.addMetricsTo(data)
+      const data = bugReporterMetrics.getMetrics()
       const tagKeys = Object.keys(data.tags)
       const extraKeys = Object.keys(data.extra)
 

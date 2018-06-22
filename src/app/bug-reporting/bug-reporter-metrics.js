@@ -46,14 +46,10 @@ Object.assign(METRICS, EXTRA)
 
 // alternative to: type Metric = 'identity_unlocked' | 'proposals_fetched' | 'last_health_check' ...
 type Metric = $Values<typeof METRICS>
-
+type keyValueMap = { [id: string]: mixed }
 type RavenData = {
-  tags: {
-    [id: string]: mixed
-  },
-  extra: {
-    [id: string]: mixed
-  },
+  tags: keyValueMap,
+  extra: keyValueMap,
 }
 
 /**
@@ -62,23 +58,21 @@ type RavenData = {
 export class BugReporterMetrics extends MapSync<Metric> {
   getMetrics (): RavenData {
     const data = { tags: {}, extra: {} }
-    this.addMetricsTo(data)
+    data.tags = this._setValues((Object.values(TAGS): any))
+    data.extra = this._setValues((Object.values(EXTRA): any))
     return data
-  }
-
-  addMetricsTo (data: RavenData) {
-    this._setValues((Object.values(TAGS): any), data.tags)
-    this._setValues((Object.values(EXTRA): any), data.extra)
   }
 
   setWithCurrentDateTime (metric: Metric) {
     super.set(metric, dateTimeString())
   }
 
-  _setValues (metrics: Array<Metric>, dest: any) {
+  _setValues (metrics: Array<Metric>): keyValueMap {
+    const result = {}
     for (let metric of metrics) {
-      dest[metric] = this._get(metric) || NOT_SET
+      result[metric] = this._get(metric) || NOT_SET
     }
+    return result
   }
 }
 
