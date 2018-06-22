@@ -66,17 +66,17 @@ class TequilapiClientWithMetrics implements TequilapiClient {
   async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {
     const result = await this.client.findProposals(filter)
     if (!result || result.length === 0) {
-      this.bugReporterMetrics.set(METRICS.PROPOSALS_FETCHED, false)
+      this.bugReporterMetrics.set(METRICS.PROPOSALS_FETCHED_ONCE, false)
     } else {
-      this.bugReporterMetrics.set(METRICS.PROPOSALS_FETCHED, true)
+      this.bugReporterMetrics.set(METRICS.PROPOSALS_FETCHED_ONCE, true)
     }
     return result
   }
 
   async connectionCreate (request: ConnectionRequestDTO, timeout: ?number = TIMEOUT_DISABLED): Promise<ConnectionStatusDTO> {
-    this.bugReporterMetrics.set(METRICS.CONNECTION_CREATED, false)
+    this.bugReporterMetrics.set(METRICS.CONNECTION_ACTIVE, false)
     const result = await this.client.connectionCreate(request, timeout)
-    this.bugReporterMetrics.set(METRICS.CONNECTION_CREATED, true)
+    this.bugReporterMetrics.set(METRICS.CONNECTION_ACTIVE, true)
     return result
   }
 
@@ -88,7 +88,7 @@ class TequilapiClientWithMetrics implements TequilapiClient {
 
   async connectionCancel (): Promise<void> {
     await this.client.connectionCancel()
-    this.bugReporterMetrics.set(METRICS.CONNECTION_CREATED, false)
+    this.bugReporterMetrics.set(METRICS.CONNECTION_ACTIVE, false)
   }
 
   async connectionIP (timeout: ?number): Promise<ConnectionIPDTO> {

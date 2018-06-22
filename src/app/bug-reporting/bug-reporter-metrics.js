@@ -27,9 +27,9 @@ const NOT_SET = 'N/A'
 
 const TAGS = {
   IDENTITY_UNLOCKED: 'identity_unlocked',
-  PROPOSALS_FETCHED: 'proposals_fetched',
-  CONNECTION_CREATED: 'connection_created',
-  CLIENT_STARTED: 'client_started',
+  PROPOSALS_FETCHED_ONCE: 'proposals_fetched_once',
+  CONNECTION_ACTIVE: 'connection_active',
+  CLIENT_RUNNING: 'client_running',
   START_TIME: 'start_time'
 }
 

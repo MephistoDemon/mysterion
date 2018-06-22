@@ -353,12 +353,12 @@ class Mysterion {
     this.monitoring.onStatusUp(() => {
       logInfo("'mysterium_client' is up")
       this.communication.sendMysteriumClientUp()
-      this.bugReporterMetrics.set(METRICS.CLIENT_STARTED, true)
+      this.bugReporterMetrics.set(METRICS.CLIENT_RUNNING, true)
     })
     this.monitoring.onStatusDown(() => {
       logInfo("'mysterium_client' is down")
       this.communication.sendMysteriumClientDown()
-      this.bugReporterMetrics.set(METRICS.CLIENT_STARTED, false)
+      this.bugReporterMetrics.set(METRICS.CLIENT_RUNNING, false)
     })
     this.monitoring.onStatus((status) => {
       if (status === false) {
