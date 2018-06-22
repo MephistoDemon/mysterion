@@ -25,6 +25,8 @@ export default {
   MYSTERIUM_CLIENT_LOG: 'mysterium-client.log',
   CURRENT_IDENTITY_CHANGED: 'current.identity.changed',
 
+  MYSTERION_BACKEND_LOG: 'MYSTERION_BACKEND_LOG',
+
   TERMS_REQUESTED: 'terms.requested',
   TERMS_ANSWERED: 'terms.answered',
   TERMS_ACCEPTED: 'terms.accepted',

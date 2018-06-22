@@ -25,12 +25,13 @@ import type {
   ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO
+  AppErrorDTO,
+  MysterionBackendLogDTO
 } from './dto'
 import messages from './messages'
 import type { MessageBus } from './messageBus'
 import type { MainCommunication } from './main-communication'
-import type {UserSettings} from '../user-settings/user-settings'
+import type { UserSettings } from '../user-settings/user-settings'
 import type {MapSyncCommunication, MapSyncDTO} from '../../libraries/map-sync'
 import type {Metric} from '../bug-reporting/bug-reporter-metrics'
 
@@ -77,6 +78,10 @@ class MainMessageBusCommunication implements MainCommunication, MapSyncCommunica
 
   sendMysteriumClientDown () {
     this._send(messages.HEALTHCHECK_DOWN)
+  }
+
+  sendMysterionBackendLog (log: MysterionBackendLogDTO) {
+    this._send(messages.MYSTERION_BACKEND_LOG, log)
   }
 
   sendProposals (proposals: ProposalUpdateDTO) {

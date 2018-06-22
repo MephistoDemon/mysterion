@@ -19,16 +19,14 @@
 import type {BugReporter} from './interface'
 import Raven from 'raven'
 import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
-import {logLevels} from '../../libraries/mysterium-client'
-import LogCache from './log-cache'
+import LogCache from '../logging/log-cache'
 
 class BugReporterMain implements BugReporter {
   raven: Raven
   logCache: LogCache
 
-  constructor (raven: Raven, logCache: LogCache) {
+  constructor (raven: Raven) {
     this.raven = raven
-    this.logCache = logCache
   }
 
   setUser (userData: IdentityDTO) {
@@ -51,10 +49,6 @@ class BugReporterMain implements BugReporter {
 
   captureInfoException (err: Error, context: ?any): void {
     this._captureException(err, 'info', context)
-  }
-
-  pushToLogCache (level: logLevels.INFO | logLevels.ERROR, data: string) {
-    this.logCache.pushToLevel(level, data)
   }
 
   _captureMessage (message: string, level: 'error' | 'info', context: ?any): void {

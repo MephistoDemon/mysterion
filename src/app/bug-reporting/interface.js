@@ -18,13 +18,11 @@
 // @flow
 
 import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
-import {logLevels} from '../../libraries/mysterium-client'
 
 export interface BugReporter {
   setUser (IdentityDTO): void,
-  captureErrorMessage (message: string, context: ?any): void,
-  captureInfoMessage (message: string, context: ?any): void,
-  captureErrorException (err: Error, context: ?any): void,
-  captureInfoException (err: Error, context: ?any): void,
-  pushToLogCache (logLevels.INFO | logLevels.ERROR, string): void
+  captureErrorMessage (message: string, context?: any): void,
+  captureInfoMessage (message: string, context?: any): void,
+  captureErrorException (err: Error, context?: any): void,
+  captureInfoException (err: Error, context?: any): void,
 }

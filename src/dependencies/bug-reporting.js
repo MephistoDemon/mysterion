@@ -18,12 +18,20 @@
 // @flow
 import type { Container } from '../app/di'
 import os from 'os'
+import LogCache from '../app/logging/log-cache'
 import {BugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
-import LogCache from '../app/bug-reporting/log-cache'
 
 function bootstrap (container: Container) {
   container.factory(
-    'logCache',
+    'mysteriumProcessLogCache',
+    [],
+    (): LogCache => {
+      return new LogCache()
+    }
+  )
+
+  container.factory(
+    'backendLogCache',
     [],
     (): LogCache => {
       return new LogCache()
@@ -39,8 +47,8 @@ function bootstrap (container: Container) {
   const extendedProcess = (process: { type?: string })
   container.service(
     'bugReporter.config',
-    ['mysterionReleaseID', 'logCache', 'bugReporterMetrics'],
-    (mysterionReleaseID, logCache, bugReporterMetrics): RavenOptions => {
+    ['mysterionReleaseID', 'mysteriumProcessLogCache', 'backendLogCache', 'bugReporterMetrics'],
+    (mysterionReleaseID, mysteriumProcessLogCache, backendLogCache, bugReporterMetrics): RavenOptions => {
       return {
         captureUnhandledRejections: true,
         release: mysterionReleaseID,
@@ -53,10 +61,13 @@ function bootstrap (container: Container) {
           platform_release: os.release()
         },
         dataCallback: (data) => {
-          data.extra.logs = logCache.getSerialized()
           const metrics = bugReporterMetrics.getMetrics()
           Object.assign(data.tags, metrics.tags)
           Object.assign(data.extra, metrics.extra)
+          data.extra.logs = {
+            mysterium_process: mysteriumProcessLogCache.getSerialized(),
+            backend: backendLogCache.getSerialized()
+          }
           return data
         },
         autoBreadcrumbs: {

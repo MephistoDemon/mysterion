@@ -20,7 +20,6 @@ import path from 'path'
 import processLogLevels from '../log-levels'
 import { INVERSE_DOMAIN_PACKAGE_NAME } from './config'
 import axios from 'axios'
-import logger from '../../../app/logger'
 import createFileIfMissing from '../../create-file-if-missing'
 
 const SYSTEM_LOG = '/var/log/system.log'
@@ -51,16 +50,16 @@ class Process {
   start () {
     return axios.get('http://127.0.0.1:' + this._daemonPort)
       .then(() => {
-        logger.info('Touched the daemon, now it should be up')
+        console.info('Touched the daemon, now it should be up')
       })
       .catch(() => {
-        logger.info('Touched the daemon with error, anyway it should be up')
+        console.info('Touched the daemon with error, anyway it should be up')
       })
   }
 
   async stop () {
     await this.tequilapi.stop()
-    logger.info('Client Quit was successful')
+    console.info('Client Quit was successful')
   }
 
   async setupLogging () {
@@ -91,7 +90,7 @@ function tailFile (filePath, cb) {
   const logTail = new Tail(filePath)
   logTail.on('line', cb)
   logTail.on('error', () => {
-    logger.error(`log file watching failed. file probably doesn't exist: ${filePath}`)
+    console.error(`log file watching failed. file probably doesn't exist: ${filePath}`)
   })
 }
 

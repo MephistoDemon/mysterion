@@ -18,7 +18,7 @@
 // @flow
 
 import { describe, it, expect, beforeEach } from '../../../helpers/dependencies'
-import LogCache from '../../../../src/app/bug-reporting/log-cache'
+import LogCache from '../../../../src/app/logging/log-cache'
 
 describe('LogCache', () => {
   let logCache, error
