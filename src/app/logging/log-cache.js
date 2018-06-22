@@ -17,6 +17,7 @@
 
 // @flow
 import LimitedLinkedList from '../../libraries/limited-linked-list'
+import type { LogLevel } from './index'
 
 type LogCacheStore = {
   info: LimitedLinkedList,
@@ -34,7 +35,10 @@ class LogCache {
     error: new LimitedLinkedList(300)
   }
 
-  pushToLevel (level: 'info' | 'error', data: any) {
+  pushToLevel (level: LogLevel, data: any) {
+    if (level !== 'info' && level !== 'error') {
+      throw new Error(`Unknown log level being pushed to log cache: ${level}`)
+    }
     this._logs[level].insert(data)
   }
 

@@ -17,6 +17,7 @@
 
 // TODO: rename to messages.js
 export default {
+  // async messages
   CONNECTION_STATUS_CHANGED: 'connection.status.changed',
   CONNECTION_REQUEST: 'connection.request',
   CONNECTION_CANCEL: 'connection.cancel',
@@ -42,7 +43,8 @@ export default {
   USER_SETTINGS: 'user.settings',
   USER_SETTINGS_REQUEST: 'user.settings.request',
   USER_SETTINGS_UPDATE: 'user.settings.update',
-  // TODO: group environment messages together
+
+  // sync messages
   GET_SESSION_ID: 'GET_SESSION_ID',
   GET_SERIALIZED_CACHES: 'GET_SERIALIZED_CACHES',
   LOG: 'LOG'

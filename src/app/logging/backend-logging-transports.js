@@ -20,6 +20,7 @@
 import Transport from 'winston-transport'
 import LogCache from './log-cache'
 import type { SyncRendererCommunication } from '../communication/sync/sync-communication'
+import type { LogLevel } from './index'
 
 type LogEntry = {
   level: string,
@@ -54,7 +55,7 @@ export class BackendLogCachingTransport extends Transport {
   }
 }
 
-function mapToLogLevel (level: string): 'info' | 'error' {
+function mapToLogLevel (level: string): LogLevel {
   switch (level) {
     case 'error':
       return 'error'

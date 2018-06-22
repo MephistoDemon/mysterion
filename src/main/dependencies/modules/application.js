@@ -90,8 +90,7 @@ function bootstrap (container: Container) {
       mysteriumClientMonitoring,
       proposalFetcher,
       bugReporter,
-      // TODO: rename
-      bugReporterEnvironmentManager,
+      environmentCollector,
       backendLogBootstrapper,
       frontendLogCache,
       mysteriumProcessLogCache,
@@ -108,7 +107,7 @@ function bootstrap (container: Container) {
         monitoring: mysteriumClientMonitoring,
         proposalFetcher: proposalFetcher,
         bugReporter: bugReporter,
-        environmentCollector: bugReporterEnvironmentManager,
+        environmentCollector,
         backendLogBootstrapper,
         frontendLogCache,
         mysteriumProcessLogCache,

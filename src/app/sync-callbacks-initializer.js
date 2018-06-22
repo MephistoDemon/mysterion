@@ -42,7 +42,6 @@ class SyncCallbacksInitializer {
       if (!logDto) {
         console.error('Got empty log from renderer')
       } else {
-        // TODO: ensure that level is allowed?
         this._logCache.pushToLevel(logDto.level, logDto.data)
       }
     })
