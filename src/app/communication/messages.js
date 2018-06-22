@@ -44,5 +44,6 @@ export default {
   USER_SETTINGS_UPDATE: 'user.settings.update',
   // TODO: group environment messages together
   GET_SESSION_ID: 'GET_SESSION_ID',
-  GET_SERIALIZED_CACHES: 'GET_SERIALIZED_CACHES'
+  GET_SERIALIZED_CACHES: 'GET_SERIALIZED_CACHES',
+  LOG: 'LOG'
 }

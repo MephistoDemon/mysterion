@@ -38,6 +38,9 @@ class FakeSyncRendererCommunication implements SyncRendererCommunication {
   getSerializedCaches () {
     return this.mockedSerializedCaches
   }
+
+  sendLog (dto) {
+  }
 }
 
 describe('RendererEnvironmentCollector', () => {

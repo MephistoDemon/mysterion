@@ -22,6 +22,7 @@ import messages from '../messages'
 import type { SyncSender } from './sync'
 import type { SyncRendererCommunication } from './sync-communication'
 import type { LogCaches } from '../../bug-reporting/environment/environment-collector'
+import type { LogDTO } from '../dto'
 
 /**
  * Performs synchronous calls from renderer to main.
@@ -45,6 +46,10 @@ class SyncSenderRendererCommunication implements SyncRendererCommunication {
   getSerializedCaches (): ?LogCaches {
     const result = this._syncSender.send(messages.GET_SERIALIZED_CACHES)
     return ((result: any): LogCaches)
+  }
+
+  sendLog (dto: LogDTO): void {
+    this._syncSender.send(messages.LOG, dto)
   }
 }
 

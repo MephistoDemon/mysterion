@@ -22,7 +22,7 @@ interface SyncReceiver {
 }
 
 interface SyncSender {
-  send (channel: string): mixed
+  send (channel: string, data?: any): mixed
 }
 
 export type { SyncReceiver, SyncSender }

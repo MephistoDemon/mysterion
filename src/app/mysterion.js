@@ -142,11 +142,20 @@ class Mysterion {
     })
   }
 
+  // TODO: extract, use flow, add tests
   _setupSyncCallbacks () {
     const receiver = new SyncIpcReceiver()
     const communication = new SyncReceiverMainCommunication(receiver)
     communication.onGetSessionId(() => this.environmentCollector.getSessionId())
     communication.onGetSerializedCaches(() => this.environmentCollector.getSerializedCaches())
+    communication.onLog((logDto) => {
+      // TODO: push to frontend log cache
+      if (!logDto) {
+        console.error('Got empty log from renderer')
+      } else {
+        console.log(`Got ${logDto.level} from renderer:`, logDto.data)
+      }
+    })
   }
 
   logUnhandledRejections () {

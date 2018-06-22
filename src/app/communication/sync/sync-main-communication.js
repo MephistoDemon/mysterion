@@ -21,6 +21,7 @@ import messages from '../messages'
 import type { SyncReceiver } from './sync'
 import type { SyncMainCommunication } from './sync-communication'
 import type { LogCaches } from '../../bug-reporting/environment/environment-collector'
+import type { LogDTO } from '../dto'
 
 class SyncReceiverMainCommunication implements SyncMainCommunication {
   _syncReceiver: SyncReceiver
@@ -37,7 +38,11 @@ class SyncReceiverMainCommunication implements SyncMainCommunication {
     this._on(messages.GET_SERIALIZED_CACHES, callback)
   }
 
-  _on (channel: string, callback: () => mixed) {
+  onLog (callback: (LogDTO) => void): void {
+    this._on(messages.LOG, callback)
+  }
+
+  _on (channel: string, callback: (data: any) => mixed) {
     this._syncReceiver.on(channel, callback)
   }
 }

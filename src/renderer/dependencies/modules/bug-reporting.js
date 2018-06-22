@@ -26,6 +26,7 @@ import RendererEnvironmentCollector from '../../../app/bug-reporting/environment
 import type { EnvironmentCollector } from '../../../app/bug-reporting/environment/environment-collector'
 import SyncSenderRendererCommunication from '../../../app/communication/sync/sync-renderer-communication'
 import { SyncIpcSender } from '../../../app/communication/sync/sync-ipc'
+import type { SyncRendererCommunication } from '../../../app/communication/sync/sync-communication'
 
 function bootstrap (container: Container) {
   container.constant('bugReporter.sentryURL', 'https://f1e63dd563c34c35a56e98aa02518d40@sentry.io/300978')
@@ -54,12 +55,19 @@ function bootstrap (container: Container) {
   )
 
   container.service(
-    'environmentCollector',
-    ['mysterionReleaseID'],
-    (mysterionReleaseID: string): EnvironmentCollector => {
+    'syncCommunication',
+    [],
+    (): SyncRendererCommunication => {
       const sender = new SyncIpcSender()
-      const communication = new SyncSenderRendererCommunication(sender)
-      return new RendererEnvironmentCollector(mysterionReleaseID, communication)
+      return new SyncSenderRendererCommunication(sender)
+    }
+  )
+
+  container.service(
+    'environmentCollector',
+    ['mysterionReleaseID', 'syncCommunication'],
+    (mysterionReleaseID: string, syncCommunication: SyncRendererCommunication): EnvironmentCollector => {
+      return new RendererEnvironmentCollector(mysterionReleaseID, syncCommunication)
     }
   )
 

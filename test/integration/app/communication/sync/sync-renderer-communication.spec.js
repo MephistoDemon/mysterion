@@ -23,20 +23,21 @@ import messages from '../../../../../src/app/communication/messages'
 import type { SyncReceiver, SyncSender } from '../../../../../src/app/communication/sync/sync'
 import SyncReceiverMainCommunication from '../../../../../src/app/communication/sync/sync-main-communication'
 import type { LogCaches } from '../../../../../src/app/bug-reporting/environment/environment-collector'
+import { CallbackRecorder } from '../../../../helpers/utils'
 
 class MockSyncReceiver implements SyncReceiver {
-  _subscribers: { [string]: () => mixed } = new Map()
+  _subscribers: { [string]: (data?: mixed) => mixed } = new Map()
 
   on (channel: string, callback: () => mixed): void {
     this._subscribers[channel] = callback
   }
 
-  invoke (channel: string): mixed {
+  invoke (channel: string, data?: mixed): mixed {
     const subscriber = this._subscribers[channel]
     if (subscriber == null) {
       return
     }
-    return subscriber()
+    return subscriber(data)
   }
 }
 
@@ -47,8 +48,8 @@ class MockSyncSender implements SyncSender {
     this._mockReceiver = mockReceiver
   }
 
-  send (channel: string): mixed {
-    return this._mockReceiver.invoke(channel)
+  send (channel: string, data?: any): mixed {
+    return this._mockReceiver.invoke(channel, data)
   }
 }
 
@@ -97,6 +98,20 @@ describe('SyncSenderRendererCommunication', () => {
 
       receiver.on(messages.GET_SERIALIZED_CACHES, () => null)
       expect(rendererCommunication.getSerializedCaches()).to.eql(null)
+    })
+  })
+
+  describe('.sendLog', () => {
+    it('sends message to bus', () => {
+      const mainCommunication = new SyncReceiverMainCommunication(receiver)
+      const rendererCommunication = new SyncSenderRendererCommunication(sender)
+      const recorder = new CallbackRecorder()
+
+      mainCommunication.onLog(recorder.getCallback())
+      const log = { level: 'info', data: 'Testing renderer log' }
+      rendererCommunication.sendLog(log)
+      expect(recorder.invoked).to.be.true
+      expect(recorder.argument).to.eq(log)
     })
   })
 })

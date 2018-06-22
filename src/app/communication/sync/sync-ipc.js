@@ -21,16 +21,22 @@ import { ipcMain, ipcRenderer } from 'electron'
 import type { SyncReceiver, SyncSender } from './sync'
 
 class SyncIpcReceiver implements SyncReceiver {
-  on (channel: string, callback: () => mixed) {
-    ipcMain.on(channel, (event) => {
-      event.returnValue = callback()
+  on (channel: string, callback: (data: any) => mixed) {
+    ipcMain.on(channel, (event, data) => {
+      let returnValue = callback(data)
+      // returnValue must be defined for sync ipc call to work
+      if (!returnValue) {
+        returnValue = true
+      }
+
+      event.returnValue = returnValue
     })
   }
 }
 
 class SyncIpcSender implements SyncSender {
-  send (channel: string): mixed {
-    return ipcRenderer.sendSync(channel)
+  send (channel: string, data?: any): mixed {
+    return ipcRenderer.sendSync(channel, data)
   }
 }
 

@@ -60,7 +60,7 @@ export default {
     AppError,
     AppModal
   },
-  dependencies: ['mysterionReleaseID', 'rendererCommunication'],
+  dependencies: ['mysterionReleaseID', 'rendererCommunication', 'syncCommunication'],
   computed: {
     ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
     version () {
@@ -69,6 +69,8 @@ export default {
     }
   },
   async mounted () {
+    // TODO: send all console logs, not just direct message
+    this.syncCommunication.sendLog({level: 'info', data: 'App was mounted'})
     // we need to notify the main process that we're up
     this.rendererCommunication.sendRendererBooted()
     this.rendererCommunication.onConnectionRequest((proposal) => {

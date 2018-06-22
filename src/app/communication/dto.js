@@ -47,3 +47,8 @@ export type AppErrorDTO = {
   hint: string,
   fatal: boolean
 }
+
+export type LogDTO = {
+  level: string,
+  data: mixed
+}
