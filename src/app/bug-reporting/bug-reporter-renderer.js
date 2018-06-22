@@ -52,7 +52,7 @@ class BugReporterRenderer implements BugReporter {
   }
 
   _captureException (err: Error, level: 'error' | 'info', context: ?any): void {
-    this.raven.captureErrorException(err, { level, extra: context })
+    this.raven.captureException(err, { level, extra: context })
   }
 }
 
