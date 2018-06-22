@@ -41,10 +41,11 @@ import type { MainCommunication } from './communication/main-communication'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
 import type { EnvironmentCollector } from './bug-reporting/environment/environment-collector'
-import { SyncIpcReceiver } from './communication/sync/sync-ipc'
-import SyncReceiverMainCommunication from './communication/sync/sync-main-communication'
 import BackendLogBootstrapper from './logging/backend-log-bootstrapper'
 import LogCache from './logging/log-cache'
+import SyncCallbacksInitializer from './sync-callbacks-initializer'
+import SyncReceiverMainCommunication from './communication/sync/sync-main-communication'
+import { SyncIpcReceiver } from './communication/sync/sync-ipc'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -104,7 +105,7 @@ class Mysterion {
   }
 
   run () {
-    this._setupSyncCallbacks()
+    this._initializeSyncCallbacks()
     this.backendLogBootstrapper.init()
     this.logUnhandledRejections()
 
@@ -142,20 +143,11 @@ class Mysterion {
     })
   }
 
-  // TODO: extract, use flow, add tests
-  _setupSyncCallbacks () {
+  _initializeSyncCallbacks () {
     const receiver = new SyncIpcReceiver()
     const communication = new SyncReceiverMainCommunication(receiver)
-    communication.onGetSessionId(() => this.environmentCollector.getSessionId())
-    communication.onGetSerializedCaches(() => this.environmentCollector.getSerializedCaches())
-    communication.onLog((logDto) => {
-      // TODO: push to frontend log cache
-      if (!logDto) {
-        console.error('Got empty log from renderer')
-      } else {
-        console.log(`Got ${logDto.level} from renderer:`, logDto.data)
-      }
-    })
+    const initializer = new SyncCallbacksInitializer(communication, this.environmentCollector)
+    initializer.initialize()
   }
 
   logUnhandledRejections () {

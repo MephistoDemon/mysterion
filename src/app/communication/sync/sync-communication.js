@@ -22,6 +22,7 @@ import type { LogDTO } from '../dto'
 
 interface SyncMainCommunication {
   onGetSessionId (callback: () => string): void,
+  onGetSerializedCaches (callback: () => LogCaches): void,
   onLog (callback: () => void): void
 }
 
