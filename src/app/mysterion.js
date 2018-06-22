@@ -82,7 +82,7 @@ class Mysterion {
 
   window: Window
   messageBus: MessageBus
-  communication: MainCommunication
+  communication: MainMessageBusCommunication
 
   constructor (params: MysterionParams) {
     this.browserWindowFactory = params.browserWindowFactory
@@ -153,13 +153,12 @@ class Mysterion {
 
     const send = this._getSendFunction(browserWindow)
     this.messageBus = new MainMessageBus(send, this.bugReporter.captureErrorException)
-    const mainMessageBusCommunication = new MainMessageBusCommunication(this.messageBus)
-    this.communication = mainMessageBusCommunication
+    this.communication = new MainMessageBusCommunication(this.messageBus)
     this.communication.onCurrentIdentityChange((identityChange: CurrentIdentityChangeDTO) => {
       const identity = new IdentityDTO({id: identityChange.id})
       this.bugReporter.setUser(identity)
     })
-    this.bugReporterMetrics.syncWith(mainMessageBusCommunication)
+    this.bugReporterMetrics.syncWith(this.communication)
     this.bugReporterMetrics.setWithCurrentDateTime(METRICS.START_TIME)
 
     await this._onRendererLoaded()
