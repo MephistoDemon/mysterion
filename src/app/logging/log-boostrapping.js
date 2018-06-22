@@ -17,28 +17,28 @@
 
 // @flow
 
-import type { StringLogger } from './logging/log-boostrapping'
+import winston from 'winston'
+import Transport from 'winston-transport'
 
-class Logger {
-  frontendStringLogger: ?StringLogger = null
+/**
+ * String logger with many log levels
+ */
+interface StringLogger {
+  info (string): void,
 
-  info (...data: Array<any>): void {
-    if (this.frontendStringLogger) {
-      this.frontendStringLogger.info(data.join(' '))
-    } else {
-      console.info(...data)
-    }
-  }
+  warn (string): void,
 
-  error (...data: Array<any>): void {
-    if (this.frontendStringLogger) {
-      this.frontendStringLogger.error(data.join(' '))
-    } else {
-      console.error(...data)
-    }
-  }
+  error (string): void,
+
+  debug (string): void,
+
+  add (Transport): void
 }
 
-const logger = new Logger()
+const winstonFormat = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
+)
 
-export default logger
+export { winstonFormat }
+export type { StringLogger }

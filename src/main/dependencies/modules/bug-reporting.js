@@ -23,8 +23,6 @@ import MainEnvironmentCollector from '../../../app/bug-reporting/environment/mai
 import BackendLogBootstrapper from '../../../app/logging/backend-log-bootstrapper'
 import type { EnvironmentCollector } from '../../../app/bug-reporting/environment/environment-collector'
 import LogCache from '../../../app/logging/log-cache'
-// TODO
-// import LogCache from '../../../app/bug-reporting/log-cache'
 
 function bootstrap (container: Container) {
   container.factory(

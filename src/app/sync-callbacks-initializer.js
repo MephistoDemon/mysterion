@@ -44,7 +44,6 @@ class SyncCallbacksInitializer {
       } else {
         // TODO: ensure that level is allowed?
         this._logCache.pushToLevel(logDto.level, logDto.data)
-        console.log(`Got ${logDto.level} from renderer:`, logDto.data)
       }
     })
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The "MysteriumNetwork/mysterion" Authors.
+ * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +18,16 @@
 // @flow
 
 import winston from 'winston'
-import LogCache from './log-cache'
-import { BackendLogCachingTransport } from './backend-logging-transports'
+import type { SyncRendererCommunication } from '../communication/sync/sync-communication'
+import { SyncCommunicationTransport } from './backend-logging-transports'
+import logger from '../logger'
 import { winstonFormat } from './log-boostrapping'
-import type { StringLogger } from './log-boostrapping'
 
-export default class BackendLogBootstrapper {
-  _backendLogCache: LogCache
+export default class FrontendLogBootstrapper {
+  _communication: SyncRendererCommunication
 
-  constructor (backendLogCache: LogCache) {
-    this._backendLogCache = backendLogCache
+  constructor (communication: SyncRendererCommunication) {
+    this._communication = communication
   }
 
   init () {
@@ -35,22 +35,10 @@ export default class BackendLogBootstrapper {
       format: winstonFormat,
       transports: [
         new winston.transports.Console(),
-        new BackendLogCachingTransport(this._backendLogCache)
+        new SyncCommunicationTransport(this._communication)
       ]
     })
-    overrideConsoleLogs(winstonLogger)
+    // TODO: find a nicer way, i.e. subscribe?
+    logger.frontendStringLogger = winstonLogger
   }
-}
-
-function overrideConsoleLogs (logger: StringLogger) {
-  // $FlowFixMe
-  console.log = (...args) => logger.info(args.join(' '))
-  // $FlowFixMe
-  console.info = (...args) => logger.info(args.join(' '))
-  // $FlowFixMe
-  console.warn = (...args) => logger.warn(args.join(' '))
-  // $FlowFixMe
-  console.error = (...args) => logger.error(args.join(' '))
-  // $FlowFixMe
-  console.debug = (...args) => logger.debug(args.join(' '))
 }

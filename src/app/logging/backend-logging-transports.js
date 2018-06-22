@@ -19,10 +19,26 @@
 
 import Transport from 'winston-transport'
 import LogCache from './log-cache'
+import type { SyncRendererCommunication } from '../communication/sync/sync-communication'
 
 type LogEntry = {
   level: string,
   message: string
+}
+
+export class SyncCommunicationTransport extends Transport {
+  _communication: SyncRendererCommunication
+
+  constructor (communication: SyncRendererCommunication) {
+    super()
+    this._communication = communication
+  }
+
+  log (info: LogEntry, callback: () => any) {
+    const logDto = { level: mapToLogLevel(info.level), data: info.message }
+    this._communication.sendLog(logDto)
+    callback()
+  }
 }
 
 export class BackendLogCachingTransport extends Transport {
