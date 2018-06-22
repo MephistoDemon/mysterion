@@ -27,7 +27,7 @@ import type {TequilapiClient} from './client'
 
 const TEQUILAPI_URL = 'http://127.0.0.1:4050'
 
-function tequilapiClientFactory (bugReporterMetrics: ?BugReporterMetrics = null, baseUrl: string = TEQUILAPI_URL, defaultTimeout: number = TIMEOUT_DEFAULT) {
+function tequilapiClientFactory (bugReporterMetrics: ?BugReporterMetrics = null, baseUrl: string = TEQUILAPI_URL, defaultTimeout: number = TIMEOUT_DEFAULT): TequilapiClient {
   const axiosInstance = axios.create({
     baseURL: baseUrl,
     headers: {
