@@ -19,6 +19,7 @@
 
 import type { EnvironmentCollector } from './bug-reporting/environment/environment-collector'
 import type { SyncMainCommunication } from './communication/sync/sync-communication'
+import LogCache from './logging/log-cache'
 
 /**
  * Adds sync application callbacks for communication messages.
@@ -26,20 +27,23 @@ import type { SyncMainCommunication } from './communication/sync/sync-communicat
 class SyncCallbacksInitializer {
   _environmentCollector: EnvironmentCollector
   _communication: SyncMainCommunication
+  _logCache: LogCache
 
-  constructor (communication: SyncMainCommunication, environmentCollector: EnvironmentCollector) {
+  constructor (communication: SyncMainCommunication, environmentCollector: EnvironmentCollector, logCache: LogCache) {
     this._environmentCollector = environmentCollector
     this._communication = communication
+    this._logCache = logCache
   }
 
   initialize () {
     this._communication.onGetSessionId(() => this._environmentCollector.getSessionId())
     this._communication.onGetSerializedCaches(() => this._environmentCollector.getSerializedCaches())
     this._communication.onLog((logDto) => {
-      // TODO: push to frontend log cache
       if (!logDto) {
         console.error('Got empty log from renderer')
       } else {
+        // TODO: ensure that level is allowed?
+        this._logCache.pushToLevel(logDto.level, logDto.data)
         console.log(`Got ${logDto.level} from renderer:`, logDto.data)
       }
     })

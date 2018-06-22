@@ -59,6 +59,7 @@ type MysterionParams = {
   bugReporter: BugReporter,
   environmentCollector: EnvironmentCollector,
   backendLogBootstrapper: BackendLogBootstrapper,
+  frontendLogCache: LogCache,
   mysteriumProcessLogCache: LogCache,
   userSettingsStore: UserSettingsStore,
   disconnectNotification: Notification
@@ -68,6 +69,7 @@ const LOG_PREFIX = '[Mysterion] '
 const MYSTERIUM_CLIENT_STARTUP_THRESHOLD = 10000
 
 class Mysterion {
+  // TODO: mark these as private
   browserWindowFactory: () => BrowserWindow
   windowFactory: Function
   config: MysterionConfig
@@ -79,6 +81,7 @@ class Mysterion {
   bugReporter: BugReporter
   environmentCollector: EnvironmentCollector
   backendLogBootstrapper: BackendLogBootstrapper
+  frontendLogCache: LogCache
   mysteriumProcessLogCache: LogCache
   userSettingsStore: UserSettingsStore
   disconnectNotification: Notification
@@ -99,6 +102,7 @@ class Mysterion {
     this.bugReporter = params.bugReporter
     this.environmentCollector = params.environmentCollector
     this.backendLogBootstrapper = params.backendLogBootstrapper
+    this.frontendLogCache = params.frontendLogCache
     this.mysteriumProcessLogCache = params.mysteriumProcessLogCache
     this.userSettingsStore = params.userSettingsStore
     this.disconnectNotification = params.disconnectNotification
@@ -146,7 +150,7 @@ class Mysterion {
   _initializeSyncCallbacks () {
     const receiver = new SyncIpcReceiver()
     const communication = new SyncReceiverMainCommunication(receiver)
-    const initializer = new SyncCallbacksInitializer(communication, this.environmentCollector)
+    const initializer = new SyncCallbacksInitializer(communication, this.environmentCollector, this.frontendLogCache)
     initializer.initialize()
   }
 

@@ -78,6 +78,7 @@ function bootstrap (container: Container) {
       'bugReporter',
       'environmentCollector',
       'backendLogBootstrapper',
+      'frontendLogCache',
       'mysteriumProcessLogCache',
       'userSettingsStore',
       'disconnectNotification'
@@ -92,6 +93,7 @@ function bootstrap (container: Container) {
       // TODO: rename
       bugReporterEnvironmentManager,
       backendLogBootstrapper,
+      frontendLogCache,
       mysteriumProcessLogCache,
       userSettingsStore,
       disconnectNotification
@@ -108,6 +110,7 @@ function bootstrap (container: Container) {
         bugReporter: bugReporter,
         environmentCollector: bugReporterEnvironmentManager,
         backendLogBootstrapper,
+        frontendLogCache,
         mysteriumProcessLogCache,
         userSettingsStore,
         disconnectNotification

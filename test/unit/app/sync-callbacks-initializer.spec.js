@@ -22,6 +22,7 @@ import SyncCallbacksInitializer from '../../../src/app/sync-callbacks-initialize
 import type { EnvironmentCollector, LogCaches } from '../../../src/app/bug-reporting/environment/environment-collector'
 import type { SyncMainCommunication } from '../../../src/app/communication/sync/sync-communication'
 import type { LogDTO } from '../../../src/app/communication/dto'
+import LogCache from '../../../src/app/logging/log-cache'
 
 class MockEnvironmentCollector implements EnvironmentCollector {
   mockSessionId = 'mock session id'
@@ -67,21 +68,30 @@ class MockCommunication implements SyncMainCommunication {
 describe('SyncCallbacksInitializer', () => {
   let communication: MockCommunication
   let envCollector: MockEnvironmentCollector
+  let logCache: LogCache
   let initializer: SyncCallbacksInitializer
 
   before(() => {
-    envCollector = new MockEnvironmentCollector()
     communication = new MockCommunication()
-    initializer = new SyncCallbacksInitializer(communication, envCollector)
+    envCollector = new MockEnvironmentCollector()
+    logCache = new LogCache()
+    initializer = new SyncCallbacksInitializer(communication, envCollector, logCache)
   })
 
   describe('.initialize', () => {
-    it('registers handlers', () => {
+    it('registers environment handlers', () => {
       initializer.initialize()
+
       expect(communication.getSession()).to.eql(envCollector.mockSessionId)
       expect(communication.getSerializedCaches()).to.eql(envCollector.mockSerializedCaches)
-      const logDto = { level: 'info', data: 'test log' }
-      expect(communication.log(logDto)).to.be.undefined
+    })
+
+    it('registers log handler', () => {
+      initializer.initialize()
+
+      communication.log({ level: 'info', data: 'test info' })
+      communication.log({ level: 'error', data: 'test error' })
+      expect(logCache.getSerialized()).to.eql({info: 'test info', error: 'test error'})
     })
   })
 })
