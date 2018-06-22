@@ -160,7 +160,7 @@ class Mysterion {
       this.bugReporter.setUser(identity)
     })
     this.bugReporterMetrics.syncWith(mainMessageBusCommunication)
-    this.bugReporterMetrics.set(METRICS.START_TIME, this.bugReporterMetrics.dateTimeString())
+    this.bugReporterMetrics.setWithCurrentDateTime(METRICS.START_TIME)
 
     await this._onRendererLoaded()
 

@@ -53,7 +53,7 @@ class TequilapiClientWithMetrics implements TequilapiClient {
 
   async healthCheck (timeout: ?number): Promise<NodeHealthcheckDTO> {
     const result = await this.client.healthCheck(timeout)
-    this.bugReporterMetrics.set(METRICS.HEALTH_CHECK_TIME, this.bugReporterMetrics.dateTimeString())
+    this.bugReporterMetrics.setWithCurrentDateTime(METRICS.HEALTH_CHECK_TIME)
     return result
   }
 

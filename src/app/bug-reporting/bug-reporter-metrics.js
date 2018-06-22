@@ -45,9 +45,9 @@ Object.assign(METRICS, TAGS)
 Object.assign(METRICS, EXTRA)
 
 // alternative to: type Metric = 'identity_unlocked' | 'proposals_fetched' | 'last_health_check' ...
-export type Metric = $Values<typeof METRICS>
+type Metric = $Values<typeof METRICS>
 
-export type RavenData = {
+type RavenData = {
   tags: {
     [id: string]: mixed
   },
@@ -60,10 +60,6 @@ export type RavenData = {
  * Collects and synchronizes data used in BugReporter
  */
 export class BugReporterMetrics extends MapSync<Metric> {
-  dateTimeString (): string {
-    return (new Date()).toUTCString()
-  }
-
   getMetrics (): RavenData {
     const data = { tags: {}, extra: {} }
     this.addMetricsTo(data)
@@ -75,6 +71,10 @@ export class BugReporterMetrics extends MapSync<Metric> {
     this._setValues((Object.values(EXTRA): any), data.extra)
   }
 
+  setWithCurrentDateTime (metric: Metric) {
+    super.set(metric, dateTimeString())
+  }
+
   _setValues (metrics: Array<Metric>, dest: any) {
     for (let metric of metrics) {
       dest[metric] = this._get(metric) || NOT_SET
@@ -82,4 +82,9 @@ export class BugReporterMetrics extends MapSync<Metric> {
   }
 }
 
-export { METRICS, TAGS, EXTRA, NOT_SET }
+function dateTimeString (): string {
+  return (new Date()).toUTCString()
+}
+
+export { METRICS, TAGS, EXTRA, NOT_SET, dateTimeString }
+export type {RavenData, Metric}

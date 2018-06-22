@@ -40,8 +40,8 @@ describe('BugReporterMetrics', () => {
     })
 
     it('sets extra metric', () => {
-      const metricKey = METRICS.HEALTH_CHECK_TIME
-      const metricValue = bugReporterMetrics.dateTimeString()
+      const metricKey = METRICS.IDENTITY_UNLOCKED
+      const metricValue = true
 
       expect(bugReporterMetrics._get(metricKey)).to.be.undefined
       bugReporterMetrics.set(metricKey, metricValue)
