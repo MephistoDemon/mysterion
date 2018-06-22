@@ -21,8 +21,8 @@ import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
 
 export interface BugReporter {
   setUser (IdentityDTO): void,
-  captureErrorMessage (message: string, context: ?any): void,
-  captureInfoMessage (message: string, context: ?any): void,
-  captureErrorException (err: Error, context: ?any): void,
-  captureInfoException (err: Error, context: ?any): void,
+  captureErrorMessage (message: string, context?: any): void,
+  captureInfoMessage (message: string, context?: any): void,
+  captureErrorException (err: Error, context?: any): void,
+  captureInfoException (err: Error, context?: any): void,
 }
