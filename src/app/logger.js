@@ -20,22 +20,27 @@
 import type { StringLogger } from './logging/log-boostrapping'
 
 class Logger {
-  frontendStringLogger: ?StringLogger = null
+  _frontendStringLogger: ?StringLogger = null
+
+  // adds frontend logger, replacing standard console logs
+  addFrontendLogger (logger: StringLogger): void {
+    this._frontendStringLogger = logger
+  }
 
   info (...data: Array<any>): void {
-    if (this.frontendStringLogger) {
-      this.frontendStringLogger.info(data.join(' '))
-    } else {
+    if (!this._frontendStringLogger) {
       console.info(...data)
+      return
     }
+    this._frontendStringLogger.info(data.join(' '))
   }
 
   error (...data: Array<any>): void {
-    if (this.frontendStringLogger) {
-      this.frontendStringLogger.error(data.join(' '))
-    } else {
+    if (!this._frontendStringLogger) {
       console.error(...data)
+      return
     }
+    this._frontendStringLogger.error(data.join(' '))
   }
 }
 
