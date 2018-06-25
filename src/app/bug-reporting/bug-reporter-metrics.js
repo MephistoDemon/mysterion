@@ -17,6 +17,7 @@
 
 // @flow
 import {MapSync} from '../../libraries/map-sync'
+import type {MapSyncCommunication} from '../../libraries/map-sync'
 
 /**
  * Used as default metric value in Sentry
@@ -55,9 +56,42 @@ type RavenData = {
 /**
  * Collects and synchronizes data used in BugReporter
  */
-export class BugReporterMetrics extends MapSync<Metric> {
+class BugReporterMetrics {
+  _mapSync: MapSync<Metric>
+
+  constructor (mapSync: ?MapSync<Metric> = null) {
+    if (mapSync) {
+      this._mapSync = mapSync
+    } else {
+      this._mapSync = new MapSync()
+    }
+  }
+
+  syncWith (communication: MapSyncCommunication<Metric>) {
+    this._mapSync.syncWith(communication)
+  }
+
+  set (metric: Metric, value: mixed) {
+    this._mapSync.set(metric, value)
+  }
+
   setWithCurrentDateTime (metric: Metric) {
-    super.set(metric, dateTimeString())
+    this._mapSync.set(metric, dateTimeString())
+  }
+
+  getMetrics (): RavenData {
+    const data = { tags: {}, extra: {} }
+    data.tags = this._setValues((Object.values(TAGS): any))
+    data.extra = this._setValues((Object.values(EXTRA): any))
+    return data
+  }
+
+  _setValues (metrics: Array<Metric>): keyValueMap {
+    const result = {}
+    for (let metric of metrics) {
+      result[metric] = this._mapSync.get(metric) || NOT_SET
+    }
+    return result
   }
 }
 
@@ -65,20 +99,5 @@ function dateTimeString (): string {
   return (new Date()).toUTCString()
 }
 
-function setMetrics (bugReporterMetrics: BugReporterMetrics, metrics: Array<Metric>): keyValueMap {
-  const result = {}
-  for (let metric of metrics) {
-    result[metric] = bugReporterMetrics.get(metric) || NOT_SET
-  }
-  return result
-}
-
-function getMetrics (bugReporterMetrics: BugReporterMetrics): RavenData {
-  const data = { tags: {}, extra: {} }
-  data.tags = setMetrics(bugReporterMetrics, (Object.values(TAGS): any))
-  data.extra = setMetrics(bugReporterMetrics, (Object.values(EXTRA): any))
-  return data
-}
-
-export { METRICS, TAGS, EXTRA, NOT_SET, dateTimeString, getMetrics }
+export { BugReporterMetrics, METRICS, NOT_SET, TAGS, EXTRA, dateTimeString }
 export type {RavenData, Metric}

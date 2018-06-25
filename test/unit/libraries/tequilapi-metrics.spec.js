@@ -21,24 +21,28 @@ import {expect, beforeEach, describe, it} from '../../helpers/dependencies'
 import TequilapiClientWithMetrics from '../../../src/libraries/tequilapi-metrics'
 import {BugReporterMetrics, METRICS} from '../../../src/app/bug-reporting/bug-reporter-metrics'
 import EmptyTequilapiClientMock from '../renderer/store/modules/empty-tequilapi-client-mock'
+import {MapSync} from '../../../src/libraries/map-sync'
+import type {Metric} from '../../../src/app/bug-reporting/bug-reporter-metrics'
 
 describe('HttpTequilapiClientWithMetrics', () => {
   let api
+  let mapSync: MapSync<Metric>
   let metrics
   let apiMetrics
 
   beforeEach(() => {
     api = new EmptyTequilapiClientMock()
-    metrics = new BugReporterMetrics()
+    mapSync = new MapSync()
+    metrics = new BugReporterMetrics(mapSync)
     apiMetrics = new TequilapiClientWithMetrics(api, metrics)
   })
 
   describe('healthcheck()', () => {
     it('returns response', async () => {
-      expect(metrics.get(METRICS.HEALTH_CHECK_TIME)).to.be.undefined
+      expect(mapSync.get(METRICS.HEALTH_CHECK_TIME)).to.be.undefined
       await apiMetrics.healthCheck()
-      expect(metrics.get(METRICS.HEALTH_CHECK_TIME)).to.be.not.undefined
-      expect(metrics.get(METRICS.HEALTH_CHECK_TIME)).to.be.a('string')
+      expect(mapSync.get(METRICS.HEALTH_CHECK_TIME)).to.be.not.undefined
+      expect(mapSync.get(METRICS.HEALTH_CHECK_TIME)).to.be.a('string')
     })
   })
 })

@@ -17,16 +17,19 @@
 
 // @flow
 import {describe, it, expect, beforeEach} from '../../../helpers/dependencies'
-import {BugReporterMetrics, EXTRA, METRICS, NOT_SET, TAGS, getMetrics} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
+import {BugReporterMetrics, EXTRA, METRICS, NOT_SET, TAGS} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import type {Metric} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import type {MapSyncDTO} from '../../../../src/libraries/map-sync'
 import FakeMapSyncCommunication from '../../../helpers/fakeMapSyncCommunication'
+import {MapSync} from '../../../../src/libraries/map-sync'
 
 describe('BugReporterMetrics', () => {
+  let mapSync: MapSync<Metric>
   let bugReporterMetrics: BugReporterMetrics
 
   beforeEach(() => {
-    bugReporterMetrics = new BugReporterMetrics()
+    mapSync = new MapSync()
+    bugReporterMetrics = new BugReporterMetrics(mapSync)
   })
 
   describe('get/set', () => {
@@ -34,24 +37,24 @@ describe('BugReporterMetrics', () => {
       const metricKey = METRICS.IDENTITY_UNLOCKED
       const metricValue = true
 
-      expect(bugReporterMetrics.get(metricKey)).to.be.undefined
+      expect(mapSync.get(metricKey)).to.be.undefined
       bugReporterMetrics.set(metricKey, metricValue)
-      expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
+      expect(mapSync.get(metricKey)).to.eql(metricValue)
     })
 
     it('sets extra metric', () => {
       const metricKey = METRICS.IDENTITY_UNLOCKED
       const metricValue = true
 
-      expect(bugReporterMetrics.get(metricKey)).to.be.undefined
+      expect(mapSync.get(metricKey)).to.be.undefined
       bugReporterMetrics.set(metricKey, metricValue)
-      expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
+      expect(mapSync.get(metricKey)).to.eql(metricValue)
     })
   })
 
   describe('getMetrics', () => {
     it('gets all metrics', () => {
-      const data = getMetrics(bugReporterMetrics)
+      const data = bugReporterMetrics.getMetrics()
       const tagKeys = Object.keys(data.tags)
       const extraKeys = Object.keys(data.extra)
 
@@ -60,15 +63,15 @@ describe('BugReporterMetrics', () => {
       for (let tagKey of Object.values(TAGS)) {
         expect(tagKeys).to.contain(tagKey)
         // $FlowFixMe
-        expect(data.tags[tagKey]).to.be.eql(bugReporterMetrics.get(tagKey) || NOT_SET)
+        expect(data.tags[tagKey]).to.be.eql(mapSync.get(tagKey) || NOT_SET)
       }
       for (let extraKey of Object.values(EXTRA)) {
         expect(extraKeys).to.contain(extraKey)
         // $FlowFixMe
-        expect(data.extra[extraKey]).to.be.eql(bugReporterMetrics.get(extraKey) || NOT_SET)
+        expect(data.extra[extraKey]).to.be.eql(mapSync.get(extraKey) || NOT_SET)
       }
 
-      expect(data).to.deep.equal(getMetrics(bugReporterMetrics))
+      expect(data).to.deep.equal(bugReporterMetrics.getMetrics())
     })
   })
 
@@ -99,7 +102,7 @@ describe('BugReporterMetrics', () => {
         value: newValue
       })
 
-      const updatedValue = bugReporterMetrics.get(metricKey)
+      const updatedValue = mapSync.get(metricKey)
       expect(updatedValue).to.be.eql(newValue)
     })
   })
