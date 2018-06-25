@@ -56,23 +56,8 @@ type RavenData = {
  * Collects and synchronizes data used in BugReporter
  */
 export class BugReporterMetrics extends MapSync<Metric> {
-  getMetrics (): RavenData {
-    const data = { tags: {}, extra: {} }
-    data.tags = this._setValues((Object.values(TAGS): any))
-    data.extra = this._setValues((Object.values(EXTRA): any))
-    return data
-  }
-
   setWithCurrentDateTime (metric: Metric) {
     super.set(metric, dateTimeString())
-  }
-
-  _setValues (metrics: Array<Metric>): keyValueMap {
-    const result = {}
-    for (let metric of metrics) {
-      result[metric] = this.get(metric) || NOT_SET
-    }
-    return result
   }
 }
 
@@ -80,5 +65,20 @@ function dateTimeString (): string {
   return (new Date()).toUTCString()
 }
 
-export { METRICS, TAGS, EXTRA, NOT_SET, dateTimeString }
+function setMetrics (bugReporterMetrics: BugReporterMetrics, metrics: Array<Metric>): keyValueMap {
+  const result = {}
+  for (let metric of metrics) {
+    result[metric] = bugReporterMetrics.get(metric) || NOT_SET
+  }
+  return result
+}
+
+function getMetrics (bugReporterMetrics: BugReporterMetrics): RavenData {
+  const data = { tags: {}, extra: {} }
+  data.tags = setMetrics(bugReporterMetrics, (Object.values(TAGS): any))
+  data.extra = setMetrics(bugReporterMetrics, (Object.values(EXTRA): any))
+  return data
+}
+
+export { METRICS, TAGS, EXTRA, NOT_SET, dateTimeString, getMetrics }
 export type {RavenData, Metric}

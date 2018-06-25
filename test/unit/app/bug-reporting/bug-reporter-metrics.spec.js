@@ -17,7 +17,7 @@
 
 // @flow
 import {describe, it, expect, beforeEach} from '../../../helpers/dependencies'
-import {BugReporterMetrics, EXTRA, METRICS, NOT_SET, TAGS} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
+import {BugReporterMetrics, EXTRA, METRICS, NOT_SET, TAGS, getMetrics} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import type {Metric} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import type {MapSyncDTO} from '../../../../src/libraries/map-sync'
 import FakeMapSyncCommunication from '../../../helpers/fakeMapSyncCommunication'
@@ -51,7 +51,7 @@ describe('BugReporterMetrics', () => {
 
   describe('getMetrics', () => {
     it('gets all metrics', () => {
-      const data = bugReporterMetrics.getMetrics()
+      const data = getMetrics(bugReporterMetrics)
       const tagKeys = Object.keys(data.tags)
       const extraKeys = Object.keys(data.extra)
 
@@ -68,7 +68,7 @@ describe('BugReporterMetrics', () => {
         expect(data.extra[extraKey]).to.be.eql(bugReporterMetrics.get(extraKey) || NOT_SET)
       }
 
-      expect(data).to.deep.equal(bugReporterMetrics.getMetrics())
+      expect(data).to.deep.equal(getMetrics(bugReporterMetrics))
     })
   })
 

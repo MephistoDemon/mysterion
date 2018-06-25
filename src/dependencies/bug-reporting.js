@@ -19,7 +19,7 @@
 import type { Container } from '../app/di'
 import os from 'os'
 import LogCache from '../app/logging/log-cache'
-import {BugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
+import {BugReporterMetrics, getMetrics} from '../app/bug-reporting/bug-reporter-metrics'
 
 function bootstrap (container: Container) {
   container.factory(
@@ -61,7 +61,7 @@ function bootstrap (container: Container) {
           platform_release: os.release()
         },
         dataCallback: (data) => {
-          const metrics = bugReporterMetrics.getMetrics()
+          const metrics = getMetrics(bugReporterMetrics)
           Object.assign(data.tags, metrics.tags)
           Object.assign(data.extra, metrics.extra)
           data.extra.logs = {
