@@ -45,6 +45,10 @@ export default class BackendLogBootstrapper {
 
   init () {
     this._winstonLogger = winston.createLogger({
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
+      ),
       transports: [
         new winston.transports.Console(),
         new BackendLogCachingTransport(this._backendLogCache)
