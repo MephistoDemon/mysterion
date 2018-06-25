@@ -17,40 +17,25 @@
 
 // @flow
 
-import { beforeEach, describe, expect, it } from '../../../../helpers/dependencies'
-import MainEnvironmentCollector from '../../../../../src/app/bug-reporting/environment/main-environment-collector'
-import LogCache from '../../../../../src/app/logging/log-cache'
-import LogCacheBundle from '../../../../../src/app/logging/log-cache-bundle'
+import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
+import LogCacheBundle from '../../../../src/app/logging/log-cache-bundle'
+import LogCache from '../../../../src/app/logging/log-cache'
 
-describe('MainEnvironmentCollector', () => {
-  const releaseID = 'id of release'
+describe('LogCacheBundle', () => {
   let backendLogCache: LogCache
   let frontendLogCache: LogCache
   let mysteriumProcessLogCache: LogCache
-  let collector: MainEnvironmentCollector
+  let logCacheBundle: LogCacheBundle
 
   beforeEach(() => {
     backendLogCache = new LogCache()
     frontendLogCache = new LogCache()
     mysteriumProcessLogCache = new LogCache()
-    const logCacheBundle = new LogCacheBundle(backendLogCache, frontendLogCache, mysteriumProcessLogCache)
-    collector = new MainEnvironmentCollector(logCacheBundle, releaseID)
+    logCacheBundle = new LogCacheBundle(backendLogCache, frontendLogCache, mysteriumProcessLogCache)
   })
 
-  describe('getMysterionReleaseId', () => {
-    it('returns release id', () => {
-      expect(collector.getMysterionReleaseId()).to.eql(releaseID)
-    })
-  })
-
-  describe('getSessionId', () => {
-    it('returns string', () => {
-      expect(collector.getSessionId()).to.be.a('string')
-    })
-  })
-
-  describe('getSerializedCaches', () => {
-    it('returns logs from cache', () => {
+  describe('.getSerialized', () => {
+    it('returns serialized caches', () => {
       backendLogCache.pushToLevel('info', 'backend info')
       backendLogCache.pushToLevel('error', 'backend error')
       frontendLogCache.pushToLevel('info', 'frontend info')
@@ -58,7 +43,7 @@ describe('MainEnvironmentCollector', () => {
       mysteriumProcessLogCache.pushToLevel('info', 'mysterium info')
       mysteriumProcessLogCache.pushToLevel('error', 'mysterium error')
 
-      expect(collector.getSerializedCaches()).to.eql({
+      expect(logCacheBundle.getSerialized()).to.eql({
         backend: { info: 'backend info', error: 'backend error' },
         frontend: { info: 'frontend info', error: 'frontend error' },
         mysterium_process: { info: 'mysterium info', error: 'mysterium error' }

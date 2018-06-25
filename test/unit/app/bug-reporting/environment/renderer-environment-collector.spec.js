@@ -21,7 +21,7 @@ import { beforeEach, describe, expect, it } from '../../../../helpers/dependenci
 import RendererEnvironmentCollector
   from '../../../../../src/app/bug-reporting/environment/renderer-environment-collector'
 import type { SyncRendererCommunication } from '../../../../../src/app/communication/sync/sync-communication'
-import type { SerializedLogCaches } from '../../../../../src/app/bug-reporting/environment/environment-collector'
+import type { SerializedLogCaches } from '../../../../../src/app/logging/log-cache-bundle'
 
 class FakeSyncRendererCommunication implements SyncRendererCommunication {
   mockedSerializedCaches: ?SerializedLogCaches = {

@@ -17,13 +17,7 @@
 
 // @flow
 
-import type { SerializedLogCache } from '../../logging/log-cache'
-
-type SerializedLogCaches = {
-  backend: SerializedLogCache,
-  frontend: SerializedLogCache,
-  mysterium_process: SerializedLogCache,
-}
+import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
 
 interface EnvironmentCollector {
   getSessionId (): string,
@@ -31,5 +25,4 @@ interface EnvironmentCollector {
   getSerializedCaches (): SerializedLogCaches
 }
 
-export type { SerializedLogCaches }
 export type { EnvironmentCollector }

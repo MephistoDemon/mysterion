@@ -23,6 +23,7 @@ import MainEnvironmentCollector from '../../../app/bug-reporting/environment/mai
 import BackendLogBootstrapper from '../../../app/logging/backend-log-bootstrapper'
 import type { EnvironmentCollector } from '../../../app/bug-reporting/environment/environment-collector'
 import LogCache from '../../../app/logging/log-cache'
+import LogCacheBundle from '../../../app/logging/log-cache-bundle'
 
 function bootstrap (container: Container) {
   container.factory(
@@ -73,7 +74,8 @@ function bootstrap (container: Container) {
       frontendLogCache: LogCache,
       mysteriumProcessLogCache: LogCache,
       mysterionReleaseID: string): EnvironmentCollector => {
-      return new MainEnvironmentCollector(backendLogCache, frontendLogCache, mysteriumProcessLogCache, mysterionReleaseID)
+      const bundle = new LogCacheBundle(backendLogCache, frontendLogCache, mysteriumProcessLogCache)
+      return new MainEnvironmentCollector(bundle, mysterionReleaseID)
     }
   )
 

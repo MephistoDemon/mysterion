@@ -19,10 +19,11 @@
 
 import { before, describe, expect, it } from '../../helpers/dependencies'
 import SyncCallbacksInitializer from '../../../src/app/sync-callbacks-initializer'
-import type { EnvironmentCollector, SerializedLogCaches } from '../../../src/app/bug-reporting/environment/environment-collector'
+import type { EnvironmentCollector } from '../../../src/app/bug-reporting/environment/environment-collector'
 import type { SyncMainCommunication } from '../../../src/app/communication/sync/sync-communication'
 import type { LogDTO } from '../../../src/app/communication/dto'
 import LogCache from '../../../src/app/logging/log-cache'
+import type { SerializedLogCaches } from '../../../src/app/logging/log-cache-bundle'
 
 class MockEnvironmentCollector implements EnvironmentCollector {
   mockSessionId = 'mock session id'

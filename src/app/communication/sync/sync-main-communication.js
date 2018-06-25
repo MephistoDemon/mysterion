@@ -20,7 +20,7 @@
 import messages from '../messages'
 import type { SyncReceiver } from './sync'
 import type { SyncMainCommunication } from './sync-communication'
-import type { SerializedLogCaches } from '../../bug-reporting/environment/environment-collector'
+import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
 import type { LogDTO } from '../dto'
 
 class SyncReceiverMainCommunication implements SyncMainCommunication {

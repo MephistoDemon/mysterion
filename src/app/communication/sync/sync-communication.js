@@ -17,7 +17,7 @@
 
 // @flow
 
-import type { SerializedLogCaches } from '../../bug-reporting/environment/environment-collector'
+import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
 import type { LogDTO } from '../dto'
 
 interface SyncMainCommunication {

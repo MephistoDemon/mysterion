@@ -17,20 +17,17 @@
 
 // @flow
 
-import type { EnvironmentCollector, SerializedLogCaches } from './environment-collector'
-import LogCache from '../../logging/log-cache'
+import type { EnvironmentCollector } from './environment-collector'
+import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
+import LogCacheBundle from '../../logging/log-cache-bundle'
 
 class MainEnvironmentCollector implements EnvironmentCollector {
-  _backendLogCache: LogCache
-  _frontendLogCache: LogCache
-  _mysteriumProcessLogCache: LogCache
+  _logCacheBundle: LogCacheBundle
   _mysterionReleaseId: string
   _sessionId: string
 
-  constructor (backendLogCache: LogCache, frontendLogCache: LogCache, mysteriumProcessLogCache: LogCache, mysterionReleaseId: string) {
-    this._backendLogCache = backendLogCache
-    this._frontendLogCache = frontendLogCache
-    this._mysteriumProcessLogCache = mysteriumProcessLogCache
+  constructor (logCacheBundle: LogCacheBundle, mysterionReleaseId: string) {
+    this._logCacheBundle = logCacheBundle
     this._mysterionReleaseId = mysterionReleaseId
     this._sessionId = generateSessionId()
   }
@@ -44,11 +41,7 @@ class MainEnvironmentCollector implements EnvironmentCollector {
   }
 
   getSerializedCaches (): SerializedLogCaches {
-    return {
-      backend: this._backendLogCache.getSerialized(),
-      frontend: this._frontendLogCache.getSerialized(),
-      mysterium_process: this._mysteriumProcessLogCache.getSerialized()
-    }
+    return this._logCacheBundle.getSerialized()
   }
 }
 
