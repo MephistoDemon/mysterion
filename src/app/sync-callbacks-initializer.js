@@ -27,12 +27,12 @@ import LogCache from './logging/log-cache'
 class SyncCallbacksInitializer {
   _environmentCollector: EnvironmentCollector
   _communication: SyncMainCommunication
-  _logCache: LogCache
+  _frontendLogCache: LogCache
 
-  constructor (communication: SyncMainCommunication, environmentCollector: EnvironmentCollector, logCache: LogCache) {
+  constructor (communication: SyncMainCommunication, environmentCollector: EnvironmentCollector, frontendLogCache: LogCache) {
     this._environmentCollector = environmentCollector
     this._communication = communication
-    this._logCache = logCache
+    this._frontendLogCache = frontendLogCache
   }
 
   initialize () {
@@ -42,7 +42,7 @@ class SyncCallbacksInitializer {
       if (!logDto) {
         console.error('Got empty log from renderer')
       } else {
-        this._logCache.pushToLevel(logDto.level, logDto.data)
+        this._frontendLogCache.pushToLevel(logDto.level, logDto.data)
       }
     })
   }

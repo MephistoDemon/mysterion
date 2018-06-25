@@ -19,6 +19,10 @@
 
 import type { StringLogger } from './logging/log-boostrapping'
 
+/**
+ * Used as logging entrypoint in frontend
+ */
+// TODO: unify how logging is done in backend and frontend (MYS-100)
 class Logger {
   _frontendStringLogger: ?StringLogger = null
 
