@@ -55,7 +55,7 @@ export class MapSync<T: string> {
     }
   }
 
-  _get (key: T): any {
+  get (key: T): any {
     return this._metrics.get(key)
   }
 }

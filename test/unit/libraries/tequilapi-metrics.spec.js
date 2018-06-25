@@ -35,10 +35,10 @@ describe('HttpTequilapiClientWithMetrics', () => {
 
   describe('healthcheck()', () => {
     it('returns response', async () => {
-      expect(metrics._get(METRICS.HEALTH_CHECK_TIME)).to.be.undefined
+      expect(metrics.get(METRICS.HEALTH_CHECK_TIME)).to.be.undefined
       await apiMetrics.healthCheck()
-      expect(metrics._get(METRICS.HEALTH_CHECK_TIME)).to.be.not.undefined
-      expect(typeof metrics._get(METRICS.HEALTH_CHECK_TIME)).to.be.eql('string')
+      expect(metrics.get(METRICS.HEALTH_CHECK_TIME)).to.be.not.undefined
+      expect(metrics.get(METRICS.HEALTH_CHECK_TIME)).to.be.a('string')
     })
   })
 })

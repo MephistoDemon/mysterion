@@ -23,7 +23,7 @@ import type {MapSyncDTO} from '../../../../src/libraries/map-sync'
 import FakeMapSyncCommunication from '../../../helpers/fakeMapSyncCommunication'
 
 describe('BugReporterMetrics', () => {
-  let bugReporterMetrics : BugReporterMetrics
+  let bugReporterMetrics: BugReporterMetrics
 
   beforeEach(() => {
     bugReporterMetrics = new BugReporterMetrics()
@@ -34,21 +34,23 @@ describe('BugReporterMetrics', () => {
       const metricKey = METRICS.IDENTITY_UNLOCKED
       const metricValue = true
 
-      expect(bugReporterMetrics._get(metricKey)).to.be.undefined
+      expect(bugReporterMetrics.get(metricKey)).to.be.undefined
       bugReporterMetrics.set(metricKey, metricValue)
-      expect(bugReporterMetrics._get(metricKey)).to.eql(metricValue)
+      expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
     })
 
     it('sets extra metric', () => {
       const metricKey = METRICS.IDENTITY_UNLOCKED
       const metricValue = true
 
-      expect(bugReporterMetrics._get(metricKey)).to.be.undefined
+      expect(bugReporterMetrics.get(metricKey)).to.be.undefined
       bugReporterMetrics.set(metricKey, metricValue)
-      expect(bugReporterMetrics._get(metricKey)).to.eql(metricValue)
+      expect(bugReporterMetrics.get(metricKey)).to.eql(metricValue)
     })
+  })
 
-    it('adds metrics to object', () => {
+  describe('getMetrics', () => {
+    it('gets all metrics', () => {
       const data = bugReporterMetrics.getMetrics()
       const tagKeys = Object.keys(data.tags)
       const extraKeys = Object.keys(data.extra)
@@ -58,17 +60,19 @@ describe('BugReporterMetrics', () => {
       for (let tagKey of Object.values(TAGS)) {
         expect(tagKeys).to.contain(tagKey)
         // $FlowFixMe
-        expect(data.tags[tagKey]).to.be.eql(bugReporterMetrics._get(tagKey) || NOT_SET)
+        expect(data.tags[tagKey]).to.be.eql(bugReporterMetrics.get(tagKey) || NOT_SET)
       }
       for (let extraKey of Object.values(EXTRA)) {
         expect(extraKeys).to.contain(extraKey)
         // $FlowFixMe
-        expect(data.extra[extraKey]).to.be.eql(bugReporterMetrics._get(extraKey) || NOT_SET)
+        expect(data.extra[extraKey]).to.be.eql(bugReporterMetrics.get(extraKey) || NOT_SET)
       }
 
       expect(data).to.deep.equal(bugReporterMetrics.getMetrics())
     })
+  })
 
+  describe('syncWith', () => {
     it('sends/receives metric via message bus', () => {
       const communication = new FakeMapSyncCommunication()
       bugReporterMetrics.syncWith(communication)
@@ -95,7 +99,7 @@ describe('BugReporterMetrics', () => {
         value: newValue
       })
 
-      const updatedValue = bugReporterMetrics._get(metricKey)
+      const updatedValue = bugReporterMetrics.get(metricKey)
       expect(updatedValue).to.be.eql(newValue)
     })
   })

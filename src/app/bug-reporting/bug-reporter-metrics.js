@@ -70,7 +70,7 @@ export class BugReporterMetrics extends MapSync<Metric> {
   _setValues (metrics: Array<Metric>): keyValueMap {
     const result = {}
     for (let metric of metrics) {
-      result[metric] = this._get(metric) || NOT_SET
+      result[metric] = this.get(metric) || NOT_SET
     }
     return result
   }
