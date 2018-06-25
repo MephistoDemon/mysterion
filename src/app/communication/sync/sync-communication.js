@@ -17,18 +17,18 @@
 
 // @flow
 
-import type { LogCaches } from '../../bug-reporting/environment/environment-collector'
+import type { SerializedLogCaches } from '../../bug-reporting/environment/environment-collector'
 import type { LogDTO } from '../dto'
 
 interface SyncMainCommunication {
   onGetSessionId (callback: () => string): void,
-  onGetSerializedCaches (callback: () => LogCaches): void,
+  onGetSerializedCaches (callback: () => SerializedLogCaches): void,
   onLog (callback: () => void): void
 }
 
 interface SyncRendererCommunication {
   getSessionId (): ?string,
-  getSerializedCaches (): ?LogCaches,
+  getSerializedCaches (): ?SerializedLogCaches,
   sendLog (dto: LogDTO): void
 }
 

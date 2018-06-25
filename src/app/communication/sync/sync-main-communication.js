@@ -20,7 +20,7 @@
 import messages from '../messages'
 import type { SyncReceiver } from './sync'
 import type { SyncMainCommunication } from './sync-communication'
-import type { LogCaches } from '../../bug-reporting/environment/environment-collector'
+import type { SerializedLogCaches } from '../../bug-reporting/environment/environment-collector'
 import type { LogDTO } from '../dto'
 
 class SyncReceiverMainCommunication implements SyncMainCommunication {
@@ -34,7 +34,7 @@ class SyncReceiverMainCommunication implements SyncMainCommunication {
     this._on(messages.GET_SESSION_ID, callback)
   }
 
-  onGetSerializedCaches (callback: () => LogCaches): void {
+  onGetSerializedCaches (callback: () => SerializedLogCaches): void {
     this._on(messages.GET_SERIALIZED_CACHES, callback)
   }
 

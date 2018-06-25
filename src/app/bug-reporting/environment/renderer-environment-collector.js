@@ -17,7 +17,7 @@
 
 // @flow
 
-import type { EnvironmentCollector, LogCaches } from './environment-collector'
+import type { EnvironmentCollector, SerializedLogCaches } from './environment-collector'
 import type { SyncRendererCommunication } from '../../communication/sync/sync-communication'
 
 class RendererEnvironmentCollector implements EnvironmentCollector {
@@ -37,7 +37,7 @@ class RendererEnvironmentCollector implements EnvironmentCollector {
     return this._syncRendererCommunication.getSessionId() || ''
   }
 
-  getSerializedCaches (): LogCaches {
+  getSerializedCaches (): SerializedLogCaches {
     const defaultCache = { info: '', error: '' }
     const defaultCaches = { backend: defaultCache, mysterium_process: defaultCache, frontend: defaultCache }
     return this._syncRendererCommunication.getSerializedCaches() || defaultCaches

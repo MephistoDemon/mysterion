@@ -21,10 +21,10 @@ import { beforeEach, describe, expect, it } from '../../../../helpers/dependenci
 import RendererEnvironmentCollector
   from '../../../../../src/app/bug-reporting/environment/renderer-environment-collector'
 import type { SyncRendererCommunication } from '../../../../../src/app/communication/sync/sync-communication'
-import type { LogCaches } from '../../../../../src/app/bug-reporting/environment/environment-collector'
+import type { SerializedLogCaches } from '../../../../../src/app/bug-reporting/environment/environment-collector'
 
 class FakeSyncRendererCommunication implements SyncRendererCommunication {
-  mockedSerializedCaches: ?LogCaches = {
+  mockedSerializedCaches: ?SerializedLogCaches = {
     backend: { info: 'backend info', error: 'backend error' },
     mysterium_process: { info: 'mysterium info', error: 'mysterium error' },
     frontend: { info: 'frontend info', error: 'frontend error' }

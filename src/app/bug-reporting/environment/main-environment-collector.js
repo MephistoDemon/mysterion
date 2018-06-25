@@ -17,7 +17,7 @@
 
 // @flow
 
-import type { EnvironmentCollector, LogCaches } from './environment-collector'
+import type { EnvironmentCollector, SerializedLogCaches } from './environment-collector'
 import LogCache from '../../logging/log-cache'
 
 class MainEnvironmentCollector implements EnvironmentCollector {
@@ -43,7 +43,7 @@ class MainEnvironmentCollector implements EnvironmentCollector {
     return this._sessionId
   }
 
-  getSerializedCaches (): LogCaches {
+  getSerializedCaches (): SerializedLogCaches {
     return {
       backend: this._backendLogCache.getSerialized(),
       frontend: this._frontendLogCache.getSerialized(),

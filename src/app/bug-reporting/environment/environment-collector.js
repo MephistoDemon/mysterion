@@ -19,7 +19,7 @@
 
 import type { SerializedLogCache } from '../../logging/log-cache'
 
-type LogCaches = {
+type SerializedLogCaches = {
   backend: SerializedLogCache,
   frontend: SerializedLogCache,
   mysterium_process: SerializedLogCache,
@@ -28,8 +28,8 @@ type LogCaches = {
 interface EnvironmentCollector {
   getSessionId (): string,
   getMysterionReleaseId (): string,
-  getSerializedCaches (): LogCaches
+  getSerializedCaches (): SerializedLogCaches
 }
 
-export type { LogCaches }
+export type { SerializedLogCaches }
 export type { EnvironmentCollector }

@@ -19,7 +19,7 @@
 
 import { before, describe, expect, it } from '../../helpers/dependencies'
 import SyncCallbacksInitializer from '../../../src/app/sync-callbacks-initializer'
-import type { EnvironmentCollector, LogCaches } from '../../../src/app/bug-reporting/environment/environment-collector'
+import type { EnvironmentCollector, SerializedLogCaches } from '../../../src/app/bug-reporting/environment/environment-collector'
 import type { SyncMainCommunication } from '../../../src/app/communication/sync/sync-communication'
 import type { LogDTO } from '../../../src/app/communication/dto'
 import LogCache from '../../../src/app/logging/log-cache'
@@ -49,14 +49,14 @@ class MockEnvironmentCollector implements EnvironmentCollector {
 
 class MockCommunication implements SyncMainCommunication {
   getSession: () => string
-  getSerializedCaches: () => LogCaches
+  getSerializedCaches: () => SerializedLogCaches
   log: (log: LogDTO) => void
 
   onGetSessionId (callback: () => string): void {
     this.getSession = callback
   }
 
-  onGetSerializedCaches (callback: () => LogCaches): void {
+  onGetSerializedCaches (callback: () => SerializedLogCaches): void {
     this.getSerializedCaches = callback
   }
 
