@@ -20,7 +20,7 @@ import {describe, it, expect, beforeEach} from '../../../helpers/dependencies'
 import {BugReporterMetrics, EXTRA, METRICS, NOT_SET, TAGS} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import type {Metric} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import type {MapSyncDTO} from '../../../../src/libraries/map-sync'
-import FakeMainCommunication from '../../../helpers/fakeMainCommunication'
+import FakeMapSyncCommunication from '../../../helpers/fakeMapSyncCommunication'
 
 describe('BugReporterMetrics', () => {
   let bugReporterMetrics : BugReporterMetrics
@@ -70,7 +70,7 @@ describe('BugReporterMetrics', () => {
     })
 
     it('sends/receives metric via message bus', () => {
-      const communication = new FakeMainCommunication()
+      const communication = new FakeMapSyncCommunication()
       bugReporterMetrics.syncWith(communication)
 
       let lastUpdate: ?MapSyncDTO<Metric> = null

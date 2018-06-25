@@ -25,16 +25,13 @@ import type {
   RequestTermsDTO, TermsAnsweredDTO
 } from '../../src/app/communication/dto'
 import type {UserSettings} from '../../src/app/user-settings/user-settings'
-import type {Metric} from '../../src/app/bug-reporting/bug-reporter-metrics'
-import type {MapSyncCommunication, MapSyncDTO} from '../../src/libraries/map-sync'
 
 /**
  * Allows tracking method invocations.
  */
-class FakeMainCommunication implements MainCommunication, MapSyncCommunication<Metric> {
+class FakeMainCommunication implements MainCommunication {
   _invokedMethods: Set<string> = new Set()
   _invokedMethodPayloads: Object = {}
-  _mapUpdateCallbacks: Set<MapSyncDTO<Metric> => void> = new Set()
 
   /**
    * Returns whether given instance method was invoked.
@@ -108,18 +105,6 @@ class FakeMainCommunication implements MainCommunication, MapSyncCommunication<M
 
   sendUserSettings (data: UserSettings): void {
     this._registerMethod(this.sendUserSettings)
-  }
-
-  sendMapUpdate (data: MapSyncDTO<Metric>): void {
-    this._registerMethod(this.sendMapUpdate)
-    for (let callback of this._mapUpdateCallbacks) {
-      callback(data)
-    }
-  }
-
-  onMapUpdate (callback: (MapSyncDTO<Metric> => void)): void {
-    this._registerMethod(this.onMapUpdate)
-    this._mapUpdateCallbacks.add(callback)
   }
 
   onConnectionStatusChange (callback: (ConnectionStatusChangeDTO) => void): void {
