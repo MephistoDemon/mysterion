@@ -29,6 +29,7 @@ class SyncIpcReceiver implements SyncReceiver {
         returnValue = true
       }
 
+      // to return some value to sync call, we have to attach it to `event.returnValue`
       event.returnValue = returnValue
     })
   }

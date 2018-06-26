@@ -49,20 +49,20 @@ class MockEnvironmentCollector implements EnvironmentCollector {
 }
 
 class MockCommunication implements SyncMainCommunication {
-  getSession: () => string
-  getSerializedCaches: () => SerializedLogCaches
-  log: (log: LogDTO) => void
+  getSessionCallback: () => string
+  getSerializedCachesCallback: () => SerializedLogCaches
+  logCallback: (log: LogDTO) => void
 
   onGetSessionId (callback: () => string): void {
-    this.getSession = callback
+    this.getSessionCallback = callback
   }
 
   onGetSerializedCaches (callback: () => SerializedLogCaches): void {
-    this.getSerializedCaches = callback
+    this.getSerializedCachesCallback = callback
   }
 
   onLog (callback: () => void): void {
-    this.log = callback
+    this.logCallback = callback
   }
 }
 
@@ -83,15 +83,15 @@ describe('SyncCallbacksInitializer', () => {
     it('registers environment handlers', () => {
       initializer.initialize()
 
-      expect(communication.getSession()).to.eql(envCollector.mockSessionId)
-      expect(communication.getSerializedCaches()).to.eql(envCollector.mockSerializedCaches)
+      expect(communication.getSessionCallback()).to.eql(envCollector.mockSessionId)
+      expect(communication.getSerializedCachesCallback()).to.eql(envCollector.mockSerializedCaches)
     })
 
     it('registers log handler', () => {
       initializer.initialize()
 
-      communication.log({ level: 'info', data: 'test info' })
-      communication.log({ level: 'error', data: 'test error' })
+      communication.logCallback({ level: 'info', data: 'test info' })
+      communication.logCallback({ level: 'error', data: 'test error' })
       expect(logCache.getSerialized()).to.eql({info: 'test info', error: 'test error'})
     })
   })

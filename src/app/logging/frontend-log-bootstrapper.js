@@ -38,6 +38,6 @@ export default class FrontendLogBootstrapper {
         new SyncCommunicationTransport(this._communication)
       ]
     })
-    logger.addFrontendLogger(winstonLogger)
+    logger.setFrontendLogger(winstonLogger)
   }
 }

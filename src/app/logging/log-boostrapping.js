@@ -37,7 +37,7 @@ interface StringLogger {
 
 const winstonFormat = winston.format.combine(
   winston.format.timestamp(),
-  winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
+  winston.format.printf(log => `${log.timestamp} ${log.level}: ${log.message}`)
 )
 
 export { winstonFormat }

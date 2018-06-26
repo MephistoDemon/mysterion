@@ -26,8 +26,8 @@ import type { StringLogger } from './logging/log-boostrapping'
 class Logger {
   _frontendStringLogger: ?StringLogger = null
 
-  // adds frontend logger, replacing standard console logs
-  addFrontendLogger (logger: StringLogger): void {
+  // sets frontend logger, replacing standard console logs
+  setFrontendLogger (logger: StringLogger): void {
     this._frontendStringLogger = logger
   }
 
