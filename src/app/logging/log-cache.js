@@ -25,8 +25,8 @@ type LogCacheStore = {
 
 class LogCache {
   _logs: LogCacheStore = {
-    info: new LimitedLinkedList(300),
-    error: new LimitedLinkedList(300)
+    info: new LimitedLinkedList(200),
+    error: new LimitedLinkedList(200)
   }
 
   pushToLevel (level: 'info' | 'error', data: any) {
