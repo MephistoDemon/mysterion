@@ -60,8 +60,21 @@ describe('BugReporterMetrics', () => {
   })
 
   describe('getMetrics', () => {
-    it('gets all metrics', () => {
+    it('returns value for non-used metrics', () => {
       const unsetMetric = TAGS.CLIENT_RUNNING
+      const data = bugReporterMetrics.getMetrics()
+      expect(data.tags[unsetMetric]).to.be.eql(NOT_SET)
+    })
+
+    it('returns value for used metrics', () => {
+      const metricKey = TAGS.IDENTITY_UNLOCKED
+      const metricValue = true
+      bugReporterMetrics.set(metricKey, metricValue)
+      const data = bugReporterMetrics.getMetrics()
+      expect(data.tags[metricKey]).to.be.eql(mapSync.get(metricKey))
+    })
+
+    it('gets all metrics', () => {
       const metricKey = TAGS.IDENTITY_UNLOCKED
       const metricValue = true
       bugReporterMetrics.set(metricKey, metricValue)
@@ -69,9 +82,6 @@ describe('BugReporterMetrics', () => {
       const data = bugReporterMetrics.getMetrics()
       const tagKeys = Object.keys(data.tags)
       const extraKeys = Object.keys(data.extra)
-
-      expect(data.tags[metricKey]).to.be.eql(mapSync.get(metricKey))
-      expect(data.tags[unsetMetric]).to.be.eql(NOT_SET)
 
       expect(tagKeys.length).to.eql(Object.values(TAGS).length)
       expect(extraKeys.length).to.eql(Object.values(EXTRA).length)
