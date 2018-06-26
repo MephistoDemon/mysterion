@@ -60,11 +60,10 @@ class BugReporterMetrics {
   _mapSync: MapSync<Metric>
 
   constructor (mapSync: ?MapSync<Metric> = null) {
-    if (mapSync) {
-      this._mapSync = mapSync
-    } else {
-      this._mapSync = new MapSync()
+    if (!mapSync) {
+      mapSync = new MapSync()
     }
+    this._mapSync = mapSync
   }
 
   syncWith (communication: MapSyncCommunication<Metric>) {
