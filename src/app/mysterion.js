@@ -136,6 +136,16 @@ class Mysterion {
     app.on('before-quit', () => {
       this.window.willQuitApp = true
     })
+
+    setTimeout(() => {
+      this.bugReporter.captureInfoMessage('test 1')
+    }, 1000)
+    setTimeout(() => {
+      this.bugReporter.captureInfoMessage('test 10')
+    }, 10000)
+    setTimeout(() => {
+      this.bugReporter.captureInfoMessage('test 20')
+    }, 20000)
   }
 
   logUnhandledRejections () {

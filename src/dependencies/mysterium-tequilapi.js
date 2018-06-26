@@ -16,9 +16,14 @@
  */
 
 // @flow
+import axios from 'axios'
 import type {Container} from '../app/di'
-import tequilapiClientFactory from '../libraries/mysterium-tequilapi/client-factory'
 import {BugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
+import HttpTequilapiClient from '../libraries/mysterium-tequilapi/client'
+import TequilapiClientWithMetrics from '../libraries/tequilapi-metrics'
+import {TIMEOUT_DEFAULT} from '../libraries/mysterium-tequilapi/timeouts'
+import type {TequilapiClient} from '../libraries/mysterium-tequilapi/client'
+import AxiosAdapter from '../libraries/mysterium-tequilapi/adapters/axios-adapter'
 
 function bootstrap (container: Container) {
   container.constant(
@@ -31,7 +36,16 @@ function bootstrap (container: Container) {
     'tequilapiClient',
     ['bugReporterMetrics', 'tequilapiClient.config'],
     (bugReporterMetrics: BugReporterMetrics, config: Object) => {
-      return tequilapiClientFactory(bugReporterMetrics, config.baseURL)
+      const axiosInstance = axios.create({
+        baseURL: config.baseURL,
+        headers: {
+          'Cache-Control': 'no-cache, no-store'
+        }
+      })
+      const axiosAdapter = new AxiosAdapter(axiosInstance, TIMEOUT_DEFAULT)
+      const client: TequilapiClient = new HttpTequilapiClient(axiosAdapter)
+      const clientWithMetrics = new TequilapiClientWithMetrics(client, bugReporterMetrics)
+      return clientWithMetrics
     }
   )
 }
