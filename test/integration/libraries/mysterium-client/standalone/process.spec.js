@@ -21,26 +21,17 @@ import sleep from '../../../../../src/libraries/sleep'
 import Process from '../../../../../src/libraries/mysterium-client/standalone/process'
 import Monitoring from '../../../../../src/libraries/mysterium-client/monitoring'
 import processLogLevels from '../../../../../src/libraries/mysterium-client/log-levels'
+import tequilapiClientFactory from '../../../../../src/libraries/mysterium-tequilapi/client-factory'
 import {describe, xdescribe, it, before, after, expect} from '../../../../helpers/dependencies'
 import path from 'path'
 import os from 'os'
-import axios from 'axios'
-import AxiosAdapter from '../../../../../src/libraries/mysterium-tequilapi/adapters/axios-adapter'
-import HttpTequilapiClient from '../../../../../src/libraries/mysterium-tequilapi/client'
 
 xdescribe('Standalone Process', () => {
-  let process
+  let process, tequilapi
   const logs = []
   const tequilapiPort = 4055
   const clientBinDirectory = path.resolve(__dirname, '../../../../../bin')
   const tmpDirectory = os.tmpdir()
-
-  const axiosInstance = axios.create({
-    baseURL: `http://127.0.0.1:${tequilapiPort}`,
-    headers: {'Cache-Control': 'no-cache, no-store'}
-  })
-  const axiosAdapter = new AxiosAdapter(axiosInstance, 1)
-  const tequilapi = new HttpTequilapiClient(axiosAdapter)
 
   before(async () => {
     process = new Process({
@@ -54,6 +45,8 @@ xdescribe('Standalone Process', () => {
     })
     process.start()
     process.onLog(processLogLevels.INFO, data => logs.push(data))
+
+    tequilapi = tequilapiClientFactory(`http://127.0.0.1:${tequilapiPort}`)
 
     await sleep(100)
   })
