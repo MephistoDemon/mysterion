@@ -32,6 +32,13 @@ describe('BugReporterMetrics', () => {
     bugReporterMetrics = new BugReporterMetrics(mapSync)
   })
 
+  describe('initialization', () => {
+    it('creates Metrics type', () => {
+      const totalMetricCount = Object.values(TAGS).length + Object.values(EXTRA).length
+      expect(Object.values(METRICS).length).to.eql(totalMetricCount)
+    })
+  })
+
   describe('get/set', () => {
     it('sets tag metric', () => {
       const metricKey = METRICS.IDENTITY_UNLOCKED
@@ -54,21 +61,30 @@ describe('BugReporterMetrics', () => {
 
   describe('getMetrics', () => {
     it('gets all metrics', () => {
+      const unsetMetric = TAGS.CLIENT_RUNNING
+      const metricKey = TAGS.IDENTITY_UNLOCKED
+      const metricValue = true
+      bugReporterMetrics.set(metricKey, metricValue)
+
       const data = bugReporterMetrics.getMetrics()
       const tagKeys = Object.keys(data.tags)
       const extraKeys = Object.keys(data.extra)
 
-      expect(tagKeys.length + extraKeys.length).to.eql(Object.values(METRICS).length)
+      expect(data.tags[metricKey]).to.be.eql(mapSync.get(metricKey))
+      expect(data.tags[unsetMetric]).to.be.eql(NOT_SET)
+
+      expect(tagKeys.length).to.eql(Object.values(TAGS).length)
+      expect(extraKeys.length).to.eql(Object.values(EXTRA).length)
 
       for (let tagKey of Object.values(TAGS)) {
         expect(tagKeys).to.contain(tagKey)
         // $FlowFixMe
-        expect(data.tags[tagKey]).to.be.eql(mapSync.get(tagKey) || NOT_SET)
+        expect(data.tags[tagKey]).to.deep.equal(mapSync.get(tagKey) || NOT_SET)
       }
       for (let extraKey of Object.values(EXTRA)) {
         expect(extraKeys).to.contain(extraKey)
         // $FlowFixMe
-        expect(data.extra[extraKey]).to.be.eql(mapSync.get(extraKey) || NOT_SET)
+        expect(data.extra[extraKey]).to.deep.equal(mapSync.get(extraKey) || NOT_SET)
       }
 
       expect(data).to.deep.equal(bugReporterMetrics.getMetrics())
@@ -86,7 +102,7 @@ describe('BugReporterMetrics', () => {
       })
 
       const metricKey = METRICS.CONNECTION_IP
-      const metricValue = '{ip: "127.0.0.1"}'
+      const metricValue = {ip: '127.0.0.1'}
       bugReporterMetrics.set(metricKey, metricValue)
 
       if (lastUpdate == null) {
@@ -96,7 +112,7 @@ describe('BugReporterMetrics', () => {
       expect(lastUpdate.metric).to.eql(metricKey)
       expect(lastUpdate.value).to.eql(metricValue)
 
-      const newValue = '{ip: "192.168.1.1"}'
+      const newValue = {ip: '192.168.1.1'}
       communication.sendMapUpdate({
         metric: metricKey,
         value: newValue
