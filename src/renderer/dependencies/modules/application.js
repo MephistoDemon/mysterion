@@ -39,7 +39,6 @@ function bootstrap (container: Container) {
     (bugReporterMetrics) => {
       const messageBus = new RendererMessageBus()
       const communication = new RendererCommunication(messageBus)
-      bugReporterMetrics.syncWith(communication)
       return communication
     }
   )
