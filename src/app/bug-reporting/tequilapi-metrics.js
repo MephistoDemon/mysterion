@@ -17,18 +17,18 @@
 
 // @flow
 
-import ConnectionStatusDTO from './mysterium-tequilapi/dto/connection-status'
-import {BugReporterMetrics, METRICS} from '../app/bug-reporting/bug-reporter-metrics'
-import NodeHealthcheckDTO from './mysterium-tequilapi/dto/node-healthcheck'
-import ProposalDTO from './mysterium-tequilapi/dto/proposal'
-import ProposalsFilter from './mysterium-tequilapi/dto/proposals-filter'
-import {TIMEOUT_DISABLED} from './mysterium-tequilapi/timeouts'
-import ConnectionRequestDTO from './mysterium-tequilapi/dto/connection-request'
-import ConnectionStatisticsDTO from './mysterium-tequilapi/dto/connection-statistics'
-import ConnectionIPDTO from './mysterium-tequilapi/dto/connection-ip'
-import type {TequilapiClient} from './mysterium-tequilapi/client'
-import IdentityDTO from './mysterium-tequilapi/dto/identity'
-import ConsumerLocationDTO from './mysterium-tequilapi/dto/consumer-location'
+import ConnectionStatusDTO from '../../libraries/mysterium-tequilapi/dto/connection-status'
+import {BugReporterMetrics, METRICS} from './bug-reporter-metrics'
+import NodeHealthcheckDTO from '../../libraries/mysterium-tequilapi/dto/node-healthcheck'
+import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
+import ProposalsFilter from '../../libraries/mysterium-tequilapi/dto/proposals-filter'
+import {TIMEOUT_DISABLED} from '../../libraries/mysterium-tequilapi/timeouts'
+import ConnectionRequestDTO from '../../libraries/mysterium-tequilapi/dto/connection-request'
+import ConnectionStatisticsDTO from '../../libraries/mysterium-tequilapi/dto/connection-statistics'
+import ConnectionIPDTO from '../../libraries/mysterium-tequilapi/dto/connection-ip'
+import type {TequilapiClient} from '../../libraries/mysterium-tequilapi/client'
+import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
+import ConsumerLocationDTO from '../../libraries/mysterium-tequilapi/dto/consumer-location'
 
 class TequilapiClientWithMetrics implements TequilapiClient {
   bugReporterMetrics: BugReporterMetrics
