@@ -24,7 +24,7 @@ import EmptyTequilapiClientMock from '../../renderer/store/modules/empty-tequila
 import {MapSync} from '../../../../src/libraries/map-sync'
 import type {Metric} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 
-describe('HttpTequilapiClientWithMetrics', () => {
+describe('TequilapiClientWithMetrics', () => {
   let api
   let mapSync: MapSync<Metric>
   let metrics
@@ -38,7 +38,7 @@ describe('HttpTequilapiClientWithMetrics', () => {
   })
 
   describe('healthcheck()', () => {
-    it('returns response', async () => {
+    it('sets HEALTH_CHECK_TIME metric value', async () => {
       expect(mapSync.get(METRICS.HEALTH_CHECK_TIME)).to.be.undefined
       await apiMetrics.healthCheck()
       expect(mapSync.get(METRICS.HEALTH_CHECK_TIME)).to.be.not.undefined

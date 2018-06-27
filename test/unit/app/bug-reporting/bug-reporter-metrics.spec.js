@@ -96,13 +96,11 @@ describe('BugReporterMetrics', () => {
         // $FlowFixMe
         expect(data.extra[extraKey]).to.deep.equal(mapSync.get(extraKey) || NOT_SET)
       }
-
-      expect(data).to.deep.equal(bugReporterMetrics.getMetrics())
     })
   })
 
   describe('syncWith', () => {
-    it('sends/receives metric via message bus', () => {
+    it('sends metric via message bus', () => {
       const communication = new FakeMapSyncCommunication()
       bugReporterMetrics.startSyncing(communication)
 
@@ -121,7 +119,13 @@ describe('BugReporterMetrics', () => {
       expect(lastUpdate).to.not.be.null
       expect(lastUpdate.metric).to.eql(metricKey)
       expect(lastUpdate.value).to.eql(metricValue)
+    })
 
+    it('receives metric via message bus', () => {
+      const communication = new FakeMapSyncCommunication()
+      bugReporterMetrics.startSyncing(communication)
+
+      const metricKey = METRICS.CONNECTION_IP
       const newValue = {ip: '192.168.1.1'}
       communication.sendMapUpdate({
         metric: metricKey,
