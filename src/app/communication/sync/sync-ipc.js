@@ -26,7 +26,7 @@ class SyncIpcReceiver implements SyncReceiver {
       let returnValue = callback(data)
       // returnValue must be defined for sync ipc call to work
       if (!returnValue) {
-        returnValue = true
+        returnValue = null
       }
 
       // to return some value to sync call, we have to attach it to `event.returnValue`
