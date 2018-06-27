@@ -28,70 +28,9 @@ Install `yarn` from https://yarnpkg.com/lang/en/docs/install/
 
 Once you're all set, cd into your project's root directory.
 
-## Development
+## Contributing
 
-Install dependencies
-```bash
-yarn install
-```
-
-Run with hot reload
-```bash
-yarn dev
-```
-
-Run all continuous integration checks (linter, Flow checker, tests):
-```bash
-yarn ci
-```
-
-Build for production
-
-```bash
-yarn build
-```
-
-Build from OSX to linux
-```bash
-docker run --rm -ti   --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_')   --env ELECTRON_CACHE="/root/.cache/electron"   --env ELECTRON_BUILDER_CACHE="/root/.cache/electron-builder"   -v ${PWD}:/project   -v ${PWD##*/}-node-modules:/project/node_modules   -v ~/.cache/electron:/root/.cache/electron   -v ~/.cache/electron-builder:/root/.cache/electron-builder   electronuserland/builder:wine
-yarn && yarn build
-```
-
-## Maintenance
-
-To update dependencies:
-
-```bash
-yarn upgrade
-```
-
-This will update packages according to version constrains in *package.json*.
-To update version constraints, edit version constrain in *package.json* and then upgrade yarn:
-
-```bash
-vim package.json
-yarn upgrade
-```
-
-To update Flow type signatures of dependencies, run:
-
-```bash
-yarn flow-typed install
-```
-
-## Testing
-
-To run all tests:
-```bash
-yarn unit
-```
-
-If you want to run selected tests multiple times, you can start `karma` server in background:
-
-```bash
-yarn unit:start-server
-yarn unit:run --grep="loading screen"
-```
+For instruction on how to contribute to this project, please read [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ---
 
