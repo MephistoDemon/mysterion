@@ -18,7 +18,7 @@
 // @flow
 
 import {expect, beforeEach, describe, it} from '../../../helpers/dependencies'
-import TequilapiClientWithMetrics from '../../../../src/app/bug-reporting/tequilapi-metrics'
+import TequilapiClientWithMetrics from '../../../../src/app/bug-reporting/tequilapi-client-with-metrics'
 import {BugReporterMetrics, METRICS} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import EmptyTequilapiClientMock from '../../renderer/store/modules/empty-tequilapi-client-mock'
 import {MapSync} from '../../../../src/libraries/map-sync'
