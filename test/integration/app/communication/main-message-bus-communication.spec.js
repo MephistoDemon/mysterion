@@ -19,15 +19,14 @@
 
 import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
 import MainMessageBusCommunication from '../../../../src/app/communication/main-message-bus-communication'
-import type { MessageBus } from '../../../../src/app/communication/messageBus'
+import DirectMessageBus from '../../../helpers/direct-message-bus'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import { CallbackRecorder } from '../../../helpers/utils'
 import type { MainCommunication } from '../../../../src/app/communication/main-communication'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
-import DirectMessageBus from '../../../helpers/direct-message-bus'
 
 describe('MainMessageBusCommunication', () => {
-  let messageBus: MessageBus
+  let messageBus: DirectMessageBus
   let mainCommunication: MainCommunication
   let rendererCommunication: RendererCommunication
   let recorder: CallbackRecorder
@@ -136,7 +135,8 @@ describe('MainMessageBusCommunication', () => {
 
   describe('sendUserSettings', () => {
     it('sends message through message bus', () => {
-      rendererCommunication.onUserSettings(recorder.getCallback())
+      const callback = recorder.getCallback()
+      rendererCommunication.onUserSettings(callback)
       const settingsDto = { showDisconnectNotifications: true }
       mainCommunication.sendUserSettings(settingsDto)
       expect(recorder.invoked).to.be.true

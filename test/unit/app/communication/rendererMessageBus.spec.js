@@ -17,12 +17,18 @@
 
 // @flow
 
-type MessageBusCallback = (data?: mixed) => void
+import { describe, expect, it } from '../../../helpers/dependencies'
+import RendererMessageBus from '../../../../src/app/communication/rendererMessageBus'
+import messages from '../../../../src/app/communication/messages'
+import { captureError } from '../../../helpers/utils'
 
-export interface MessageBus {
-  send (channel: string, data?: mixed): void,
-  on (channel: string, callback: MessageBusCallback): void,
-  removeCallback (channel: string, callback: MessageBusCallback): void
-}
-
-export type { MessageBusCallback }
+describe('RendererMessageBus', () => {
+  describe('.removeCallback', () => {
+    it('returns error for unknown callbacks', () => {
+      const messageBus = new RendererMessageBus()
+      const f = () => messageBus.removeCallback(messages.CONNECTION_REQUEST, () => {})
+      const error = captureError(f)
+      expect(error).to.be.an('error')
+    })
+  })
+})

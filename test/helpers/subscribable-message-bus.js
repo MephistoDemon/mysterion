@@ -16,32 +16,40 @@
  */
 
 // @flow
-import {ipcRenderer} from 'electron'
-import type { MessageBus, MessageBusCallback } from './messageBus'
 
-class RendererMessageBus implements MessageBus {
-  _listeners: { [MessageBusCallback]: ?MessageBusCallback } = {}
+import type { MessageBus, MessageBusCallback } from '../../src/app/communication/messageBus'
+
+class SubscribableMessageBus implements MessageBus {
+  _callbacks: { [string]: ?MessageBusCallback } = {}
+  _callbacksCount = 0
 
   send (channel: string, data?: mixed): void {
-    ipcRenderer.send(channel, data)
   }
 
   on (channel: string, callback: MessageBusCallback): void {
-    const listener = (event, data) => {
-      callback(data)
-    }
-    ipcRenderer.on(channel, listener)
-    this._listeners[callback] = listener
+    this._callbacks[channel] = callback
+    this._callbacksCount++
   }
 
   removeCallback (channel: string, callback: MessageBusCallback): void {
-    const listener = this._listeners[callback]
-    if (!listener) {
-      throw new Error(`Removing callback for '${channel}' message in renderer failed - callback was not found`)
+    if (this._callbacks[channel] !== callback) {
+      throw new Error('Callback being removed was not found')
     }
-    ipcRenderer.removeListener(channel, listener)
-    this._listeners[callback] = undefined
+    this._callbacks[channel] = undefined
+    this._callbacksCount--
+  }
+
+  triggerOn (channel: string, data?: mixed): void {
+    const callback = this._callbacks[channel]
+    if (!callback) {
+      return
+    }
+    callback(data)
+  }
+
+  noRemainingCallbacks (): boolean {
+    return this._callbacksCount === 0
   }
 }
 
-export default RendererMessageBus
+export default SubscribableMessageBus

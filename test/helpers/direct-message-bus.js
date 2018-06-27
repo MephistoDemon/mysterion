@@ -34,19 +34,15 @@
 
 // @flow
 
-import type { MessageBus } from '../../src/app/communication/messageBus'
+import type { MessageBusCallback } from '../../src/app/communication/messageBus'
+import SubscribableMessageBus from './subscribable-message-bus'
 
-class DirectMessageBus implements MessageBus {
-  _subscribers: { [string]: (data?: mixed) => void } = new Map()
+class DirectMessageBus extends SubscribableMessageBus {
+  _callbacks: { [string]: ?MessageBusCallback } = {}
+  _callbacksCount = 0
 
   send (channel: string, data?: mixed): void {
-    if (this._subscribers[channel]) {
-      this._subscribers[channel](data)
-    }
-  }
-
-  on (channel: string, callback: (data?: mixed) => void): void {
-    this._subscribers[channel] = callback
+    this.triggerOn(channel, data)
   }
 }
 
