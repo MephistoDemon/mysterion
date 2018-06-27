@@ -17,22 +17,24 @@
 
 // @flow
 
-import axios from 'axios'
-import AxiosAdapter from './adapters/axios-adapter'
-import {TIMEOUT_DEFAULT} from './timeouts'
-import HttpTequilapiClient from './client'
+import type {Metric} from '../../src/app/bug-reporting/bug-reporter-metrics'
+import type {MapSyncCommunication, MapSyncDTO} from '../../src/libraries/map-sync'
 
-const TEQUILAPI_URL = 'http://127.0.0.1:4050'
+/**
+ * Allows tracking method invocations.
+ */
+class FakeMapSyncCommunication implements MapSyncCommunication<Metric> {
+  _mapUpdateCallbacks: Set<MapSyncDTO<Metric> => void> = new Set()
 
-function tequilapiClientFactory (baseUrl: string = TEQUILAPI_URL, defaultTimeout: number = TIMEOUT_DEFAULT): HttpTequilapiClient {
-  const axiosInstance = axios.create({
-    baseURL: baseUrl,
-    headers: {
-      'Cache-Control': 'no-cache, no-store'
+  sendMapUpdate (data: MapSyncDTO<Metric>): void {
+    for (let callback of this._mapUpdateCallbacks) {
+      callback(data)
     }
-  })
-  const axiosAdapter = new AxiosAdapter(axiosInstance, defaultTimeout)
-  return new HttpTequilapiClient(axiosAdapter)
+  }
+
+  onMapUpdate (callback: (MapSyncDTO<Metric> => void)): void {
+    this._mapUpdateCallbacks.add(callback)
+  }
 }
 
-export default tequilapiClientFactory
+export default FakeMapSyncCommunication

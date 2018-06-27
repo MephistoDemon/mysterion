@@ -19,6 +19,8 @@
 import type { Container } from '../app/di'
 import os from 'os'
 import LogCache from '../app/logging/log-cache'
+import {BugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
+import {MapSync} from '../libraries/map-sync'
 
 function bootstrap (container: Container) {
   container.factory(
@@ -37,11 +39,17 @@ function bootstrap (container: Container) {
     }
   )
 
+  container.factory(
+    'bugReporterMetrics',
+    [],
+    (): BugReporterMetrics => new BugReporterMetrics(new MapSync())
+  )
+
   const extendedProcess = (process: { type?: string })
   container.service(
     'bugReporter.config',
-    ['mysterionReleaseID', 'mysteriumProcessLogCache', 'backendLogCache'],
-    (mysterionReleaseID, mysteriumProcessLogCache, backendLogCache): RavenOptions => {
+    ['mysterionReleaseID', 'mysteriumProcessLogCache', 'backendLogCache', 'bugReporterMetrics'],
+    (mysterionReleaseID, mysteriumProcessLogCache, backendLogCache, bugReporterMetrics): RavenOptions => {
       return {
         captureUnhandledRejections: true,
         release: mysterionReleaseID,
@@ -54,6 +62,9 @@ function bootstrap (container: Container) {
           platform_release: os.release()
         },
         dataCallback: (data) => {
+          const metrics = bugReporterMetrics.getMetrics()
+          Object.assign(data.tags, metrics.tags)
+          Object.assign(data.extra, metrics.extra)
           data.extra.logs = {
             mysterium_process: mysteriumProcessLogCache.getSerialized(),
             backend: backendLogCache.getSerialized()
