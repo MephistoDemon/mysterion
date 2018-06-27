@@ -67,3 +67,11 @@ yarn unit:start-server
 yarn unit:run --grep="loading screen"
 ```
 
+## Conventions
+
+We are using [StandardJS](https://standardjs.com/) style.
+These rules are already checked by CI (`yarn ci`).
+
+In addition to that, we have following conventions:
+- We are using `file-name.js` convention for filenames
+- All new code should we written in [Flow](https://flow.org/)
