@@ -69,7 +69,7 @@ export default {
     }
   },
   async mounted () {
-    this._bugReporterMetrics.startSyncing(this.rendererCommunication)
+    this.bugReporterMetrics.startSyncing(this.rendererCommunication)
 
     // we need to notify the main process that we're up
     this.rendererCommunication.sendRendererBooted()
