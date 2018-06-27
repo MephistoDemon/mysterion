@@ -17,8 +17,13 @@
 
 // @flow
 
-import { describe, it, expect } from '../../helpers/dependencies'
-import { applyTransformation, filterByString, prependWithFn } from '../../../src/libraries/string-transform'
+import { describe, it, expect, beforeEach } from '../../helpers/dependencies'
+import {
+  applyTransformation,
+  filterByString,
+  getCurrentTimeISOFormat,
+  prependWithFn
+} from '../../../src/libraries/string-transform'
 import { CallbackRecorder } from '../../helpers/utils'
 
 describe('prependWithFn', () => {
@@ -44,26 +49,35 @@ describe('filterByString', () => {
 })
 
 describe('applyTransformation', () => {
-  let called
-  const cbRec1 = new CallbackRecorder()
-  const cbRec2 = new CallbackRecorder()
-  const transform = (data) => {
-    if (!called) {
-      called = true
-      return data + '+'
-    }
-  }
-  const transformReturnNull = () => {
-  }
+  let cbRec
+
+  beforeEach(() => {
+    cbRec = new CallbackRecorder()
+  })
 
   it('runs transformation function and pipes its output to callback', () => {
-    applyTransformation(transform, cbRec1.getCallback())('data')
-    expect(cbRec1.invoked).to.be.true
-    expect(cbRec1.argument).to.eql('data+')
+    const transform = (data) => data + '+'
+    
+    applyTransformation(transform, cbRec.getCallback())('data')
+    expect(cbRec.invoked).to.be.true
+    expect(cbRec.argument).to.eql('data+')
   })
 
   it('does not call callback if transformation returns undefined or null', () => {
-    applyTransformation(transformReturnNull, cbRec2.getCallback())('data')
-    expect(cbRec2.invoked).to.be.false
+    const transformReturnNull = () => {
+      return null
+    }
+
+    applyTransformation(transformReturnNull, cbRec.getCallback())('data')
+    expect(cbRec.invoked).to.be.false
+  })
+})
+
+describe('getCurrentTimeISOFormat', () => {
+  const current = getCurrentTimeISOFormat()
+  const ISORegex = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/
+  it('returns a valid ISO format', () => {
+    expect(Date.parse(current)).to.not.be.NaN
+    expect(current).to.match(ISORegex)
   })
 })

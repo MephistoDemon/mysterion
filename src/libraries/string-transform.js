@@ -20,7 +20,7 @@
 type TransformFn = (string) => ?string
 type Callback = (string) => void
 
-export function applyTransformation (transform: TransformFn, next: Callback): (string) => void {
+function applyTransformation (transform: TransformFn, next: Callback): (string) => void {
   return (data) => {
     const transformed = transform(data)
     if (transformed !== null && transformed !== undefined) {
@@ -29,13 +29,13 @@ export function applyTransformation (transform: TransformFn, next: Callback): (s
   }
 }
 
-export function prependWithFn (fn: () => string): TransformFn {
+function prependWithFn (fn: () => string): TransformFn {
   return (data: string) => {
     return fn() + data
   }
 }
 
-export function filterByString (filter: string): TransformFn {
+function filterByString (filter: string): TransformFn {
   const regex = new RegExp(filter)
 
   return (data: string) => {
@@ -44,4 +44,15 @@ export function filterByString (filter: string): TransformFn {
     }
     return data
   }
+}
+
+function getCurrentTimeISOFormat (): string {
+  return new Date(Date.now()).toISOString()
+}
+
+export {
+  applyTransformation,
+  prependWithFn,
+  filterByString,
+  getCurrentTimeISOFormat
 }

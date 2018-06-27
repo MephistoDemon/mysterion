@@ -21,7 +21,7 @@ import processLogLevels from '../log-levels'
 import { INVERSE_DOMAIN_PACKAGE_NAME } from './config'
 import axios from 'axios'
 import createFileIfMissing from '../../create-file-if-missing'
-import { applyTransformation, filterByString, prependWith } from '../../string-transform'
+import { applyTransformation, filterByString, prependWithFn, getCurrentTimeISOFormat } from '../../string-transform'
 
 const SYSTEM_LOG = '/var/log/system.log'
 const stdoutFileName = 'stdout.log'
@@ -66,9 +66,8 @@ class Process {
   async setupLogging () {
     await this._prepareLogFiles()
     const boundErrorCb = this._logCallback.bind(this, processLogLevels.ERROR)
-    const getTimeFn = () => new Date(Date.now()).toString()
     tailFile(this._stdoutPath, this._logCallback.bind(this, processLogLevels.INFO))
-    tailFile(this._stderrPath, applyTransformation(prependWith(getTimeFn), boundErrorCb))
+    tailFile(this._stderrPath, applyTransformation(prependWithFn(getCurrentTimeISOFormat), boundErrorCb))
     tailFile(SYSTEM_LOG, applyTransformation(filterByString(INVERSE_DOMAIN_PACKAGE_NAME), boundErrorCb))
   }
 
