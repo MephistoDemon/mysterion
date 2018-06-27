@@ -25,7 +25,7 @@ import type { LogLevel } from './index'
 type LogEntry = {
   level: string,
   message: string,
-  timestamp: string
+  timestamp?: string
 }
 
 export class SyncCommunicationTransport extends Transport {
@@ -37,7 +37,8 @@ export class SyncCommunicationTransport extends Transport {
   }
 
   log (logEntry: LogEntry, callback: () => any) {
-    const message = logEntry.timestamp + logEntry.message
+    const timestamp = logEntry.timestamp || ''
+    const message = timestamp + logEntry.message
     const logDto = { level: mapToLogLevel(logEntry.level), data: message }
     this._communication.sendLog(logDto)
     callback()
@@ -52,7 +53,8 @@ export class BackendLogCachingTransport extends Transport {
   }
 
   log (logEntry: LogEntry, callback: () => any) {
-    const message = logEntry.timestamp + logEntry.message
+    const timestamp = logEntry.timestamp || ''
+    const message = timestamp + logEntry.message
     this._logCache.pushToLevel(mapToLogLevel(logEntry.level), message)
     callback()
   }
