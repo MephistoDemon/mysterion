@@ -32,11 +32,13 @@ import messages from './messages'
 import type { MessageBus } from './messageBus'
 import type { MainCommunication } from './main-communication'
 import type { UserSettings } from '../user-settings/user-settings'
+import type {MapSyncCommunication, MapSyncDTO} from '../../libraries/map-sync'
+import type {Metric} from '../bug-reporting/bug-reporter-metrics'
 
 /**
  * This allows main process communicating with renderer process.
  */
-class MainMessageBusCommunication implements MainCommunication {
+class MainMessageBusCommunication implements MainCommunication, MapSyncCommunication<Metric> {
   _messageBus: MessageBus
 
   constructor (messageBus: MessageBus) {
@@ -104,6 +106,14 @@ class MainMessageBusCommunication implements MainCommunication {
 
   sendUserSettings (data: UserSettings): void {
     this._send(messages.USER_SETTINGS, data)
+  }
+
+  sendMapUpdate (data: MapSyncDTO<Metric>): void {
+    this._send(messages.METRIC_SYNC, data)
+  }
+
+  onMapUpdate (callback: (MapSyncDTO<Metric>) => void): void {
+    this._on(messages.METRIC_SYNC, callback)
   }
 
   onConnectionStatusChange (callback: (ConnectionStatusChangeDTO) => void): void {
