@@ -6,7 +6,7 @@ Mysterion is desktop application to access Mysterion Network - decentralized VPN
 - [Whitepaper](https://mysterium.network/whitepaper.pdf)
 - [Stable](https://github.com/MysteriumNetwork/mysterion/releases/latest) release
 
-#### Build Setup
+## Build Setup
 
 ##### Note that currently, the only supported development environment is OSX, Windows and linux are work in progress.
 
@@ -28,7 +28,7 @@ Install `yarn` from https://yarnpkg.com/lang/en/docs/install/
 
 Once you're all set, cd into your project's root directory.
 
-#### Development
+## Development
 
 Install dependencies
 ```bash
@@ -57,7 +57,7 @@ docker run --rm -ti   --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|N
 yarn && yarn build
 ```
 
-#### Maintenance
+## Maintenance
 
 To update dependencies:
 
@@ -79,7 +79,7 @@ To update Flow type signatures of dependencies, run:
 yarn flow-typed install
 ```
 
-#### Testing
+## Testing
 
 To run all tests:
 ```bash
