@@ -57,7 +57,7 @@ describe('applyTransformation', () => {
 
   it('runs transformation function and pipes its output to callback', () => {
     const transform = (data) => data + '+'
-    
+
     applyTransformation(transform, cbRec.getCallback())('data')
     expect(cbRec.invoked).to.be.true
     expect(cbRec.argument).to.eql('data+')
