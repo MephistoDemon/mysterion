@@ -59,15 +59,12 @@ type RavenData = {
 class BugReporterMetrics {
   _mapSync: MapSync<Metric>
 
-  constructor (mapSync: ?MapSync<Metric> = null) {
-    if (!mapSync) {
-      mapSync = new MapSync()
-    }
+  constructor (mapSync: MapSync<Metric>) {
     this._mapSync = mapSync
   }
 
-  syncWith (communication: MapSyncCommunication<Metric>) {
-    this._mapSync.syncWith(communication)
+  startSyncing (communication: MapSyncCommunication<Metric>) {
+    this._mapSync.startSyncing(communication)
   }
 
   set (metric: Metric, value: mixed) {
@@ -80,12 +77,12 @@ class BugReporterMetrics {
 
   getMetrics (): RavenData {
     const data = { tags: {}, extra: {} }
-    data.tags = this._setValues((Object.values(TAGS): any))
-    data.extra = this._setValues((Object.values(EXTRA): any))
+    data.tags = this._getValues((Object.values(TAGS): any))
+    data.extra = this._getValues((Object.values(EXTRA): any))
     return data
   }
 
-  _setValues (metrics: Array<Metric>): keyValueMap {
+  _getValues (metrics: Array<Metric>): keyValueMap {
     const result = {}
     for (let metric of metrics) {
       result[metric] = this._mapSync.get(metric) || NOT_SET
@@ -98,5 +95,5 @@ function dateTimeString (): string {
   return (new Date()).toUTCString()
 }
 
-export { BugReporterMetrics, METRICS, NOT_SET, TAGS, EXTRA, dateTimeString }
+export { BugReporterMetrics, METRICS, NOT_SET, TAGS, EXTRA }
 export type {RavenData, Metric}

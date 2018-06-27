@@ -20,6 +20,7 @@ import type { Container } from '../app/di'
 import os from 'os'
 import LogCache from '../app/logging/log-cache'
 import {BugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
+import {MapSync} from '../libraries/map-sync'
 
 function bootstrap (container: Container) {
   container.factory(
@@ -41,7 +42,7 @@ function bootstrap (container: Container) {
   container.factory(
     'bugReporterMetrics',
     [],
-    (): BugReporterMetrics => new BugReporterMetrics()
+    (): BugReporterMetrics => new BugReporterMetrics(new MapSync())
   )
 
   const extendedProcess = (process: { type?: string })

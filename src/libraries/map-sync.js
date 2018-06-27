@@ -28,10 +28,10 @@ export interface MapSyncCommunication<T: string> {
 }
 
 export class MapSync<T: string> {
-  _metrics: Map<T, any> = new Map()
+  _metrics: Map<T, mixed> = new Map()
   _communication: ?MapSyncCommunication<T> = null
 
-  syncWith (communication: MapSyncCommunication<T>): void {
+  startSyncing (communication: MapSyncCommunication<T>): void {
     this._communication = communication
     this._communication.onMapUpdate(dto => {
       this.set(dto.metric, dto.value)
@@ -55,7 +55,7 @@ export class MapSync<T: string> {
     }
   }
 
-  get (key: T): any {
+  get (key: T): mixed {
     return this._metrics.get(key)
   }
 }

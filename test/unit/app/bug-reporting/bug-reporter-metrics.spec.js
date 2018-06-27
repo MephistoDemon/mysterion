@@ -20,7 +20,7 @@ import {describe, it, expect, beforeEach} from '../../../helpers/dependencies'
 import {BugReporterMetrics, EXTRA, METRICS, NOT_SET, TAGS} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import type {Metric} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
 import type {MapSyncDTO} from '../../../../src/libraries/map-sync'
-import FakeMapSyncCommunication from '../../../helpers/fakeMapSyncCommunication'
+import FakeMapSyncCommunication from '../../../helpers/fake_map_sync_communication'
 import {MapSync} from '../../../../src/libraries/map-sync'
 
 describe('BugReporterMetrics', () => {
@@ -50,8 +50,8 @@ describe('BugReporterMetrics', () => {
     })
 
     it('sets extra metric', () => {
-      const metricKey = METRICS.IDENTITY_UNLOCKED
-      const metricValue = true
+      const metricKey = EXTRA.CONNECTION_IP
+      const metricValue = {ip: '192.168.1.1'}
 
       expect(mapSync.get(metricKey)).to.be.undefined
       bugReporterMetrics.set(metricKey, metricValue)
@@ -104,7 +104,7 @@ describe('BugReporterMetrics', () => {
   describe('syncWith', () => {
     it('sends/receives metric via message bus', () => {
       const communication = new FakeMapSyncCommunication()
-      bugReporterMetrics.syncWith(communication)
+      bugReporterMetrics.startSyncing(communication)
 
       let lastUpdate: ?MapSyncDTO<Metric> = null
       communication.onMapUpdate(update => {

@@ -31,80 +31,80 @@ import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
 import ConsumerLocationDTO from '../../libraries/mysterium-tequilapi/dto/consumer-location'
 
 class TequilapiClientWithMetrics implements TequilapiClient {
-  bugReporterMetrics: BugReporterMetrics
-  client: TequilapiClient
+  _bugReporterMetrics: BugReporterMetrics
+  _client: TequilapiClient
 
   constructor (client: TequilapiClient, bugReporterMetrics: BugReporterMetrics) {
-    this.client = client
-    this.bugReporterMetrics = bugReporterMetrics
+    this._client = client
+    this._bugReporterMetrics = bugReporterMetrics
   }
 
   async stop (): Promise<void> {
-    return this.client.stop()
+    return this._client.stop()
   }
 
   async identitiesList (): Promise<Array<IdentityDTO>> {
-    return this.client.identitiesList()
+    return this._client.identitiesList()
   }
 
   async identityCreate (passphrase: string): Promise<IdentityDTO> {
-    return this.client.identityCreate(passphrase)
+    return this._client.identityCreate(passphrase)
   }
 
   async healthCheck (timeout: ?number): Promise<NodeHealthcheckDTO> {
-    const result = await this.client.healthCheck(timeout)
-    this.bugReporterMetrics.setWithCurrentDateTime(METRICS.HEALTH_CHECK_TIME)
+    const result = await this._client.healthCheck(timeout)
+    this._bugReporterMetrics.setWithCurrentDateTime(METRICS.HEALTH_CHECK_TIME)
     return result
   }
 
   async identityUnlock (id: string, passphrase: string): Promise<void> {
-    this.bugReporterMetrics.set(METRICS.IDENTITY_UNLOCKED, false)
-    await this.client.identityUnlock(id, passphrase)
-    this.bugReporterMetrics.set(METRICS.IDENTITY_UNLOCKED, true)
+    this._bugReporterMetrics.set(METRICS.IDENTITY_UNLOCKED, false)
+    await this._client.identityUnlock(id, passphrase)
+    this._bugReporterMetrics.set(METRICS.IDENTITY_UNLOCKED, true)
   }
 
   async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {
-    const result = await this.client.findProposals(filter)
+    const result = await this._client.findProposals(filter)
     if (!result || result.length === 0) {
-      this.bugReporterMetrics.set(METRICS.PROPOSALS_FETCHED_ONCE, false)
+      this._bugReporterMetrics.set(METRICS.PROPOSALS_FETCHED_ONCE, false)
     } else {
-      this.bugReporterMetrics.set(METRICS.PROPOSALS_FETCHED_ONCE, true)
+      this._bugReporterMetrics.set(METRICS.PROPOSALS_FETCHED_ONCE, true)
     }
     return result
   }
 
   async connectionCreate (request: ConnectionRequestDTO, timeout: ?number = TIMEOUT_DISABLED): Promise<ConnectionStatusDTO> {
-    this.bugReporterMetrics.set(METRICS.CONNECTION_ACTIVE, false)
-    const result = await this.client.connectionCreate(request, timeout)
-    this.bugReporterMetrics.set(METRICS.CONNECTION_ACTIVE, true)
+    this._bugReporterMetrics.set(METRICS.CONNECTION_ACTIVE, false)
+    const result = await this._client.connectionCreate(request, timeout)
+    this._bugReporterMetrics.set(METRICS.CONNECTION_ACTIVE, true)
     return result
   }
 
   async connectionStatus (): Promise<ConnectionStatusDTO> {
-    const result = await this.client.connectionStatus()
-    this.bugReporterMetrics.set(METRICS.CONNECTION_STATUS, result)
+    const result = await this._client.connectionStatus()
+    this._bugReporterMetrics.set(METRICS.CONNECTION_STATUS, result)
     return result
   }
 
   async connectionCancel (): Promise<void> {
-    await this.client.connectionCancel()
-    this.bugReporterMetrics.set(METRICS.CONNECTION_ACTIVE, false)
+    await this._client.connectionCancel()
+    this._bugReporterMetrics.set(METRICS.CONNECTION_ACTIVE, false)
   }
 
   async connectionIP (timeout: ?number): Promise<ConnectionIPDTO> {
-    const result = await this.client.connectionIP(timeout)
-    this.bugReporterMetrics.set(METRICS.CONNECTION_IP, result)
+    const result = await this._client.connectionIP(timeout)
+    this._bugReporterMetrics.set(METRICS.CONNECTION_IP, result)
     return result
   }
 
   async connectionStatistics (): Promise<ConnectionStatisticsDTO> {
-    const result = await this.client.connectionStatistics()
-    this.bugReporterMetrics.set(METRICS.CONNECTION_STATISTICS, result)
+    const result = await this._client.connectionStatistics()
+    this._bugReporterMetrics.set(METRICS.CONNECTION_STATISTICS, result)
     return result
   }
 
   async location (timeout: ?number): Promise<ConsumerLocationDTO> {
-    return this.client.location(timeout)
+    return this._client.location(timeout)
   }
 }
 

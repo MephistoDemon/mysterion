@@ -157,7 +157,7 @@ class Mysterion {
       const identity = new IdentityDTO({id: identityChange.id})
       this.bugReporter.setUser(identity)
     })
-    this.bugReporterMetrics.syncWith(this.communication)
+    this.bugReporterMetrics.startSyncing(this.communication)
     this.bugReporterMetrics.setWithCurrentDateTime(METRICS.START_TIME)
 
     await this._onRendererLoaded()
