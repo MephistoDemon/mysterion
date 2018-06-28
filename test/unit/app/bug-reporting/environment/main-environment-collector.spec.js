@@ -21,12 +21,15 @@ import { beforeEach, describe, expect, it } from '../../../../helpers/dependenci
 import MainEnvironmentCollector from '../../../../../src/app/bug-reporting/environment/main-environment-collector'
 import LogCache from '../../../../../src/app/logging/log-cache'
 import LogCacheBundle from '../../../../../src/app/logging/log-cache-bundle'
+import { BugReporterMetrics, TAGS } from '../../../../../src/app/bug-reporting/bug-reporter-metrics'
+import { MapSync } from '../../../../../src/libraries/map-sync'
 
 describe('MainEnvironmentCollector', () => {
   const releaseID = 'id of release'
   let backendLogCache: LogCache
   let frontendLogCache: LogCache
   let mysteriumProcessLogCache: LogCache
+  let bugReporterMetrics: BugReporterMetrics
   let collector: MainEnvironmentCollector
 
   beforeEach(() => {
@@ -34,22 +37,23 @@ describe('MainEnvironmentCollector', () => {
     frontendLogCache = new LogCache()
     mysteriumProcessLogCache = new LogCache()
     const logCacheBundle = new LogCacheBundle(backendLogCache, frontendLogCache, mysteriumProcessLogCache)
-    collector = new MainEnvironmentCollector(logCacheBundle, releaseID)
+    bugReporterMetrics = new BugReporterMetrics(new MapSync())
+    collector = new MainEnvironmentCollector(logCacheBundle, releaseID, bugReporterMetrics)
   })
 
-  describe('getMysterionReleaseId', () => {
+  describe('.getMysterionReleaseId', () => {
     it('returns release id', () => {
       expect(collector.getMysterionReleaseId()).to.eql(releaseID)
     })
   })
 
-  describe('getSessionId', () => {
+  describe('.getSessionId', () => {
     it('returns string', () => {
       expect(collector.getSessionId()).to.be.a('string')
     })
   })
 
-  describe('getSerializedCaches', () => {
+  describe('.getSerializedCaches', () => {
     it('returns logs from cache', () => {
       backendLogCache.pushToLevel('info', 'backend info')
       backendLogCache.pushToLevel('error', 'backend error')
@@ -63,6 +67,13 @@ describe('MainEnvironmentCollector', () => {
         frontend: { info: 'frontend info', error: 'frontend error' },
         mysterium_process: { info: 'mysterium info', error: 'mysterium error' }
       })
+    })
+  })
+
+  describe('.getMetrics', () => {
+    it('returns metrics from bug reporter metrics', () => {
+      bugReporterMetrics.set(TAGS.CLIENT_RUNNING, true)
+      expect(collector.getMetrics()).to.eql(bugReporterMetrics.getMetrics())
     })
   })
 })

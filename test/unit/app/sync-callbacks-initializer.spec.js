@@ -34,6 +34,10 @@ class MockEnvironmentCollector implements EnvironmentCollector {
     frontend: this._cache,
     mysterium_process: this._cache
   }
+  mockMetrics = {
+    tags: {},
+    extra: {}
+  }
 
   getSessionId () {
     return this.mockSessionId
@@ -45,6 +49,10 @@ class MockEnvironmentCollector implements EnvironmentCollector {
 
   getSerializedCaches () {
     return this.mockSerializedCaches
+  }
+
+  getMetrics () {
+    return this.mockMetrics
   }
 }
 

@@ -33,8 +33,8 @@ function bootstrap (container: Container) {
 
   container.service(
     'bugReporter.config',
-    ['environmentCollector', 'bugReporterMetrics'],
-    (environmentCollector: EnvironmentCollector, bugReporterMetrics: BugReporterMetrics): RavenOptions => {
+    ['environmentCollector'],
+    (environmentCollector: EnvironmentCollector): RavenOptions => {
       return {
         captureUnhandledRejections: true,
         release: environmentCollector.getMysterionReleaseId(),
@@ -48,7 +48,7 @@ function bootstrap (container: Container) {
           session_id: environmentCollector.getSessionId()
         },
         dataCallback: (data) => {
-          const metrics = bugReporterMetrics.getMetrics()
+          const metrics = environmentCollector.getMetrics()
           Object.assign(data.tags, metrics.tags)
           Object.assign(data.extra, metrics.extra)
           data.extra.logs = environmentCollector.getSerializedCaches()

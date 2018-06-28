@@ -22,6 +22,8 @@ import RendererEnvironmentCollector
   from '../../../../../src/app/bug-reporting/environment/renderer-environment-collector'
 import type { SyncRendererCommunication } from '../../../../../src/app/communication/sync/sync-communication'
 import type { SerializedLogCaches } from '../../../../../src/app/logging/log-cache-bundle'
+import { BugReporterMetrics, TAGS } from '../../../../../src/app/bug-reporting/bug-reporter-metrics'
+import { MapSync } from '../../../../../src/libraries/map-sync'
 
 class FakeSyncRendererCommunication implements SyncRendererCommunication {
   mockedSerializedCaches: ?SerializedLogCaches = {
@@ -46,20 +48,22 @@ class FakeSyncRendererCommunication implements SyncRendererCommunication {
 describe('RendererEnvironmentCollector', () => {
   const releaseID = 'id of release'
   let communication: FakeSyncRendererCommunication
+  let bugReporterMetrics: BugReporterMetrics
   let collector: RendererEnvironmentCollector
 
   beforeEach(() => {
     communication = new FakeSyncRendererCommunication()
-    collector = new RendererEnvironmentCollector(releaseID, communication)
+    bugReporterMetrics = new BugReporterMetrics(new MapSync())
+    collector = new RendererEnvironmentCollector(releaseID, communication, bugReporterMetrics)
   })
 
-  describe('getMysterionReleaseId', () => {
+  describe('.getMysterionReleaseId', () => {
     it('returns release id', () => {
       expect(collector.getMysterionReleaseId()).to.eql(releaseID)
     })
   })
 
-  describe('getSessionId', () => {
+  describe('.getSessionId', () => {
     it('returns session id using sync communication', () => {
       expect(collector.getSessionId()).to.eql('mock session id')
     })
@@ -71,7 +75,7 @@ describe('RendererEnvironmentCollector', () => {
     })
   })
 
-  describe('getSerializedCaches', () => {
+  describe('.getSerializedCaches', () => {
     it('returns logs using sync communication', () => {
       expect(collector.getSerializedCaches()).to.eql(communication.mockedSerializedCaches)
     })
@@ -84,6 +88,13 @@ describe('RendererEnvironmentCollector', () => {
         frontend: { info: '', error: '' },
         mysterium_process: { info: '', error: '' }
       })
+    })
+  })
+
+  describe('.getMetrics', () => {
+    it('returns metrics from bug reporter metrics', () => {
+      bugReporterMetrics.set(TAGS.CLIENT_RUNNING, true)
+      expect(collector.getMetrics()).to.eql(bugReporterMetrics.getMetrics())
     })
   })
 })

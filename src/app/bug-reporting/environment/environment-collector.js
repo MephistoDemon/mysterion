@@ -18,11 +18,13 @@
 // @flow
 
 import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
+import type { RavenData } from '../bug-reporter-metrics'
 
 interface EnvironmentCollector {
   getSessionId (): string,
   getMysterionReleaseId (): string,
-  getSerializedCaches (): SerializedLogCaches
+  getSerializedCaches (): SerializedLogCaches,
+  getMetrics (): RavenData
 }
 
 export type { EnvironmentCollector }

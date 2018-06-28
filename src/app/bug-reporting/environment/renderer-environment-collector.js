@@ -20,14 +20,18 @@
 import type { EnvironmentCollector } from './environment-collector'
 import type { SyncRendererCommunication } from '../../communication/sync/sync-communication'
 import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
+import { BugReporterMetrics } from '../bug-reporter-metrics'
 
 class RendererEnvironmentCollector implements EnvironmentCollector {
   _mysterionReleaseId: string
   _syncRendererCommunication: SyncRendererCommunication
+  _bugReporterMetrics: BugReporterMetrics
 
-  constructor (mysterionReleaseId: string, syncRendererCommunication: SyncRendererCommunication) {
+  // TODO: use communication for fetching metrics
+  constructor (mysterionReleaseId: string, syncRendererCommunication: SyncRendererCommunication, bugReporterMetrics: BugReporterMetrics) {
     this._mysterionReleaseId = mysterionReleaseId
     this._syncRendererCommunication = syncRendererCommunication
+    this._bugReporterMetrics = bugReporterMetrics
   }
 
   getMysterionReleaseId (): string {
@@ -42,6 +46,10 @@ class RendererEnvironmentCollector implements EnvironmentCollector {
     const defaultCache = { info: '', error: '' }
     const defaultCaches = { backend: defaultCache, mysterium_process: defaultCache, frontend: defaultCache }
     return this._syncRendererCommunication.getSerializedCaches() || defaultCaches
+  }
+
+  getMetrics () {
+    return this._bugReporterMetrics.getMetrics()
   }
 }
 

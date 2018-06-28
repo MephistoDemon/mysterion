@@ -20,15 +20,19 @@
 import type { EnvironmentCollector } from './environment-collector'
 import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
 import LogCacheBundle from '../../logging/log-cache-bundle'
+import type { RavenData } from '../bug-reporter-metrics'
+import { BugReporterMetrics } from '../bug-reporter-metrics'
 
 class MainEnvironmentCollector implements EnvironmentCollector {
   _logCacheBundle: LogCacheBundle
   _mysterionReleaseId: string
+  _bugReporterMetrics: BugReporterMetrics
   _sessionId: string
 
-  constructor (logCacheBundle: LogCacheBundle, mysterionReleaseId: string) {
+  constructor (logCacheBundle: LogCacheBundle, mysterionReleaseId: string, bugReporterMetrics: BugReporterMetrics) {
     this._logCacheBundle = logCacheBundle
     this._mysterionReleaseId = mysterionReleaseId
+    this._bugReporterMetrics = bugReporterMetrics
     this._sessionId = generateSessionId()
   }
 
@@ -42,6 +46,10 @@ class MainEnvironmentCollector implements EnvironmentCollector {
 
   getSerializedCaches (): SerializedLogCaches {
     return this._logCacheBundle.getSerialized()
+  }
+
+  getMetrics (): RavenData {
+    return this._bugReporterMetrics.getMetrics()
   }
 }
 
