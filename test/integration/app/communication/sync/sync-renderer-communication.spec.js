@@ -24,6 +24,8 @@ import type { SyncReceiver, SyncSender } from '../../../../../src/app/communicat
 import SyncReceiverMainCommunication from '../../../../../src/app/communication/sync/sync-main-communication'
 import type { SerializedLogCaches } from '../../../../../src/app/logging/log-cache-bundle'
 import { CallbackRecorder } from '../../../../helpers/utils'
+import type { RavenData } from '../../../../../src/app/bug-reporting/bug-reporter-metrics'
+import { TAGS } from '../../../../../src/app/bug-reporting/bug-reporter-metrics'
 
 class MockSyncReceiver implements SyncReceiver {
   _subscribers: { [string]: (data?: mixed) => mixed } = new Map()
@@ -56,24 +58,23 @@ class MockSyncSender implements SyncSender {
 describe('SyncSenderRendererCommunication', () => {
   let receiver: MockSyncReceiver
   let sender: MockSyncSender
+  let rendererCommunication: SyncSenderRendererCommunication
 
   beforeEach(() => {
     receiver = new MockSyncReceiver()
     sender = new MockSyncSender(receiver)
+    rendererCommunication = new SyncSenderRendererCommunication(sender)
   })
 
   describe('.getSessionId', () => {
     it('gets value from listener', () => {
       const mainCommunication = new SyncReceiverMainCommunication(receiver)
-      const rendererCommunication = new SyncSenderRendererCommunication(sender)
 
       mainCommunication.onGetSessionId(() => 'mock id')
       expect(rendererCommunication.getSessionId()).to.eql('mock id')
     })
 
     it('returns null when listener returns non-string', () => {
-      const rendererCommunication = new SyncSenderRendererCommunication(sender)
-
       receiver.on(messages.GET_SESSION_ID, () => 123)
       expect(rendererCommunication.getSessionId()).to.be.null
     })
@@ -82,7 +83,6 @@ describe('SyncSenderRendererCommunication', () => {
   describe('.getSerializedCaches', () => {
     it('gets value from listener', () => {
       const mainCommunication = new SyncReceiverMainCommunication(receiver)
-      const rendererCommunication = new SyncSenderRendererCommunication(sender)
 
       const mockLogs: SerializedLogCaches = {
         backend: {info: 'backend info', error: 'backend error'},
@@ -94,17 +94,27 @@ describe('SyncSenderRendererCommunication', () => {
     })
 
     it('returns empty logs when listener returns null', () => {
-      const rendererCommunication = new SyncSenderRendererCommunication(sender)
-
       receiver.on(messages.GET_SERIALIZED_CACHES, () => null)
       expect(rendererCommunication.getSerializedCaches()).to.eql(null)
+    })
+  })
+
+  describe('.getMetrics', () => {
+    it('gets value from listener', () => {
+      const mainCommunication = new SyncReceiverMainCommunication(receiver)
+
+      const mockMetrics: RavenData = {
+        extra: {},
+        tags: { [TAGS.CLIENT_RUNNING]: true }
+      }
+      mainCommunication.onGetMetrics(() => mockMetrics)
+      expect(rendererCommunication.getMetrics()).to.eql(mockMetrics)
     })
   })
 
   describe('.sendLog', () => {
     it('sends message to bus', () => {
       const mainCommunication = new SyncReceiverMainCommunication(receiver)
-      const rendererCommunication = new SyncSenderRendererCommunication(sender)
       const recorder = new CallbackRecorder()
 
       mainCommunication.onLog(recorder.getCallback())

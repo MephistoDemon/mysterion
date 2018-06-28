@@ -21,6 +21,7 @@ import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
 import type { RavenData } from '../bug-reporter-metrics'
 
 interface EnvironmentCollector {
+  // TODO: move sessionId into metrics or remove it
   getSessionId (): string,
   getMysterionReleaseId (): string,
   getSerializedCaches (): SerializedLogCaches,

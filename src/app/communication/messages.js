@@ -49,5 +49,6 @@ export default {
   // sync messages
   GET_SESSION_ID: 'GET_SESSION_ID',
   GET_SERIALIZED_CACHES: 'GET_SERIALIZED_CACHES',
+  GET_METRICS: 'GET_METRICS',
   LOG: 'LOG'
 }
