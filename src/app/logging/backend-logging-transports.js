@@ -18,23 +18,26 @@
 // @flow
 
 import Transport from 'winston-transport'
-import type { MainCommunication } from '../communication/main-communication'
 import LogCache from './log-cache'
+import type { SyncRendererCommunication } from '../communication/sync/sync-communication'
+import type { LogLevel } from './index'
 
 type LogEntry = {
   level: string,
   message: string
 }
 
-export class BackendLogCommunicationTransport extends Transport {
-  _communication: MainCommunication
-  constructor (com: MainCommunication) {
+export class SyncCommunicationTransport extends Transport {
+  _communication: SyncRendererCommunication
+
+  constructor (communication: SyncRendererCommunication) {
     super()
-    this._communication = com
+    this._communication = communication
   }
 
   log (info: LogEntry, callback: () => any) {
-    this._communication.sendMysterionBackendLog({ level: mapToLogLevel(info.level), message: info.message })
+    const logDto = { level: mapToLogLevel(info.level), data: info.message }
+    this._communication.sendLog(logDto)
     callback()
   }
 }
@@ -52,7 +55,7 @@ export class BackendLogCachingTransport extends Transport {
   }
 }
 
-function mapToLogLevel (level: string): 'info' | 'error' {
+function mapToLogLevel (level: string): LogLevel {
   switch (level) {
     case 'error':
       return 'error'

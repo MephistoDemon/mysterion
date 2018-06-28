@@ -21,12 +21,10 @@ import type {
   RequestConnectionDTO,
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
-  MysteriumClientLogDTO,
   ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO,
-  MysterionBackendLogDTO
+  AppErrorDTO
 } from './dto'
 import messages from './messages'
 import type { MessageBus } from './messageBus'
@@ -68,20 +66,12 @@ class MainMessageBusCommunication implements MainCommunication, MapSyncCommunica
     this._send(messages.MYSTERIUM_CLIENT_READY)
   }
 
-  sendMysteriumClientLog (dto: MysteriumClientLogDTO): void {
-    this._send(messages.MYSTERIUM_CLIENT_LOG, dto)
-  }
-
   sendMysteriumClientUp () {
     this._send(messages.HEALTHCHECK_UP)
   }
 
   sendMysteriumClientDown () {
     this._send(messages.HEALTHCHECK_DOWN)
-  }
-
-  sendMysterionBackendLog (log: MysterionBackendLogDTO) {
-    this._send(messages.MYSTERION_BACKEND_LOG, log)
   }
 
   sendProposals (proposals: ProposalUpdateDTO) {

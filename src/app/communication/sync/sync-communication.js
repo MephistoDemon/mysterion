@@ -16,34 +16,21 @@
  */
 
 // @flow
-import {ipcMain} from 'electron'
 
-import type { MessageBus } from './messageBus'
+import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
+import type { LogDTO } from '../dto'
+import type { RavenData } from '../../bug-reporting/bug-reporter-metrics'
 
-type Sender = (channel: string, data?: mixed) => void
-
-class MainMessageBus implements MessageBus {
-  _send: Sender
-  _captureException: (Error) => void
-
-  constructor (send: Sender, captureException: (Error) => void) {
-    this._send = send
-    this._captureException = captureException
-  }
-
-  send (channel: string, data?: mixed): void {
-    try {
-      this._send(channel, data)
-    } catch (err) {
-      this._captureException(err)
-    }
-  }
-
-  on (channel: string, callback: (data?: mixed) => any): void {
-    ipcMain.on(channel, (event, data) => {
-      callback(data)
-    })
-  }
+interface SyncMainCommunication {
+  onGetSerializedCaches (callback: () => SerializedLogCaches): void,
+  onGetMetrics (callback: () => RavenData): void,
+  onLog (callback: () => void): void
 }
 
-export default MainMessageBus
+interface SyncRendererCommunication {
+  getSerializedCaches (): ?SerializedLogCaches,
+  getMetrics (): RavenData,
+  sendLog (dto: LogDTO): void
+}
+
+export type { SyncMainCommunication, SyncRendererCommunication }

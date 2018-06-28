@@ -31,7 +31,8 @@ const TAGS = {
   PROPOSALS_FETCHED_ONCE: 'proposals_fetched_once',
   CONNECTION_ACTIVE: 'connection_active',
   CLIENT_RUNNING: 'client_running',
-  START_TIME: 'start_time'
+  START_TIME: 'start_time',
+  SESSION_ID: 'session_id'
 }
 
 const EXTRA = {
