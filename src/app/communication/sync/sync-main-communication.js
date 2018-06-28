@@ -31,10 +31,6 @@ class SyncReceiverMainCommunication implements SyncMainCommunication {
     this._syncReceiver = syncReceiver
   }
 
-  onGetSessionId (callback: () => string): void {
-    this._on(messages.GET_SESSION_ID, callback)
-  }
-
   onGetSerializedCaches (callback: () => SerializedLogCaches): void {
     this._on(messages.GET_SERIALIZED_CACHES, callback)
   }

@@ -27,21 +27,15 @@ class MainEnvironmentCollector implements EnvironmentCollector {
   _logCacheBundle: LogCacheBundle
   _mysterionReleaseId: string
   _bugReporterMetrics: BugReporterMetrics
-  _sessionId: string
 
   constructor (logCacheBundle: LogCacheBundle, mysterionReleaseId: string, bugReporterMetrics: BugReporterMetrics) {
     this._logCacheBundle = logCacheBundle
     this._mysterionReleaseId = mysterionReleaseId
     this._bugReporterMetrics = bugReporterMetrics
-    this._sessionId = generateSessionId()
   }
 
   getMysterionReleaseId (): string {
     return this._mysterionReleaseId
-  }
-
-  getSessionId (): string {
-    return this._sessionId
   }
 
   getSerializedCaches (): SerializedLogCaches {
@@ -51,10 +45,6 @@ class MainEnvironmentCollector implements EnvironmentCollector {
   getMetrics (): RavenData {
     return this._bugReporterMetrics.getMetrics()
   }
-}
-
-function generateSessionId () {
-  return Math.floor(Math.random() * 10 ** 9).toString()
 }
 
 export default MainEnvironmentCollector

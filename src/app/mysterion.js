@@ -40,7 +40,7 @@ import type { MessageBus } from './communication/messageBus'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
 import type { EnvironmentCollector } from './bug-reporting/environment/environment-collector'
-import {BugReporterMetrics, METRICS} from '../app/bug-reporting/bug-reporter-metrics'
+import {BugReporterMetrics, METRICS, TAGS} from '../app/bug-reporting/bug-reporter-metrics'
 import BackendLogBootstrapper from './logging/backend-log-bootstrapper'
 import LogCache from './logging/log-cache'
 import SyncCallbacksInitializer from './sync-callbacks-initializer'
@@ -112,6 +112,7 @@ class Mysterion {
   }
 
   run () {
+    this.bugReporterMetrics.set(TAGS.SESSION_ID, generateSessionId())
     this._initializeSyncCallbacks()
     this.backendLogBootstrapper.init()
     this.logUnhandledRejections()
@@ -454,6 +455,10 @@ function logInfo (message: string) {
 
 function logException (message: string, err: Error) {
   console.error(LOG_PREFIX + message, err)
+}
+
+function generateSessionId () {
+  return Math.floor(Math.random() * 10 ** 9).toString()
 }
 
 export default Mysterion

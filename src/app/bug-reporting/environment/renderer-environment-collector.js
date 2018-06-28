@@ -34,10 +34,6 @@ class RendererEnvironmentCollector implements EnvironmentCollector {
     return this._mysterionReleaseId
   }
 
-  getSessionId (): string {
-    return this._syncRendererCommunication.getSessionId() || ''
-  }
-
   getSerializedCaches (): SerializedLogCaches {
     const defaultCache = { info: '', error: '' }
     const defaultCaches = { backend: defaultCache, mysterium_process: defaultCache, frontend: defaultCache }

@@ -44,8 +44,7 @@ function bootstrap (container: Container) {
           electron: process.versions.electron || '',
           chrome: process.versions.chrome || '',
           platform: os.platform(),
-          platform_release: os.release(),
-          session_id: environmentCollector.getSessionId()
+          platform_release: os.release()
         },
         dataCallback: (data) => {
           const metrics = environmentCollector.getMetrics()

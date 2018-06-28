@@ -17,7 +17,6 @@
 
 // @flow
 
-import logger from '../../logger'
 import messages from '../messages'
 import type { SyncSender } from './sync'
 import type { SyncRendererCommunication } from './sync-communication'
@@ -33,15 +32,6 @@ class SyncSenderRendererCommunication implements SyncRendererCommunication {
 
   constructor (syncSender: SyncSender) {
     this._syncSender = syncSender
-  }
-
-  getSessionId (): ?string {
-    const result = this._syncSender.send(messages.GET_SESSION_ID)
-    if (typeof result !== 'string') {
-      logger.error(`Wrong result for sessionId received, result: ${String(result)}`)
-      return null
-    }
-    return result
   }
 
   getSerializedCaches (): ?SerializedLogCaches {

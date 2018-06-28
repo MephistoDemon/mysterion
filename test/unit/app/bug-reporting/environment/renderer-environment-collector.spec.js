@@ -37,10 +37,6 @@ class FakeSyncRendererCommunication implements SyncRendererCommunication {
     extra: {}
   }
 
-  getSessionId () {
-    return this.mockedSessionId
-  }
-
   getSerializedCaches () {
     return this.mockedSerializedCaches
   }
@@ -66,18 +62,6 @@ describe('RendererEnvironmentCollector', () => {
   describe('.getMysterionReleaseId', () => {
     it('returns release id', () => {
       expect(collector.getMysterionReleaseId()).to.eql(releaseID)
-    })
-  })
-
-  describe('.getSessionId', () => {
-    it('returns session id using sync communication', () => {
-      expect(collector.getSessionId()).to.eql('mock session id')
-    })
-
-    it('returns empty session id when communication returns null session id', () => {
-      communication.mockedSessionId = null
-
-      expect(collector.getSessionId()).to.eql('')
     })
   })
 

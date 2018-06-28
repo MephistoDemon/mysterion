@@ -66,20 +66,6 @@ describe('SyncSenderRendererCommunication', () => {
     rendererCommunication = new SyncSenderRendererCommunication(sender)
   })
 
-  describe('.getSessionId', () => {
-    it('gets value from listener', () => {
-      const mainCommunication = new SyncReceiverMainCommunication(receiver)
-
-      mainCommunication.onGetSessionId(() => 'mock id')
-      expect(rendererCommunication.getSessionId()).to.eql('mock id')
-    })
-
-    it('returns null when listener returns non-string', () => {
-      receiver.on(messages.GET_SESSION_ID, () => 123)
-      expect(rendererCommunication.getSessionId()).to.be.null
-    })
-  })
-
   describe('.getSerializedCaches', () => {
     it('gets value from listener', () => {
       const mainCommunication = new SyncReceiverMainCommunication(receiver)

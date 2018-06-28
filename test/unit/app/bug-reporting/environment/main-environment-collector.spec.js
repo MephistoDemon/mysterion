@@ -47,12 +47,6 @@ describe('MainEnvironmentCollector', () => {
     })
   })
 
-  describe('.getSessionId', () => {
-    it('returns string', () => {
-      expect(collector.getSessionId()).to.be.a('string')
-    })
-  })
-
   describe('.getSerializedCaches', () => {
     it('returns logs from cache', () => {
       backendLogCache.pushToLevel('info', 'backend info')

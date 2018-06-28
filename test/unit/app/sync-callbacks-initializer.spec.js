@@ -28,7 +28,6 @@ import type { RavenData } from '../../../src/app/bug-reporting/bug-reporter-metr
 import { TAGS } from '../../../src/app/bug-reporting/bug-reporter-metrics'
 
 class MockEnvironmentCollector implements EnvironmentCollector {
-  mockSessionId = 'mock session id'
   mockMysterionReleaseId = 'mock mysterion release id'
   _cache = { info: 'mock info', error: 'mock error' }
   mockSerializedCaches = {
@@ -39,10 +38,6 @@ class MockEnvironmentCollector implements EnvironmentCollector {
   mockMetrics = {
     tags: { [TAGS.CLIENT_RUNNING]: true },
     extra: {}
-  }
-
-  getSessionId () {
-    return this.mockSessionId
   }
 
   getMysterionReleaseId () {
@@ -59,14 +54,9 @@ class MockEnvironmentCollector implements EnvironmentCollector {
 }
 
 class MockCommunication implements SyncMainCommunication {
-  getSessionCallback: () => string
   getSerializedCachesCallback: () => SerializedLogCaches
   getMetricsCallback: () => RavenData
   logCallback: (log: LogDTO) => void
-
-  onGetSessionId (callback: () => string): void {
-    this.getSessionCallback = callback
-  }
 
   onGetSerializedCaches (callback: () => SerializedLogCaches): void {
     this.getSerializedCachesCallback = callback
@@ -98,7 +88,6 @@ describe('SyncCallbacksInitializer', () => {
     it('registers environment handlers', () => {
       initializer.initialize()
 
-      expect(communication.getSessionCallback()).to.eql(envCollector.mockSessionId)
       expect(communication.getSerializedCachesCallback()).to.eql(envCollector.mockSerializedCaches)
       expect(communication.getMetricsCallback()).to.eql(envCollector.mockMetrics)
     })

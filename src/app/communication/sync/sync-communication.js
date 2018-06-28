@@ -22,14 +22,12 @@ import type { LogDTO } from '../dto'
 import type { RavenData } from '../../bug-reporting/bug-reporter-metrics'
 
 interface SyncMainCommunication {
-  onGetSessionId (callback: () => string): void,
   onGetSerializedCaches (callback: () => SerializedLogCaches): void,
   onGetMetrics (callback: () => RavenData): void,
   onLog (callback: () => void): void
 }
 
 interface SyncRendererCommunication {
-  getSessionId (): ?string,
   getSerializedCaches (): ?SerializedLogCaches,
   getMetrics (): RavenData,
   sendLog (dto: LogDTO): void
