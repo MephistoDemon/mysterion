@@ -35,7 +35,8 @@ module.exports = {
   },
   plugins: [
     'eslint-plugin-flowtype',
-    'flowtype'
+    'flowtype',
+    'filenames'
   ],
   'rules': {
     // allow paren-less arrow functions
@@ -44,7 +45,9 @@ module.exports = {
     'generator-star-spacing': 0,
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
-    "no-restricted-globals": ['error', 'event'],
-    'no-console': ['error']
+    'no-restricted-globals': ['error', 'event'],
+    'no-console': ['error'],
+    // TODO: fix existing filename warnings
+    // "filenames/match-regex": [2, "^[a-z-]+$", true]
   }
 }
