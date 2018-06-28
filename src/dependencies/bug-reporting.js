@@ -19,13 +19,22 @@
 import type { Container } from '../app/di'
 import os from 'os'
 import type { EnvironmentCollector } from '../app/bug-reporting/environment/environment-collector'
+import {BugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
+import {MapSync} from '../libraries/map-sync'
 
 function bootstrap (container: Container) {
   const extendedProcess = (process: { type?: string })
+
+  container.factory(
+    'bugReporterMetrics',
+    [],
+    (): BugReporterMetrics => new BugReporterMetrics(new MapSync())
+  )
+
   container.service(
     'bugReporter.config',
-    ['environmentCollector'],
-    (environmentCollector: EnvironmentCollector): RavenOptions => {
+    ['environmentCollector', 'bugReporterMetrics'],
+    (environmentCollector: EnvironmentCollector, bugReporterMetrics: BugReporterMetrics): RavenOptions => {
       return {
         captureUnhandledRejections: true,
         release: environmentCollector.getMysterionReleaseId(),
@@ -39,6 +48,9 @@ function bootstrap (container: Container) {
           session_id: environmentCollector.getSessionId()
         },
         dataCallback: (data) => {
+          const metrics = bugReporterMetrics.getMetrics()
+          Object.assign(data.tags, metrics.tags)
+          Object.assign(data.extra, metrics.extra)
           data.extra.logs = environmentCollector.getSerializedCaches()
           return data
         },

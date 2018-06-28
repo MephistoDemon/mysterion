@@ -35,7 +35,7 @@ describe('HttpTequilapiClient', () => {
   let mock
   beforeEach(() => {
     const axioInstance = axios.create()
-    api = new HttpTequilapiClient(new AxiosAdapter(axioInstance), 1)
+    api = new HttpTequilapiClient(new AxiosAdapter(axioInstance))
     mock = new MockAdapter(axioInstance)
   })
 

@@ -37,10 +37,10 @@ import type { BugReporter } from './bug-reporting/interface'
 import { UserSettingsStore } from './user-settings/user-settings-store'
 import Notification from './notification'
 import type { MessageBus } from './communication/messageBus'
-import type { MainCommunication } from './communication/main-communication'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
 import type { EnvironmentCollector } from './bug-reporting/environment/environment-collector'
+import {BugReporterMetrics, METRICS} from '../app/bug-reporting/bug-reporter-metrics'
 import BackendLogBootstrapper from './logging/backend-log-bootstrapper'
 import LogCache from './logging/log-cache'
 import SyncCallbacksInitializer from './sync-callbacks-initializer'
@@ -58,6 +58,7 @@ type MysterionParams = {
   proposalFetcher: ProposalFetcher,
   bugReporter: BugReporter,
   environmentCollector: EnvironmentCollector,
+  bugReporterMetrics: BugReporterMetrics,
   backendLogBootstrapper: BackendLogBootstrapper,
   frontendLogCache: LogCache,
   mysteriumProcessLogCache: LogCache,
@@ -80,6 +81,7 @@ class Mysterion {
   proposalFetcher: ProposalFetcher
   bugReporter: BugReporter
   environmentCollector: EnvironmentCollector
+  bugReporterMetrics: BugReporterMetrics
   backendLogBootstrapper: BackendLogBootstrapper
   frontendLogCache: LogCache
   mysteriumProcessLogCache: LogCache
@@ -88,7 +90,7 @@ class Mysterion {
 
   window: Window
   messageBus: MessageBus
-  communication: MainCommunication
+  communication: MainMessageBusCommunication
 
   constructor (params: MysterionParams) {
     this.browserWindowFactory = params.browserWindowFactory
@@ -101,6 +103,7 @@ class Mysterion {
     this.proposalFetcher = params.proposalFetcher
     this.bugReporter = params.bugReporter
     this.environmentCollector = params.environmentCollector
+    this.bugReporterMetrics = params.bugReporterMetrics
     this.backendLogBootstrapper = params.backendLogBootstrapper
     this.frontendLogCache = params.frontendLogCache
     this.mysteriumProcessLogCache = params.mysteriumProcessLogCache
@@ -173,6 +176,8 @@ class Mysterion {
       const identity = new IdentityDTO({id: identityChange.id})
       this.bugReporter.setUser(identity)
     })
+    this.bugReporterMetrics.startSyncing(this.communication)
+    this.bugReporterMetrics.setWithCurrentDateTime(METRICS.START_TIME)
 
     await this._onRendererLoaded()
 
@@ -364,10 +369,12 @@ class Mysterion {
     this.monitoring.onStatusUp(() => {
       logInfo("'mysterium_client' is up")
       this.communication.sendMysteriumClientUp()
+      this.bugReporterMetrics.set(METRICS.CLIENT_RUNNING, true)
     })
     this.monitoring.onStatusDown(() => {
       logInfo("'mysterium_client' is down")
       this.communication.sendMysteriumClientDown()
+      this.bugReporterMetrics.set(METRICS.CLIENT_RUNNING, false)
     })
     this.monitoring.onStatus((status) => {
       if (status === false) {

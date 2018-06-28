@@ -30,11 +30,13 @@ import type {
 } from './dto'
 
 import type {UserSettings} from '../user-settings/user-settings'
+import type {Metric} from '../bug-reporting/bug-reporter-metrics'
+import type {MapSyncCommunication, MapSyncDTO} from '../../libraries/map-sync'
 
 /**
  * This allows renderer process communicating with main process.
  */
-class RendererCommunication {
+class RendererCommunication implements MapSyncCommunication<Metric> {
   _messageBus: MessageBus
 
   constructor (messageBus: MessageBus) {
@@ -71,6 +73,14 @@ class RendererCommunication {
 
   sendUserSettingsUpdate (dto: UserSettings): void {
     return this._send(messages.USER_SETTINGS_UPDATE, dto)
+  }
+
+  sendMapUpdate (data: MapSyncDTO<Metric>): void {
+    this._send(messages.METRIC_SYNC, data)
+  }
+
+  onMapUpdate (callback: (MapSyncDTO<Metric>) => void): void {
+    this._on(messages.METRIC_SYNC, callback)
   }
 
   onUserSettings (callback: (UserSettings) => void): void {
