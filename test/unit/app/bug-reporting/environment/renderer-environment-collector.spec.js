@@ -22,8 +22,8 @@ import RendererEnvironmentCollector
   from '../../../../../src/app/bug-reporting/environment/renderer-environment-collector'
 import type { SyncRendererCommunication } from '../../../../../src/app/communication/sync/sync-communication'
 import type { SerializedLogCaches } from '../../../../../src/app/logging/log-cache-bundle'
-import { BugReporterMetrics, TAGS } from '../../../../../src/app/bug-reporting/bug-reporter-metrics'
-import { MapSync } from '../../../../../src/libraries/map-sync'
+import type { RavenData } from '../../../../../src/app/bug-reporting/bug-reporter-metrics'
+import { TAGS } from '../../../../../src/app/bug-reporting/bug-reporter-metrics'
 
 class FakeSyncRendererCommunication implements SyncRendererCommunication {
   mockedSerializedCaches: ?SerializedLogCaches = {
@@ -32,6 +32,10 @@ class FakeSyncRendererCommunication implements SyncRendererCommunication {
     frontend: { info: 'frontend info', error: 'frontend error' }
   }
   mockedSessionId: ?string = 'mock session id'
+  mockedMetrics: RavenData = {
+    tags: { [TAGS.CLIENT_RUNNING]: true },
+    extra: {}
+  }
 
   getSessionId () {
     return this.mockedSessionId
@@ -41,6 +45,10 @@ class FakeSyncRendererCommunication implements SyncRendererCommunication {
     return this.mockedSerializedCaches
   }
 
+  getMetrics (): RavenData {
+    return this.mockedMetrics
+  }
+
   sendLog (dto) {
   }
 }
@@ -48,13 +56,11 @@ class FakeSyncRendererCommunication implements SyncRendererCommunication {
 describe('RendererEnvironmentCollector', () => {
   const releaseID = 'id of release'
   let communication: FakeSyncRendererCommunication
-  let bugReporterMetrics: BugReporterMetrics
   let collector: RendererEnvironmentCollector
 
   beforeEach(() => {
     communication = new FakeSyncRendererCommunication()
-    bugReporterMetrics = new BugReporterMetrics(new MapSync())
-    collector = new RendererEnvironmentCollector(releaseID, communication, bugReporterMetrics)
+    collector = new RendererEnvironmentCollector(releaseID, communication)
   })
 
   describe('.getMysterionReleaseId', () => {
@@ -92,9 +98,8 @@ describe('RendererEnvironmentCollector', () => {
   })
 
   describe('.getMetrics', () => {
-    it('returns metrics from bug reporter metrics', () => {
-      bugReporterMetrics.set(TAGS.CLIENT_RUNNING, true)
-      expect(collector.getMetrics()).to.eql(bugReporterMetrics.getMetrics())
+    it('returns metrics using sync communication', () => {
+      expect(collector.getMetrics()).to.eql(communication.mockedMetrics)
     })
   })
 })

@@ -38,6 +38,7 @@ class SyncCallbacksInitializer {
   initialize () {
     this._communication.onGetSessionId(() => this._environmentCollector.getSessionId())
     this._communication.onGetSerializedCaches(() => this._environmentCollector.getSerializedCaches())
+    this._communication.onGetMetrics(() => this._environmentCollector.getMetrics())
     this._communication.onLog((logDto) => {
       if (!logDto) {
         console.error('Got empty log from renderer')
