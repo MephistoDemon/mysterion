@@ -24,6 +24,7 @@ import type from '@/store/types'
 import messages from '../../app/messages'
 import logger from '../../app/logger'
 import DelayedRetrier from '../../app/delayedRetrier'
+import config from '../config'
 
 export default {
   dependencies: ['bugReporter', 'vpnInitializer', 'sleeper'],
@@ -39,9 +40,9 @@ export default {
         const msg = 'Initialization failed, will retry.'
         logger.info(msg)
         this.bugReporter.captureInfoMessage(msg)
-        await this.sleeper.sleep(3000)
+        await this.sleeper.sleep(config.initializationSleepBetweenRetries)
       }
-      const initializeRetrier = new DelayedRetrier(initialize, delay, 3)
+      const initializeRetrier = new DelayedRetrier(initialize, delay, config.initializationMaxRetries)
       await initializeRetrier.retryWithDelay()
 
       commit(type.INIT_SUCCESS)
