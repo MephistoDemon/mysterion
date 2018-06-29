@@ -37,11 +37,15 @@ import type { BugReporter } from './bug-reporting/interface'
 import { UserSettingsStore } from './user-settings/user-settings-store'
 import Notification from './notification'
 import type { MessageBus } from './communication/messageBus'
-import type { MainCommunication } from './communication/main-communication'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
+import type { EnvironmentCollector } from './bug-reporting/environment/environment-collector'
+import {BugReporterMetrics, METRICS, TAGS} from '../app/bug-reporting/bug-reporter-metrics'
 import BackendLogBootstrapper from './logging/backend-log-bootstrapper'
 import LogCache from './logging/log-cache'
+import SyncCallbacksInitializer from './sync-callbacks-initializer'
+import SyncReceiverMainCommunication from './communication/sync/sync-main-communication'
+import { SyncIpcReceiver } from './communication/sync/sync-ipc'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -53,7 +57,10 @@ type MysterionParams = {
   process: Object,
   proposalFetcher: ProposalFetcher,
   bugReporter: BugReporter,
+  environmentCollector: EnvironmentCollector,
+  bugReporterMetrics: BugReporterMetrics,
   backendLogBootstrapper: BackendLogBootstrapper,
+  frontendLogCache: LogCache,
   mysteriumProcessLogCache: LogCache,
   userSettingsStore: UserSettingsStore,
   disconnectNotification: Notification
@@ -63,6 +70,7 @@ const LOG_PREFIX = '[Mysterion] '
 const MYSTERIUM_CLIENT_STARTUP_THRESHOLD = 10000
 
 class Mysterion {
+  // TODO: mark these as private
   browserWindowFactory: () => BrowserWindow
   windowFactory: Function
   config: MysterionConfig
@@ -72,14 +80,17 @@ class Mysterion {
   process: Object
   proposalFetcher: ProposalFetcher
   bugReporter: BugReporter
+  environmentCollector: EnvironmentCollector
+  bugReporterMetrics: BugReporterMetrics
   backendLogBootstrapper: BackendLogBootstrapper
+  frontendLogCache: LogCache
   mysteriumProcessLogCache: LogCache
   userSettingsStore: UserSettingsStore
   disconnectNotification: Notification
 
   window: Window
   messageBus: MessageBus
-  communication: MainCommunication
+  communication: MainMessageBusCommunication
 
   constructor (params: MysterionParams) {
     this.browserWindowFactory = params.browserWindowFactory
@@ -91,13 +102,18 @@ class Mysterion {
     this.process = params.process
     this.proposalFetcher = params.proposalFetcher
     this.bugReporter = params.bugReporter
+    this.environmentCollector = params.environmentCollector
+    this.bugReporterMetrics = params.bugReporterMetrics
     this.backendLogBootstrapper = params.backendLogBootstrapper
+    this.frontendLogCache = params.frontendLogCache
     this.mysteriumProcessLogCache = params.mysteriumProcessLogCache
     this.userSettingsStore = params.userSettingsStore
     this.disconnectNotification = params.disconnectNotification
   }
 
   run () {
+    this.bugReporterMetrics.set(TAGS.SESSION_ID, generateSessionId())
+    this._initializeSyncCallbacks()
     this.backendLogBootstrapper.init()
     this.logUnhandledRejections()
 
@@ -135,6 +151,13 @@ class Mysterion {
     })
   }
 
+  _initializeSyncCallbacks () {
+    const receiver = new SyncIpcReceiver()
+    const communication = new SyncReceiverMainCommunication(receiver)
+    const initializer = new SyncCallbacksInitializer(communication, this.environmentCollector, this.frontendLogCache)
+    initializer.initialize()
+  }
+
   logUnhandledRejections () {
     process.on('unhandledRejection', error => {
       logException('Received unhandled rejection:', error)
@@ -154,6 +177,8 @@ class Mysterion {
       const identity = new IdentityDTO({id: identityChange.id})
       this.bugReporter.setUser(identity)
     })
+    this.bugReporterMetrics.startSyncing(this.communication)
+    this.bugReporterMetrics.setWithCurrentDateTime(METRICS.START_TIME)
 
     await this._onRendererLoaded()
 
@@ -174,8 +199,6 @@ class Mysterion {
     })
 
     this._subscribeProposals()
-
-    this.backendLogBootstrapper.startSendingLogsViaCommunication(this.communication)
 
     synchronizeUserSettings(this.userSettingsStore, this.communication)
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
@@ -271,6 +294,7 @@ class Mysterion {
 
   async onWillQuit () {
     this.monitoring.stop()
+    // TODO: fix - proposalFetcher can still be undefined at this point
     this.proposalFetcher.stop()
 
     try {
@@ -327,7 +351,6 @@ class Mysterion {
 
   _startProcess () {
     const cacheLogs = (level, data) => {
-      this.communication.sendMysteriumClientLog({level, data})
       this.mysteriumProcessLogCache.pushToLevel(level, data)
     }
 
@@ -347,10 +370,12 @@ class Mysterion {
     this.monitoring.onStatusUp(() => {
       logInfo("'mysterium_client' is up")
       this.communication.sendMysteriumClientUp()
+      this.bugReporterMetrics.set(METRICS.CLIENT_RUNNING, true)
     })
     this.monitoring.onStatusDown(() => {
       logInfo("'mysterium_client' is down")
       this.communication.sendMysteriumClientDown()
+      this.bugReporterMetrics.set(METRICS.CLIENT_RUNNING, false)
     })
     this.monitoring.onStatus((status) => {
       if (status === false) {
@@ -430,6 +455,10 @@ function logInfo (message: string) {
 
 function logException (message: string, err: Error) {
   console.error(LOG_PREFIX + message, err)
+}
+
+function generateSessionId () {
+  return Math.floor(Math.random() * 10 ** 9).toString()
 }
 
 export default Mysterion

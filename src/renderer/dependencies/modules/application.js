@@ -35,9 +35,11 @@ function bootstrap (container: Container) {
 
   container.service(
     'rendererCommunication',
-    [],
-    () => {
-      return new RendererCommunication(new RendererMessageBus())
+    ['bugReporterMetrics'],
+    (bugReporterMetrics) => {
+      const messageBus = new RendererMessageBus()
+      const communication = new RendererCommunication(messageBus)
+      return communication
     }
   )
 

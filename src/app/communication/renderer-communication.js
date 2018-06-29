@@ -22,21 +22,21 @@ import type {MessageBus} from './messageBus'
 import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
-  MysteriumClientLogDTO,
   RequestConnectionDTO,
   ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO,
-  MysterionBackendLogDTO
+  AppErrorDTO
 } from './dto'
 
 import type {UserSettings} from '../user-settings/user-settings'
+import type {Metric} from '../bug-reporting/bug-reporter-metrics'
+import type {MapSyncCommunication, MapSyncDTO} from '../../libraries/map-sync'
 
 /**
  * This allows renderer process communicating with main process.
  */
-class RendererCommunication {
+class RendererCommunication implements MapSyncCommunication<Metric> {
   _messageBus: MessageBus
 
   constructor (messageBus: MessageBus) {
@@ -75,6 +75,14 @@ class RendererCommunication {
     return this._send(messages.USER_SETTINGS_UPDATE, dto)
   }
 
+  sendMapUpdate (data: MapSyncDTO<Metric>): void {
+    this._send(messages.METRIC_SYNC, data)
+  }
+
+  onMapUpdate (callback: (MapSyncDTO<Metric>) => void): void {
+    this._on(messages.METRIC_SYNC, callback)
+  }
+
   onUserSettings (callback: (UserSettings) => void): void {
     this._on(messages.USER_SETTINGS, callback)
   }
@@ -96,20 +104,12 @@ class RendererCommunication {
     this._on(messages.MYSTERIUM_CLIENT_READY, callback)
   }
 
-  onMysteriumClientLog (callback: (MysteriumClientLogDTO) => void): void {
-    this._on(messages.MYSTERIUM_CLIENT_LOG, callback)
-  }
-
   onMysteriumClientUp (callback: () => void): void {
     this._on(messages.HEALTHCHECK_UP, callback)
   }
 
   onMysteriumClientDown (callback: () => void): void {
     this._on(messages.HEALTHCHECK_DOWN, callback)
-  }
-
-  onMysterionBackendLog (callback: (log: MysterionBackendLogDTO) => void): void {
-    this._on(messages.MYSTERION_BACKEND_LOG, callback)
   }
 
   onTermsRequest (callback: (RequestTermsDTO) => void): void {

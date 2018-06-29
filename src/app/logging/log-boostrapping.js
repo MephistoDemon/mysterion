@@ -17,22 +17,28 @@
 
 // @flow
 
-import axios from 'axios'
-import AxiosAdapter from './adapters/axios-adapter'
-import {TIMEOUT_DEFAULT} from './timeouts'
-import HttpTequilapiClient from './client'
+import winston from 'winston'
+import Transport from 'winston-transport'
 
-const TEQUILAPI_URL = 'http://127.0.0.1:4050'
+/**
+ * String logger with many log levels
+ */
+interface StringLogger {
+  info (string): void,
 
-function tequilapiClientFactory (baseUrl: string = TEQUILAPI_URL, defaultTimeout: number = TIMEOUT_DEFAULT): HttpTequilapiClient {
-  const axiosInstance = axios.create({
-    baseURL: baseUrl,
-    headers: {
-      'Cache-Control': 'no-cache, no-store'
-    }
-  })
-  const axiosAdapter = new AxiosAdapter(axiosInstance, defaultTimeout)
-  return new HttpTequilapiClient(axiosAdapter)
+  warn (string): void,
+
+  error (string): void,
+
+  debug (string): void,
+
+  add (Transport): void
 }
 
-export default tequilapiClientFactory
+const winstonFormat = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.printf(log => `${log.timestamp} ${log.level}: ${log.message}`)
+)
+
+export { winstonFormat }
+export type { StringLogger }

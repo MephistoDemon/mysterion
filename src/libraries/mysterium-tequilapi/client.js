@@ -57,11 +57,9 @@ class HttpTequilapiClient implements TequilapiClient {
 
   async healthCheck (timeout: ?number): Promise<NodeHealthcheckDTO> {
     const response = await this.http.get('healthcheck', null, timeout)
-
     if (!response) {
       throw new Error('Healthcheck response body is missing')
     }
-
     return new NodeHealthcheckDTO(response)
   }
 
@@ -84,7 +82,6 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Identities creation response body is missing')
     }
-
     return new IdentityDTO(response)
   }
 
@@ -99,11 +96,12 @@ class HttpTequilapiClient implements TequilapiClient {
       throw new Error('Proposals response body is missing')
     }
     const responseDto = new ProposalsResponseDTO(response)
+    const proposals = responseDto.proposals
 
-    if (!responseDto.proposals) {
+    if (!proposals) {
       return []
     }
-    return responseDto.proposals
+    return proposals
   }
 
   async connectionCreate (request: ConnectionRequestDTO, timeout: ?number = TIMEOUT_DISABLED): Promise<ConnectionStatusDTO> {
@@ -118,7 +116,6 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Connection creation response body is missing')
     }
-
     return new ConnectionStatusDTO(response)
   }
 
@@ -127,7 +124,6 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Connection status response body is missing')
     }
-
     return new ConnectionStatusDTO(response)
   }
 
@@ -140,7 +136,6 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Connection IP response body is missing')
     }
-
     return new ConnectionIPDTO(response)
   }
 
@@ -149,7 +144,6 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Connection statistics response body is missing')
     }
-
     return new ConnectionStatisticsDTO(response)
   }
 
@@ -158,7 +152,6 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Location response body is missing')
     }
-
     return new ConsumerLocationDTO(response)
   }
 }

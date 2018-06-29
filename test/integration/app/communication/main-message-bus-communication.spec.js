@@ -83,26 +83,6 @@ describe('MainMessageBusCommunication', () => {
     })
   })
 
-  describe('sendMysteriumClientLog ', () => {
-    it('sends message through message bus', () => {
-      rendererCommunication.onMysteriumClientLog(recorder.getCallback())
-      const logDto = {data: 'test data', level: 'test level'}
-      mainCommunication.sendMysteriumClientLog(logDto)
-      expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eql(logDto)
-    })
-  })
-
-  describe('sendMysteriumClientLog ', () => {
-    it('sends message through message bus', () => {
-      rendererCommunication.onMysteriumClientLog(recorder.getCallback())
-      const logDto = {data: 'test data', level: 'test level'}
-      mainCommunication.sendMysteriumClientLog(logDto)
-      expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eql(logDto)
-    })
-  })
-
   describe('sendMysteriumClientUp', () => {
     it('sends message through message bus', () => {
       rendererCommunication.onMysteriumClientUp(recorder.getCallback())

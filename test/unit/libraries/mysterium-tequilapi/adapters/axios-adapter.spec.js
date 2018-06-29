@@ -21,7 +21,6 @@ import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../../helpers/utils'
 import {
   isHttpError,
-  isNetworkError,
   isTimeoutError
 } from '../../../../../src/libraries/mysterium-tequilapi/client-error'
 
@@ -73,7 +72,6 @@ describe('TequilapiClient AxiosAdapter', () => {
 
     const err = await capturePromiseError(adapter.get('test-url'))
     expect(err).to.be.instanceOf(Error)
-    expect(isNetworkError(err)).to.be.true
     expect(isHttpError(err)).to.be.true
   })
 
@@ -84,6 +82,7 @@ describe('TequilapiClient AxiosAdapter', () => {
     expect(err).to.be.instanceOf(Error)
     expect(isTimeoutError(err)).to.be.true
     expect(isHttpError(err)).to.be.true
+    expect(err.toString()).to.eql('Tequilapi error: timeout of 1ms exceeded (path="test-url")')
   })
 
   it('returns 404 response error', async () => {
@@ -91,6 +90,6 @@ describe('TequilapiClient AxiosAdapter', () => {
 
     const err = await capturePromiseError(adapter.get('test-url'))
     expect(err).to.be.instanceOf(Error)
-    expect(err.message).to.be.equal('Request failed with status code 404')
+    expect(err.message).to.be.equal('Request failed with status code 404 (path="test-url")')
   })
 })

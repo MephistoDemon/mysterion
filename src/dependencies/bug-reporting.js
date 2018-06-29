@@ -18,33 +18,26 @@
 // @flow
 import type { Container } from '../app/di'
 import os from 'os'
-import LogCache from '../app/logging/log-cache'
+import type { EnvironmentCollector } from '../app/bug-reporting/environment/environment-collector'
+import {BugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
+import {MapSync} from '../libraries/map-sync'
 
 function bootstrap (container: Container) {
-  container.factory(
-    'mysteriumProcessLogCache',
-    [],
-    (): LogCache => {
-      return new LogCache()
-    }
-  )
-
-  container.factory(
-    'backendLogCache',
-    [],
-    (): LogCache => {
-      return new LogCache()
-    }
-  )
-
   const extendedProcess = (process: { type?: string })
+
+  container.factory(
+    'bugReporterMetrics',
+    [],
+    (): BugReporterMetrics => new BugReporterMetrics(new MapSync())
+  )
+
   container.service(
     'bugReporter.config',
-    ['mysterionReleaseID', 'mysteriumProcessLogCache', 'backendLogCache'],
-    (mysterionReleaseID, mysteriumProcessLogCache, backendLogCache): RavenOptions => {
+    ['environmentCollector'],
+    (environmentCollector: EnvironmentCollector): RavenOptions => {
       return {
         captureUnhandledRejections: true,
-        release: mysterionReleaseID,
+        release: environmentCollector.getMysterionReleaseId(),
         tags: {
           environment: process.env.NODE_ENV || '',
           process: extendedProcess.type || '',
@@ -54,10 +47,10 @@ function bootstrap (container: Container) {
           platform_release: os.release()
         },
         dataCallback: (data) => {
-          data.extra.logs = {
-            mysterium_process: mysteriumProcessLogCache.getSerialized(),
-            backend: backendLogCache.getSerialized()
-          }
+          const metrics = environmentCollector.getMetrics()
+          Object.assign(data.tags, metrics.tags)
+          Object.assign(data.extra, metrics.extra)
+          data.extra.logs = environmentCollector.getSerializedCaches()
           return data
         },
         autoBreadcrumbs: {

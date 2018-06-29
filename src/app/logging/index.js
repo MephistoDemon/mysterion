@@ -17,22 +17,6 @@
 
 // @flow
 
-import axios from 'axios'
-import AxiosAdapter from './adapters/axios-adapter'
-import {TIMEOUT_DEFAULT} from './timeouts'
-import HttpTequilapiClient from './client'
+type LogLevel = 'info' | 'error'
 
-const TEQUILAPI_URL = 'http://127.0.0.1:4050'
-
-function tequilapiClientFactory (baseUrl: string = TEQUILAPI_URL, defaultTimeout: number = TIMEOUT_DEFAULT): HttpTequilapiClient {
-  const axiosInstance = axios.create({
-    baseURL: baseUrl,
-    headers: {
-      'Cache-Control': 'no-cache, no-store'
-    }
-  })
-  const axiosAdapter = new AxiosAdapter(axiosInstance, defaultTimeout)
-  return new HttpTequilapiClient(axiosAdapter)
-}
-
-export default tequilapiClientFactory
+export type { LogLevel }

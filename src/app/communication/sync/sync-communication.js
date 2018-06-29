@@ -17,22 +17,20 @@
 
 // @flow
 
-import axios from 'axios'
-import AxiosAdapter from './adapters/axios-adapter'
-import {TIMEOUT_DEFAULT} from './timeouts'
-import HttpTequilapiClient from './client'
+import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
+import type { LogDTO } from '../dto'
+import type { RavenData } from '../../bug-reporting/bug-reporter-metrics'
 
-const TEQUILAPI_URL = 'http://127.0.0.1:4050'
-
-function tequilapiClientFactory (baseUrl: string = TEQUILAPI_URL, defaultTimeout: number = TIMEOUT_DEFAULT): HttpTequilapiClient {
-  const axiosInstance = axios.create({
-    baseURL: baseUrl,
-    headers: {
-      'Cache-Control': 'no-cache, no-store'
-    }
-  })
-  const axiosAdapter = new AxiosAdapter(axiosInstance, defaultTimeout)
-  return new HttpTequilapiClient(axiosAdapter)
+interface SyncMainCommunication {
+  onGetSerializedCaches (callback: () => SerializedLogCaches): void,
+  onGetMetrics (callback: () => RavenData): void,
+  onLog (callback: () => void): void
 }
 
-export default tequilapiClientFactory
+interface SyncRendererCommunication {
+  getSerializedCaches (): ?SerializedLogCaches,
+  getMetrics (): RavenData,
+  sendLog (dto: LogDTO): void
+}
+
+export type { SyncMainCommunication, SyncRendererCommunication }

@@ -35,7 +35,7 @@ describe('HttpTequilapiClient', () => {
   let mock
   beforeEach(() => {
     const axioInstance = axios.create()
-    api = new HttpTequilapiClient(new AxiosAdapter(axioInstance), 1)
+    api = new HttpTequilapiClient(new AxiosAdapter(axioInstance))
     mock = new MockAdapter(axioInstance)
   })
 
@@ -60,7 +60,7 @@ describe('HttpTequilapiClient', () => {
       mock.onGet('/healthcheck').reply(500)
 
       const e = await capturePromiseError(api.healthCheck())
-      expect(e.message).to.equal('Request failed with status code 500')
+      expect(e.message).to.equal('Request failed with status code 500 (path="healthcheck")')
     })
   })
 
@@ -77,7 +77,7 @@ describe('HttpTequilapiClient', () => {
       mock.onPost('stop').reply(500)
 
       const e = await capturePromiseError(api.stop())
-      expect(e.message).to.equal('Request failed with status code 500')
+      expect(e.message).to.equal('Request failed with status code 500 (path="stop")')
     })
   })
 
@@ -118,7 +118,7 @@ describe('HttpTequilapiClient', () => {
       mock.onGet('proposals').reply(500)
 
       const e = await capturePromiseError(api.findProposals())
-      expect(e.message).to.equal('Request failed with status code 500')
+      expect(e.message).to.equal('Request failed with status code 500 (path="proposals")')
     })
   })
 
@@ -142,7 +142,7 @@ describe('HttpTequilapiClient', () => {
       mock.onGet('identities').reply(500)
 
       const e = await capturePromiseError(api.identitiesList())
-      expect(e.message).to.equal('Request failed with status code 500')
+      expect(e.message).to.equal('Request failed with status code 500 (path="identities")')
     })
   })
 
@@ -159,7 +159,7 @@ describe('HttpTequilapiClient', () => {
       mock.onPost('identities').reply(500)
 
       const e = await capturePromiseError(api.identityCreate('test'))
-      expect(e.message).to.equal('Request failed with status code 500')
+      expect(e.message).to.equal('Request failed with status code 500 (path="identities")')
     })
   })
 
@@ -175,7 +175,7 @@ describe('HttpTequilapiClient', () => {
       mock.onPut('identities/0x0000bEEF/unlock').reply(500)
 
       const e = await capturePromiseError(api.identityUnlock('0x0000bEEF', 'test'))
-      expect(e.message).to.equal('Request failed with status code 500')
+      expect(e.message).to.equal('Request failed with status code 500 (path="identities/0x0000bEEF/unlock")')
     })
   })
 
@@ -199,7 +199,7 @@ describe('HttpTequilapiClient', () => {
       mock.onPut('connection').reply(500)
 
       const e = await capturePromiseError(api.connectionCreate(new ConnectionRequestDTO()))
-      expect(e.message).to.equal('Request failed with status code 500')
+      expect(e.message).to.equal('Request failed with status code 500 (path="connection")')
     })
   })
 
@@ -219,7 +219,7 @@ describe('HttpTequilapiClient', () => {
       mock.onGet('connection').reply(500)
 
       const e = await capturePromiseError(api.connectionStatus())
-      expect(e.message).to.equal('Request failed with status code 500')
+      expect(e.message).to.equal('Request failed with status code 500 (path="connection")')
     })
   })
 
@@ -235,7 +235,7 @@ describe('HttpTequilapiClient', () => {
       mock.onDelete('connection').reply(500)
 
       const e = await capturePromiseError(api.connectionCancel())
-      expect(e.message).to.equal('Request failed with status code 500')
+      expect(e.message).to.equal('Request failed with status code 500 (path="connection")')
     })
   })
 
@@ -252,7 +252,7 @@ describe('HttpTequilapiClient', () => {
       mock.onGet('connection/ip').reply(500)
 
       const e = await capturePromiseError(api.connectionIP())
-      expect(e.message).to.equal('Request failed with status code 500')
+      expect(e.message).to.equal('Request failed with status code 500 (path="connection/ip")')
     })
   })
 
@@ -273,7 +273,7 @@ describe('HttpTequilapiClient', () => {
       mock.onGet('connection/statistics').reply(500)
 
       const e = await capturePromiseError(api.connectionStatistics())
-      expect(e.message).to.equal('Request failed with status code 500')
+      expect(e.message).to.equal('Request failed with status code 500 (path="connection/statistics")')
     })
   })
 
@@ -299,7 +299,7 @@ describe('HttpTequilapiClient', () => {
       mock.onGet('location').reply(500)
 
       const e = await capturePromiseError(api.location())
-      expect(e.message).to.equal('Request failed with status code 500')
+      expect(e.message).to.equal('Request failed with status code 500 (path="location")')
     })
   })
 })

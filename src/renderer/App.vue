@@ -60,7 +60,7 @@ export default {
     AppError,
     AppModal
   },
-  dependencies: ['mysterionReleaseID', 'rendererCommunication'],
+  dependencies: ['mysterionReleaseID', 'rendererCommunication', 'syncCommunication', 'frontendLogBootstrapper', 'bugReporterMetrics'],
   computed: {
     ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
     version () {
@@ -69,6 +69,10 @@ export default {
     }
   },
   async mounted () {
+    this.bugReporterMetrics.startSyncing(this.rendererCommunication)
+    this.frontendLogBootstrapper.init()
+    logger.info('App view was mounted')
+
     // we need to notify the main process that we're up
     this.rendererCommunication.sendRendererBooted()
     this.rendererCommunication.onConnectionRequest((proposal) => {

@@ -17,22 +17,13 @@
 
 // @flow
 
-import axios from 'axios'
-import AxiosAdapter from './adapters/axios-adapter'
-import {TIMEOUT_DEFAULT} from './timeouts'
-import HttpTequilapiClient from './client'
+import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
+import type { RavenData } from '../bug-reporter-metrics'
 
-const TEQUILAPI_URL = 'http://127.0.0.1:4050'
-
-function tequilapiClientFactory (baseUrl: string = TEQUILAPI_URL, defaultTimeout: number = TIMEOUT_DEFAULT): HttpTequilapiClient {
-  const axiosInstance = axios.create({
-    baseURL: baseUrl,
-    headers: {
-      'Cache-Control': 'no-cache, no-store'
-    }
-  })
-  const axiosAdapter = new AxiosAdapter(axiosInstance, defaultTimeout)
-  return new HttpTequilapiClient(axiosAdapter)
+interface EnvironmentCollector {
+  getMysterionReleaseId (): string,
+  getSerializedCaches (): SerializedLogCaches,
+  getMetrics (): RavenData
 }
 
-export default tequilapiClientFactory
+export type { EnvironmentCollector }

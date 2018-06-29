@@ -18,10 +18,9 @@
 // @flow
 
 import { describe, it, expect, beforeEach } from '../../../helpers/dependencies'
-import { BackendLogCachingTransport, BackendLogCommunicationTransport }
+import { BackendLogCachingTransport }
   from '../../../../src/app/logging/backend-logging-transports'
 import LogCache from '../../../../src/app/logging/log-cache'
-import FakeMainCommunication from '../../../helpers/fakeMainCommunication'
 
 describe('BackendLogCachingTransport', () => {
   describe('.log', () => {
@@ -46,33 +45,6 @@ describe('BackendLogCachingTransport', () => {
             done()
           })
         })
-      })
-    })
-  })
-})
-
-describe('BackendLogCommunicationTransport', () => {
-  describe('.log', () => {
-    let backendLogComTransport, communication
-
-    beforeEach(() => {
-      communication = new FakeMainCommunication()
-      backendLogComTransport = new BackendLogCommunicationTransport(communication)
-    })
-
-    it('sends messages via communication', () => {
-      backendLogComTransport.log({level: 'error', message: 'error message'}, () => {
-        expect(communication.wasInvoked(communication.sendMysterionBackendLog)).to.be.true
-        expect(communication.getLastPayload(communication.sendMysterionBackendLog))
-          .to.eql([{level: 'error', message: 'error message'}])
-      })
-    })
-
-    it('sends any unknown log level to info', () => {
-      backendLogComTransport.log({level: 'some level', message: 'random message'}, () => {
-        expect(communication.wasInvoked(communication.sendMysterionBackendLog)).to.be.true
-        expect(communication.getLastPayload(communication.sendMysterionBackendLog))
-          .to.eql([{level: 'info', message: 'random message'}])
       })
     })
   })

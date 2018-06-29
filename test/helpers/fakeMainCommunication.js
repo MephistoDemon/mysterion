@@ -19,12 +19,11 @@
 
 import type { MainCommunication } from '../../src/app/communication/main-communication'
 import type {
-  AppErrorDTO, ConnectionStatusChangeDTO, CurrentIdentityChangeDTO, MysterionBackendLogDTO,
-  MysteriumClientLogDTO,
+  AppErrorDTO, ConnectionStatusChangeDTO, CurrentIdentityChangeDTO,
   ProposalUpdateDTO,
   RequestTermsDTO, TermsAnsweredDTO
 } from '../../src/app/communication/dto'
-import type { UserSettings } from '../../src/app/user-settings/user-settings'
+import type {UserSettings} from '../../src/app/user-settings/user-settings'
 
 /**
  * Allows tracking method invocations.
@@ -67,20 +66,12 @@ class FakeMainCommunication implements MainCommunication {
     this._registerMethod(this.sendMysteriumClientIsReady)
   }
 
-  sendMysteriumClientLog (dto: MysteriumClientLogDTO): void {
-    this._registerMethod(this.sendMysteriumClientLog)
-  }
-
   sendMysteriumClientUp () {
     this._registerMethod(this.sendMysteriumClientUp)
   }
 
   sendMysteriumClientDown () {
     this._registerMethod(this.sendMysteriumClientDown)
-  }
-
-  sendMysterionBackendLog (dto: MysterionBackendLogDTO) {
-    this._registerMethod(this.sendMysterionBackendLog, dto)
   }
 
   sendProposals (proposals: ProposalUpdateDTO): void {
