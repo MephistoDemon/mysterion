@@ -16,34 +16,29 @@
  */
 
 // @flow
-import {ipcMain} from 'electron'
 
-import type { MessageBus } from './messageBus'
+import { ipcMain, ipcRenderer } from 'electron'
+import type { SyncReceiver, SyncSender } from './sync'
 
-type Sender = (channel: string, data?: mixed) => void
-
-class MainMessageBus implements MessageBus {
-  _send: Sender
-  _captureException: (Error) => void
-
-  constructor (send: Sender, captureException: (Error) => void) {
-    this._send = send
-    this._captureException = captureException
-  }
-
-  send (channel: string, data?: mixed): void {
-    try {
-      this._send(channel, data)
-    } catch (err) {
-      this._captureException(err)
-    }
-  }
-
-  on (channel: string, callback: (data?: mixed) => any): void {
+class SyncIpcReceiver implements SyncReceiver {
+  on (channel: string, callback: (data: any) => mixed) {
     ipcMain.on(channel, (event, data) => {
-      callback(data)
+      let returnValue = callback(data)
+      // returnValue must be defined for sync ipc call to work
+      if (!returnValue) {
+        returnValue = null
+      }
+
+      // to return some value to sync call, we have to attach it to `event.returnValue`
+      event.returnValue = returnValue
     })
   }
 }
 
-export default MainMessageBus
+class SyncIpcSender implements SyncSender {
+  send (channel: string, data?: any): mixed {
+    return ipcRenderer.sendSync(channel, data)
+  }
+}
+
+export { SyncIpcSender, SyncIpcReceiver }

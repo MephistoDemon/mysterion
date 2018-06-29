@@ -22,27 +22,32 @@ import {FeedbackForm} from '../../../app/bug-reporting/feedback-form'
 import RavenJs from 'raven-js'
 import Vue from 'vue'
 import RavenVue from 'raven-js/plugins/vue'
+import RendererEnvironmentCollector from '../../../app/bug-reporting/environment/renderer-environment-collector'
+import type { EnvironmentCollector } from '../../../app/bug-reporting/environment/environment-collector'
+import SyncSenderRendererCommunication from '../../../app/communication/sync/sync-renderer-communication'
+import { SyncIpcSender } from '../../../app/communication/sync/sync-ipc'
+import type { SyncRendererCommunication } from '../../../app/communication/sync/sync-communication'
+import FrontendLogBootstrapper from '../../../app/logging/frontend-log-bootstrapper'
+import { BugReporterMetrics } from '../../../app/bug-reporting/bug-reporter-metrics'
 
 function bootstrap (container: Container) {
   container.constant('bugReporter.sentryURL', 'https://f1e63dd563c34c35a56e98aa02518d40@sentry.io/300978')
 
   container.factory(
+    'frontendLogBootstrapper',
+    ['syncCommunication'],
+    (syncCommunication: SyncRendererCommunication) => {
+      return new FrontendLogBootstrapper(syncCommunication)
+    }
+  )
+  container.factory(
     'bugReporter',
-    ['bugReporter.raven', 'rendererCommunication', 'mysteriumProcessLogCache', 'backendLogCache'],
-    (raven, rendererCommunication, mysteriumProcessLogCache, backendLogCache) => {
+    ['bugReporter.raven'],
+    (raven) => {
       const bugReporter = new BugReporterRenderer(raven)
       window.addEventListener('unhandledrejection', (evt) => {
         bugReporter.captureErrorMessage(evt.reason, evt.reason.response ? evt.reason.response.data : evt.reason)
       })
-
-      rendererCommunication.onMysteriumClientLog(({ level, data }) => {
-        mysteriumProcessLogCache.pushToLevel(level, data)
-      })
-
-      rendererCommunication.onMysterionBackendLog(({ level, message }) => {
-        backendLogCache.pushToLevel(level, message)
-      })
-
       return bugReporter
     }
   )
@@ -55,6 +60,26 @@ function bootstrap (container: Container) {
         .config(sentryURL, config)
         .install()
         .addPlugin(RavenVue, Vue)
+    }
+  )
+
+  container.service(
+    'syncCommunication',
+    [],
+    (): SyncRendererCommunication => {
+      const sender = new SyncIpcSender()
+      return new SyncSenderRendererCommunication(sender)
+    }
+  )
+
+  container.service(
+    'environmentCollector',
+    ['mysterionReleaseID', 'syncCommunication'],
+    (
+      mysterionReleaseID: string,
+      syncCommunication: SyncRendererCommunication,
+      bugReporterMetrics: BugReporterMetrics): EnvironmentCollector => {
+      return new RendererEnvironmentCollector(mysterionReleaseID, syncCommunication)
     }
   )
 

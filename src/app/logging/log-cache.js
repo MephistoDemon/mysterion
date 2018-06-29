@@ -17,10 +17,16 @@
 
 // @flow
 import LimitedLinkedList from '../../libraries/limited-linked-list'
+import type { LogLevel } from './index'
 
 type LogCacheStore = {
   info: LimitedLinkedList,
   error: LimitedLinkedList
+}
+
+type SerializedLogCache = {
+  info: string,
+  error: string
 }
 
 class LogCache {
@@ -29,7 +35,10 @@ class LogCache {
     error: new LimitedLinkedList(200)
   }
 
-  pushToLevel (level: 'info' | 'error', data: any) {
+  pushToLevel (level: LogLevel, data: any) {
+    if (level !== 'info' && level !== 'error') {
+      throw new Error(`Unknown log level being pushed to log cache: ${level}`)
+    }
     this._logs[level].insert(data)
   }
 
@@ -40,7 +49,7 @@ class LogCache {
     }
   }
 
-  getSerialized (): { info: string, error: string } {
+  getSerialized (): SerializedLogCache {
     return {
       info: this._logs.info.toArray().reverse().join('\n'),
       error: this._logs.error.toArray().reverse().join('\n')
@@ -48,4 +57,5 @@ class LogCache {
   }
 }
 
+export type { SerializedLogCache }
 export default LogCache

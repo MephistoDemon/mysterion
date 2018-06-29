@@ -17,8 +17,11 @@
 
 // @flow
 
+// TODO: rename file to log-cache.spec.js
+
 import { describe, it, expect, beforeEach } from '../../../helpers/dependencies'
 import LogCache from '../../../../src/app/logging/log-cache'
+import { captureError } from '../../../helpers/utils'
 
 describe('LogCache', () => {
   let logCache, error
@@ -28,6 +31,18 @@ describe('LogCache', () => {
     logCache.pushToLevel('info', 'something')
     logCache.pushToLevel('info', 'log2')
     logCache.pushToLevel('error', error)
+  })
+
+  describe('.pushToLevel', () => {
+    it('throws error when pushing unknown level', () => {
+      const unknownLevel = (('unknown': any): 'info')
+      const err = captureError(() => logCache.pushToLevel(unknownLevel, 'log'))
+      if (!err) {
+        throw new Error('No error was returned')
+      }
+      console.log(err.message)
+      expect(err.message).to.eql('Unknown log level being pushed to log cache: unknown')
+    })
   })
 
   describe('.getSerialized', () => {

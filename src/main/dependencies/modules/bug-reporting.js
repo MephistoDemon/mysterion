@@ -19,7 +19,12 @@
 import Raven from 'raven'
 import BugReporterMain from '../../../app/bug-reporting/bug-reporter-main'
 import type {Container} from '../../../app/di'
+import MainEnvironmentCollector from '../../../app/bug-reporting/environment/main-environment-collector'
 import BackendLogBootstrapper from '../../../app/logging/backend-log-bootstrapper'
+import type { EnvironmentCollector } from '../../../app/bug-reporting/environment/environment-collector'
+import LogCache from '../../../app/logging/log-cache'
+import LogCacheBundle from '../../../app/logging/log-cache-bundle'
+import { BugReporterMetrics } from '../../../app/bug-reporting/bug-reporter-metrics'
 
 function bootstrap (container: Container) {
   container.factory(
@@ -41,6 +46,38 @@ function bootstrap (container: Container) {
     (sentryURL, config) => {
       const raven = Raven.config(sentryURL, config).install()
       return new BugReporterMain(raven)
+    }
+  )
+
+  container.factory(
+    'backendLogCache',
+    [],
+    (): LogCache => new LogCache()
+  )
+
+  container.factory(
+    'frontendLogCache',
+    [],
+    (): LogCache => new LogCache()
+  )
+
+  container.factory(
+    'mysteriumProcessLogCache',
+    [],
+    (): LogCache => new LogCache()
+  )
+
+  container.service(
+    'environmentCollector',
+    ['backendLogCache', 'frontendLogCache', 'mysteriumProcessLogCache', 'mysterionReleaseID', 'bugReporterMetrics'],
+    (
+      backendLogCache: LogCache,
+      frontendLogCache: LogCache,
+      mysteriumProcessLogCache: LogCache,
+      mysterionReleaseID: string,
+      bugReporterMetrics: BugReporterMetrics): EnvironmentCollector => {
+      const bundle = new LogCacheBundle(backendLogCache, frontendLogCache, mysteriumProcessLogCache)
+      return new MainEnvironmentCollector(bundle, mysterionReleaseID, bugReporterMetrics)
     }
   )
 

@@ -56,11 +56,11 @@ async function captureAsyncError (func: () => Promise<any>) {
  */
 class CallbackRecorder {
   invoked: boolean
-  argument: any
+  _argument: any
 
   constructor () {
     this.invoked = false
-    this.argument = null
+    this._argument = null
   }
 
   /**
@@ -75,7 +75,14 @@ class CallbackRecorder {
 
   _record (argument: any): void {
     this.invoked = true
-    this.argument = argument
+    this._argument = argument
+  }
+
+  get argument (): any {
+    if (!this.invoked) {
+      throw new Error('CallbackRecorder: callback was not invoked, so no available argument')
+    }
+    return this._argument
   }
 }
 

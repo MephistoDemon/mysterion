@@ -16,34 +16,29 @@
  */
 
 // @flow
-import {ipcMain} from 'electron'
 
-import type { MessageBus } from './messageBus'
+import winston from 'winston'
+import Transport from 'winston-transport'
 
-type Sender = (channel: string, data?: mixed) => void
+/**
+ * String logger with many log levels
+ */
+interface StringLogger {
+  info (string): void,
 
-class MainMessageBus implements MessageBus {
-  _send: Sender
-  _captureException: (Error) => void
+  warn (string): void,
 
-  constructor (send: Sender, captureException: (Error) => void) {
-    this._send = send
-    this._captureException = captureException
-  }
+  error (string): void,
 
-  send (channel: string, data?: mixed): void {
-    try {
-      this._send(channel, data)
-    } catch (err) {
-      this._captureException(err)
-    }
-  }
+  debug (string): void,
 
-  on (channel: string, callback: (data?: mixed) => any): void {
-    ipcMain.on(channel, (event, data) => {
-      callback(data)
-    })
-  }
+  add (Transport): void
 }
 
-export default MainMessageBus
+const winstonFormat = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.printf(log => `${log.timestamp} ${log.level}: ${log.message}`)
+)
+
+export { winstonFormat }
+export type { StringLogger }

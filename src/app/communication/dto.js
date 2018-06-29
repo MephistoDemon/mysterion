@@ -18,20 +18,11 @@
 // @flow
 import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
+import type { LogLevel } from '../logging'
 
 export type ConnectionStatusChangeDTO = {
   oldStatus: ConnectionStatus,
   newStatus: ConnectionStatus
-}
-
-export type MysterionBackendLogDTO = {
-  level: string,
-  message: string
-}
-
-export type MysteriumClientLogDTO = {
-  level: string,
-  data: mixed
 }
 
 export type CurrentIdentityChangeDTO = {
@@ -56,4 +47,9 @@ export type AppErrorDTO = {
   message: string,
   hint: string,
   fatal: boolean
+}
+
+export type LogDTO = {
+  level: LogLevel,
+  data: mixed
 }
