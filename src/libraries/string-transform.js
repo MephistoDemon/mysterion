@@ -36,10 +36,8 @@ function prependWithFn (fn: () => string): TransformFn {
 }
 
 function filterByString (filter: string): TransformFn {
-  const regex = new RegExp(filter)
-
   return (data: string) => {
-    if (!regex.test(data)) {
+    if (!data.includes(filter)) {
       return
     }
     return data
@@ -47,7 +45,11 @@ function filterByString (filter: string): TransformFn {
 }
 
 function getCurrentTimeISOFormat (): string {
-  return new Date(Date.now()).toISOString()
+  return getTimeISOFormat(new Date(Date.now()))
+}
+
+function getTimeISOFormat (date: Date) {
+  return date.toISOString()
 }
 
 export {
