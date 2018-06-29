@@ -17,7 +17,6 @@
 
 // @flow
 import {
-  isNetworkError,
   isTimeoutError,
   isRequestClosedError,
   isServiceUnavailableError,
@@ -33,16 +32,6 @@ describe('errors', () => {
 
       markErrorAsHttp(error)
       expect(isHttpError(error)).to.eql(true)
-    })
-  })
-
-  describe('isNetworkError()', () => {
-    it('indicates network error', () => {
-      let error = new Error('Network Error')
-      expect(isNetworkError(error)).to.be.true
-
-      error = new Error('Slow Network Error')
-      expect(isNetworkError(error)).to.be.false
     })
   })
 

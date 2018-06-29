@@ -42,10 +42,6 @@ function isHttpError (error: Error): boolean {
   return errorObj.isHttpError === true
 }
 
-function isNetworkError (error: Error): boolean {
-  return error.message === 'Network Error'
-}
-
 function isTimeoutError (error: Error): boolean {
   const axiosError = (error: AxiosError)
   if (!axiosError.code) {
@@ -71,4 +67,4 @@ function hasHttpStatus (error: Error, expectedStatus: number): boolean {
   return axiosError.response.status === expectedStatus
 }
 
-export { isHttpError, markErrorAsHttp, isNetworkError, isTimeoutError, isRequestClosedError, isServiceUnavailableError }
+export { isHttpError, markErrorAsHttp, isTimeoutError, isRequestClosedError, isServiceUnavailableError }

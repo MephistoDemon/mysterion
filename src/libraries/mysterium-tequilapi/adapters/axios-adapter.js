@@ -36,25 +36,29 @@ class AxiosAdapter implements HttpInterface {
     options.params = query
 
     return decorateResponse(
-      this._axios.get(path, options)
+      this._axios.get(path, options),
+      path
     )
   }
 
   post (path: string, data: mixed, timeout: ?number): Promise<?any> {
     return decorateResponse(
-      this._axios.post(path, data, this._decorateOptions(timeout))
+      this._axios.post(path, data, this._decorateOptions(timeout)),
+      path
     )
   }
 
   delete (path: string, timeout: ?number): Promise<?any> {
     return decorateResponse(
-      this._axios.delete(path, this._decorateOptions(timeout))
+      this._axios.delete(path, this._decorateOptions(timeout)),
+      path
     )
   }
 
   put (path: string, data: mixed, timeout: ?number): Promise<?any> {
     return decorateResponse(
-      this._axios.put(path, data, this._decorateOptions(timeout))
+      this._axios.put(path, data, this._decorateOptions(timeout)),
+      path
     )
   }
 
@@ -65,12 +69,14 @@ class AxiosAdapter implements HttpInterface {
   }
 }
 
-async function decorateResponse (promise: Promise<Object>): Promise<Object> {
+async function decorateResponse (promise: Promise<Object>, path: string): Promise<Object> {
   let response
   try {
     response = await promise
   } catch (err) {
     markErrorAsHttp(err)
+    err.name = 'Tequilapi error'
+    err.message = `${err.message} (path="${path}")`
     throw err
   }
   return response.data
