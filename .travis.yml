@@ -32,6 +32,7 @@ before_deploy:
 - cp build/Mysterion-*.dmg binaries/Mysterion-latest.dmg
 - cp build/Mysterion-*.dmg releases/
 deploy:
+  # Latest (master branch)
   - provider: pages
     edge:
       branch: v1.8.47
@@ -39,11 +40,28 @@ deploy:
     skip-cleanup: true
     github-token: "$GITHUB_API_TOKEN"
     keep-history: false
+    # Example: mysterion_osx
     target-branch: mysterion_$TRAVIS_OS_NAME
     repo: MysteriumNetwork/build-artifacts
     on:
       tags: false
       branch: master
+  # Release-candidate ('x.x.x' release branches)
+  - provider: pages
+    edge:
+      branch: v1.8.47
+    local-dir: releases
+    skip-cleanup: true
+    github-token: "$GITHUB_API_TOKEN"
+    keep-history: false
+    # Example: mysterion_osx_0.0.3-rc
+    target-branch: mysterion_$TRAVIS_OS_NAME_$TRAVIS_BRANCH-rc
+    repo: MysteriumNetwork/build-artifacts
+    on:
+      tags: false
+      all_branches: true
+      conditions: $TRAVIS_BRANCH =~ ^[0-9]+\.[0-9]+\.[0-9]+$
+  # Release (tags)
   - provider: releases
     file_glob: true
     file: releases/*
