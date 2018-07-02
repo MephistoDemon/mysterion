@@ -34,6 +34,7 @@ import types from '@/store/types'
 import type { TequilapiClient } from '../../../../src/libraries/mysterium-tequilapi/client'
 
 import DIContainer from '../../../../src/app/di/vue-container'
+import BugReporterMock from '../../../helpers/bug-reporter-mock'
 
 describe('VpnLoader', () => {
   const tequilapi: TequilapiClient = tequilapiMockCreate()
@@ -45,10 +46,7 @@ describe('VpnLoader', () => {
     const fakeSleeper = {
       async sleep (_time: number): Promise<void> {}
     }
-    dependencies.constant('bugReporter', {
-      setUser: () => {},
-      captureInfoMessage: () => {}
-    })
+    dependencies.constant('bugReporter', new BugReporterMock())
     dependencies.constant('vpnInitializer', vpnInitializer)
     dependencies.constant('sleeper', fakeSleeper)
 
