@@ -57,7 +57,7 @@ async function captureAsyncError (func: () => Promise<any>) {
 class CallbackRecorder {
   invoked: boolean = false
   _argument: any = null
-  _bindedCallback: (any) => void
+  _boundCallback: (any) => void
 
   /**
    * Returns function, which records it's invocation and argument
@@ -66,10 +66,10 @@ class CallbackRecorder {
    * @returns Function
    */
   getCallback (): (any) => void {
-    if (!this._bindedCallback) {
-      this._bindedCallback = this._record.bind(this)
+    if (!this._boundCallback) {
+      this._boundCallback = this._record.bind(this)
     }
-    return this._bindedCallback
+    return this._boundCallback
   }
 
   _record (argument: any): void {
