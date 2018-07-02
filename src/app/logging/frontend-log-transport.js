@@ -18,16 +18,11 @@
 // @flow
 
 import Transport from 'winston-transport'
-import LogCache from './log-cache'
 import type { SyncRendererCommunication } from '../communication/sync/sync-communication'
-import type { LogLevel } from './index'
+import type { WinstonLogEntry } from './winston-log-entry'
+import { mapWinstonLogLevelToMysterionLevel } from './winston-log-entry'
 
-type LogEntry = {
-  level: string,
-  message: string
-}
-
-export class SyncCommunicationTransport extends Transport {
+class SyncCommunicationTransport extends Transport {
   _communication: SyncRendererCommunication
 
   constructor (communication: SyncRendererCommunication) {
@@ -35,34 +30,13 @@ export class SyncCommunicationTransport extends Transport {
     this._communication = communication
   }
 
-  log (info: LogEntry, callback: () => any) {
-    const logDto = { level: mapToLogLevel(info.level), data: info.message }
+  log (logEntry: WinstonLogEntry, callback: () => any) {
+    const timestamp = logEntry.timestamp || ''
+    const message = timestamp + logEntry.message
+    const logDto = { level: mapWinstonLogLevelToMysterionLevel(logEntry.level), data: message }
     this._communication.sendLog(logDto)
     callback()
   }
 }
 
-export class BackendLogCachingTransport extends Transport {
-  _logCache: LogCache
-  constructor (logCache: LogCache) {
-    super()
-    this._logCache = logCache
-  }
-
-  log (info: LogEntry, callback: () => any) {
-    this._logCache.pushToLevel(mapToLogLevel(info.level), info.message)
-    callback()
-  }
-}
-
-function mapToLogLevel (level: string): LogLevel {
-  switch (level) {
-    case 'error':
-      return 'error'
-    case 'info':
-    case 'warn':
-    case 'debug':
-    default:
-      return 'info'
-  }
-}
+export default SyncCommunicationTransport

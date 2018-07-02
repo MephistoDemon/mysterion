@@ -19,11 +19,11 @@
 
 import winston from 'winston'
 import type { SyncRendererCommunication } from '../communication/sync/sync-communication'
-import { SyncCommunicationTransport } from './backend-logging-transports'
+import SyncCommunicationTransport from './frontend-log-transport'
 import logger from '../logger'
 import { winstonFormat } from './log-boostrapping'
 
-export default class FrontendLogBootstrapper {
+class FrontendLogBootstrapper {
   _communication: SyncRendererCommunication
 
   constructor (communication: SyncRendererCommunication) {
@@ -41,3 +41,5 @@ export default class FrontendLogBootstrapper {
     logger.setFrontendLogger(winstonLogger)
   }
 }
+
+export default FrontendLogBootstrapper
