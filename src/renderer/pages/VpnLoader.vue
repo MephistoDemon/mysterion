@@ -48,11 +48,12 @@ export default {
       commit(type.INIT_SUCCESS)
       this.$router.push('/vpn')
     } catch (err) {
-      logger.error('Application init failed', err.stack)
+      err.message = `Application loading failed: ${err.message}`
+      logger.error(err)
+      this.bugReporter.captureErrorException(err)
 
       commit(type.INIT_FAIL)
       commit(type.OVERLAY_ERROR, messages.initializationError)
-      this.bugReporter.captureErrorException(err)
     }
   },
   computed: {

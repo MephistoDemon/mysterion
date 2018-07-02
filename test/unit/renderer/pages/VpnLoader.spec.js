@@ -164,7 +164,7 @@ describe('VpnLoader', () => {
         throw new Error('Expected error was not captured')
       }
       expect(error).to.be.an('error')
-      expect(error.message).to.eql('Mock initialization error')
+      expect(error.message).to.eql('Application loading failed: Mock initialization error')
     })
   })
 })
