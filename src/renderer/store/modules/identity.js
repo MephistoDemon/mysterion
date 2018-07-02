@@ -62,8 +62,12 @@ function mutationsFactory (dependencies: Container) {
 }
 
 const getters = {
-  currentIdentity (state: Object): string {
-    return state.current.id
+  currentIdentity (state: State): string {
+    const identity = state.current
+    if (!identity) {
+      throw new Error('Trying to get identity which is not present')
+    }
+    return identity.id
   }
 }
 
