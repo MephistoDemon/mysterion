@@ -21,6 +21,7 @@ import { describe, expect, it } from '../../../../helpers/dependencies'
 import Process from '../../../../../src/libraries/mysterium-client/launch-daemon/process'
 import MockAdapter from 'axios-mock-adapter'
 import axios from 'axios'
+import EmptyTequilapiClientMock from '../../../renderer/store/modules/empty-tequilapi-client-mock'
 
 describe('Process', () => {
   describe('start()', () => {
@@ -31,7 +32,9 @@ describe('Process', () => {
         invoked = true
         return [200]
       })
-      const process = new Process(null, 1234, '')
+
+      const tequilApi = new EmptyTequilapiClientMock()
+      const process = new Process(tequilApi, 1234, '')
       await process.start()
 
       expect(invoked).to.be.true

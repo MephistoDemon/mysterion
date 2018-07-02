@@ -57,7 +57,7 @@ xdescribe('Standalone Process', () => {
 
   describe('startup', () => {
     it('spawns in less than 100ms without errors', () => {
-      expect(process.child).to.be.instanceOf(ChildProcess)
+      expect(process._child).to.be.instanceOf(ChildProcess)
     })
 
     it('sends log data to callback on()', () => {

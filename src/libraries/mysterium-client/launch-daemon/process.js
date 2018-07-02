@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// @flow
+
 import { Tail } from 'tail'
 import path from 'path'
+import type { TequilapiClient } from '../../mysterium-tequilapi/client'
+import type { ProcessInterface } from '../index'
 import processLogLevels from '../log-levels'
 import { INVERSE_DOMAIN_PACKAGE_NAME } from './config'
 import axios from 'axios'
@@ -30,15 +34,21 @@ const stderrFileName = 'stderr.log'
 /**
  * Spawns and stops 'mysterium_client' daemon on OSX
  */
-class Process {
+class Process implements ProcessInterface {
+  _tequilapi: TequilapiClient
+  _daemonPort: number
+  _stdoutPath: string
+  _stderrPath: string
+  _subscribers: Object
+
   /**
    * @constructor
    * @param {TequilapiClient} tequilapi - api to be used
    * @param {string} daemonPort - port at which the daemon is spawned
    * @param {string} logDirectory - directory where it's looking for logs
    */
-  constructor (tequilapi, daemonPort, logDirectory) {
-    this.tequilapi = tequilapi
+  constructor (tequilapi: TequilapiClient, daemonPort: number, logDirectory: string) {
+    this._tequilapi = tequilapi
     this._daemonPort = daemonPort
     this._stdoutPath = path.join(logDirectory, stdoutFileName)
     this._stderrPath = path.join(logDirectory, stderrFileName)
@@ -48,8 +58,8 @@ class Process {
     }
   }
 
-  start () {
-    return axios.get('http://127.0.0.1:' + this._daemonPort)
+  async start (): Promise<void> {
+    axios.get('http://127.0.0.1:' + this._daemonPort)
       .then(() => {
         console.info('Touched the daemon, now it should be up')
       })
@@ -58,12 +68,13 @@ class Process {
       })
   }
 
-  async stop () {
-    await this.tequilapi.stop()
+  async stop (): Promise<void> {
+    await this._tequilapi.stop()
+
     console.info('Client Quit was successful')
   }
 
-  async setupLogging () {
+  async setupLogging (): Promise<void> {
     await this._prepareLogFiles()
     const notifyOnErrorSubscribers = this._notifySubscribersWithLog.bind(this, processLogLevels.ERROR)
     tailFile(this._stdoutPath, this._notifySubscribersWithLog.bind(this, processLogLevels.INFO))
@@ -75,8 +86,11 @@ class Process {
     })
   }
 
-  onLog (level, cb) {
-    if (!this._subscribers[level]) throw new Error(`Unknown process logging level: ${level}`)
+  onLog (level: string, cb: Function): void {
+    if (!this._subscribers[level]) {
+      throw new Error(`Unknown process logging level: ${level}`)
+    }
+
     this._subscribers[level].push(cb)
   }
 
@@ -92,7 +106,7 @@ class Process {
   }
 }
 
-function tailFile (filePath, cb) {
+function tailFile (filePath: string, cb: Function) {
   const logTail = new Tail(filePath)
   logTail.on('line', cb)
   logTail.on('error', () => {

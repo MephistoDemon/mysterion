@@ -16,15 +16,30 @@
  */
 
 // @flow
-import type {Container} from '../../../app/di'
-import type {MysterionConfig} from '../../../app/mysterionConfig'
-import {Installer, Process, Monitoring} from '../../../libraries/mysterium-client'
+import type { Container } from '../../../app/di'
+import type { MysterionConfig } from '../../../app/mysterionConfig'
+import { Monitoring } from '../../../libraries/mysterium-client'
+
+import LaunchDaemonInstaller from '../../../libraries/mysterium-client/launch-daemon/installer'
+import LaunchDaemonProcess from '../../../libraries/mysterium-client/launch-daemon/process'
+
+import StandaloneInstaller from '../../../libraries/mysterium-client/standalone/installer'
+import StandaloneProcess from '../../../libraries/mysterium-client/standalone/process'
+
 import path from 'path'
-import type {ClientConfig} from '../../../libraries/mysterium-client/config'
+import type { ClientConfig } from '../../../libraries/mysterium-client/config'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import { LAUNCH_DAEMON_PORT } from '../../../libraries/mysterium-client/launch-daemon/config'
+import os from 'os'
 
 function bootstrap (container: Container) {
+  container.service(
+    'mysteriumClient.platform',
+    [],
+    () => {
+      return os.platform()
+    }
+  )
   container.service(
     'mysteriumClient.config',
     ['mysterionApplication.config'],
@@ -42,14 +57,26 @@ function bootstrap (container: Container) {
   )
   container.service(
     'mysteriumClientInstaller',
-    ['mysteriumClient.config'],
-    (config) => new Installer(config)
+    ['mysteriumClient.config', 'mysteriumClient.platform'],
+    (config: ClientConfig, platform: string) => {
+      switch (platform) {
+        case 'darwin':
+          return new LaunchDaemonInstaller(config)
+        default:
+          return new StandaloneInstaller()
+      }
+    }
   )
   container.service(
     'mysteriumClientProcess',
-    ['tequilapiClient', 'mysteriumClient.config'],
-    (tequilapiClient: TequilapiClient, mysteriumClientConfig: ClientConfig) => {
-      return new Process(tequilapiClient, LAUNCH_DAEMON_PORT, mysteriumClientConfig.logDir)
+    ['tequilapiClient', 'mysteriumClient.config', 'mysteriumClient.platform'],
+    (tequilapiClient: TequilapiClient, config: ClientConfig, platform: string) => {
+      switch (platform) {
+        case 'darwin':
+          return new LaunchDaemonProcess(tequilapiClient, LAUNCH_DAEMON_PORT, config.logDir)
+        default:
+          return new StandaloneProcess(config)
+      }
     }
   )
   container.service(

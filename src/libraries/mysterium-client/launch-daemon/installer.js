@@ -15,12 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// @flow
+
 import fs from 'fs'
 import sudo from 'sudo-prompt'
 import path from 'path'
 import md5 from 'md5'
+import type { ClientConfig } from '../config'
+import type { InstallerInterface } from '../index'
 import { INVERSE_DOMAIN_PACKAGE_NAME, LAUNCH_DAEMON_PORT, PROPERTY_LIST_FILE, PROPERTY_LIST_NAME } from './config'
-import {promisify} from 'util'
+import { promisify } from 'util'
 import createFileIfMissing from '../../create-file-if-missing'
 
 const writeFile = promisify(fs.writeFile)
@@ -32,13 +36,11 @@ function processInstalled () {
   return fs.existsSync(PROPERTY_LIST_FILE)
 }
 
-class Installer {
-  /**
-   * @constructor
-   * @param {ClientConfig} config
-   */
-  constructor (config) {
-    this.config = config
+class Installer implements InstallerInterface {
+  _config: ClientConfig
+
+  constructor (config: ClientConfig) {
+    this._config = config
   }
 
   template () {
@@ -49,20 +51,20 @@ class Installer {
         <key>Label</key>
           <string>${INVERSE_DOMAIN_PACKAGE_NAME}</string>
           <key>Program</key>
-          <string>${this.config.clientBin}</string>
+          <string>${this._config.clientBin}</string>
           <key>ProgramArguments</key>
           <array>
-            <string>${this.config.clientBin}</string>
+            <string>${this._config.clientBin}</string>
             <string>--config-dir</string>
-            <string>${this.config.configDir}</string>
+            <string>${this._config.configDir}</string>
             <string>--data-dir</string>
-            <string>${this.config.dataDir}</string>
+            <string>${this._config.dataDir}</string>
             <string>--runtime-dir</string>
-            <string>${this.config.runtimeDir}</string>
+            <string>${this._config.runtimeDir}</string>
             <string>--openvpn.binary</string>
-            <string>${this.config.openVPNBin}</string>
+            <string>${this._config.openVPNBin}</string>
             <string>--tequilapi.port</string>
-            <string>${this.config.tequilapiPort}</string>
+            <string>${this._config.tequilapiPort}</string>
           </array>
           <key>Sockets</key>
             <dict>
@@ -80,21 +82,21 @@ class Installer {
             <false/>
           </dict>
           <key>WorkingDirectory</key>
-          <string>${this.config.runtimeDir}</string>
+          <string>${this._config.runtimeDir}</string>
           <key>StandardOutPath</key>
-          <string>${this.config.logDir}/stdout.log</string>
+          <string>${this._config.logDir}/stdout.log</string>
           <key>StandardErrorPath</key>
-          <string>${this.config.logDir}/stderr.log</string>
+          <string>${this._config.logDir}/stderr.log</string>
          </dict>
       </plist>`
   }
 
-  needsInstallation () {
+  needsInstallation (): boolean {
     return !processInstalled() || this._pListChecksumMismatch()
   }
 
-  async install () {
-    let tempPlistFile = path.join(this.config.runtimeDir, PROPERTY_LIST_NAME)
+  async install (): Promise<void> {
+    let tempPlistFile = path.join(this._config.runtimeDir, PROPERTY_LIST_NAME)
     let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
     let script = `\
       cp ${tempPlistFile} ${PROPERTY_LIST_FILE}\
@@ -107,19 +109,20 @@ class Installer {
     let command = `sh -c '${script}'`.replace(/\n/, '')
 
     await writeFile(tempPlistFile, this.template())
-    await sudoExec(command, { name: 'Mysterion' })
+    await sudoExec(command, {name: 'Mysterion'})
     await this._createLogFilesIfMissing()
   }
 
   _pListChecksumMismatch () {
     let templateChecksum = md5(this.template())
     let plistChecksum = md5(fs.readFileSync(PROPERTY_LIST_FILE))
+
     return templateChecksum !== plistChecksum
   }
 
   async _createLogFilesIfMissing () {
-    await createFileIfMissing(path.join(this.config.logDir, 'stdout.log'))
-    await createFileIfMissing(path.join(this.config.logDir, 'stderr.log'))
+    await createFileIfMissing(path.join(this._config.logDir, 'stdout.log'))
+    await createFileIfMissing(path.join(this._config.logDir, 'stderr.log'))
   }
 }
 

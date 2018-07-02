@@ -15,12 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class Installer {
-  needsInstallation () {
+// @flow
+
+import type { InstallerInterface } from '../index'
+
+class Installer implements InstallerInterface {
+  needsInstallation (): boolean {
     return false
   }
 
-  install () {}
+  install (): Promise<void> {
+    return Promise.resolve()
+  }
 }
 
 export default Installer
