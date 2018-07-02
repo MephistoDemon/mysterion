@@ -28,25 +28,36 @@ import mainStoreFactory from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
 import VpnLoader from '@/pages/VpnLoader'
 
-import { describe, it, before } from '../../../helpers/dependencies'
+import { describe, it, beforeEach, before } from '../../../helpers/dependencies'
 import messages from '../../../../src/app/messages'
 import types from '@/store/types'
 import type { TequilapiClient } from '../../../../src/libraries/mysterium-tequilapi/client'
 
 import DIContainer from '../../../../src/app/di/vue-container'
 import BugReporterMock from '../../../helpers/bug-reporter-mock'
+import type { BugReporter } from '../../../../src/app/bug-reporting/interface'
+import { nextTick } from '../../../helpers/utils'
+
+class VpnLoaderBugReporter extends BugReporterMock {
+  errorException: ?Error = null
+
+  captureErrorException (err: Error, _context?: any): void {
+    this.errorException = err
+  }
+}
 
 describe('VpnLoader', () => {
   const tequilapi: TequilapiClient = tequilapiMockCreate()
+  let bugReporter: VpnLoaderBugReporter
 
-  async function mountComponent (tequilapi: TequilapiClient, vpnInitializer: Object): Vue {
+  async function mountComponent (tequilapi: TequilapiClient, vpnInitializer: Object, bugReporter: BugReporter): Vue {
     const localVue = createLocalVue()
 
     const dependencies = new DIContainer(localVue)
     const fakeSleeper = {
       async sleep (_time: number): Promise<void> {}
     }
-    dependencies.constant('bugReporter', new BugReporterMock())
+    dependencies.constant('bugReporter', bugReporter)
     dependencies.constant('vpnInitializer', vpnInitializer)
     dependencies.constant('sleeper', fakeSleeper)
 
@@ -76,6 +87,10 @@ describe('VpnLoader', () => {
     return {}
   }
 
+  beforeEach(() => {
+    bugReporter = new VpnLoaderBugReporter()
+  })
+
   describe('when initialization succeeds', () => {
     let vm
 
@@ -83,8 +98,7 @@ describe('VpnLoader', () => {
       const vpnInitializer = {
         async initialize (..._args: Array<any>): Promise<void> {}
       }
-
-      vm = await mountComponent(tequilapi, vpnInitializer)
+      vm = await mountComponent(tequilapi, vpnInitializer, bugReporter)
     })
 
     it('loads without errors', async () => {
@@ -111,7 +125,7 @@ describe('VpnLoader', () => {
         }
       }
 
-      vm = await mountComponent(tequilapi, vpnInitializer)
+      vm = await mountComponent(tequilapi, vpnInitializer, bugReporter)
     })
 
     it('loads without errors', async () => {
@@ -127,20 +141,30 @@ describe('VpnLoader', () => {
   describe('when initialization fails always', () => {
     let vm
 
-    before(async () => {
+    beforeEach(async () => {
       const vpnInitializer = {
         async initialize (..._args: Array<any>): Promise<void> {
           throw new Error('Mock initialization error')
         }
       }
 
-      vm = await mountComponent(tequilapi, vpnInitializer)
+      vm = await mountComponent(tequilapi, vpnInitializer, bugReporter)
+      await nextTick() // wait for mount hook to complete
     })
 
     it('notifies user with an overlay', () => {
       expect(vm.$store.getters.overlayError).to.eql({
         message: messages.initializationError.message
       })
+    })
+
+    it('reports error', () => {
+      const error = bugReporter.errorException
+      if (!error) {
+        throw new Error('Expected error was not captured')
+      }
+      expect(error).to.be.an('error')
+      expect(error.message).to.eql('Mock initialization error')
     })
   })
 })
