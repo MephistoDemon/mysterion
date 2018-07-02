@@ -35,7 +35,7 @@ class SubscribableMessageBus implements MessageBus {
     if (this._callbacks[channel] !== callback) {
       throw new Error('Callback being removed was not found')
     }
-    this._callbacks[channel] = undefined
+    delete this._callbacks[channel]
     this._callbacksCount--
   }
 

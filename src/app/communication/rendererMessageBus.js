@@ -44,7 +44,7 @@ class RendererMessageBus implements MessageBus {
       throw new Error(`Removing callback for '${channel}' message in renderer failed - callback was not found`)
     }
     this._removeListener(channel, listener)
-    this._listeners[callback] = undefined
+    delete this._listeners[callback]
   }
 
   _buildListener (callback: MessageBusCallback): Listener {
