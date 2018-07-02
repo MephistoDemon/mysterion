@@ -111,21 +111,22 @@ describe('VpnLoader', () => {
     })
   })
 
-  describe('when initialization fails two times', () => {
+  describe('when initialization fails few times', () => {
     let vm
     let invoked: number = 0
 
-    before(async () => {
+    beforeEach(async () => {
       const vpnInitializer = {
         async initialize (..._args: Array<any>): Promise<void> {
           invoked++
-          if (invoked <= 2) {
+          if (invoked <= 5) {
             throw new Error('Mock initialization error')
           }
         }
       }
 
       vm = await mountComponent(tequilapi, vpnInitializer, bugReporter)
+      await nextTick()
     })
 
     it('loads without errors', async () => {
