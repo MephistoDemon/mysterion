@@ -24,7 +24,7 @@ import {
   toISOString
 } from '../../../src/libraries/strings'
 
-describe.only('strings', () => {
+describe('strings', () => {
   describe('prependWithFn', () => {
     it('prepends each time with fn execution result', () => {
       let calledTimes = 0

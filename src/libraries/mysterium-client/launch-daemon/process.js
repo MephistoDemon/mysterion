@@ -65,8 +65,8 @@ class Process {
 
   async setupLogging () {
     await this._prepareLogFiles()
-    const notifyOnErrorSubscribers = this._notifySubscriberWithLog.bind(this, processLogLevels.ERROR)
-    tailFile(this._stdoutPath, this._notifySubscriberWithLog.bind(this, processLogLevels.INFO))
+    const notifyOnErrorSubscribers = this._notifySubscribersWithLog.bind(this, processLogLevels.ERROR)
+    tailFile(this._stdoutPath, this._notifySubscribersWithLog.bind(this, processLogLevels.INFO))
     tailFile(this._stderrPath, (data) => {
       notifyOnErrorSubscribers(prependWithCurrentTime(prependWithSpace(data)))
     })
@@ -80,7 +80,7 @@ class Process {
     this._subscribers[level].push(cb)
   }
 
-  _notifySubscriberWithLog (level, data) {
+  _notifySubscribersWithLog (level, data) {
     for (let sub of this._subscribers[level]) {
       sub(data)
     }
