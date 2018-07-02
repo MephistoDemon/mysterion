@@ -21,6 +21,7 @@ import DIContainer from '../../../../src/app/di/vue-container'
 import FakeMessageBus from '../../../helpers/fakeMessageBus'
 import DisconnectNotificationSetting from '@/components/DisconnectNotificationSetting'
 
+// TODO: extract this out to DRY with other occurances
 function mountWith (rendererCommunication, store) {
   const vue = createLocalVue()
 
