@@ -19,19 +19,23 @@
 import {ipcRenderer} from 'electron'
 import type { MessageBus, MessageBusCallback } from './messageBus'
 
+// Listener is used for registering to channel events.
+// It has different signature from MessageBusCallback.
+type Listener = (event: Object, ...args: Array<any>) => void
+
 class RendererMessageBus implements MessageBus {
-  _listeners: { [MessageBusCallback]: ?MessageBusCallback } = {}
+  // _listeners stores listener reference for each callback.
+  // This is needed on .removeCallback, because Listener and Callback are different objects.
+  _listeners: { [MessageBusCallback]: ?Listener } = {}
 
   send (channel: string, data?: mixed): void {
     ipcRenderer.send(channel, data)
   }
 
   on (channel: string, callback: MessageBusCallback): void {
-    const listener = (event, data) => {
-      callback(data)
-    }
-    ipcRenderer.on(channel, listener)
+    const listener = this._buildListener(callback)
     this._listeners[callback] = listener
+    this._registerListener(channel, listener)
   }
 
   removeCallback (channel: string, callback: MessageBusCallback): void {
@@ -39,8 +43,22 @@ class RendererMessageBus implements MessageBus {
     if (!listener) {
       throw new Error(`Removing callback for '${channel}' message in renderer failed - callback was not found`)
     }
-    ipcRenderer.removeListener(channel, listener)
+    this._removeListener(channel, listener)
     this._listeners[callback] = undefined
+  }
+
+  _buildListener (callback: MessageBusCallback): Listener {
+    return (event, data) => {
+      callback(data)
+    }
+  }
+
+  _registerListener (channel: string, listener: Listener) {
+    ipcRenderer.on(channel, listener)
+  }
+
+  _removeListener (channel: string, listener: Listener) {
+    ipcRenderer.removeListener(channel, listener)
   }
 }
 
