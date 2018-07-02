@@ -21,7 +21,7 @@ import processLogLevels from '../log-levels'
 import { INVERSE_DOMAIN_PACKAGE_NAME } from './config'
 import axios from 'axios'
 import createFileIfMissing from '../../create-file-if-missing'
-import { applyTransformation, filterByString, prependWithFn, getCurrentTimeISOFormat } from '../../string-transform'
+import { filterByString, prependWithFn, getCurrentTimeISOFormat } from '../../strings'
 
 const SYSTEM_LOG = '/var/log/system.log'
 const stdoutFileName = 'stdout.log'
@@ -65,10 +65,15 @@ class Process {
 
   async setupLogging () {
     await this._prepareLogFiles()
-    const boundErrorCb = this._logCallback.bind(this, processLogLevels.ERROR)
-    tailFile(this._stdoutPath, this._logCallback.bind(this, processLogLevels.INFO))
-    tailFile(this._stderrPath, applyTransformation(prependWithFn(getCurrentTimeISOFormat), boundErrorCb))
-    tailFile(SYSTEM_LOG, applyTransformation(filterByString(INVERSE_DOMAIN_PACKAGE_NAME), boundErrorCb))
+    const notifyOnErrorSubscribers = this._notifySubscriberWithLog.bind(this, processLogLevels.ERROR)
+    tailFile(this._stdoutPath, this._notifySubscriberWithLog.bind(this, processLogLevels.INFO))
+    tailFile(this._stderrPath, (data) => {
+      notifyOnErrorSubscribers(prependWithCurrentTime(prependWithSpace(data)))
+    })
+    tailFile(SYSTEM_LOG, (data) => {
+      const filtered = filterByInversePackageName(data)
+      if (filtered) notifyOnErrorSubscribers(filtered)
+    })
   }
 
   onLog (level, cb) {
@@ -76,7 +81,7 @@ class Process {
     this._subscribers[level].push(cb)
   }
 
-  _logCallback (level, data) {
+  _notifySubscriberWithLog (level, data) {
     for (let sub of this._subscribers[level]) {
       sub(data)
     }
@@ -95,5 +100,9 @@ function tailFile (filePath, cb) {
     console.error(`log file watching failed. file probably doesn't exist: ${filePath}`)
   })
 }
+
+const prependWithCurrentTime = prependWithFn(getCurrentTimeISOFormat)
+const prependWithSpace = prependWithFn(() => ` `)
+const filterByInversePackageName = filterByString(INVERSE_DOMAIN_PACKAGE_NAME)
 
 export default Process

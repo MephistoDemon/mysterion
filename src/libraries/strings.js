@@ -18,16 +18,6 @@
 // @flow
 
 type TransformFn = (string) => ?string
-type Callback = (string) => void
-
-function applyTransformation (transform: TransformFn, next: Callback): (string) => void {
-  return (data) => {
-    const transformed = transform(data)
-    if (transformed !== null && transformed !== undefined) {
-      next(transformed)
-    }
-  }
-}
 
 function prependWithFn (fn: () => string): TransformFn {
   return (data: string) => {
@@ -45,16 +35,16 @@ function filterByString (filter: string): TransformFn {
 }
 
 function getCurrentTimeISOFormat (): string {
-  return getTimeISOFormat(new Date(Date.now()))
+  return toISOString(new Date())
 }
 
-function getTimeISOFormat (date: Date) {
+function toISOString (date: Date): string {
   return date.toISOString()
 }
 
 export {
-  applyTransformation,
   prependWithFn,
   filterByString,
-  getCurrentTimeISOFormat
+  getCurrentTimeISOFormat,
+  toISOString
 }

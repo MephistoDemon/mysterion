@@ -17,14 +17,13 @@
 
 // @flow
 
-import { describe, it, expect, beforeEach } from '../../helpers/dependencies'
+import { describe, it, expect } from '../../helpers/dependencies'
 import {
-  applyTransformation,
   filterByString,
   getCurrentTimeISOFormat,
-  prependWithFn
-} from '../../../src/libraries/string-transform'
-import { CallbackRecorder } from '../../helpers/utils'
+  prependWithFn,
+  toISOString
+} from '../../../src/libraries/strings'
 
 describe('prependWithFn', () => {
   it('prepends each time with fn execution result', () => {
@@ -48,36 +47,17 @@ describe('filterByString', () => {
   })
 })
 
-describe('applyTransformation', () => {
-  let cbRec
-
-  beforeEach(() => {
-    cbRec = new CallbackRecorder()
-  })
-
-  it('runs transformation function and pipes its output to callback', () => {
-    const transform = (data) => data + '+'
-
-    applyTransformation(transform, cbRec.getCallback())('data')
-    expect(cbRec.invoked).to.be.true
-    expect(cbRec.argument).to.eql('data+')
-  })
-
-  it('does not call callback if transformation returns undefined or null', () => {
-    const transformReturnNull = () => {
-      return null
-    }
-
-    applyTransformation(transformReturnNull, cbRec.getCallback())('data')
-    expect(cbRec.invoked).to.be.false
+describe('getCurrentTimeISOFormat', () => {
+  const current = getCurrentTimeISOFormat()
+  it('returns a string representing current time', () => {
+    expect(Date.parse(current)).to.not.be.NaN
+    expect(Date.parse(current)).to.be.string
   })
 })
 
-describe('getCurrentTimeISOFormat', () => {
-  const current = getCurrentTimeISOFormat()
-  const ISORegex = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/
-  it('returns a valid ISO format', () => {
-    expect(Date.parse(current)).to.not.be.NaN
-    expect(current).to.match(ISORegex)
+describe('toISOString', () => {
+  const datetime = new Date(Date.parse('04 Dec 1995 00:12:00 GMT'))
+  it('returns ISO formatted string from datetime number', () => {
+    expect(toISOString(datetime)).to.eql('1995-12-04T00:12:00.000Z')
   })
 })
