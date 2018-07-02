@@ -21,7 +21,7 @@ import processLogLevels from '../log-levels'
 import { INVERSE_DOMAIN_PACKAGE_NAME } from './config'
 import axios from 'axios'
 import createFileIfMissing from '../../create-file-if-missing'
-import { filterByString, prependWithFn, getCurrentTimeISOFormat } from '../../strings'
+import { prependWithFn, getCurrentTimeISOFormat } from '../../strings'
 
 const SYSTEM_LOG = '/var/log/system.log'
 const stdoutFileName = 'stdout.log'
@@ -71,8 +71,7 @@ class Process {
       notifyOnErrorSubscribers(prependWithCurrentTime(prependWithSpace(data)))
     })
     tailFile(SYSTEM_LOG, (data) => {
-      const filtered = filterByInversePackageName(data)
-      if (filtered) notifyOnErrorSubscribers(filtered)
+      if (data.includes(INVERSE_DOMAIN_PACKAGE_NAME)) notifyOnErrorSubscribers(data)
     })
   }
 
@@ -103,6 +102,5 @@ function tailFile (filePath, cb) {
 
 const prependWithCurrentTime = prependWithFn(getCurrentTimeISOFormat)
 const prependWithSpace = prependWithFn(() => ` `)
-const filterByInversePackageName = filterByString(INVERSE_DOMAIN_PACKAGE_NAME)
 
 export default Process

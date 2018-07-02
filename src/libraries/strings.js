@@ -17,20 +17,11 @@
 
 // @flow
 
-type TransformFn = (string) => ?string
+type TransformFn = (string) => string
 
 function prependWithFn (fn: () => string): TransformFn {
   return (data: string) => {
     return fn() + data
-  }
-}
-
-function filterByString (filter: string): TransformFn {
-  return (data: string) => {
-    if (!data.includes(filter)) {
-      return
-    }
-    return data
   }
 }
 
@@ -44,7 +35,6 @@ function toISOString (date: Date): string {
 
 export {
   prependWithFn,
-  filterByString,
   getCurrentTimeISOFormat,
   toISOString
 }
