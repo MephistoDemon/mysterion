@@ -17,7 +17,7 @@
 
 // @flow
 import LimitedLinkedList from '../../libraries/limited-linked-list'
-import type { LogLevel } from './index'
+import type { LogLevel } from './mysterion-log-levels'
 
 type LogCacheStore = {
   info: LimitedLinkedList,
