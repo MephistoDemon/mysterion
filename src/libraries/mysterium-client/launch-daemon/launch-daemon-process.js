@@ -62,20 +62,12 @@ class LaunchDaemonProcess implements Process {
     }
   }
 
-  async start (): Promise<void> {
-    try {
-      await axios.get('http://127.0.0.1:' + this._daemonPort)
-
-      console.info('Touched the daemon, now it should be up')
-    } catch (e) {
-      console.info('Touched the daemon with error, anyway it should be up')
-    }
+  start (): Promise<void> {
+    return axios.get('http://127.0.0.1:' + this._daemonPort)
   }
 
-  async stop (): Promise<void> {
-    await this._tequilapi.stop()
-
-    console.info('Client Quit was successful')
+  stop (): Promise<void> {
+    return this._tequilapi.stop()
   }
 
   async setupLogging (): Promise<void> {
