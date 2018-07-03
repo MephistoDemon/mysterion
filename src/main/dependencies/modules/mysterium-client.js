@@ -23,8 +23,8 @@ import { Monitoring } from '../../../libraries/mysterium-client'
 import LaunchDaemonInstaller from '../../../libraries/mysterium-client/launch-daemon/launch-daemon-installer'
 import LaunchDaemonProcess from '../../../libraries/mysterium-client/launch-daemon/launch-daemon-process'
 
-import StandaloneInstaller from '../../../libraries/mysterium-client/standalone/standalone-client-installer'
-import StandaloneProcess from '../../../libraries/mysterium-client/standalone/standalone-client-process'
+import StandaloneClientInstaller from '../../../libraries/mysterium-client/standalone/standalone-client-installer'
+import StandaloneClientProcess from '../../../libraries/mysterium-client/standalone/standalone-client-process'
 
 import path from 'path'
 import type { ClientConfig } from '../../../libraries/mysterium-client/config'
@@ -33,11 +33,8 @@ import { LAUNCH_DAEMON_PORT } from '../../../libraries/mysterium-client/launch-d
 import os from 'os'
 
 function bootstrap (container: Container) {
-  container.service(
-    'mysteriumClient.platform',
-    [],
-    () => os.platform()
-  )
+  container.constant('mysteriumClient.platform', os.platform())
+
   container.service(
     'mysteriumClient.config',
     ['mysterionApplication.config'],
@@ -61,7 +58,7 @@ function bootstrap (container: Container) {
         case 'darwin':
           return new LaunchDaemonInstaller(config)
         default:
-          return new StandaloneInstaller()
+          return new StandaloneClientInstaller()
       }
     }
   )
@@ -73,7 +70,7 @@ function bootstrap (container: Container) {
         case 'darwin':
           return new LaunchDaemonProcess(tequilapiClient, LAUNCH_DAEMON_PORT, config.logDir)
         default:
-          return new StandaloneProcess(config)
+          return new StandaloneClientProcess(config)
       }
     }
   )
