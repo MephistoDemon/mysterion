@@ -20,11 +20,11 @@ import type { Container } from '../../../app/di'
 import type { MysterionConfig } from '../../../app/mysterionConfig'
 import { Monitoring } from '../../../libraries/mysterium-client'
 
-import LaunchDaemonInstaller from '../../../libraries/mysterium-client/launch-daemon/installer'
-import LaunchDaemonProcess from '../../../libraries/mysterium-client/launch-daemon/process'
+import LaunchDaemonInstaller from '../../../libraries/mysterium-client/launch-daemon/launch-daemon-installer'
+import LaunchDaemonProcess from '../../../libraries/mysterium-client/launch-daemon/launch-daemon-process'
 
-import StandaloneInstaller from '../../../libraries/mysterium-client/standalone/installer'
-import StandaloneProcess from '../../../libraries/mysterium-client/standalone/process'
+import StandaloneInstaller from '../../../libraries/mysterium-client/standalone/standalone-client-installer'
+import StandaloneProcess from '../../../libraries/mysterium-client/standalone/standalone-client-process'
 
 import path from 'path'
 import type { ClientConfig } from '../../../libraries/mysterium-client/config'

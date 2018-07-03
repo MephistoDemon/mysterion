@@ -80,11 +80,14 @@ class LaunchDaemonProcess implements Process {
 
   async setupLogging (): Promise<void> {
     await this._prepareLogFiles()
+
     const notifyOnErrorSubscribers = this._notifySubscribersWithLog.bind(this, processLogLevels.ERROR)
+
     tailFile(this._stdoutPath, this._notifySubscribersWithLog.bind(this, processLogLevels.INFO))
     tailFile(this._stderrPath, (data) => {
       notifyOnErrorSubscribers(prependWithCurrentTime(prependWithSpace(data)))
     })
+
     tailFile(SYSTEM_LOG, (data) => {
       if (data.includes(INVERSE_DOMAIN_PACKAGE_NAME)) notifyOnErrorSubscribers(data)
     })
@@ -98,19 +101,19 @@ class LaunchDaemonProcess implements Process {
     this._subscribers[level].push(cb)
   }
 
-  _notifySubscribersWithLog (level, data) {
+  _notifySubscribersWithLog (level: string, data: mixed): void {
     for (let sub of this._subscribers[level]) {
       sub(data)
     }
   }
 
-  async _prepareLogFiles () {
+  async _prepareLogFiles (): Promise<void> {
     await createFileIfMissing(this._stdoutPath)
     await createFileIfMissing(this._stderrPath)
   }
 }
 
-function tailFile (filePath: string, cb: Function) {
+function tailFile (filePath: string, cb: LogCallback): void {
   const logTail = new Tail(filePath)
   logTail.on('line', cb)
   logTail.on('error', () => {

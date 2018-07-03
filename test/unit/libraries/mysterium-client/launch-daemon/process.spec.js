@@ -18,7 +18,7 @@
 // @flow
 
 import { describe, expect, it } from '../../../../helpers/dependencies'
-import Process from '../../../../../src/libraries/mysterium-client/launch-daemon/process'
+import Process from '../../../../../src/libraries/mysterium-client/launch-daemon/launch-daemon-process'
 import MockAdapter from 'axios-mock-adapter'
 import axios from 'axios'
 import EmptyTequilapiClientMock from '../../../renderer/store/modules/empty-tequilapi-client-mock'

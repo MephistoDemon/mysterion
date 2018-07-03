@@ -43,7 +43,7 @@ class LaunchDaemonInstaller implements Installer {
     this._config = config
   }
 
-  template () {
+  template (): string {
     return `<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
       <plist version="1.0">
@@ -113,14 +113,14 @@ class LaunchDaemonInstaller implements Installer {
     await this._createLogFilesIfMissing()
   }
 
-  _pListChecksumMismatch () {
+  _pListChecksumMismatch (): boolean {
     let templateChecksum = md5(this.template())
     let plistChecksum = md5(fs.readFileSync(PROPERTY_LIST_FILE))
 
     return templateChecksum !== plistChecksum
   }
 
-  async _createLogFilesIfMissing () {
+  async _createLogFilesIfMissing (): Promise<void> {
     await createFileIfMissing(path.join(this._config.logDir, 'stdout.log'))
     await createFileIfMissing(path.join(this._config.logDir, 'stderr.log'))
   }

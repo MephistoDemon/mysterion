@@ -26,7 +26,7 @@ import logLevels from '../log-levels'
 /**
  * 'mysterium_client' process handler
  */
-class StandaloneProcess implements Process {
+class StandaloneClientProcess implements Process {
   _config: ClientConfig
   _child: ?ChildProcess
 
@@ -97,4 +97,4 @@ class StandaloneProcess implements Process {
   }
 }
 
-export default StandaloneProcess
+export default StandaloneClientProcess
