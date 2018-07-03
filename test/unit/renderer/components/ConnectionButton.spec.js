@@ -15,12 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// @flow
+
 import Vuex from 'vuex'
 import ConnectionButton from '../../../../src/renderer/components/ConnectionButton'
 import type from '../../../../src/renderer/store/types'
 import ConnectionStatusEnum from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
 import {state, mutations, getters} from '@/store/modules/connection'
 import {createLocalVue, mount} from '@vue/test-utils'
+import { describe, expect, it } from '../../../helpers/dependencies'
 
 const mountWithStore = function () {
   const localVue = createLocalVue()
@@ -67,7 +70,7 @@ const mountWithStore = function () {
 
 describe('ConnectionButton', () => {
   it('renders button text based on state', async () => {
-    let rules = [
+    const rules = [
       ['NotConnected', 'Connect'],
       ['Connected', 'Disconnect'],
       ['Connecting', 'Cancel'],
@@ -75,10 +78,10 @@ describe('ConnectionButton', () => {
     ]
     const wrapper = mountWithStore()
     const vm = wrapper.vm
-    for (let index in rules) {
-      vm.$store.commit(type.SET_CONNECTION_STATUS, rules[index][0])
+    for (let rule of rules) {
+      vm.$store.commit(type.SET_CONNECTION_STATUS, rule[0])
       vm._watcher.run()
-      expect(vm.$el.textContent).to.eql(rules[index][1])
+      expect(vm.$el.textContent).to.eql(rule[1])
     }
     // reset store
     vm.$store.commit(type.SET_CONNECTION_STATUS, ConnectionStatusEnum.NOT_CONNECTED)
