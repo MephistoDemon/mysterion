@@ -81,7 +81,11 @@ function mountWith (rendererCommunication, store) {
 describe('CountrySelect', () => {
   let wrapper
 
-  const fakeMessageBus = new FakeMessageBus()
+  let fakeMessageBus
+
+  beforeEach(() => {
+    fakeMessageBus = new FakeMessageBus()
+  })
 
   describe('errors', () => {
     let store
@@ -173,6 +177,11 @@ describe('CountrySelect', () => {
 
       const label = wrapper.vm.selectedCountryLabel(country)
       expect(label).to.be.eql('Lithuania (0x1234567..)')
+    })
+
+    it('cleans all message bus callbacks after being destroyed', async () => {
+      wrapper.destroy()
+      expect(fakeMessageBus.noRemainingCallbacks()).to.be.true
     })
   })
 })

@@ -95,6 +95,10 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     this._on(messages.CONNECTION_REQUEST, callback)
   }
 
+  removeConnectionRequestCallback (callback: (UserSettings) => void): void {
+    this._removeCallback(messages.CONNECTION_REQUEST, callback)
+  }
+
   // TODO: unify naming 'disconnection' and 'connection cancel'
   onDisconnectionRequest (callback: () => void) {
     this._on(messages.CONNECTION_CANCEL, callback)
@@ -102,6 +106,10 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
 
   onProposalUpdate (callback: (ProposalUpdateDTO) => void) {
     this._on(messages.PROPOSALS_UPDATE, callback)
+  }
+
+  removeProposalUpdateCallback (callback: (UserSettings) => void): void {
+    this._removeCallback(messages.PROPOSALS_UPDATE, callback)
   }
 
   onMysteriumClientIsReady (callback: () => void) {
