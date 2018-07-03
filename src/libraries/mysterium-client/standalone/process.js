@@ -20,17 +20,15 @@
 import { spawn, ChildProcess } from 'child_process'
 import { Readable } from 'stream'
 import type { ClientConfig } from '../config'
-import type { ProcessInterface } from '../index'
+import type { LogCallback, Process } from '../index'
 import logLevels from '../log-levels'
-
-type LogCallback = (data: any) => any
 
 /**
  * 'mysterium_client' process handler
  */
-class Process implements ProcessInterface {
+class StandaloneProcess implements Process {
   _config: ClientConfig
-  _child: ChildProcess
+  _child: ?ChildProcess
 
   /**
    * @constructor
@@ -41,7 +39,7 @@ class Process implements ProcessInterface {
     this._config = config
   }
 
-  async start (): Promise<void> {
+  start (): void {
     this._child = spawn(this._config.clientBin, [
       '--config-dir', this._config.configDir,
       '--runtime-dir', this._config.runtimeDir,
@@ -51,6 +49,10 @@ class Process implements ProcessInterface {
   }
 
   async stop (): Promise<void> {
+    if (!this._child) {
+      throw new Error('Cannot stop process. Process has not started.')
+    }
+
     this._child.kill('SIGTERM')
   }
 
@@ -80,6 +82,10 @@ class Process implements ProcessInterface {
    * @private
    */
   _getStreamForLevel (level: string): Readable {
+    if (!this._child) {
+      throw new Error('Cannot bind IO stream. Process has not started.')
+    }
+
     switch (level) {
       case logLevels.INFO:
         return this._child.stdout
@@ -91,4 +97,4 @@ class Process implements ProcessInterface {
   }
 }
 
-export default Process
+export default StandaloneProcess

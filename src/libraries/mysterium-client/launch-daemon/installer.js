@@ -22,7 +22,7 @@ import sudo from 'sudo-prompt'
 import path from 'path'
 import md5 from 'md5'
 import type { ClientConfig } from '../config'
-import type { InstallerInterface } from '../index'
+import type { Installer } from '../index'
 import { INVERSE_DOMAIN_PACKAGE_NAME, LAUNCH_DAEMON_PORT, PROPERTY_LIST_FILE, PROPERTY_LIST_NAME } from './config'
 import { promisify } from 'util'
 import createFileIfMissing from '../../create-file-if-missing'
@@ -36,7 +36,7 @@ function processInstalled () {
   return fs.existsSync(PROPERTY_LIST_FILE)
 }
 
-class Installer implements InstallerInterface {
+class LaunchDaemonInstaller implements Installer {
   _config: ClientConfig
 
   constructor (config: ClientConfig) {
@@ -126,5 +126,5 @@ class Installer implements InstallerInterface {
   }
 }
 
-export default Installer
+export default LaunchDaemonInstaller
 export { SUDO_PROMT_PERMISSION_DENIED }

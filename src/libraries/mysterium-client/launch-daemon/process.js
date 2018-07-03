@@ -20,7 +20,7 @@
 import { Tail } from 'tail'
 import path from 'path'
 import type { TequilapiClient } from '../../mysterium-tequilapi/client'
-import type { ProcessInterface } from '../index'
+import type { LogCallback, Process } from '../index'
 import processLogLevels from '../log-levels'
 import { INVERSE_DOMAIN_PACKAGE_NAME } from './config'
 import axios from 'axios'
@@ -31,15 +31,19 @@ const SYSTEM_LOG = '/var/log/system.log'
 const stdoutFileName = 'stdout.log'
 const stderrFileName = 'stderr.log'
 
+type Subscribers = {
+  [processLogLevels.INFO | processLogLevels.ERROR]: Array<LogCallback>,
+}
+
 /**
  * Spawns and stops 'mysterium_client' daemon on OSX
  */
-class Process implements ProcessInterface {
+class LaunchDaemonProcess implements Process {
   _tequilapi: TequilapiClient
   _daemonPort: number
   _stdoutPath: string
   _stderrPath: string
-  _subscribers: Object
+  _subscribers: Subscribers
 
   /**
    * @constructor
@@ -58,7 +62,7 @@ class Process implements ProcessInterface {
     }
   }
 
-  async start (): Promise<void> {
+  start (): void {
     axios.get('http://127.0.0.1:' + this._daemonPort)
       .then(() => {
         console.info('Touched the daemon, now it should be up')
@@ -86,7 +90,7 @@ class Process implements ProcessInterface {
     })
   }
 
-  onLog (level: string, cb: Function): void {
+  onLog (level: string, cb: LogCallback): void {
     if (!this._subscribers[level]) {
       throw new Error(`Unknown process logging level: ${level}`)
     }
@@ -117,4 +121,4 @@ function tailFile (filePath: string, cb: Function) {
 const prependWithCurrentTime = prependWithFn(getCurrentTimeISOFormat)
 const prependWithSpace = prependWithFn(() => ` `)
 
-export default Process
+export default LaunchDaemonProcess

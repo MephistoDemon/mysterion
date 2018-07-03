@@ -20,14 +20,16 @@
 import Monitoring from './monitoring'
 import logLevels from './log-levels'
 
-interface InstallerInterface {
+type LogCallback = (data: any) => any
+
+interface Installer {
   needsInstallation (): boolean,
 
-  install (): Promise<any>
+  install (): Promise<void>
 }
 
-interface ProcessInterface {
-  start (): Promise<any>,
+interface Process {
+  start (): void,
 
   stop (): Promise<any>,
 
@@ -37,4 +39,4 @@ interface ProcessInterface {
 }
 
 export { Monitoring, logLevels }
-export type { InstallerInterface, ProcessInterface }
+export type { Installer, Process, LogCallback }

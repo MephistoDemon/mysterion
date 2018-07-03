@@ -17,16 +17,15 @@
 
 // @flow
 
-import type { InstallerInterface } from '../index'
+import type { Installer } from '../index'
 
-class Installer implements InstallerInterface {
+class StandaloneClientInstaller implements Installer {
   needsInstallation (): boolean {
     return false
   }
 
-  install (): Promise<void> {
-    return Promise.resolve()
+  async install (): Promise<void> {
   }
 }
 
-export default Installer
+export default StandaloneClientInstaller
