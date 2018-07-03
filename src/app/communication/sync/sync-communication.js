@@ -17,7 +17,7 @@
 
 // @flow
 
-import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
+import type { SerializedLogCaches } from '../../logger/log-cache-bundle'
 import type { LogDTO } from '../dto'
 import type { RavenData } from '../../bug-reporting/bug-reporter-metrics'
 

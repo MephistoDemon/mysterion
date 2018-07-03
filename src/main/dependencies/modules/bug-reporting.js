@@ -20,10 +20,10 @@ import Raven from 'raven'
 import BugReporterMain from '../../../app/bug-reporting/bug-reporter-main'
 import type {Container} from '../../../app/di'
 import MainEnvironmentCollector from '../../../app/bug-reporting/environment/main-environment-collector'
-import BackendLogBootstrapper from '../../../app/logging/backend-log-bootstrapper'
+import BackendLogBootstrapper from '../../../app/logger/backend-log-bootstrapper'
 import type { EnvironmentCollector } from '../../../app/bug-reporting/environment/environment-collector'
-import LogCache from '../../../app/logging/log-cache'
-import LogCacheBundle from '../../../app/logging/log-cache-bundle'
+import LogCache from '../../../app/logger/log-cache'
+import LogCacheBundle from '../../../app/logger/log-cache-bundle'
 import { BugReporterMetrics } from '../../../app/bug-reporting/bug-reporter-metrics'
 
 function bootstrap (container: Container) {

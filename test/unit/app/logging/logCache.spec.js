@@ -20,7 +20,7 @@
 // TODO: rename file to log-cache.spec.js
 
 import { describe, it, expect, beforeEach } from '../../../helpers/dependencies'
-import LogCache from '../../../../src/app/logging/log-cache'
+import LogCache from '../../../../src/app/logger/log-cache'
 import { captureError } from '../../../helpers/utils'
 
 describe('LogCache', () => {

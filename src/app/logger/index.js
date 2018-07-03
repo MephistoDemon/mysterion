@@ -17,28 +17,25 @@
 
 // @flow
 
-import winston from 'winston'
-import Transport from 'winston-transport'
+import type { StringLogger } from './string-logger'
 
-/**
- * String logger with many log levels
- */
-interface StringLogger {
-  info (string): void,
+class Index {
+  _logger: StringLogger = console
 
-  warn (string): void,
+  // sets logger, replacing standard console logs
+  setLogger (logger: StringLogger): void {
+    this._logger = logger
+  }
 
-  error (string): void,
+  info (...data: Array<any>): void {
+    this._logger.info(data.join(' '))
+  }
 
-  debug (string): void,
-
-  add (Transport): void
+  error (...data: Array<any>): void {
+    this._logger.error(data.join(' '))
+  }
 }
 
-const winstonFormat = winston.format.combine(
-  winston.format.timestamp(),
-  winston.format.printf(log => `${log.timestamp} ${log.level}: ${log.message}`)
-)
+const logger = new Index()
 
-export { winstonFormat }
-export type { StringLogger }
+export default logger

@@ -22,7 +22,7 @@ import SyncSenderRendererCommunication from '../../../../../src/app/communicatio
 import messages from '../../../../../src/app/communication/messages'
 import type { SyncReceiver, SyncSender } from '../../../../../src/app/communication/sync/sync'
 import SyncReceiverMainCommunication from '../../../../../src/app/communication/sync/sync-main-communication'
-import type { SerializedLogCaches } from '../../../../../src/app/logging/log-cache-bundle'
+import type { SerializedLogCaches } from '../../../../../src/app/logger/log-cache-bundle'
 import { CallbackRecorder } from '../../../../helpers/utils'
 import type { RavenData } from '../../../../../src/app/bug-reporting/bug-reporter-metrics'
 import { TAGS } from '../../../../../src/app/bug-reporting/bug-reporter-metrics'

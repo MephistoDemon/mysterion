@@ -18,7 +18,7 @@
 // @flow
 import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
-import type { LogLevel } from '../logging/mysterion-log-levels'
+import type { LogLevel } from '../logger/mysterion-log-levels'
 
 export type ConnectionStatusChangeDTO = {
   oldStatus: ConnectionStatus,

@@ -19,7 +19,7 @@
 import type {BugReporter} from './interface'
 import Raven from 'raven'
 import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
-import LogCache from '../logging/log-cache'
+import LogCache from '../logger/log-cache'
 
 class BugReporterMain implements BugReporter {
   raven: Raven

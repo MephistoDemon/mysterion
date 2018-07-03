@@ -17,24 +17,31 @@
 
 // @flow
 
-import Transport from 'winston-transport'
-import LogCache from './log-cache'
-import type { WinstonLogEntry } from './winston-log-entry'
-import { mapWinstonLogLevelToMysterionLevel } from './winston-log-entry'
+import winston from 'winston'
+import type { LogLevel } from './mysterion-log-levels'
 
-class BackendLogCachingTransport extends Transport {
-  _logCache: LogCache
-  constructor (logCache: LogCache) {
-    super()
-    this._logCache = logCache
-  }
+type Winston = {
+  level: string,
+  message: string,
+  timestamp?: string
+}
 
-  log (logEntry: WinstonLogEntry, callback: () => any) {
-    const timestamp = logEntry.timestamp || ''
-    const message = timestamp + logEntry.message
-    this._logCache.pushToLevel(mapWinstonLogLevelToMysterionLevel(logEntry.level), message)
-    callback()
+function mapWinstonLogLevelToMysterionLevel (level: string): LogLevel {
+  switch (level) {
+    case 'error':
+      return 'error'
+    case 'info':
+    case 'warn':
+    case 'debug':
+    default:
+      return 'info'
   }
 }
 
-export default BackendLogCachingTransport
+const winstonFormat = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.printf(log => `${log.timestamp} ${log.level}: ${log.message}`)
+)
+
+export type { Winston }
+export { winstonFormat, mapWinstonLogLevelToMysterionLevel }

@@ -19,7 +19,7 @@
 
 import type { EnvironmentCollector } from './bug-reporting/environment/environment-collector'
 import type { SyncMainCommunication } from './communication/sync/sync-communication'
-import LogCache from './logging/log-cache'
+import LogCache from './logger/log-cache'
 
 /**
  * Adds sync application callbacks for communication messages.

@@ -18,8 +18,8 @@
 // @flow
 
 import { describe, it, expect, beforeEach } from '../../../helpers/dependencies'
-import BackendLogCachingTransport from '../../../../src/app/logging/backend-log-transport'
-import LogCache from '../../../../src/app/logging/log-cache'
+import BackendLogCachingTransport from '../../../../src/app/logger/backend-log-transport'
+import LogCache from '../../../../src/app/logger/log-cache'
 
 describe('BackendLogCachingTransport', () => {
   describe('.log', () => {

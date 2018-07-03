@@ -17,25 +17,29 @@
 
 // @flow
 
-import type { LogLevel } from './mysterion-log-levels'
+import winston from 'winston'
+import LogCache from './log-cache'
+import BackendLogCachingTransport from './backend-log-transport'
+import { winstonFormat } from './winston'
+import logger from './index'
 
-type WinstonLogEntry = {
-  level: string,
-  message: string,
-  timestamp?: string
-}
+class BackendLogBootstrapper {
+  _backendLogCache: LogCache
 
-function mapWinstonLogLevelToMysterionLevel (level: string): LogLevel {
-  switch (level) {
-    case 'error':
-      return 'error'
-    case 'info':
-    case 'warn':
-    case 'debug':
-    default:
-      return 'info'
+  constructor (backendLogCache: LogCache) {
+    this._backendLogCache = backendLogCache
+  }
+
+  init () {
+    const winstonLogger = winston.createLogger({
+      format: winstonFormat,
+      transports: [
+        new winston.transports.Console(),
+        new BackendLogCachingTransport(this._backendLogCache)
+      ]
+    })
+    logger.setLogger(winstonLogger)
   }
 }
 
-export type { WinstonLogEntry }
-export { mapWinstonLogLevelToMysterionLevel }
+export default BackendLogBootstrapper
