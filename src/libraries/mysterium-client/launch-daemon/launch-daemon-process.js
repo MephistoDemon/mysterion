@@ -62,14 +62,14 @@ class LaunchDaemonProcess implements Process {
     }
   }
 
-  start (): void {
-    axios.get('http://127.0.0.1:' + this._daemonPort)
-      .then(() => {
-        console.info('Touched the daemon, now it should be up')
-      })
-      .catch(() => {
-        console.info('Touched the daemon with error, anyway it should be up')
-      })
+  async start (): Promise<void> {
+    try {
+      await axios.get('http://127.0.0.1:' + this._daemonPort)
+
+      console.info('Touched the daemon, now it should be up')
+    } catch (e) {
+      console.info('Touched the daemon with error, anyway it should be up')
+    }
   }
 
   async stop (): Promise<void> {

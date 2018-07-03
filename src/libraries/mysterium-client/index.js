@@ -29,9 +29,9 @@ interface Installer {
 }
 
 interface Process {
-  start (): void,
+  start (): Promise<void>,
 
-  stop (): Promise<any>,
+  stop (): Promise<void>,
 
   onLog (level: string, callback: Function): void,
 

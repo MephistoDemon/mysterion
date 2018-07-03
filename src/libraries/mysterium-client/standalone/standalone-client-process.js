@@ -39,7 +39,7 @@ class StandaloneClientProcess implements Process {
     this._config = config
   }
 
-  start (): void {
+  async start (): Promise<void> {
     this._child = spawn(this._config.clientBin, [
       '--config-dir', this._config.configDir,
       '--runtime-dir', this._config.runtimeDir,
