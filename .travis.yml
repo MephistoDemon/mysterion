@@ -50,8 +50,8 @@ deploy:
     skip-cleanup: true
     github-token: "$GITHUB_API_TOKEN"
     keep-history: false
-    # Example: mysterion_osx_0.0.3-rc
-    target-branch: mysterion_$TRAVIS_OS_NAME_$TRAVIS_BRANCH-rc
+    # Example: mysterion_osx_rc
+    target-branch: mysterion_${TRAVIS_OS_NAME}_rc
     repo: MysteriumNetwork/build-artifacts
     on:
       tags: false
