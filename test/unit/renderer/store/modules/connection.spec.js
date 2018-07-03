@@ -30,10 +30,10 @@ import {createEventFactory} from '../../../../../src/app/statistics/events'
 import type {EventFactory as StatsEventsFactory} from '../../../../../src/app/statistics/events'
 import {ActionLooper, ActionLooperConfig} from '../../../../../src/renderer/store/modules/connection'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
-import type {BugReporter} from '../../../../../src/app/bug-reporting/interface'
 import EmptyTequilapiClientMock from './empty-tequilapi-client-mock'
 import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
 import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
+import BugReporterMock from '../../../../helpers/bug-reporter-mock'
 
 function factoryTequilapiManipulator () {
   let statusFail = false
@@ -150,26 +150,6 @@ const fakeCollector = {
 
 function statsEventsFactory (): StatsEventsFactory {
   return createEventFactory({name: 'Test', version: '1.0.test'})
-}
-
-class BugReporterMock implements BugReporter {
-  setUser (identity): void {
-  }
-
-  captureErrorMessage (_message, _context): void {
-  }
-
-  captureInfoMessage (_message, _context): void {
-  }
-
-  captureErrorException (_err, _context): void {
-  }
-
-  captureInfoException (_err, _context): void {
-  }
-
-  pushToLogCache (level, log): void {
-  }
 }
 
 const bugReporterMock = new BugReporterMock()

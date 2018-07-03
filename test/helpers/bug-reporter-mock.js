@@ -16,40 +16,25 @@
  */
 
 // @flow
-import type from '../types'
 
-type OverlayError = {
-  message: string,
-  hint: ?string
-}
+import type { BugReporter } from '../../src/app/bug-reporting/interface'
+import IdentityDTO from '../../src/libraries/mysterium-tequilapi/dto/identity'
 
-type State = {
-  overlay: ?OverlayError
-}
+class BugReporterMock implements BugReporter {
+  setUser (identity: IdentityDTO): void {
+  }
 
-const state:State = {
-  overlay: null
-}
+  captureErrorMessage (_message: string, _context?: any): void {
+  }
 
-const mutations = {
-  [type.OVERLAY_ERROR] (state: State, error: OverlayError) {
-    state.overlay = error
+  captureInfoMessage (_message: string, _context?: any): void {
+  }
+
+  captureErrorException (_err: Error, _context?: any): void {
+  }
+
+  captureInfoException (_err: Error, _context?: any): void {
   }
 }
 
-const getters = {
-  overlayError: (state: State) => state.overlay
-}
-
-const actions = {
-  [type.OVERLAY_ERROR] ({commit}, error: OverlayError) {
-    commit(type.OVERLAY_ERROR, error)
-  }
-}
-
-export default {
-  state,
-  mutations,
-  getters,
-  actions
-}
+export default BugReporterMock

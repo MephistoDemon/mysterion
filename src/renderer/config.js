@@ -22,5 +22,5 @@ export default {
   ipUpdateTimeout: 5000,
   locationUpdateTimeout: 5000,
   initializationSleepBetweenRetries: 3000,
-  initializationMaxRetries: 40 // 3000*40 ~= 2mins trying to initialize
+  initializationMaxRetries: 10 // 3000ms*10=30s trying to initialize
 }
