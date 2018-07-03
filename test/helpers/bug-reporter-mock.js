@@ -17,12 +17,24 @@
 
 // @flow
 
-type MessageBusCallback = (data?: mixed) => void
+import type { BugReporter } from '../../src/app/bug-reporting/interface'
+import IdentityDTO from '../../src/libraries/mysterium-tequilapi/dto/identity'
 
-export interface MessageBus {
-  send (channel: string, data?: mixed): void,
-  on (channel: string, callback: MessageBusCallback): void,
-  removeCallback (channel: string, callback: MessageBusCallback): void
+class BugReporterMock implements BugReporter {
+  setUser (identity: IdentityDTO): void {
+  }
+
+  captureErrorMessage (_message: string, _context?: any): void {
+  }
+
+  captureInfoMessage (_message: string, _context?: any): void {
+  }
+
+  captureErrorException (_err: Error, _context?: any): void {
+  }
+
+  captureInfoException (_err: Error, _context?: any): void {
+  }
 }
 
-export type { MessageBusCallback }
+export default BugReporterMock

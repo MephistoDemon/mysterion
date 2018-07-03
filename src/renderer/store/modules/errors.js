@@ -38,7 +38,7 @@ const mutations = {
 }
 
 const getters = {
-  overlayError: (store: Object) => store.overlay
+  overlayError: (state: State) => state.overlay
 }
 
 const actions = {

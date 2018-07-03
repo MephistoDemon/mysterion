@@ -22,6 +22,7 @@ import AppLoading from '@/pages/AppLoading'
 import Vpn from '@/pages/Vpn'
 import Terms from '@/pages/Terms'
 import About from '@/pages/About'
+import logger from '../../app/logger'
 
 function factory (store) {
   Vue.use(Router)
@@ -71,6 +72,7 @@ function factory (store) {
   })
 
   router.beforeEach((to, from, next) => {
+    logger.info(`Route changes ${from.path} -> ${to.path}`)
     if (!store.getters.loading) {
       store.dispatch(
         'setVisual',

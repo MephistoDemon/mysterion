@@ -19,28 +19,14 @@
 
 import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
 import MainMessageBusCommunication from '../../../../src/app/communication/main-message-bus-communication'
-import type { MessageBus } from '../../../../src/app/communication/messageBus'
+import DirectMessageBus from '../../../helpers/direct-message-bus'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import { CallbackRecorder } from '../../../helpers/utils'
 import type { MainCommunication } from '../../../../src/app/communication/main-communication'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 
-class DirectMessageBus implements MessageBus {
-  _subscribers: { [string]: (data?: mixed) => void } = new Map()
-
-  send (channel: string, data?: mixed): void {
-    if (this._subscribers[channel]) {
-      this._subscribers[channel](data)
-    }
-  }
-
-  on (channel: string, callback: (data?: mixed) => void): void {
-    this._subscribers[channel] = callback
-  }
-}
-
 describe('MainMessageBusCommunication', () => {
-  let messageBus: MessageBus
+  let messageBus: DirectMessageBus
   let mainCommunication: MainCommunication
   let rendererCommunication: RendererCommunication
   let recorder: CallbackRecorder
@@ -149,7 +135,8 @@ describe('MainMessageBusCommunication', () => {
 
   describe('sendUserSettings', () => {
     it('sends message through message bus', () => {
-      rendererCommunication.onUserSettings(recorder.getCallback())
+      const callback = recorder.getCallback()
+      rendererCommunication.onUserSettings(callback)
       const settingsDto = { showDisconnectNotifications: true }
       mainCommunication.sendUserSettings(settingsDto)
       expect(recorder.invoked).to.be.true
