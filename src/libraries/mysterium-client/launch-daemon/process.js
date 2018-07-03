@@ -21,6 +21,7 @@ import processLogLevels from '../log-levels'
 import { INVERSE_DOMAIN_PACKAGE_NAME } from './config'
 import axios from 'axios'
 import createFileIfMissing from '../../create-file-if-missing'
+import { prependWithFn, getCurrentTimeISOFormat } from '../../strings'
 
 const SYSTEM_LOG = '/var/log/system.log'
 const stdoutFileName = 'stdout.log'
@@ -64,9 +65,14 @@ class Process {
 
   async setupLogging () {
     await this._prepareLogFiles()
-    tailFile(this._stdoutPath, this._logCallback.bind(this, processLogLevels.INFO))
-    tailFile(this._stderrPath, this._logCallback.bind(this, processLogLevels.ERROR))
-    tailFile(SYSTEM_LOG, filterLine(INVERSE_DOMAIN_PACKAGE_NAME, this._logCallback.bind(this, processLogLevels.ERROR)))
+    const notifyOnErrorSubscribers = this._notifySubscribersWithLog.bind(this, processLogLevels.ERROR)
+    tailFile(this._stdoutPath, this._notifySubscribersWithLog.bind(this, processLogLevels.INFO))
+    tailFile(this._stderrPath, (data) => {
+      notifyOnErrorSubscribers(prependWithCurrentTime(prependWithSpace(data)))
+    })
+    tailFile(SYSTEM_LOG, (data) => {
+      if (data.includes(INVERSE_DOMAIN_PACKAGE_NAME)) notifyOnErrorSubscribers(data)
+    })
   }
 
   onLog (level, cb) {
@@ -74,7 +80,7 @@ class Process {
     this._subscribers[level].push(cb)
   }
 
-  _logCallback (level, data) {
+  _notifySubscribersWithLog (level, data) {
     for (let sub of this._subscribers[level]) {
       sub(data)
     }
@@ -94,15 +100,7 @@ function tailFile (filePath, cb) {
   })
 }
 
-function filterLine (filter, cb) {
-  const regex = new RegExp(filter)
-
-  return (data) => {
-    if (!regex.test(data)) {
-      return
-    }
-    cb(data)
-  }
-}
+const prependWithCurrentTime = prependWithFn(getCurrentTimeISOFormat)
+const prependWithSpace = prependWithFn(() => ` `)
 
 export default Process
