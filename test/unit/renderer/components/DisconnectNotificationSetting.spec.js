@@ -22,15 +22,14 @@ import FakeMessageBus from '../../../helpers/fake-message-bus'
 import DisconnectNotificationSetting from '@/components/DisconnectNotificationSetting'
 
 // TODO: extract this out to DRY with other occurances
-function mountWith (rendererCommunication, store) {
+function mountWith (rendererCommunication) {
   const vue = createLocalVue()
 
   const dependencies = new DIContainer(vue)
   dependencies.constant('rendererCommunication', rendererCommunication)
 
   return mount(DisconnectNotificationSetting, {
-    localVue: vue,
-    store
+    localVue: vue
   })
 }
 
