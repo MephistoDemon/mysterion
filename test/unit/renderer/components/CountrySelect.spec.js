@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// @flow
+
 import {createLocalVue, mount} from '@vue/test-utils'
 import CountrySelect from '@/components/CountrySelect'
 import messages from '../../../../src/app/communication/messages'
@@ -25,6 +27,7 @@ import FakeMessageBus from '../../../helpers/fake-Message-Bus'
 import Vue from 'vue'
 import type from '@/store/types'
 import translations from '@/../app/messages'
+import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
 
 Vue.use(Vuex)
 
