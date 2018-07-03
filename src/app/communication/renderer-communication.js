@@ -87,6 +87,10 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     this._on(messages.USER_SETTINGS, callback)
   }
 
+  removeOnUserSettingsCallback (callback: (UserSettings) => void): void {
+    this._removeCallback(messages.USER_SETTINGS, callback)
+  }
+
   onConnectionRequest (callback: (RequestConnectionDTO) => void) {
     this._on(messages.CONNECTION_REQUEST, callback)
   }
@@ -126,6 +130,10 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
 
   _on (channel: string, callback: (dto: any) => void): void {
     this._messageBus.on(channel, callback)
+  }
+
+  _removeCallback (channel: string, callback: (dto: any) => void): void {
+    this._messageBus.removeCallback(channel, callback)
   }
 }
 

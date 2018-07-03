@@ -42,10 +42,11 @@ export default {
     }
   },
   mounted () {
-    this.rendererCommunication.onUserSettings((settings) => {
-      this.isDisconnectNotificationEnabled = settings.showDisconnectNotifications
-    })
+    this.rendererCommunication.onUserSettings(this.updateUserSettings)
     this.rendererCommunication.sendUserSettingsRequest()
+  },
+  beforeDestroy () {
+    this.rendererCommunication.removeOnUserSettingsCallback(this.updateUserSettings)
   },
   methods: {
     toggle () {
@@ -53,6 +54,9 @@ export default {
       this.rendererCommunication.sendUserSettingsUpdate({
         showDisconnectNotifications: this.isDisconnectNotificationEnabled
       })
+    },
+    updateUserSettings (settings) {
+      this.isDisconnectNotificationEnabled = settings.showDisconnectNotifications
     }
   }
 }

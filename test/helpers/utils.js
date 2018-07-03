@@ -55,13 +55,9 @@ async function captureAsyncError (func: () => Promise<any>) {
  * Records callback invocation. Useful for asserting that callback was invoked.
  */
 class CallbackRecorder {
-  invoked: boolean
-  _argument: any
-
-  constructor () {
-    this.invoked = false
-    this._argument = null
-  }
+  invoked: boolean = false
+  _argument: any = null
+  _boundCallback: (any) => void
 
   /**
    * Returns function, which records it's invocation and argument
@@ -70,7 +66,10 @@ class CallbackRecorder {
    * @returns Function
    */
   getCallback (): (any) => void {
-    return this._record.bind(this)
+    if (!this._boundCallback) {
+      this._boundCallback = this._record.bind(this)
+    }
+    return this._boundCallback
   }
 
   _record (argument: any): void {
