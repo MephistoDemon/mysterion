@@ -147,6 +147,10 @@ describe('DataFetchers', () => {
 
         expect(counter).to.equal(1)
       })
+
+      it('does not fail when invoked without starting', async () => {
+        await fetcher.stop()
+      })
     })
 
     describe('.fetch', () => {
