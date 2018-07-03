@@ -63,8 +63,6 @@ export default {
     reportIssue () {
       this.feedbackForm.show()
     }
-  },
-  mounted () {
   }
 }
 </script>
