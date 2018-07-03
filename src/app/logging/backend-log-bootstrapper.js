@@ -19,11 +19,11 @@
 
 import winston from 'winston'
 import LogCache from './log-cache'
-import { BackendLogCachingTransport } from './backend-logging-transports'
+import BackendLogCachingTransport from './backend-log-transport'
 import { winstonFormat } from './log-boostrapping'
 import type { StringLogger } from './log-boostrapping'
 
-export default class BackendLogBootstrapper {
+class BackendLogBootstrapper {
   _backendLogCache: LogCache
 
   constructor (backendLogCache: LogCache) {
@@ -54,3 +54,5 @@ function overrideConsoleLogs (logger: StringLogger) {
   // $FlowFixMe
   console.debug = (...args) => logger.debug(args.join(' '))
 }
+
+export default BackendLogBootstrapper
