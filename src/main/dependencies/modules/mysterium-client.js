@@ -36,9 +36,7 @@ function bootstrap (container: Container) {
   container.service(
     'mysteriumClient.platform',
     [],
-    () => {
-      return os.platform()
-    }
+    () => os.platform()
   )
   container.service(
     'mysteriumClient.config',
