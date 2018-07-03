@@ -34,8 +34,6 @@ before_deploy:
 deploy:
   # Latest (master branch)
   - provider: pages
-    edge:
-      branch: v1.8.47
     local-dir: binaries
     skip-cleanup: true
     github-token: "$GITHUB_API_TOKEN"
@@ -48,8 +46,6 @@ deploy:
       branch: master
   # Release-candidate ('x.x.x' release branches)
   - provider: pages
-    edge:
-      branch: v1.8.47
     local-dir: releases
     skip-cleanup: true
     github-token: "$GITHUB_API_TOKEN"
