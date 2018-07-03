@@ -20,10 +20,13 @@ import CountrySelect from '@/components/CountrySelect'
 import messages from '../../../../src/app/communication/messages'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import DIContainer from '../../../../src/app/di/vue-container'
-import FakeMessageBus from '../../../helpers/fake-message-bus'
-import {Store} from 'vuex'
+import Vuex, {Store} from 'vuex'
+import FakeMessageBus from '../../../helpers/fake-Message-Bus'
+import Vue from 'vue'
 import type from '@/store/types'
 import translations from '@/../app/messages'
+
+Vue.use(Vuex)
 
 const communicationProposalsResponse = [
   {
