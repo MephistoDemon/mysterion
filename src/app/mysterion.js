@@ -42,11 +42,12 @@ import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
 import type { EnvironmentCollector } from './bug-reporting/environment/environment-collector'
 import {BugReporterMetrics, METRICS, TAGS} from '../app/bug-reporting/bug-reporter-metrics'
-import BackendLogBootstrapper from './logger/backend-log-bootstrapper'
 import LogCache from './logger/log-cache'
 import SyncCallbacksInitializer from './sync-callbacks-initializer'
 import SyncReceiverMainCommunication from './communication/sync/sync-main-communication'
 import { SyncIpcReceiver } from './communication/sync/sync-ipc'
+import type { StringLogger } from './logger/string-logger'
+import logger from './logger'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -60,7 +61,7 @@ type MysterionParams = {
   bugReporter: BugReporter,
   environmentCollector: EnvironmentCollector,
   bugReporterMetrics: BugReporterMetrics,
-  backendLogBootstrapper: BackendLogBootstrapper,
+  winstonCachingLogger: StringLogger,
   frontendLogCache: LogCache,
   mysteriumProcessLogCache: LogCache,
   userSettingsStore: UserSettingsStore,
@@ -83,7 +84,7 @@ class Mysterion {
   bugReporter: BugReporter
   environmentCollector: EnvironmentCollector
   bugReporterMetrics: BugReporterMetrics
-  backendLogBootstrapper: BackendLogBootstrapper
+  winstonCachingLogger: StringLogger
   frontendLogCache: LogCache
   mysteriumProcessLogCache: LogCache
   userSettingsStore: UserSettingsStore
@@ -105,7 +106,7 @@ class Mysterion {
     this.bugReporter = params.bugReporter
     this.environmentCollector = params.environmentCollector
     this.bugReporterMetrics = params.bugReporterMetrics
-    this.backendLogBootstrapper = params.backendLogBootstrapper
+    this.winstonCachingLogger = params.winstonCachingLogger
     this.frontendLogCache = params.frontendLogCache
     this.mysteriumProcessLogCache = params.mysteriumProcessLogCache
     this.userSettingsStore = params.userSettingsStore
@@ -113,9 +114,9 @@ class Mysterion {
   }
 
   run () {
+    logger.setLogger(this.winstonCachingLogger)
     this.bugReporterMetrics.set(TAGS.SESSION_ID, generateSessionId())
     this._initializeSyncCallbacks()
-    this.backendLogBootstrapper.init()
     this.logUnhandledRejections()
 
     // fired when app has been launched
@@ -451,11 +452,11 @@ function synchronizeUserSettings (userSettingsStore, communication) {
 }
 
 function logInfo (message: string) {
-  console.info(LOG_PREFIX + message)
+  logger.info(LOG_PREFIX + message)
 }
 
 function logException (message: string, err: Error) {
-  console.error(LOG_PREFIX + message, err)
+  logger.error(LOG_PREFIX + message, err)
 }
 
 function generateSessionId () {

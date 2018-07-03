@@ -19,11 +19,40 @@
 
 import winston from 'winston'
 import type { LogLevel } from './mysterion-log-levels'
+import LogCache from './log-cache'
+import WinstonTransportCaching from './winston-transport-caching'
+import type { StringLogger } from './string-logger'
+import WinstonTransportSyncCom from './winston-transport-sync-com'
+import type { SyncRendererCommunication } from '../communication/sync/sync-communication'
 
-type Winston = {
+type WinstonLogEntry = {
   level: string,
   message: string,
   timestamp?: string
+}
+
+const winstonFormat = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.printf(log => `${log.timestamp} ${log.level}: ${log.message}`)
+)
+
+function createWinstonLogger () {
+  return winston.createLogger({
+    format: winstonFormat,
+    transports: [ new winston.transports.Console() ]
+  })
+}
+
+function createWinstonCachingLogger (backendLogCache: LogCache): StringLogger {
+  const winstonLogger = createWinstonLogger()
+  winstonLogger.add(new WinstonTransportCaching(backendLogCache))
+  return winstonLogger
+}
+
+function createWinstonSyncComLogger (communication: SyncRendererCommunication) {
+  const winstonLogger = createWinstonLogger()
+  winstonLogger.add(new WinstonTransportSyncCom(communication))
+  return winstonLogger
 }
 
 function mapWinstonLogLevelToMysterionLevel (level: string): LogLevel {
@@ -38,10 +67,9 @@ function mapWinstonLogLevelToMysterionLevel (level: string): LogLevel {
   }
 }
 
-const winstonFormat = winston.format.combine(
-  winston.format.timestamp(),
-  winston.format.printf(log => `${log.timestamp} ${log.level}: ${log.message}`)
-)
-
-export type { Winston }
-export { winstonFormat, mapWinstonLogLevelToMysterionLevel }
+export type { WinstonLogEntry }
+export {
+  createWinstonCachingLogger,
+  createWinstonSyncComLogger,
+  mapWinstonLogLevelToMysterionLevel
+}
