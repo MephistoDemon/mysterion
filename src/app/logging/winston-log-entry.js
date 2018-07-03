@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ * Copyright (C) 2018 The "MysteriumNetwork/mysterion" Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,25 @@
 
 // @flow
 
-type MessageBusCallback = (data?: mixed) => void
+import type { LogLevel } from './mysterion-log-levels'
 
-export interface MessageBus {
-  send (channel: string, data?: mixed): void,
-  on (channel: string, callback: MessageBusCallback): void,
-  removeCallback (channel: string, callback: MessageBusCallback): void
+type WinstonLogEntry = {
+  level: string,
+  message: string,
+  timestamp?: string
 }
 
-export type { MessageBusCallback }
+function mapWinstonLogLevelToMysterionLevel (level: string): LogLevel {
+  switch (level) {
+    case 'error':
+      return 'error'
+    case 'info':
+    case 'warn':
+    case 'debug':
+    default:
+      return 'info'
+  }
+}
+
+export type { WinstonLogEntry }
+export { mapWinstonLogLevelToMysterionLevel }

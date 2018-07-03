@@ -24,20 +24,7 @@ import RendererCommunication from '../../../../src/app/communication/renderer-co
 import { CallbackRecorder } from '../../../helpers/utils'
 import type { MainCommunication } from '../../../../src/app/communication/main-communication'
 import ConnectionStatusEnum from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
-
-class DirectMessageBus implements MessageBus {
-  _subscribers: { [string]: (data?: mixed) => void } = new Map()
-
-  send (channel: string, data?: mixed): void {
-    if (this._subscribers[channel]) {
-      this._subscribers[channel](data)
-    }
-  }
-
-  on (channel: string, callback: (data?: mixed) => void): void {
-    this._subscribers[channel] = callback
-  }
-}
+import DirectMessageBus from '../../../helpers/direct-message-bus'
 
 describe('RendererCommunication', () => {
   let messageBus: MessageBus

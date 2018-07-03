@@ -23,7 +23,7 @@
     "test:integration:start-server": "karma start test/integration/karma.conf.js",
     "unit:start-server": "karma start test/unit/karma.conf.js",
     "unit:run": "karma run test/unit/karma.conf.js",
-    "ci": "yarn lint && yarn unit && yarn flow"
+    "ci": "yarn flow && yarn lint && yarn unit && yarn test:integration"
   },
   "build": {
     "productName": "Mysterion",
