@@ -15,68 +15,86 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {spawn} from 'child_process'
+// @flow
+
+import { spawn, ChildProcess } from 'child_process'
+import { Readable } from 'stream'
+import type { ClientConfig } from '../config'
+import type { LogCallback, Process } from '../index'
 import logLevels from '../log-levels'
 
 /**
  * 'mysterium_client' process handler
  */
-class Process {
+class StandaloneClientProcess implements Process {
+  _config: ClientConfig
+  _child: ?ChildProcess
+
   /**
    * @constructor
+   *
    * @param {ClientConfig} config
    */
-  constructor (config) {
-    this.config = config
+  constructor (config: ClientConfig) {
+    this._config = config
   }
 
-  start () {
-    this.child = spawn(this.config.clientBin, [
-      '--config-dir', this.config.configDir,
-      '--runtime-dir', this.config.runtimeDir,
-      '--openvpn.binary', this.config.openVPNBin,
-      '--tequilapi.port', this.config.tequilapiPort
+  async start (): Promise<void> {
+    this._child = spawn(this._config.clientBin, [
+      '--config-dir', this._config.configDir,
+      '--runtime-dir', this._config.runtimeDir,
+      '--openvpn.binary', this._config.openVPNBin,
+      '--tequilapi.port', this._config.tequilapiPort.toString()
     ])
   }
 
-  stop () {
-    this.child.kill('SIGTERM')
+  async stop (): Promise<void> {
+    if (!this._child) {
+      throw new Error('Cannot stop process. Process has not started.')
+    }
+
+    this._child.kill('SIGTERM')
   }
 
   /**
-   * Registers a callback for a specific process log/error message
+   * Registers a callback for a specific log level
    *
    * @param {string} level
    * @param {LogCallback} cb
    */
-  onLog (level, cb) {
+  onLog (level: string, cb: LogCallback): void {
     this._getStreamForLevel(level).on('data', (data) => {
       cb(data.toString())
     })
   }
 
+  async setupLogging (): Promise<void> {
+
+  }
+
   /**
-   * Converts log level to child process members 'child.stdout' and 'child.stderr'
+   * Returns child process output stream based on log level
    *
    * @param {string} level
+   *
    * @return {Readable}
+   *
    * @private
    */
-  _getStreamForLevel (level) {
+  _getStreamForLevel (level: string): Readable {
+    if (!this._child) {
+      throw new Error('Cannot bind IO stream. Process has not started.')
+    }
+
     switch (level) {
       case logLevels.INFO:
-        return this.child.stdout
+        return this._child.stdout
       case logLevels.ERROR:
-        return this.child.stderr
+        return this._child.stderr
       default:
         throw new Error(`Unknown logging level: ${level}`)
     }
   }
 }
 
-export default Process
-
-/**
- * @callback LogCallback
- * @param {string} data - chunk of log output
- */
+export default StandaloneClientProcess
