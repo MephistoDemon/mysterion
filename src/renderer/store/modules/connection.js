@@ -36,7 +36,7 @@ import {
   isRequestClosedError,
   isHttpError
 } from '../../../libraries/mysterium-tequilapi/client-error'
-import logger from '../../../app/logger'
+import logger from '../../../app/logging/logger'
 
 type ConnectionStore = {
   ip: ?string,

@@ -42,12 +42,12 @@ import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
 import type { EnvironmentCollector } from './bug-reporting/environment/environment-collector'
 import {BugReporterMetrics, METRICS, TAGS} from '../app/bug-reporting/bug-reporter-metrics'
-import LogCache from './logger/log-cache'
+import LogCache from './logging/log-cache'
 import SyncCallbacksInitializer from './sync-callbacks-initializer'
 import SyncReceiverMainCommunication from './communication/sync/sync-main-communication'
 import { SyncIpcReceiver } from './communication/sync/sync-ipc'
-import type { StringLogger } from './logger/string-logger'
-import logger from './logger'
+import type { StringLogger } from './logging/string-logger'
+import logger from './logging/logger'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,

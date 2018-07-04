@@ -18,8 +18,8 @@
 // @flow
 
 import { describe, it, expect, beforeEach } from '../../../helpers/dependencies'
-import WinstonTransportCaching from '../../../../src/app/logger/winston-transport-caching'
-import LogCache from '../../../../src/app/logger/log-cache'
+import WinstonTransportCaching from '../../../../src/app/logging/winston-transport-caching'
+import LogCache from '../../../../src/app/logging/log-cache'
 
 describe('WinstonTransportCaching', () => {
   describe('.log', () => {

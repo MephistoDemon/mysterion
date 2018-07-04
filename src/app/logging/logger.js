@@ -19,7 +19,7 @@
 
 import type { StringLogger } from './string-logger'
 
-class Index {
+class Logger {
   _logger: StringLogger = console
 
   // sets logger, replacing standard console logs
@@ -36,6 +36,6 @@ class Index {
   }
 }
 
-const logger = new Index()
+const logger = new Logger()
 
 export default logger

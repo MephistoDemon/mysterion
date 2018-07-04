@@ -17,7 +17,7 @@
 
 // @flow
 
-import logger from '../app/logger'
+import logger from '../app/logging/logger'
 
 /**
  * Allows subscribing callbacks and notifying them with data.

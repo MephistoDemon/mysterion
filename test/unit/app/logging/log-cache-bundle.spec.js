@@ -18,8 +18,8 @@
 // @flow
 
 import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
-import LogCacheBundle from '../../../../src/app/logger/log-cache-bundle'
-import LogCache from '../../../../src/app/logger/log-cache'
+import LogCacheBundle from '../../../../src/app/logging/log-cache-bundle'
+import LogCache from '../../../../src/app/logging/log-cache'
 
 describe('LogCacheBundle', () => {
   let backendLogCache: LogCache

@@ -18,8 +18,8 @@
 // @flow
 
 import type { EnvironmentCollector } from './environment-collector'
-import type { SerializedLogCaches } from '../../logger/log-cache-bundle'
-import LogCacheBundle from '../../logger/log-cache-bundle'
+import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
+import LogCacheBundle from '../../logging/log-cache-bundle'
 import type { RavenData } from '../bug-reporter-metrics'
 import { BugReporterMetrics } from '../bug-reporter-metrics'
 

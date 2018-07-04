@@ -22,7 +22,7 @@ import AppLoading from '@/pages/AppLoading'
 import Vpn from '@/pages/Vpn'
 import Terms from '@/pages/Terms'
 import About from '@/pages/About'
-import logger from '../../app/logger'
+import logger from '../../app/logging/logger'
 
 function factory (store) {
   Vue.use(Router)

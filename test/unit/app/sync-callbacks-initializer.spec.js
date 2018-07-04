@@ -22,8 +22,8 @@ import SyncCallbacksInitializer from '../../../src/app/sync-callbacks-initialize
 import type { EnvironmentCollector } from '../../../src/app/bug-reporting/environment/environment-collector'
 import type { SyncMainCommunication } from '../../../src/app/communication/sync/sync-communication'
 import type { LogDTO } from '../../../src/app/communication/dto'
-import LogCache from '../../../src/app/logger/log-cache'
-import type { SerializedLogCaches } from '../../../src/app/logger/log-cache-bundle'
+import LogCache from '../../../src/app/logging/log-cache'
+import type { SerializedLogCaches } from '../../../src/app/logging/log-cache-bundle'
 import type { RavenData } from '../../../src/app/bug-reporting/bug-reporter-metrics'
 import { TAGS } from '../../../src/app/bug-reporting/bug-reporter-metrics'
 

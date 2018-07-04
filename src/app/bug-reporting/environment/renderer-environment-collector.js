@@ -19,7 +19,7 @@
 
 import type { EnvironmentCollector } from './environment-collector'
 import type { SyncRendererCommunication } from '../../communication/sync/sync-communication'
-import type { SerializedLogCaches } from '../../logger/log-cache-bundle'
+import type { SerializedLogCaches } from '../../logging/log-cache-bundle'
 
 class RendererEnvironmentCollector implements EnvironmentCollector {
   _mysterionReleaseId: string

@@ -19,8 +19,8 @@
 
 import { beforeEach, describe, expect, it } from '../../../../helpers/dependencies'
 import MainEnvironmentCollector from '../../../../../src/app/bug-reporting/environment/main-environment-collector'
-import LogCache from '../../../../../src/app/logger/log-cache'
-import LogCacheBundle from '../../../../../src/app/logger/log-cache-bundle'
+import LogCache from '../../../../../src/app/logging/log-cache'
+import LogCacheBundle from '../../../../../src/app/logging/log-cache-bundle'
 import { BugReporterMetrics, TAGS } from '../../../../../src/app/bug-reporting/bug-reporter-metrics'
 import { MapSync } from '../../../../../src/libraries/map-sync'
 

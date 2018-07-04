@@ -27,7 +27,7 @@ import type { EnvironmentCollector } from '../../../app/bug-reporting/environmen
 import SyncSenderRendererCommunication from '../../../app/communication/sync/sync-renderer-communication'
 import { SyncIpcSender } from '../../../app/communication/sync/sync-ipc'
 import type { SyncRendererCommunication } from '../../../app/communication/sync/sync-communication'
-import { createWinstonSyncComLogger } from '../../../app/logger/winston'
+import { createWinstonSyncComLogger } from '../../../app/logging/winston'
 import { BugReporterMetrics } from '../../../app/bug-reporting/bug-reporter-metrics'
 
 function bootstrap (container: Container) {
