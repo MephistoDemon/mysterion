@@ -18,7 +18,7 @@
 // @flow
 import {ChildProcess} from 'child_process'
 import sleep from '../../../../../src/libraries/sleep'
-import Process from '../../../../../src/libraries/mysterium-client/standalone/process'
+import Process from '../../../../../src/libraries/mysterium-client/standalone/standalone-client-process'
 import Monitoring from '../../../../../src/libraries/mysterium-client/monitoring'
 import processLogLevels from '../../../../../src/libraries/mysterium-client/log-levels'
 import tequilapiClientFactory from '../../../../../src/libraries/mysterium-tequilapi/client-factory'
@@ -57,7 +57,7 @@ xdescribe('Standalone Process', () => {
 
   describe('startup', () => {
     it('spawns in less than 100ms without errors', () => {
-      expect(process.child).to.be.instanceOf(ChildProcess)
+      expect(process._child).to.be.instanceOf(ChildProcess)
     })
 
     it('sends log data to callback on()', () => {

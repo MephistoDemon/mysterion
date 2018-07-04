@@ -15,30 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import os from 'os'
-import LaunchDaemonInstaller from './launch-daemon/installer'
-import LaunchDaemonProcess from './launch-daemon/process'
-import StandaloneInstaller from './standalone/installer'
-import StandaloneProcess from './standalone/process'
+// @flow
+
 import Monitoring from './monitoring'
 import logLevels from './log-levels'
 
-let Installer, Process
+type LogCallback = (data: any) => any
 
-const platform = os.platform()
-// TODO: extract Installer interface, move this logic into function (i.e. getInstaller()) or DI
-switch (platform) {
-  case 'darwin':
-    Installer = LaunchDaemonInstaller
-    Process = LaunchDaemonProcess
-    break
+interface Installer {
+  needsInstallation (): boolean,
 
-  default:
-    Installer = StandaloneInstaller
-    // TODO: fix this, because StandaloneProcess constructor differs from LaunchDaemonProcess constructor, but they are
-    // constructed with same parameters
-    Process = StandaloneProcess
-    break
+  install (): Promise<void>
 }
 
-export {Installer, Process, Monitoring, logLevels}
+interface Process {
+  start (): Promise<void>,
+
+  stop (): Promise<void>,
+
+  onLog (level: string, callback: Function): void,
+
+  setupLogging (): Promise<void>
+}
+
+export { Monitoring, logLevels }
+export type { Installer, Process, LogCallback }

@@ -18,9 +18,10 @@
 // @flow
 
 import { app, BrowserWindow } from 'electron'
+import type { Installer, Process } from '../libraries/mysterium-client'
+import { logLevels as processLogLevels } from '../libraries/mysterium-client'
 import trayFactory from '../main/tray/factory'
-import { Installer, logLevels as processLogLevels } from '../libraries/mysterium-client'
-import { SUDO_PROMT_PERMISSION_DENIED } from '../libraries/mysterium-client/launch-daemon/installer'
+import { SUDO_PROMT_PERMISSION_DENIED } from '../libraries/mysterium-client/launch-daemon/launch-daemon-installer'
 import translations from './messages'
 import MainMessageBusCommunication from './communication/main-message-bus-communication'
 import MainMessageBus from './communication/mainMessageBus'
@@ -54,7 +55,7 @@ type MysterionParams = {
   terms: Terms,
   installer: Installer,
   monitoring: ProcessMonitoring,
-  process: Object,
+  process: Process,
   proposalFetcher: ProposalFetcher,
   bugReporter: BugReporter,
   environmentCollector: EnvironmentCollector,
@@ -77,7 +78,7 @@ class Mysterion {
   terms: Terms
   installer: Installer
   monitoring: ProcessMonitoring
-  process: Object
+  process: Process
   proposalFetcher: ProposalFetcher
   bugReporter: BugReporter
   environmentCollector: EnvironmentCollector
