@@ -60,7 +60,7 @@ export default {
     AppError,
     AppModal
   },
-  dependencies: ['mysterionReleaseID', 'rendererCommunication', 'syncCommunication', 'winstonCachingLogger', 'bugReporterMetrics'],
+  dependencies: ['mysterionReleaseID', 'rendererCommunication', 'syncCommunication', 'stringLogger', 'bugReporterMetrics'],
   computed: {
     ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
     version () {
@@ -70,7 +70,7 @@ export default {
   },
   async mounted () {
     this.bugReporterMetrics.startSyncing(this.rendererCommunication)
-    logger.setLogger(this.winstonCachingLogger)
+    logger.setLogger(this.stringLogger)
     logger.info('App view was mounted')
 
     // we need to notify the main process that we're up
