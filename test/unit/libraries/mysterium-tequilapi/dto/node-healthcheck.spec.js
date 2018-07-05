@@ -17,7 +17,7 @@
 
 import {expect} from 'chai'
 import NodeHealthcheckDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
-import NodeVersionDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-version'
+import NodeBuildInfoDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-build-info'
 import { captureError } from '../../../../helpers/utils'
 
 describe('TequilapiClient DTO', () => {
@@ -33,7 +33,7 @@ describe('TequilapiClient DTO', () => {
       expect(status.uptime).to.equal('1h10m')
       expect(status.process).to.equal(1111)
       expect(status.version).to.equal('0.0.6')
-      expect(status.buildInfo).to.deep.equal(new NodeVersionDTO({}))
+      expect(status.buildInfo).to.deep.equal(new NodeBuildInfoDTO({}))
     })
 
     it('throws error with empty data', async () => {

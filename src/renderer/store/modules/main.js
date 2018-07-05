@@ -19,13 +19,13 @@
 // TODO: rename to `vpn.js` to be consistent with `Vpn.vue`
 import type from '../types'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
-import NodeVersionDTO from '../../../libraries/mysterium-tequilapi/dto/node-version'
+import NodeBuildInfoDTO from '../../../libraries/mysterium-tequilapi/dto/node-build-info'
 
 type State = {
   init: string,
   visual: string,
   navOpen: boolean,
-  clientBuildInfo: NodeVersionDTO,
+  clientBuildInfo: NodeBuildInfoDTO,
   navVisible: boolean,
   errorMessage: ?string,
   error: ?Error,
@@ -36,7 +36,7 @@ const state: State = {
   init: '',
   visual: 'head',
   navOpen: false,
-  clientBuildInfo: new NodeVersionDTO({}),
+  clientBuildInfo: new NodeBuildInfoDTO({}),
   navVisible: true,
   errorMessage: null,
   error: null,
@@ -54,7 +54,7 @@ const getters = {
 }
 
 const mutations = {
-  [type.CLIENT_BUILD_INFO] (state: State, buildInfo: NodeVersionDTO) {
+  [type.CLIENT_BUILD_INFO] (state: State, buildInfo: NodeBuildInfoDTO) {
     state.clientBuildInfo = buildInfo
   },
   [type.SET_NAV_OPEN] (state: State, open) {

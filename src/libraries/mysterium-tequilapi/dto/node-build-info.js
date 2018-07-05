@@ -17,8 +17,7 @@
 
 // @flow
 
-// TODO: rename
-class NodeVersionDTO {
+class NodeBuildInfoDTO {
   commit: string
   branch: string
   buildNumber: string
@@ -30,4 +29,4 @@ class NodeVersionDTO {
   }
 }
 
-export default NodeVersionDTO
+export default NodeBuildInfoDTO

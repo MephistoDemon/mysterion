@@ -16,13 +16,13 @@
  */
 
 // @flow
-import NodeVersionDTO from './node-version'
+import NodeBuildInfoDTO from './node-build-info'
 
 class NodeHealthcheckDTO {
   uptime: string
   process: number
   version: string
-  buildInfo: NodeVersionDTO
+  buildInfo: NodeBuildInfoDTO
 
   // TODO: DRY error throw
   // TODO: extract logic out
@@ -53,7 +53,7 @@ class NodeHealthcheckDTO {
     if (typeof buildInfo !== 'object' || buildInfo === null) {
       throw new Error('Unable to parse response')
     }
-    this.buildInfo = new NodeVersionDTO(buildInfo)
+    this.buildInfo = new NodeBuildInfoDTO(buildInfo)
   }
 }
 
