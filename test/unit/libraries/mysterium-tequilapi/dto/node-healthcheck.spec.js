@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: rename file to unify naming with tested file
-
 import {expect} from 'chai'
 import NodeHealthcheckDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
 import NodeVersionDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-version'
