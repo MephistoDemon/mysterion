@@ -28,7 +28,12 @@ import ConsumerLocationDTO from '../../../../../src/libraries/mysterium-tequilap
 
 class EmptyTequilapiClientMock implements TequilapiClient {
   async healthCheck (_timeout: ?number): Promise<NodeHealthcheckDTO> {
-    return new NodeHealthcheckDTO({})
+    return new NodeHealthcheckDTO({
+      uptime: '',
+      process: 0,
+      version: '',
+      buildInfo: {}
+    })
   }
 
   async stop (): Promise<void> {

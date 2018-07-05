@@ -21,14 +21,39 @@ import NodeVersionDTO from './node-version'
 class NodeHealthcheckDTO {
   uptime: string
   process: number
-  version: NodeVersionDTO
+  version: string
+  buildInfo: NodeVersionDTO
 
-  constructor (data: Object) {
-    this.uptime = data.uptime
-    this.process = data.process
-    if (data.version) {
-      this.version = new NodeVersionDTO(data.version)
+  // TODO: DRY error throw
+  // TODO: extract logic out
+  constructor (data: mixed) {
+    if (typeof data !== 'object' || data === null) {
+      throw new Error('Unable to parse response')
     }
+
+    const uptime = data.uptime
+    if (typeof uptime !== 'string') {
+      throw new Error('Unable to parse response')
+    }
+    this.uptime = uptime
+
+    const process = data.process
+    if (typeof process !== 'number') {
+      throw new Error('Unable to parse response')
+    }
+    this.process = process
+
+    const version = data.version
+    if (typeof version !== 'string') {
+      throw new Error('Unable to parse response')
+    }
+    this.version = version
+
+    const buildInfo = data.buildInfo
+    if (typeof buildInfo !== 'object' || buildInfo === null) {
+      throw new Error('Unable to parse response')
+    }
+    this.buildInfo = new NodeVersionDTO(buildInfo)
   }
 }
 

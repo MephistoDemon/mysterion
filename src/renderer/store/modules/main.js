@@ -107,7 +107,7 @@ function actionsFactory (tequilapi: TequilapiClient) {
     },
     async [type.CLIENT_BUILD_INFO] ({commit}) {
       const res = await tequilapi.healthCheck()
-      commit(type.CLIENT_BUILD_INFO, res.version)
+      commit(type.CLIENT_BUILD_INFO, res.buildInfo)
     },
     setNavVisibility ({commit}, visible: boolean) {
       commit(type.SET_NAV_VISIBLE, visible)

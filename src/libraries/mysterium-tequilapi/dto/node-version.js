@@ -17,6 +17,7 @@
 
 // @flow
 
+// TODO: rename
 class NodeVersionDTO {
   commit: string
   branch: string

@@ -44,7 +44,8 @@ describe('HttpTequilapiClient', () => {
       const response = {
         uptime: '1h10m',
         process: 1111,
-        version: {
+        version: '0.0.6',
+        buildInfo: {
           commit: '0bcccc',
           branch: 'master',
           buildNumber: '001'
@@ -54,6 +55,29 @@ describe('HttpTequilapiClient', () => {
 
       const healthcheck = await api.healthCheck()
       expect(healthcheck).to.deep.equal(new NodeHealthcheckDTO(response))
+      expect(healthcheck.version).to.eql('0.0.6')
+      expect(healthcheck.buildInfo).to.eql({
+        commit: '0bcccc',
+        branch: 'master',
+        buildNumber: '001'
+      })
+    })
+
+    it('throws error with unexpected response body', async () => {
+      const response = {
+        uptime: '1h10m',
+        process: 1111,
+        version: {
+          commit: '0bcccc',
+          branch: 'master',
+          buildNumber: '001'
+        }
+      }
+      mock.onGet('healthcheck').reply(200, response)
+
+      const err = await capturePromiseError(api.healthCheck())
+      expect(err).to.be.an('error')
+      expect(err.message).to.eql('Unable to parse response')
     })
 
     it('handles error', async () => {

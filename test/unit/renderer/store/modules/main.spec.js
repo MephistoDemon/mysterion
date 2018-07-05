@@ -15,10 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// @flow
+
 import {expect} from 'chai'
 
-import {mutations} from '@/store/modules/main'
+import {mutations, actionsFactory} from '@/store/modules/main'
 import type from '@/store/types'
+import EmptyTequilapiClientMock from './empty-tequilapi-client-mock'
+import { describe, it } from '../../../../helpers/dependencies'
+import NodeHealthcheckDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
 
 describe('mutations', () => {
   describe('SHOW_ERROR', () => {
@@ -34,7 +39,8 @@ describe('mutations', () => {
     it('saves message and shows it with response error', () => {
       const state = {}
       const err = new Error('My error')
-      err.response = {
+      const errObj = (err: Object)
+      errObj.response = {
         data: {
           message: 'Response message'
         }
@@ -72,6 +78,45 @@ describe('mutations', () => {
       mutations[type.HIDE_ERROR](state)
 
       expect(state.showError).to.eql(false)
+    })
+  })
+})
+
+class MainTequilapiClientMock extends EmptyTequilapiClientMock {
+  async healthCheck (_timeout: ?number): Promise<NodeHealthcheckDTO> {
+    return new NodeHealthcheckDTO({
+      uptime: '',
+      process: 0,
+      version: 'mock version',
+      buildInfo: {
+        commit: 'mock commit',
+        branch: 'mock branch',
+        buildNumber: 'mock buildNumber'
+      }
+    })
+  }
+}
+
+describe('actions', () => {
+  describe('CLIENT_BUILD_INFO', () => {
+    it('works', async () => {
+      const client = new MainTequilapiClientMock()
+      const actions = actionsFactory(client)
+
+      // TODO: re-use CallbackRecorder
+      let m = null
+      let a = null
+      function commit (mutation, argument) {
+        m = mutation
+        a = argument
+      }
+      await actions[type.CLIENT_BUILD_INFO]({commit})
+      expect(m).to.eql(type.CLIENT_BUILD_INFO)
+      expect(a).to.eql({
+        commit: 'mock commit',
+        branch: 'mock branch',
+        buildNumber: 'mock buildNumber'
+      })
     })
   })
 })
