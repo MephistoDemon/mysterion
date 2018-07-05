@@ -63,7 +63,11 @@ class LaunchDaemonProcess implements Process {
   }
 
   async start (): Promise<void> {
-    await axios.get('http://127.0.0.1:' + this._daemonPort)
+    try {
+      await axios.get('http://127.0.0.1:' + this._daemonPort)
+    } catch (e) {
+      await this._tequilapi.healthCheck()
+    }
   }
 
   async stop (): Promise<void> {

@@ -358,6 +358,9 @@ class Mysterion {
 
     logInfo("Starting 'mysterium_client' process")
     this.process.start()
+      .then(() => { logInfo('mysterium_client start successful') })
+      .catch(() => { logException('client launch or initial healthcheck failed', new Error('mysterium_client start failed')) })
+
     try {
       this.process.setupLogging()
       this.process.onLog(processLogLevels.INFO, (data) => cacheLogs(processLogLevels.INFO, data))
