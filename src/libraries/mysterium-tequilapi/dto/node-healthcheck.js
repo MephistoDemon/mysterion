@@ -18,43 +18,45 @@
 // @flow
 import NodeBuildInfoDTO from './node-build-info'
 
-class NodeHealthcheckDTO {
-  uptime: string
-  process: number
-  version: string
+type NodeHealthcheckDTO = {
+  uptime: string,
+  process: number,
+  version: string,
   buildInfo: NodeBuildInfoDTO
-
-  // TODO: DRY error throw
-  // TODO: extract logic out
-  constructor (data: mixed) {
-    if (typeof data !== 'object' || data === null) {
-      throw new Error('Unable to parse response')
-    }
-
-    const uptime = data.uptime
-    if (typeof uptime !== 'string') {
-      throw new Error('Unable to parse response')
-    }
-    this.uptime = uptime
-
-    const process = data.process
-    if (typeof process !== 'number') {
-      throw new Error('Unable to parse response')
-    }
-    this.process = process
-
-    const version = data.version
-    if (typeof version !== 'string') {
-      throw new Error('Unable to parse response')
-    }
-    this.version = version
-
-    const buildInfo = data.buildInfo
-    if (typeof buildInfo !== 'object' || buildInfo === null) {
-      throw new Error('Unable to parse response')
-    }
-    this.buildInfo = new NodeBuildInfoDTO(buildInfo)
-  }
 }
 
-export default NodeHealthcheckDTO
+/**
+ * Tries to parse data into DTO type
+ */
+function parseHealthcheckResponse (data: mixed): NodeHealthcheckDTO {
+  const errorMessage = 'Unable to parse response'
+  if (typeof data !== 'object' || data === null) {
+    throw new Error(errorMessage)
+  }
+
+  const uptime = data.uptime
+  if (typeof uptime !== 'string') {
+    throw new Error(errorMessage)
+  }
+
+  const process = data.process
+  if (typeof process !== 'number') {
+    throw new Error(errorMessage)
+  }
+
+  const version = data.version
+  if (typeof version !== 'string') {
+    throw new Error(errorMessage)
+  }
+
+  const buildInfoData = data.buildInfo
+  if (typeof buildInfoData !== 'object' || buildInfoData === null) {
+    throw new Error(errorMessage)
+  }
+  const buildInfo = new NodeBuildInfoDTO(buildInfoData)
+
+  return { uptime, process, version, buildInfo }
+}
+
+export type { NodeHealthcheckDTO }
+export { parseHealthcheckResponse }

@@ -16,14 +16,14 @@
  */
 
 import {expect} from 'chai'
-import NodeHealthcheckDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
+import { parseHealthcheckResponse } from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
 import NodeBuildInfoDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-build-info'
 import { captureError } from '../../../../helpers/utils'
 
 describe('TequilapiClient DTO', () => {
   describe('NodeHealthcheckDTO', () => {
     it('sets properties', async () => {
-      const status = new NodeHealthcheckDTO({
+      const status = parseHealthcheckResponse({
         uptime: '1h10m',
         process: 1111,
         version: '0.0.6',
@@ -37,13 +37,13 @@ describe('TequilapiClient DTO', () => {
     })
 
     it('throws error with empty data', async () => {
-      const err = captureError(() => new NodeHealthcheckDTO({}))
+      const err = captureError(() => parseHealthcheckResponse({}))
       expect(err).to.be.an('error')
       expect(err.message).to.eql('Unable to parse response')
     })
 
     it('throws error with wrong data', async () => {
-      const err = captureError(() => new NodeHealthcheckDTO('I am wrong'))
+      const err = captureError(() => parseHealthcheckResponse('I am wrong'))
       expect(err).to.be.an('error')
       expect(err.message).to.eql('Unable to parse response')
     })

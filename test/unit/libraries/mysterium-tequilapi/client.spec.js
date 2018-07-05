@@ -23,7 +23,7 @@ import AxiosAdapter from '../../../../src/libraries/mysterium-tequilapi/adapters
 import axios from 'axios/index'
 import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../helpers/utils'
-import NodeHealthcheckDTO from '../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
+import { parseHealthcheckResponse } from '../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
 import ConnectionStatisticsDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
 import ConnectionIPDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 import ConnectionStatusDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
@@ -54,7 +54,7 @@ describe('HttpTequilapiClient', () => {
       mock.onGet('healthcheck').reply(200, response)
 
       const healthcheck = await api.healthCheck()
-      expect(healthcheck).to.deep.equal(new NodeHealthcheckDTO(response))
+      expect(healthcheck).to.deep.equal(parseHealthcheckResponse(response))
       expect(healthcheck.version).to.eql('0.0.6')
       expect(healthcheck.buildInfo).to.eql({
         commit: '0bcccc',

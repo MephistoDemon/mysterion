@@ -23,8 +23,9 @@ import {mutations, actionsFactory} from '@/store/modules/main'
 import type from '@/store/types'
 import EmptyTequilapiClientMock from './empty-tequilapi-client-mock'
 import { describe, it } from '../../../../helpers/dependencies'
-import NodeHealthcheckDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
 import { CallbackRecorder } from '../../../../helpers/utils'
+import type { NodeHealthcheckDTO } from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
+import NodeBuildInfoDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-build-info'
 
 describe('mutations', () => {
   describe('SHOW_ERROR', () => {
@@ -85,16 +86,16 @@ describe('mutations', () => {
 
 class MainTequilapiClientMock extends EmptyTequilapiClientMock {
   async healthCheck (_timeout: ?number): Promise<NodeHealthcheckDTO> {
-    return new NodeHealthcheckDTO({
+    return {
       uptime: '',
       process: 0,
       version: 'mock version',
-      buildInfo: {
+      buildInfo: new NodeBuildInfoDTO({
         commit: 'mock commit',
         branch: 'mock branch',
         buildNumber: 'mock buildNumber'
-      }
-    })
+      })
+    }
   }
 }
 
