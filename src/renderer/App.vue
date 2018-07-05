@@ -50,7 +50,7 @@ import AppNav from '@/partials/AppNav'
 
 import AppError from '@/partials/AppError'
 import AppModal from '@/partials/AppModal'
-import logger from '../app/logging/logger'
+import logger from '../app/logger'
 
 export default {
   name: 'App',

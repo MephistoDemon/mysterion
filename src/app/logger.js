@@ -17,7 +17,7 @@
 
 // @flow
 
-import type { StringLogger } from './string-logger'
+import type { StringLogger } from './logging/string-logger'
 
 class Logger {
   _logger: StringLogger = console

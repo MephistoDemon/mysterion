@@ -47,7 +47,7 @@ import SyncCallbacksInitializer from './sync-callbacks-initializer'
 import SyncReceiverMainCommunication from './communication/sync/sync-main-communication'
 import { SyncIpcReceiver } from './communication/sync/sync-ipc'
 import type { StringLogger } from './logging/string-logger'
-import logger from './logging/logger'
+import logger from './logger'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,

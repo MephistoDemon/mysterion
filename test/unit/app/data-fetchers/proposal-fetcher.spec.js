@@ -22,7 +22,7 @@ import ProposalFetcher from '../../../../src/app/data-fetchers/proposal-fetcher'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import {nextTick} from '../../../helpers/utils'
 import EmptyTequilapiClientMock from '../../renderer/store/modules/empty-tequilapi-client-mock'
-import logger from '../../../../src/app/logging/logger'
+import logger from '../../../../src/app/logger'
 
 class IdentityTequilapiClientMock extends EmptyTequilapiClientMock {
   mockError: Error = new Error('Mock error')

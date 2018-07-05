@@ -25,7 +25,7 @@
 /* eslint-disable */
 
 // Set environment for development
-import logger from '../app/logging/logger'
+import logger from '../app/logger'
 
 process.env.NODE_ENV = 'development'
 
