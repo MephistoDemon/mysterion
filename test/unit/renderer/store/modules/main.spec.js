@@ -24,6 +24,7 @@ import type from '@/store/types'
 import EmptyTequilapiClientMock from './empty-tequilapi-client-mock'
 import { describe, it } from '../../../../helpers/dependencies'
 import NodeHealthcheckDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
+import { CallbackRecorder } from '../../../../helpers/utils'
 
 describe('mutations', () => {
   describe('SHOW_ERROR', () => {
@@ -102,17 +103,13 @@ describe('actions', () => {
     it('works', async () => {
       const client = new MainTequilapiClientMock()
       const actions = actionsFactory(client)
+      const recorder = new CallbackRecorder()
+      const commit = recorder.getCallback()
 
-      // TODO: re-use CallbackRecorder
-      let m = null
-      let a = null
-      function commit (mutation, argument) {
-        m = mutation
-        a = argument
-      }
-      await actions[type.CLIENT_BUILD_INFO]({commit})
-      expect(m).to.eql(type.CLIENT_BUILD_INFO)
-      expect(a).to.eql({
+      await actions[type.CLIENT_BUILD_INFO]({ commit })
+
+      expect(recorder.arguments[0]).to.eql(type.CLIENT_BUILD_INFO)
+      expect(recorder.arguments[1]).to.eql({
         commit: 'mock commit',
         branch: 'mock branch',
         buildNumber: 'mock buildNumber'
