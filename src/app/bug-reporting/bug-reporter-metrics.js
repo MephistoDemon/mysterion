@@ -18,6 +18,7 @@
 // @flow
 import {MapSync} from '../../libraries/map-sync'
 import type {MapSyncCommunication} from '../../libraries/map-sync'
+import { getCurrentTimeISOFormat } from '../../libraries/strings'
 
 /**
  * Used as default metric value in Sentry
@@ -73,7 +74,7 @@ class BugReporterMetrics {
   }
 
   setWithCurrentDateTime (metric: Metric) {
-    this._mapSync.set(metric, dateTimeString())
+    this._mapSync.set(metric, getCurrentTimeISOFormat())
   }
 
   getMetrics (): RavenData {
@@ -90,10 +91,6 @@ class BugReporterMetrics {
     }
     return result
   }
-}
-
-function dateTimeString (): string {
-  return (new Date()).toUTCString()
 }
 
 export { BugReporterMetrics, METRICS, NOT_SET, TAGS, EXTRA }

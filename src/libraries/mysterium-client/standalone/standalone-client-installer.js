@@ -15,12 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class Installer {
-  needsInstallation () {
+// @flow
+
+import type { Installer } from '../index'
+
+class StandaloneClientInstaller implements Installer {
+  needsInstallation (): boolean {
     return false
   }
 
-  install () {}
+  async install (): Promise<void> {
+  }
 }
 
-export default Installer
+export default StandaloneClientInstaller

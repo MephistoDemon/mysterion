@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ * Copyright (C) 2018 The "MysteriumNetwork/mysterion" Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,26 +17,24 @@
 
 // @flow
 
-import Monitoring from './monitoring'
-import logLevels from './log-levels'
+type TransformFn = (string) => string
 
-type LogCallback = (data: any) => any
-
-interface Installer {
-  needsInstallation (): boolean,
-
-  install (): Promise<void>
+function prependWithFn (fn: () => string): TransformFn {
+  return (data: string) => {
+    return fn() + data
+  }
 }
 
-interface Process {
-  start (): Promise<void>,
-
-  stop (): Promise<void>,
-
-  onLog (level: string, callback: Function): void,
-
-  setupLogging (): Promise<void>
+function getCurrentTimeISOFormat (): string {
+  return toISOString(new Date())
 }
 
-export { Monitoring, logLevels }
-export type { Installer, Process, LogCallback }
+function toISOString (date: Date): string {
+  return date.toISOString()
+}
+
+export {
+  prependWithFn,
+  getCurrentTimeISOFormat,
+  toISOString
+}
