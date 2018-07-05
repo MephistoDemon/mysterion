@@ -107,7 +107,6 @@ describe('VpnInitializer', () => {
       })
 
       it('creates and unlocks identity', async () => {
-        let initNewUser = false
         let unlocked = false
         const dispatch = (...args: Array<any>) => {}
         const commit = (...args: Array<any>) => {
@@ -118,17 +117,12 @@ describe('VpnInitializer', () => {
           if (args.length === 1 && args[0] === types.IDENTITY_UNLOCK_SUCCESS) {
             unlocked = true
           }
-
-          if (args.length === 1 && args[0] === types.INIT_NEW_USER) {
-            initNewUser = true
-          }
         }
         const state: IdentityState = { current: null, unlocked: false }
         await new VpnInitializer(tequilapi).initialize(dispatch, commit, state)
 
         expect(state.current).to.eql(mockCreatedIdentity)
         expect(unlocked).to.be.true
-        expect(initNewUser).to.be.true
       })
     })
 

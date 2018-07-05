@@ -19,57 +19,64 @@
 // TODO: rename to `vpn.js` to be consistent with `Vpn.vue`
 import type from '../types'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
+import NodeVersionDTO from '../../../libraries/mysterium-tequilapi/dto/node-version'
 
-const state = {
+type State = {
+  init: string,
+  visual: string,
+  navOpen: boolean,
+  clientBuildInfo: NodeVersionDTO,
+  navVisible: boolean,
+  errorMessage: ?string,
+  error: ?Error,
+  showError: boolean
+}
+
+const state: State = {
   init: '',
   visual: 'head',
   navOpen: false,
-  clientBuildInfo: {},
+  clientBuildInfo: new NodeVersionDTO({}),
   navVisible: true,
   errorMessage: null,
+  error: null,
   showError: false
 }
 
-// TODO: add type for state
-
 const getters = {
-  loading: (state: Object) => (state.init === type.INIT_PENDING),
-  visual: (state: Object) => state.visual,
-  navOpen: (state: Object) => state.navOpen,
-  navVisible: (state: Object) => state.navVisible && !(state.init === type.INIT_PENDING),
-  clientBuildInfo: (state: Object) => state.clientBuildInfo,
-  errorMessage: (state: Object) => state.errorMessage,
-  showError: (state: Object) => state.showError
+  loading: (state: State) => (state.init === type.INIT_PENDING),
+  visual: (state: State) => state.visual,
+  navOpen: (state: State) => state.navOpen,
+  navVisible: (state: State) => state.navVisible && !(state.init === type.INIT_PENDING),
+  clientBuildInfo: (state: State) => state.clientBuildInfo,
+  errorMessage: (state: State) => state.errorMessage,
+  showError: (state: State) => state.showError
 }
 
 const mutations = {
-  [type.CLIENT_BUILD_INFO] (state, buildInfo: string) {
+  [type.CLIENT_BUILD_INFO] (state: State, buildInfo: NodeVersionDTO) {
     state.clientBuildInfo = buildInfo
   },
-  [type.SET_NAV_OPEN] (state, open) {
+  [type.SET_NAV_OPEN] (state: State, open) {
     state.navOpen = open
   },
-  [type.SET_NAV_VISIBLE] (state, visible: boolean) {
+  [type.SET_NAV_VISIBLE] (state: State, visible: boolean) {
     state.navVisible = visible
   },
-  [type.SET_VISUAL] (state, visual: boolean) {
+  [type.SET_VISUAL] (state: State, visual: string) {
     state.visual = visual
   },
-  [type.INIT_SUCCESS] (state) {
+  [type.INIT_SUCCESS] (state: State) {
     state.init = type.INIT_SUCCESS
   },
-  [type.INIT_PENDING] (state) {
+  [type.INIT_PENDING] (state: State) {
     state.init = type.INIT_PENDING
   },
-  [type.INIT_FAIL] (state, err: ?Error) {
+  [type.INIT_FAIL] (state: State, err: ?Error) {
     state.init = type.INIT_FAIL
     state.error = err
   },
-  [type.INIT_NEW_USER] (state) {
-    // TODO: remove if this is not used anywhere
-    state.newUser = true
-  },
-  [type.SHOW_ERROR] (state, err) {
+  [type.SHOW_ERROR] (state: State, err) {
     state.showError = true
     if (err && err.response && err.response.data && err.response.data.message) {
       state.errorMessage = err.response.data.message
@@ -81,11 +88,11 @@ const mutations = {
     }
     state.errorMessage = 'Unknown error'
   },
-  [type.SHOW_ERROR_MESSAGE] (state, errorMessage: string) {
+  [type.SHOW_ERROR_MESSAGE] (state: State, errorMessage: string) {
     state.errorMessage = errorMessage
     state.showError = true
   },
-  [type.HIDE_ERROR] (state) {
+  [type.HIDE_ERROR] (state: State) {
     state.showError = false
   }
 }
@@ -95,7 +102,7 @@ function actionsFactory (tequilapi: TequilapiClient) {
     switchNav ({commit}, open: boolean) {
       commit(type.SET_NAV_OPEN, open)
     },
-    setVisual ({commit}, visual: boolean) {
+    setVisual ({commit}, visual: ?string) {
       commit(type.SET_VISUAL, visual)
     },
     async [type.CLIENT_BUILD_INFO] ({commit}) {
