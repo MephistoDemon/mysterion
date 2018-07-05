@@ -113,6 +113,8 @@ function tailFile (filePath: string, cb: LogCallback): void {
   const logTail = new Tail(filePath)
   logTail.on('line', cb)
   logTail.on('error', () => {
+    // #TODO: fix no-console logging in libs
+    // eslint-disable-next-line
     console.error(`log file watching failed. file probably doesn't exist: ${filePath}`)
   })
 }
