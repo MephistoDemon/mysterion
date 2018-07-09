@@ -61,7 +61,7 @@ type MysterionParams = {
   bugReporter: BugReporter,
   environmentCollector: EnvironmentCollector,
   bugReporterMetrics: BugReporterMetrics,
-  stringLogger: StringLogger,
+  logger: StringLogger,
   frontendLogCache: LogCache,
   mysteriumProcessLogCache: LogCache,
   userSettingsStore: UserSettingsStore,
@@ -84,7 +84,7 @@ class Mysterion {
   bugReporter: BugReporter
   environmentCollector: EnvironmentCollector
   bugReporterMetrics: BugReporterMetrics
-  stringLogger: StringLogger
+  logger: StringLogger
   frontendLogCache: LogCache
   mysteriumProcessLogCache: LogCache
   userSettingsStore: UserSettingsStore
@@ -106,7 +106,7 @@ class Mysterion {
     this.bugReporter = params.bugReporter
     this.environmentCollector = params.environmentCollector
     this.bugReporterMetrics = params.bugReporterMetrics
-    this.stringLogger = params.stringLogger
+    this.logger = params.logger
     this.frontendLogCache = params.frontendLogCache
     this.mysteriumProcessLogCache = params.mysteriumProcessLogCache
     this.userSettingsStore = params.userSettingsStore
@@ -114,7 +114,7 @@ class Mysterion {
   }
 
   run () {
-    logger.setLogger(this.stringLogger)
+    logger.setLogger(this.logger)
     this.bugReporterMetrics.set(TAGS.SESSION_ID, generateSessionId())
     this._initializeSyncCallbacks()
     this.logUnhandledRejections()

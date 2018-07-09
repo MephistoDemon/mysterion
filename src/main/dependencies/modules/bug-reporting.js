@@ -28,7 +28,7 @@ import { BugReporterMetrics } from '../../../app/bug-reporting/bug-reporter-metr
 
 function bootstrap (container: Container) {
   container.factory(
-    'stringLogger',
+    'logger',
     ['backendLogCache'],
     (backendLogCache) => {
       return createWinstonCachingLogger(backendLogCache)

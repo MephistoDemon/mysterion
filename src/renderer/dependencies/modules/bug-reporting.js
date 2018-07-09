@@ -34,7 +34,7 @@ function bootstrap (container: Container) {
   container.constant('bugReporter.sentryURL', 'https://f1e63dd563c34c35a56e98aa02518d40@sentry.io/300978')
 
   container.factory(
-    'stringLogger',
+    'logger',
     ['syncCommunication'],
     (syncCommunication: SyncRendererCommunication) => {
       return createWinstonSyncComLogger(syncCommunication)
