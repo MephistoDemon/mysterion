@@ -64,8 +64,11 @@ class LaunchDaemonProcess implements Process {
 
   async start (): Promise<void> {
     try {
+      // we are spawning osx Launch Daemon
       await axios.get('http://127.0.0.1:' + this._daemonPort)
     } catch (e) {
+      // no http server is running on `_daemonPort`, so request results in a failure
+      // we are waiting for tequilapi healthcheck response to make sure the process is running
       await this._tequilapi.healthCheck()
     }
   }
