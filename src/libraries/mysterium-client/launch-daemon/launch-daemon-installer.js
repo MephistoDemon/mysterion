@@ -28,6 +28,7 @@ import { promisify } from 'util'
 import createFileIfMissing from '../../create-file-if-missing'
 
 const writeFile = promisify(fs.writeFile)
+// TODO: check if sudo.exec promisifying works as expected
 const sudoExec = promisify(sudo.exec)
 
 const SUDO_PROMT_PERMISSION_DENIED = 'User did not grant permission.'

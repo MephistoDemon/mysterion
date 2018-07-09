@@ -31,6 +31,8 @@ import type { ClientConfig } from '../../../libraries/mysterium-client/config'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import { LAUNCH_DAEMON_PORT } from '../../../libraries/mysterium-client/launch-daemon/config'
 import os from 'os'
+import ServiceManagerInstaller from '../../../libraries/mysterium-client/service-manager/service-manager-installer'
+import ServiceManagerProcess from '../../../libraries/mysterium-client/service-manager/service-manager-process'
 
 function bootstrap (container: Container) {
   container.constant('mysteriumClient.platform', os.platform())
@@ -39,10 +41,18 @@ function bootstrap (container: Container) {
     'mysteriumClient.config',
     ['mysterionApplication.config'],
     (mysterionConfig: MysterionConfig): ClientConfig => {
+      let clientBin = path.join(mysterionConfig.contentsDirectory, 'bin', 'mysterium_client')
+      let openvpnBin = path.join(mysterionConfig.contentsDirectory, 'bin', 'openvpn')
+
+      if (os.platform() === 'win32') {
+        clientBin += '.exe'
+        openvpnBin += '.exe'
+      }
+
       return {
-        clientBin: path.join(mysterionConfig.contentsDirectory, 'bin', 'mysterium_client'),
+        clientBin: clientBin,
         configDir: path.join(mysterionConfig.contentsDirectory, 'bin', 'config'),
-        openVPNBin: path.join(mysterionConfig.contentsDirectory, 'bin', 'openvpn'),
+        openVPNBin: openvpnBin,
         dataDir: mysterionConfig.userDataDirectory,
         runtimeDir: mysterionConfig.runtimeDirectory,
         logDir: mysterionConfig.userDataDirectory,
@@ -52,11 +62,13 @@ function bootstrap (container: Container) {
   )
   container.service(
     'mysteriumClientInstaller',
-    ['mysteriumClient.config', 'mysteriumClient.platform'],
-    (config: ClientConfig, platform: string) => {
+    ['mysterionApplication.config', 'mysteriumClient.config', 'mysteriumClient.platform'],
+    (mysterionConfig: MysterionConfig, config: ClientConfig, platform: string) => {
       switch (platform) {
         case 'darwin':
           return new LaunchDaemonInstaller(config)
+        case 'win32':
+          return new ServiceManagerInstaller(config, path.join(mysterionConfig.contentsDirectory, 'bin'))
         default:
           return new StandaloneClientInstaller()
       }
@@ -69,6 +81,8 @@ function bootstrap (container: Container) {
       switch (platform) {
         case 'darwin':
           return new LaunchDaemonProcess(tequilapiClient, LAUNCH_DAEMON_PORT, config.logDir)
+        case 'win32':
+          return new ServiceManagerProcess(config)
         default:
           return new StandaloneClientProcess(config)
       }
