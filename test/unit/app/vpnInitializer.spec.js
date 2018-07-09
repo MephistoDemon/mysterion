@@ -112,9 +112,7 @@ describe('VpnInitializer', () => {
         const commit = (...args: Array<any>) => {
           if (args.length === 2 && args[0] === types.IDENTITY_GET_SUCCESS) {
             state.current = args[1]
-          }
-
-          if (args.length === 1 && args[0] === types.IDENTITY_UNLOCK_SUCCESS) {
+          } else if (args.length === 1 && args[0] === types.IDENTITY_UNLOCK_SUCCESS) {
             unlocked = true
           }
         }

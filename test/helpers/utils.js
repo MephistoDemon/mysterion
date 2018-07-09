@@ -55,7 +55,6 @@ async function captureAsyncError (func: () => Promise<any>) {
  * Records callback invocation. Useful for asserting that callback was invoked.
  */
 class CallbackRecorder {
-  invoked: boolean = false
   _arguments: ?Array<any> = null
   _boundCallback: (any) => void
 
@@ -66,15 +65,16 @@ class CallbackRecorder {
    * @returns Function
    */
   getCallback (): (any) => void {
-    if (!this._boundCallback) {
-      this._boundCallback = this._record.bind(this)
-    }
+    this._boundCallback = this._boundCallback || this._record.bind(this)
     return this._boundCallback
   }
 
   _record (...args: Array<any>): void {
-    this.invoked = true
     this._arguments = args
+  }
+
+  get invoked (): boolean {
+    return this._arguments != null
   }
 
   get firstArgument (): any {
@@ -82,11 +82,8 @@ class CallbackRecorder {
   }
 
   get arguments (): Array<any> {
-    if (!this.invoked) {
-      throw new Error('CallbackRecorder: callback was not invoked, so no available argument')
-    }
-    if (!this._arguments) {
-      throw new Error('Did not receive any array for arguments')
+    if (this._arguments == null) {
+      throw new Error('Arguments are not set, even though callback was invoked')
     }
     return this._arguments
   }

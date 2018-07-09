@@ -41,7 +41,7 @@ describe('mutations', () => {
     it('saves message and shows it with response error', () => {
       const state = {}
       const err = new Error('My error')
-      const errObj = (err: Object)
+      const errObj = (err: any)
       errObj.response = {
         data: {
           message: 'Response message'
@@ -109,6 +109,7 @@ describe('actions', () => {
 
       await actions[type.CLIENT_BUILD_INFO]({ commit })
 
+      expect(recorder.arguments.length).to.eql(2)
       expect(recorder.arguments[0]).to.eql(type.CLIENT_BUILD_INFO)
       expect(recorder.arguments[1]).to.eql({
         commit: 'mock commit',

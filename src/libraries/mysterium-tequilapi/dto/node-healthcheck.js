@@ -26,11 +26,13 @@ type NodeHealthcheckDTO = {
 }
 
 /**
- * Tries to parse data into DTO type
+ * Verifies and converts mixed type into NodeHealthcheckDTO.
+ * @param data to be conveted
+ * @returns converted type
  */
 function parseHealthcheckResponse (data: mixed): NodeHealthcheckDTO {
   const errorMessage = 'Unable to parse response'
-  if (typeof data !== 'object' || data === null) {
+  if (data == null || typeof data !== 'object') {
     throw new Error(errorMessage)
   }
 

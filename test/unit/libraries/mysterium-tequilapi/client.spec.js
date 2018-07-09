@@ -41,26 +41,23 @@ describe('HttpTequilapiClient', () => {
 
   describe('healthcheck()', () => {
     it('returns response', async () => {
+      const buildInfo = {
+        commit: '0bcccc',
+        branch: 'master',
+        buildNumber: '001'
+      }
       const response = {
         uptime: '1h10m',
         process: 1111,
         version: '0.0.6',
-        buildInfo: {
-          commit: '0bcccc',
-          branch: 'master',
-          buildNumber: '001'
-        }
+        buildInfo
       }
       mock.onGet('healthcheck').reply(200, response)
 
       const healthcheck = await api.healthCheck()
       expect(healthcheck).to.deep.equal(parseHealthcheckResponse(response))
       expect(healthcheck.version).to.eql('0.0.6')
-      expect(healthcheck.buildInfo).to.eql({
-        commit: '0bcccc',
-        branch: 'master',
-        buildNumber: '001'
-      })
+      expect(healthcheck.buildInfo).to.eql(buildInfo)
     })
 
     it('throws error with unexpected response body', async () => {

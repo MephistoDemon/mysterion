@@ -27,6 +27,7 @@ type State = {
   navOpen: boolean,
   clientBuildInfo: NodeBuildInfoDTO,
   navVisible: boolean,
+  // TODO: merge `errorMessage` and `error` into one
   errorMessage: ?string,
   error: ?Error,
   showError: boolean
@@ -47,7 +48,7 @@ const getters = {
   loading: (state: State) => (state.init === type.INIT_PENDING),
   visual: (state: State) => state.visual,
   navOpen: (state: State) => state.navOpen,
-  navVisible: (state: State) => state.navVisible && !(state.init === type.INIT_PENDING),
+  navVisible: (state: State) => state.navVisible && state.init !== type.INIT_PENDING,
   clientBuildInfo: (state: State) => state.clientBuildInfo,
   errorMessage: (state: State) => state.errorMessage,
   showError: (state: State) => state.showError
@@ -63,6 +64,7 @@ const mutations = {
   [type.SET_NAV_VISIBLE] (state: State, visible: boolean) {
     state.navVisible = visible
   },
+  // TODO: use enum for visual?
   [type.SET_VISUAL] (state: State, visual: string) {
     state.visual = visual
   },
@@ -76,17 +78,16 @@ const mutations = {
     state.init = type.INIT_FAIL
     state.error = err
   },
-  [type.SHOW_ERROR] (state: State, err) {
+  [type.SHOW_ERROR] (state: State, errWithResponse: mixed) {
+    let errorMessage = 'Unknown error'
+    if (errWithResponse && errWithResponse.response && errWithResponse.response.data &&
+      errWithResponse.response.data.message && typeof errWithResponse.response.data.message === 'string') {
+      errorMessage = errWithResponse.response.data.message
+    } else if (errWithResponse && errWithResponse.message && typeof errWithResponse.message === 'string') {
+      errorMessage = errWithResponse.message
+    }
+    state.errorMessage = errorMessage
     state.showError = true
-    if (err && err.response && err.response.data && err.response.data.message) {
-      state.errorMessage = err.response.data.message
-      return
-    }
-    if (err.message) {
-      state.errorMessage = err.message
-      return
-    }
-    state.errorMessage = 'Unknown error'
   },
   [type.SHOW_ERROR_MESSAGE] (state: State, errorMessage: string) {
     state.errorMessage = errorMessage
