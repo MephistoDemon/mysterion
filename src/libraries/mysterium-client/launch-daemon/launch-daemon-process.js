@@ -63,14 +63,8 @@ class LaunchDaemonProcess implements Process {
   }
 
   async start (): Promise<void> {
-    try {
-      // we are spawning osx Launch Daemon
-      await axios.get('http://127.0.0.1:' + this._daemonPort)
-    } catch (e) {
-      // no http server is running on `_daemonPort`, so request results in a failure
-      // we are waiting for tequilapi healthcheck response to make sure the process is running
-      await this._tequilapi.healthCheck()
-    }
+    await this._spawnOsXLaunchDaemon()
+    await this._ensureProcessIsRunning()
   }
 
   async stop (): Promise<void> {
@@ -109,6 +103,19 @@ class LaunchDaemonProcess implements Process {
   async _prepareLogFiles (): Promise<void> {
     await createFileIfMissing(this._stdoutPath)
     await createFileIfMissing(this._stderrPath)
+  }
+
+  async _spawnOsXLaunchDaemon (): Promise<void> {
+    try {
+      await axios.get('http://127.0.0.1:' + this._daemonPort)
+    } catch (e) {
+      // no http server is running on `_daemonPort`, so request results in a failure
+      // if some service is responding on daemonPort then additional healthcheck ensures tequilapi is accessible
+    }
+  }
+
+  async _ensureProcessIsRunning (): Promise<void> {
+    await this._tequilapi.healthCheck()
   }
 }
 
