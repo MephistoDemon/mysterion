@@ -56,15 +56,7 @@ function createWinstonSyncComLogger (communication: SyncRendererCommunication) {
 }
 
 function mapWinstonLogLevelToMysterionLevel (level: string): LogLevel {
-  switch (level) {
-    case 'error':
-      return 'error'
-    case 'info':
-    case 'warn':
-    case 'debug':
-    default:
-      return 'info'
-  }
+  return level === 'error' ? 'error' : 'info'
 }
 
 export type { WinstonLogEntry }
