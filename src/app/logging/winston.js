@@ -25,8 +25,10 @@ import type { StringLogger } from './string-logger'
 import WinstonTransportSyncCom from './winston-transport-sync-com'
 import type { SyncRendererCommunication } from '../communication/sync/sync-communication'
 
+type WinstonLevel = 'error' | 'info' | 'warn' | 'debug'
+
 type WinstonLogEntry = {
-  level: string,
+  level: WinstonLevel,
   message: string,
   timestamp?: string
 }
@@ -43,9 +45,9 @@ function createWinstonLogger () {
   })
 }
 
-function createWinstonCachingLogger (backendLogCache: LogCache): StringLogger {
+function createWinstonCachingLogger (logCache: LogCache): StringLogger {
   const winstonLogger = createWinstonLogger()
-  winstonLogger.add(new WinstonTransportCaching(backendLogCache))
+  winstonLogger.add(new WinstonTransportCaching(logCache))
   return winstonLogger
 }
 
@@ -55,7 +57,7 @@ function createWinstonSyncComLogger (communication: SyncRendererCommunication) {
   return winstonLogger
 }
 
-function mapWinstonLogLevelToMysterionLevel (level: string): LogLevel {
+function mapWinstonLogLevelToMysterionLevel (level: WinstonLevel): LogLevel {
   return level === 'error' ? 'error' : 'info'
 }
 

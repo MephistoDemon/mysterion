@@ -359,7 +359,7 @@ class Mysterion {
     logInfo("Starting 'mysterium_client' process")
     this.process.start()
       .then(() => { logInfo('mysterium_client start successful') })
-      .catch(() => { logException('mysterium_client start failed', new Error('process.start() thrown error')) })
+      .catch((e) => { logException('mysterium_client start failed', e) })
 
     try {
       this.process.setupLogging()
