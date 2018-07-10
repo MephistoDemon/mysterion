@@ -25,28 +25,26 @@ import Subscriber from '../../libraries/subscriber'
 
 class ProposalFetcher {
   _api: TequilapiClient
-  _loop: ?FunctionLooper
+  _loop: FunctionLooper
   _proposalSubscriber: Subscriber<Array<ProposalDTO>> = new Subscriber()
   _errorSubscriber: Subscriber<Error> = new Subscriber()
-  _interval: number
 
   constructor (api: TequilapiClient, interval: number = 5000) {
     this._api = api
-    this._interval = interval
+
+    this._loop = new FunctionLooper(async () => {
+      await this.fetch()
+    }, interval)
+    this._loop.onFunctionError((error) => {
+      this._errorSubscriber.notify(error)
+    })
   }
 
   /**
    * Starts periodic proposal fetching.
    */
   start (): void {
-    const loop = new FunctionLooper(async () => {
-      await this.fetch()
-    }, this._interval)
-    loop.onFunctionError((error) => {
-      this._errorSubscriber.notify(error)
-    })
-    loop.start()
-    this._loop = loop
+    this._loop.start()
   }
 
   /**
@@ -60,11 +58,7 @@ class ProposalFetcher {
     return proposals
   }
 
-  // TODO: handle case when .stop() is invoked without .start()
   stop (): void {
-    if (!this._loop) {
-      return
-    }
     this._loop.stop()
   }
 
