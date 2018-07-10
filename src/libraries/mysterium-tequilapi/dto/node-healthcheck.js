@@ -26,7 +26,7 @@ type NodeHealthcheckDTO = {
 }
 
 /**
- * Verifies and converts mixed type into NodeHealthcheckDTO.
+ * Validates and converts mixed type into NodeHealthcheckDTO.
  * @param data to be conveted
  * @returns converted type
  */
@@ -36,28 +36,24 @@ function parseHealthcheckResponse (data: mixed): NodeHealthcheckDTO {
     throw new Error(errorMessage)
   }
 
-  const uptime = data.uptime
-  if (typeof uptime !== 'string') {
+  if (typeof data.uptime !== 'string') {
     throw new Error(errorMessage)
   }
 
-  const process = data.process
-  if (typeof process !== 'number') {
+  if (typeof data.process !== 'number') {
     throw new Error(errorMessage)
   }
 
-  const version = data.version
-  if (typeof version !== 'string') {
+  if (typeof data.version !== 'string') {
     throw new Error(errorMessage)
   }
 
-  const buildInfoData = data.buildInfo
-  if (typeof buildInfoData !== 'object' || buildInfoData === null) {
+  if (data.buildInfo === null || typeof data.buildInfo !== 'object') {
     throw new Error(errorMessage)
   }
-  const buildInfo = new NodeBuildInfoDTO(buildInfoData)
+  const buildInfo = new NodeBuildInfoDTO(data.buildInfo)
 
-  return { uptime, process, version, buildInfo }
+  return { uptime: data.uptime, process: data.process, version: data.version, buildInfo }
 }
 
 export type { NodeHealthcheckDTO }
