@@ -44,22 +44,22 @@ class SystemMock implements System {
     }
 
     return JSON.stringify({
-      'Name': 'MysteriumClient',
-      'DisplayName': 'Mysterium Client',
-      'Description': 'Mysterium Client service',
-      'Directory': '/tmp/runtime',
-      'Executable': '/tmp/clientbin',
-      'Port': 4050,
-      'Arguments': [
+      Name: 'MysteriumClient',
+      DisplayName: 'Mysterium Client',
+      Description: 'Mysterium Client service',
+      Directory: '/tmp/runtime',
+      Executable: '/tmp/clientbin',
+      Port: 4050,
+      Arguments: [
         '--config-dir=/tmp/config',
         '--data-dir=/tmp/data',
         '--runtime-dir=/tmp/runtime',
         '--openvpn.binary=/tmp/ovpnbin',
         '--tequilapi.port=4050'
       ],
-      'Logging': {
-        'Stderr': '/tmp/logs/stderr.log',
-        'Stdout': '/tmp/logs/stdout.log'
+      Logging: {
+        Stderr: '/tmp/logs/stderr.log',
+        Stdout: '/tmp/logs/stdout.log'
       }
     })
   }

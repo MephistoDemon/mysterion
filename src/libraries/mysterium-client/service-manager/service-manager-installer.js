@@ -42,28 +42,23 @@ class ServiceManagerInstaller implements Installer {
   }
 
   async needsInstallation (): Promise<boolean> {
-    logger.info('[needs-install] config does not exist1')
     if (!this._configExists()) {
       logger.info('[needs-install] config does not exist')
 
       return true
     }
-    logger.info('[needs-install] config does not exist2')
 
     if (this._configChecksumMismatch()) {
       logger.info('[needs-install] checksum mismatch')
 
       return true
     }
-    logger.info('[needs-install] config does not exist3')
 
     if (!await this._serviceInstalled()) {
       logger.info('[needs-install] service not installed')
 
       return true
     }
-
-    logger.info('[needs-install] config does not exist4')
 
     if (!await this._tapDriversInstalled()) {
       logger.info('[needs-install] drivers not installed')
