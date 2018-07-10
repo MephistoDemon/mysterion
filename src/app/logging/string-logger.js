@@ -17,12 +17,6 @@
 
 // @flow
 
-import winston from 'winston'
-import Transport from 'winston-transport'
-
-/**
- * String logger with many log levels
- */
 interface StringLogger {
   info (string): void,
 
@@ -30,15 +24,7 @@ interface StringLogger {
 
   error (string): void,
 
-  debug (string): void,
-
-  add (Transport): void
+  debug (string): void
 }
 
-const winstonFormat = winston.format.combine(
-  winston.format.timestamp(),
-  winston.format.printf(log => `${log.timestamp} ${log.level}: ${log.message}`)
-)
-
-export { winstonFormat }
 export type { StringLogger }

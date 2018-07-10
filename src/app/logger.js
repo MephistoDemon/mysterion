@@ -17,34 +17,22 @@
 
 // @flow
 
-import type { StringLogger } from './logging/log-boostrapping'
+import type { StringLogger } from './logging/string-logger'
 
-/**
- * Used as logging entrypoint in frontend
- */
-// TODO: unify how logging is done in backend and frontend (MYS-100)
 class Logger {
-  _frontendStringLogger: ?StringLogger = null
+  _logger: StringLogger = console
 
-  // sets frontend logger, replacing standard console logs
-  setFrontendLogger (logger: StringLogger): void {
-    this._frontendStringLogger = logger
+  // sets logger, replacing standard console logs
+  setLogger (logger: StringLogger): void {
+    this._logger = logger
   }
 
   info (...data: Array<any>): void {
-    if (!this._frontendStringLogger) {
-      console.info(...data)
-      return
-    }
-    this._frontendStringLogger.info(data.join(' '))
+    this._logger.info(data.join(' '))
   }
 
   error (...data: Array<any>): void {
-    if (!this._frontendStringLogger) {
-      console.error(...data)
-      return
-    }
-    this._frontendStringLogger.error(data.join(' '))
+    this._logger.error(data.join(' '))
   }
 }
 

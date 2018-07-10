@@ -27,17 +27,17 @@ import type { EnvironmentCollector } from '../../../app/bug-reporting/environmen
 import SyncSenderRendererCommunication from '../../../app/communication/sync/sync-renderer-communication'
 import { SyncIpcSender } from '../../../app/communication/sync/sync-ipc'
 import type { SyncRendererCommunication } from '../../../app/communication/sync/sync-communication'
-import FrontendLogBootstrapper from '../../../app/logging/frontend-log-bootstrapper'
+import { createWinstonSyncComLogger } from '../../../app/logging/winston'
 import { BugReporterMetrics } from '../../../app/bug-reporting/bug-reporter-metrics'
 
 function bootstrap (container: Container) {
   container.constant('bugReporter.sentryURL', 'https://f1e63dd563c34c35a56e98aa02518d40@sentry.io/300978')
 
   container.factory(
-    'frontendLogBootstrapper',
+    'logger',
     ['syncCommunication'],
     (syncCommunication: SyncRendererCommunication) => {
-      return new FrontendLogBootstrapper(syncCommunication)
+      return createWinstonSyncComLogger(syncCommunication)
     }
   )
   container.factory(

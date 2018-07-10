@@ -40,7 +40,6 @@ describe('LogCache', () => {
       if (!err) {
         throw new Error('No error was returned')
       }
-      console.log(err.message)
       expect(err.message).to.eql('Unknown log level being pushed to log cache: unknown')
     })
   })
