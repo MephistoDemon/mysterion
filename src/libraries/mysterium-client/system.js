@@ -5,8 +5,7 @@ import sudo from 'sudo-prompt'
 import { promisify } from 'util'
 import fs from 'fs'
 
-const writeFile = promisify(fs.writeFileSync)
-const readFile = promisify(fs.readFileSync)
+const writeFile = promisify(fs.writeFile)
 
 interface System {
   userExec(command: string): Promise<string>,
@@ -15,7 +14,7 @@ interface System {
 
   writeFile(file: string, content: string): Promise<void>,
 
-  readFile(file: string): Promise<mixed>,
+  readFile(file: string): string,
 
   fileExists(file: string): boolean
 }
@@ -51,8 +50,8 @@ class OSSystem implements System {
     await writeFile(file, contents)
   }
 
-  async readFile (file: string): Promise<mixed> {
-    await readFile(file)
+  readFile (file: string): string {
+    return fs.readFileSync(file).toString()
   }
 
   fileExists (file: string) {

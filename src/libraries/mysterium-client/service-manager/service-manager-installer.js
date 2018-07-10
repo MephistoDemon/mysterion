@@ -42,23 +42,28 @@ class ServiceManagerInstaller implements Installer {
   }
 
   async needsInstallation (): Promise<boolean> {
+    logger.info('[needs-install] config does not exist1')
     if (!this._configExists()) {
       logger.info('[needs-install] config does not exist')
 
       return true
     }
+    logger.info('[needs-install] config does not exist2')
 
-    if (await this._configChecksumMismatch()) {
+    if (this._configChecksumMismatch()) {
       logger.info('[needs-install] checksum mismatch')
 
       return true
     }
+    logger.info('[needs-install] config does not exist3')
 
     if (!await this._serviceInstalled()) {
       logger.info('[needs-install] service not installed')
 
       return true
     }
+
+    logger.info('[needs-install] config does not exist4')
 
     if (!await this._tapDriversInstalled()) {
       logger.info('[needs-install] drivers not installed')
@@ -70,7 +75,7 @@ class ServiceManagerInstaller implements Installer {
   }
 
   async install (): Promise<void> {
-    if (!this._configExists() || await this._configChecksumMismatch()) {
+    if (!this._configExists() || this._configChecksumMismatch()) {
       logger.info('[install] config needs to be recreated')
 
       await this._system.writeFile(this._getConfigPath(), this._getServiceManagerConfigContents())
@@ -93,9 +98,9 @@ class ServiceManagerInstaller implements Installer {
     return this._system.fileExists(this._getConfigPath())
   }
 
-  async _configChecksumMismatch () {
+  _configChecksumMismatch () {
     const config = md5(this._getServiceManagerConfigContents())
-    const installedConfig = md5(await this._system.readFile(this._getConfigPath()))
+    const installedConfig = md5(this._system.readFile(this._getConfigPath()))
 
     return config !== installedConfig
   }

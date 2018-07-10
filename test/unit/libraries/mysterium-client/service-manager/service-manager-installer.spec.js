@@ -38,7 +38,7 @@ class SystemMock implements System {
     this.writeFileReturnValue = content
   }
 
-  async readFile (file: string): Promise<mixed> {
+  readFile (file: string): string {
     if (this.readFileReturnValue) {
       return this.readFileReturnValue
     }
