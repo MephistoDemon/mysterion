@@ -297,7 +297,12 @@ class Mysterion {
   async onWillQuit () {
     this.monitoring.stop()
     // TODO: fix - proposalFetcher can still be undefined at this point
-    this.proposalFetcher.stop()
+    try {
+      await this.proposalFetcher.stop()
+    } catch (e) {
+      logException('Failed to stop proposal fetcher', e)
+      this.bugReporter.captureErrorException(e)
+    }
 
     try {
       await this.process.stop()
@@ -416,7 +421,9 @@ class Mysterion {
       logInfo('Starting proposal fetcher')
       this.proposalFetcher.start()
     })
-    this.monitoring.onStatusDown(() => this.proposalFetcher.stop())
+    this.monitoring.onStatusDown(() => {
+      this.proposalFetcher.stop()
+    })
   }
 
   _buildTray () {
