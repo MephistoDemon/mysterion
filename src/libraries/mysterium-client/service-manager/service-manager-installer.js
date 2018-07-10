@@ -158,22 +158,22 @@ class ServiceManagerInstaller implements Installer {
 
   _getServiceManagerConfigContents () {
     const file = {
-      'Name': SERVICE_NAME,
-      'DisplayName': 'Mysterium Client',
-      'Description': 'Mysterium Client service',
-      'Directory': this._config.runtimeDir,
-      'Executable': this._config.clientBin,
-      'Port': this._config.tequilapiPort,
-      'Arguments': [
+      Name: SERVICE_NAME,
+      DisplayName: 'Mysterium Client',
+      Description: 'Mysterium Client service',
+      Directory: this._config.runtimeDir,
+      Executable: this._config.clientBin,
+      Port: this._config.tequilapiPort,
+      Arguments: [
         `--config-dir=${this._config.configDir}`,
         `--data-dir=${this._config.dataDir}`,
         `--runtime-dir=${this._config.runtimeDir}`,
         `--openvpn.binary=${this._config.openVPNBin}`,
         `--tequilapi.port=${this._config.tequilapiPort}`
       ],
-      'Logging': {
-        'Stderr': path.join(this._config.logDir, 'stderr.log'),
-        'Stdout': path.join(this._config.logDir, 'stdout.log')
+      Logging: {
+        Stderr: path.join(this._config.logDir, 'stderr.log'),
+        Stdout: path.join(this._config.logDir, 'stdout.log')
       }
     }
 
