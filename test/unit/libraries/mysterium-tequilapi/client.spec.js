@@ -23,7 +23,7 @@ import AxiosAdapter from '../../../../src/libraries/mysterium-tequilapi/adapters
 import axios from 'axios/index'
 import MockAdapter from 'axios-mock-adapter'
 import {capturePromiseError} from '../../../helpers/utils'
-import NodeHealthcheckDTO from '../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
+import { parseHealthcheckResponse } from '../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
 import ConnectionStatisticsDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
 import ConnectionIPDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 import ConnectionStatusDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
@@ -41,6 +41,26 @@ describe('HttpTequilapiClient', () => {
 
   describe('healthcheck()', () => {
     it('returns response', async () => {
+      const buildInfo = {
+        commit: '0bcccc',
+        branch: 'master',
+        buildNumber: '001'
+      }
+      const response = {
+        uptime: '1h10m',
+        process: 1111,
+        version: '0.0.6',
+        buildInfo
+      }
+      mock.onGet('healthcheck').reply(200, response)
+
+      const healthcheck = await api.healthCheck()
+      expect(healthcheck).to.deep.equal(parseHealthcheckResponse(response))
+      expect(healthcheck.version).to.eql('0.0.6')
+      expect(healthcheck.buildInfo).to.eql(buildInfo)
+    })
+
+    it('throws error with unexpected response body', async () => {
       const response = {
         uptime: '1h10m',
         process: 1111,
@@ -52,8 +72,9 @@ describe('HttpTequilapiClient', () => {
       }
       mock.onGet('healthcheck').reply(200, response)
 
-      const healthcheck = await api.healthCheck()
-      expect(healthcheck).to.deep.equal(new NodeHealthcheckDTO(response))
+      const err = await capturePromiseError(api.healthCheck())
+      expect(err).to.be.an('error')
+      expect(err.message).to.eql('Unable to parse response')
     })
 
     it('handles error', async () => {
