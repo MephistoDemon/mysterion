@@ -43,7 +43,7 @@ describe('MainMessageBusCommunication', () => {
       rendererCommunication.onShowRendererError(recorder.getCallback())
       mainCommunication.sendRendererShowErrorMessage('test error')
       expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eql({
+      expect(recorder.firstArgument).to.eql({
         message: 'test error',
         hint: '',
         fatal: true
@@ -57,7 +57,7 @@ describe('MainMessageBusCommunication', () => {
       const errorDto = {fatal: false, hint: 'test hint', message: 'test message'}
       mainCommunication.sendRendererShowError(errorDto)
       expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eql(errorDto)
+      expect(recorder.firstArgument).to.eql(errorDto)
     })
   })
 
@@ -93,7 +93,7 @@ describe('MainMessageBusCommunication', () => {
       ]
       mainCommunication.sendProposals(proposalsDto)
       expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eql(proposalsDto)
+      expect(recorder.firstArgument).to.eql(proposalsDto)
     })
   })
 
@@ -111,7 +111,7 @@ describe('MainMessageBusCommunication', () => {
       const requestDto = { providerId: 'test provider id' }
       mainCommunication.sendConnectionRequest(requestDto)
       expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eql(requestDto)
+      expect(recorder.firstArgument).to.eql(requestDto)
     })
   })
 
@@ -121,7 +121,7 @@ describe('MainMessageBusCommunication', () => {
       const termsDto = { htmlContent: 'test html' }
       mainCommunication.sendTermsRequest(termsDto)
       expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eql(termsDto)
+      expect(recorder.firstArgument).to.eql(termsDto)
     })
   })
 
@@ -140,7 +140,7 @@ describe('MainMessageBusCommunication', () => {
       const settingsDto = { showDisconnectNotifications: true }
       mainCommunication.sendUserSettings(settingsDto)
       expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eql(settingsDto)
+      expect(recorder.firstArgument).to.eql(settingsDto)
     })
   })
 })

@@ -16,37 +16,36 @@
  */
 
 import {expect} from 'chai'
-import NodeHealthcheckDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
-import NodeVersionDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-version'
+import { parseHealthcheckResponse } from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
+import NodeBuildInfoDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-build-info'
+import { captureError } from '../../../../helpers/utils'
 
 describe('TequilapiClient DTO', () => {
   describe('NodeHealthcheckDTO', () => {
     it('sets properties', async () => {
-      const status = new NodeHealthcheckDTO({
+      const status = parseHealthcheckResponse({
         uptime: '1h10m',
         process: 1111,
-        version: {}
+        version: '0.0.6',
+        buildInfo: {}
       })
 
       expect(status.uptime).to.equal('1h10m')
       expect(status.process).to.equal(1111)
-      expect(status.version).to.deep.equal(new NodeVersionDTO({}))
+      expect(status.version).to.equal('0.0.6')
+      expect(status.buildInfo).to.deep.equal(new NodeBuildInfoDTO({}))
     })
 
-    it('sets empty properties', async () => {
-      const status = new NodeHealthcheckDTO({})
-
-      expect(status.uptime).to.be.undefined
-      expect(status.process).to.be.undefined
-      expect(status.version).to.be.undefined
+    it('throws error with empty data', async () => {
+      const err = captureError(() => parseHealthcheckResponse({}))
+      expect(err).to.be.an('error')
+      expect(err.message).to.eql('Unable to parse response')
     })
 
-    it('sets wrong properties', async () => {
-      const status = new NodeHealthcheckDTO('I am wrong')
-
-      expect(status.uptime).to.be.undefined
-      expect(status.process).to.be.undefined
-      expect(status.version).to.be.undefined
+    it('throws error with wrong data', async () => {
+      const err = captureError(() => parseHealthcheckResponse('I am wrong'))
+      expect(err).to.be.an('error')
+      expect(err.message).to.eql('Unable to parse response')
     })
   })
 })

@@ -15,10 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// @flow
+
 import {expect} from 'chai'
 
-import {mutations} from '@/store/modules/main'
+import {mutations, actionsFactory} from '@/store/modules/main'
 import type from '@/store/types'
+import EmptyTequilapiClientMock from './empty-tequilapi-client-mock'
+import { describe, it } from '../../../../helpers/dependencies'
+import { CallbackRecorder } from '../../../../helpers/utils'
+import type { NodeHealthcheckDTO } from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
+import NodeBuildInfoDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-build-info'
 
 describe('mutations', () => {
   describe('SHOW_ERROR', () => {
@@ -34,7 +41,8 @@ describe('mutations', () => {
     it('saves message and shows it with response error', () => {
       const state = {}
       const err = new Error('My error')
-      err.response = {
+      const errObj = (err: any)
+      errObj.response = {
         data: {
           message: 'Response message'
         }
@@ -72,6 +80,42 @@ describe('mutations', () => {
       mutations[type.HIDE_ERROR](state)
 
       expect(state.showError).to.eql(false)
+    })
+  })
+})
+
+class MainTequilapiClientMock extends EmptyTequilapiClientMock {
+  async healthCheck (_timeout: ?number): Promise<NodeHealthcheckDTO> {
+    return {
+      uptime: '',
+      process: 0,
+      version: 'mock version',
+      buildInfo: new NodeBuildInfoDTO({
+        commit: 'mock commit',
+        branch: 'mock branch',
+        buildNumber: 'mock buildNumber'
+      })
+    }
+  }
+}
+
+describe('actions', () => {
+  describe('CLIENT_BUILD_INFO', () => {
+    it('works', async () => {
+      const client = new MainTequilapiClientMock()
+      const actions = actionsFactory(client)
+      const recorder = new CallbackRecorder()
+      const commit = recorder.getCallback()
+
+      await actions[type.CLIENT_BUILD_INFO]({ commit })
+
+      expect(recorder.arguments.length).to.eql(2)
+      expect(recorder.arguments[0]).to.eql(type.CLIENT_BUILD_INFO)
+      expect(recorder.arguments[1]).to.eql({
+        commit: 'mock commit',
+        branch: 'mock branch',
+        buildNumber: 'mock buildNumber'
+      })
     })
   })
 })

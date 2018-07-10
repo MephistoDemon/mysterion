@@ -64,7 +64,7 @@ export default {
   computed: {
     ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
     version () {
-      const clientVisibleVersion = this.clientBuildInfo.buildNumber ? this.clientBuildInfo.buildNumber : ''
+      const clientVisibleVersion = this.clientBuildInfo.buildNumber || ''
       return `v${this.mysterionReleaseID}.${clientVisibleVersion}`
     }
   },
