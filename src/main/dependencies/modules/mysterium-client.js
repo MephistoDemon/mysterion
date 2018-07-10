@@ -85,7 +85,7 @@ function bootstrap (container: Container) {
         case 'darwin':
           return new LaunchDaemonProcess(tequilapiClient, LAUNCH_DAEMON_PORT, config.logDir)
         case 'win32':
-          return new ServiceManagerProcess(config)
+          return new ServiceManagerProcess(tequilapiClient, config)
         default:
           return new StandaloneClientProcess(config)
       }

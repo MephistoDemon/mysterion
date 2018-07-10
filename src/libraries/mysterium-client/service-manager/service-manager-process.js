@@ -19,16 +19,14 @@
 
 import type { ClientConfig } from '../config'
 import type { LogCallback, Process } from '../index'
+import type { TequilapiClient } from '../../mysterium-tequilapi/client'
 
 class ServiceManagerProcess implements Process {
   _config: ClientConfig
+  _tequilapi: TequilapiClient
 
-  /**
-   * @constructor
-   *
-   * @param {ClientConfig} config
-   */
-  constructor (config: ClientConfig) {
+  constructor (tequilapi: TequilapiClient, config: ClientConfig) {
+    this._tequilapi = tequilapi
     this._config = config
   }
 
@@ -36,7 +34,7 @@ class ServiceManagerProcess implements Process {
   }
 
   async stop (): Promise<void> {
-    // do disconnect
+    await this._tequilapi.connectionCancel()
   }
 
   async setupLogging (): Promise<void> {
