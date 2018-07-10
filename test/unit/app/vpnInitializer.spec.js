@@ -107,20 +107,13 @@ describe('VpnInitializer', () => {
       })
 
       it('creates and unlocks identity', async () => {
-        let initNewUser = false
         let unlocked = false
         const dispatch = (...args: Array<any>) => {}
         const commit = (...args: Array<any>) => {
           if (args.length === 2 && args[0] === types.IDENTITY_GET_SUCCESS) {
             state.current = args[1]
-          }
-
-          if (args.length === 1 && args[0] === types.IDENTITY_UNLOCK_SUCCESS) {
+          } else if (args.length === 1 && args[0] === types.IDENTITY_UNLOCK_SUCCESS) {
             unlocked = true
-          }
-
-          if (args.length === 1 && args[0] === types.INIT_NEW_USER) {
-            initNewUser = true
           }
         }
         const state: IdentityState = { current: null, unlocked: false }
@@ -128,7 +121,6 @@ describe('VpnInitializer', () => {
 
         expect(state.current).to.eql(mockCreatedIdentity)
         expect(unlocked).to.be.true
-        expect(initNewUser).to.be.true
       })
     })
 

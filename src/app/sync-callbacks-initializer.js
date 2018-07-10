@@ -20,6 +20,7 @@
 import type { EnvironmentCollector } from './bug-reporting/environment/environment-collector'
 import type { SyncMainCommunication } from './communication/sync/sync-communication'
 import LogCache from './logging/log-cache'
+import logger from './logger'
 
 /**
  * Adds sync application callbacks for communication messages.
@@ -40,7 +41,7 @@ class SyncCallbacksInitializer {
     this._communication.onGetMetrics(() => this._environmentCollector.getMetrics())
     this._communication.onLog((logDto) => {
       if (!logDto) {
-        console.error('Got empty log from renderer')
+        logger.error('Got empty log object from communication')
       } else {
         this._frontendLogCache.pushToLevel(logDto.level, logDto.data)
       }

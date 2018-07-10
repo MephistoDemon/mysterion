@@ -19,7 +19,7 @@
 
 import ConnectionStatusDTO from '../../libraries/mysterium-tequilapi/dto/connection-status'
 import {BugReporterMetrics, METRICS} from './bug-reporter-metrics'
-import NodeHealthcheckDTO from '../../libraries/mysterium-tequilapi/dto/node-healthcheck'
+import type { NodeHealthcheckDTO } from '../../libraries/mysterium-tequilapi/dto/node-healthcheck'
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 import ProposalsFilter from '../../libraries/mysterium-tequilapi/dto/proposals-filter'
 import {TIMEOUT_DISABLED} from '../../libraries/mysterium-tequilapi/timeouts'

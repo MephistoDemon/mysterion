@@ -53,7 +53,6 @@ class FunctionLooper {
         try {
           await this._currentPromise
         } catch (err) {
-          console.info('FunctionLooper got error while executing given function, error:', err)
           this._errorSubscriber.notify(err)
         }
       }

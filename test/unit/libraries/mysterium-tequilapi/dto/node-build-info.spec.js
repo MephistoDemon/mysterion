@@ -16,12 +16,12 @@
  */
 
 import {expect} from 'chai'
-import NodeVersionDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-version'
+import NodeBuildInfoDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-build-info'
 
 describe('TequilapiClient DTO', () => {
-  describe('NodeVersionDTO', () => {
+  describe('NodeBuildInfoDTO', () => {
     it('sets properties', async () => {
-      const version = new NodeVersionDTO({
+      const version = new NodeBuildInfoDTO({
         commit: '0bcccc',
         branch: 'master',
         buildNumber: '001'
@@ -33,7 +33,7 @@ describe('TequilapiClient DTO', () => {
     })
 
     it('sets empty properties', async () => {
-      const version = new NodeVersionDTO({})
+      const version = new NodeBuildInfoDTO({})
 
       expect(version.commit).to.be.undefined
       expect(version.branch).to.be.undefined
@@ -41,7 +41,7 @@ describe('TequilapiClient DTO', () => {
     })
 
     it('sets wrong properties', async () => {
-      const version = new NodeVersionDTO('I am wrong')
+      const version = new NodeBuildInfoDTO('I am wrong')
 
       expect(version.commit).to.be.undefined
       expect(version.branch).to.be.undefined

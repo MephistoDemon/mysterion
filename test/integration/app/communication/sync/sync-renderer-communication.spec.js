@@ -107,7 +107,7 @@ describe('SyncSenderRendererCommunication', () => {
       const log = { level: 'info', data: 'Testing renderer log' }
       rendererCommunication.sendLog(log)
       expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eq(log)
+      expect(recorder.firstArgument).to.eq(log)
     })
   })
 })
