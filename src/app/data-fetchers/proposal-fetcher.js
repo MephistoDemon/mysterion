@@ -58,8 +58,8 @@ class ProposalFetcher {
     return proposals
   }
 
-  stop (): void {
-    this._loop.stop()
+  async stop (): Promise<void> {
+    await this._loop.stop()
   }
 
   onFetchedProposals (subscriber: Callback<Array<ProposalDTO>>): void {

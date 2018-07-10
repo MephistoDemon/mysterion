@@ -141,9 +141,9 @@ describe('DataFetchers', () => {
         await tickWithDelay(1000)
         expect(counter).to.equal(1)
 
-        await fetcher.stop()
-
+        const stopPromise = fetcher.stop()
         await tickWithDelay(1000)
+        await stopPromise
 
         expect(counter).to.equal(1)
       })

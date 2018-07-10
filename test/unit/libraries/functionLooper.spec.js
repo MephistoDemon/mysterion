@@ -130,6 +130,11 @@ describe('utils', () => {
         expect(stopped).to.eql(true)
         expect(counter).to.eql(1)
       })
+
+      it('does not fail when invoked without starting', async () => {
+        const looper = new FunctionLooper(() => {}, 1000)
+        await looper.stop()
+      })
     })
 
     describe('.isRunning', () => {
