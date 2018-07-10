@@ -16,6 +16,9 @@
  */
 
 // @flow
+import os from 'os'
+import path from 'path'
+
 import type { Container } from '../../../app/di'
 import type { MysterionConfig } from '../../../app/mysterionConfig'
 import { Monitoring } from '../../../libraries/mysterium-client'
@@ -26,13 +29,13 @@ import LaunchDaemonProcess from '../../../libraries/mysterium-client/launch-daem
 import StandaloneClientInstaller from '../../../libraries/mysterium-client/standalone/standalone-client-installer'
 import StandaloneClientProcess from '../../../libraries/mysterium-client/standalone/standalone-client-process'
 
-import path from 'path'
+import ServiceManagerInstaller from '../../../libraries/mysterium-client/service-manager/service-manager-installer'
+import ServiceManagerProcess from '../../../libraries/mysterium-client/service-manager/service-manager-process'
+
 import type { ClientConfig } from '../../../libraries/mysterium-client/config'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import { LAUNCH_DAEMON_PORT } from '../../../libraries/mysterium-client/launch-daemon/config'
-import os from 'os'
-import ServiceManagerInstaller from '../../../libraries/mysterium-client/service-manager/service-manager-installer'
-import ServiceManagerProcess from '../../../libraries/mysterium-client/service-manager/service-manager-process'
+import OSSystem from '../../../libraries/mysterium-client/system'
 
 function bootstrap (container: Container) {
   container.constant('mysteriumClient.platform', os.platform())
@@ -68,7 +71,7 @@ function bootstrap (container: Container) {
         case 'darwin':
           return new LaunchDaemonInstaller(config)
         case 'win32':
-          return new ServiceManagerInstaller(config, path.join(mysterionConfig.contentsDirectory, 'bin'))
+          return new ServiceManagerInstaller(new OSSystem(), config, path.join(mysterionConfig.contentsDirectory, 'bin'))
         default:
           return new StandaloneClientInstaller()
       }

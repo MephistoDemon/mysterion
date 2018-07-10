@@ -92,7 +92,7 @@ class LaunchDaemonInstaller implements Installer {
       </plist>`
   }
 
-  needsInstallation (): boolean {
+  async needsInstallation (): Promise<boolean> {
     return !processInstalled() || this._pListChecksumMismatch()
   }
 

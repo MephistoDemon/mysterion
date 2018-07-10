@@ -20,7 +20,7 @@
 import type { Installer } from '../index'
 
 class StandaloneClientInstaller implements Installer {
-  needsInstallation (): boolean {
+  async needsInstallation (): Promise<boolean> {
     return false
   }
 

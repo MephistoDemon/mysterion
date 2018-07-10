@@ -23,7 +23,7 @@ import logLevels from './log-levels'
 type LogCallback = (data: any) => any
 
 interface Installer {
-  needsInstallation (): boolean,
+  needsInstallation (): Promise<boolean>,
 
   install (): Promise<void>
 }

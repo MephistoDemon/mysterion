@@ -32,14 +32,14 @@ class ServiceManagerProcess implements Process {
     this._config = config
   }
 
-  start () {
+  async start (): Promise<void> {
   }
 
-  stop (): void {
+  async stop (): Promise<void> {
     // do disconnect
   }
 
-  setupLogging () {
+  async setupLogging (): Promise<void> {
 
   }
 

@@ -23,7 +23,7 @@ import path from 'path'
 import logger from '../../../app/logger'
 import type { ClientConfig } from '../config'
 import type { Installer } from '../index'
-import System from '../system'
+import type { System } from '../system'
 
 const SERVICE_NAME = 'MysteriumClient'
 const SERVICE_MANAGER_BIN = 'service.exe'
@@ -41,14 +41,14 @@ class ServiceManagerInstaller implements Installer {
     this._serviceManagerDir = serviceManagerDir
   }
 
-  async needsInstallation (): boolean {
+  async needsInstallation (): Promise<boolean> {
     if (!this._configExists()) {
       logger.info('[needs-install] config does not exist')
 
       return true
     }
 
-    if (this._configChecksumMismatch()) {
+    if (await this._configChecksumMismatch()) {
       logger.info('[needs-install] checksum mismatch')
 
       return true
@@ -70,7 +70,7 @@ class ServiceManagerInstaller implements Installer {
   }
 
   async install (): Promise<void> {
-    if (!this._configExists() || this._configChecksumMismatch()) {
+    if (!this._configExists() || await this._configChecksumMismatch()) {
       logger.info('[install] config needs to be recreated')
 
       await this._system.writeFile(this._getConfigPath(), this._getServiceManagerConfigContents())
@@ -93,14 +93,14 @@ class ServiceManagerInstaller implements Installer {
     return this._system.fileExists(this._getConfigPath())
   }
 
-  _configChecksumMismatch () {
+  async _configChecksumMismatch () {
     const config = md5(this._getServiceManagerConfigContents())
-    const installedConfig = md5(this._system.readFile(this._getConfigPath()))
+    const installedConfig = md5(await this._system.readFile(this._getConfigPath()))
 
     return config !== installedConfig
   }
 
-  async _serviceInstalled () {
+  async _serviceInstalled (): Promise<boolean> {
     let stdout
     try {
       stdout = await this._system.userExec(`sc.exe query "${SERVICE_NAME}"`)
@@ -112,7 +112,7 @@ class ServiceManagerInstaller implements Installer {
     return stdout.indexOf(`SERVICE_NAME: ${SERVICE_NAME}`) > -1
   }
 
-  async _tapDriversInstalled (): boolean {
+  async _tapDriversInstalled (): Promise<boolean> {
     let stdout
     try {
       stdout = await this._system.userExec(this._config.openVPNBin + ` --show-adapters`)
@@ -127,10 +127,10 @@ class ServiceManagerInstaller implements Installer {
   _stdoutHasGuid (stdout: string): boolean {
     let lines = stdout.split(os.EOL)
 
-    const guidRule = /{[A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12}}/i
+    const guidRule = new RegExp(/(\{?([A-Z0-9]{8})-(([A-Z0-9]{4}-){3})[A-Z0-9]{12}\}?)/i)
 
     lines = lines.filter(line => {
-      return line.match(guidRule)
+      return guidRule.test(line)
     })
 
     return lines.length > 0
@@ -144,7 +144,7 @@ class ServiceManagerInstaller implements Installer {
     const serviceManagerPath = path.join(this._serviceManagerDir, SERVICE_MANAGER_BIN)
     const command = `${serviceManagerPath} --do=install && ${serviceManagerPath} --do=start`
 
-    await this._system.sudoExec(command, {name: 'Mysterion'})
+    await this._system.sudoExec(command)
   }
 
   _getConfigPath () {
