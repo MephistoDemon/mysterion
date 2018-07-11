@@ -18,7 +18,6 @@
 // @flow
 
 import os from 'os'
-import md5 from 'md5'
 import path from 'path'
 import logger from '../../../app/logger'
 import type { ClientConfig } from '../config'
@@ -94,8 +93,8 @@ class ServiceManagerInstaller implements Installer {
   }
 
   _configChecksumMismatch () {
-    const config = md5(this._getServiceManagerConfigContents())
-    const installedConfig = md5(this._system.readFile(this._getConfigPath()))
+    const config = this._getServiceManagerConfigContents()
+    const installedConfig = this._system.readFile(this._getConfigPath())
 
     return config !== installedConfig
   }
