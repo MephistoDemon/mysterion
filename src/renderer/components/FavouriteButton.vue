@@ -18,7 +18,7 @@
 <template>
   <div>
     <div
-      style="float: right; width: 15%; font-size: 29px; cursor: pointer; color: #99cc33"
+      style="font-size: 29px; cursor: pointer; color: #99cc33; margin-left: 1rem"
       v-bind="country"
       @click="toggleFavorite(country)"
       v-text="buttonText"/>
@@ -27,34 +27,21 @@
 </template>
 
 <script>
-import {toggleFavorite} from '../../app/countries'
 
 export default {
   name: 'FavouriteButton',
+  computed: {
+    buttonText () { return this.country && this.country.isFavorite ? '★' : '☆' }
+  },
   props: {
     country: {
-      type: Object,
+      type: [Object, null],
+      default: () => { return {isFavorite: false} }
+    },
+    toggleFavorite: {
+      type: Function,
       required: true
     }
-  },
-
-  computed: {
-    buttonText () {
-      // eslint-disable-next-line
-      return this.country && this.country.isFavorite ? '★' : '☆'
-    }
-  },
-  methods: {
-    toggleFavorite (country) {
-      // eslint-disable-next-line
-      console.log('press', country)
-      toggleFavorite(country.id)
-      this.buttonText = this.country.isFavorite ? '★' : '☆'
-    }
-  },
-  mounted () {
-    // eslint-disable-next-line
-    console.log('favorit mount')
   }
 }
 </script>

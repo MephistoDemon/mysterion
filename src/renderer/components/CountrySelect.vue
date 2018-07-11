@@ -18,8 +18,7 @@
 <template>
   <div class="countries">
     <multiselect
-      class="countries__multiselect pull-left"
-      style="float: left; width: 85%"
+      class="countries__multiselect"
       :max-height="120"
       v-model="country"
       :custom-label="selectedCountryLabel"

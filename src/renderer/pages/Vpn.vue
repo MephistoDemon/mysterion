@@ -26,14 +26,22 @@
           class="control__location"
           v-if="ip">current IP: {{ ip }}</div>
       </div>
+
       <div class="control__bottom">
-        <country-select
-          @selected="setCountry"
-          class="control__countries"
-          :class="{'is-disabled': statusCode!==-1}"/>
-        <favourite-button :country="country"/>
+        <div
+          style="display:flex"
+          class="control__countries">
+          <country-select
+            @selected="setCountry"
+            style="max-width:25rem"
+            :class="{'is-disabled': statusCode!==-1}"/>
+          <favourite-button
+            :country="country"
+            :toggle-favorite="toggleFavorite"/>
+        </div>
         <connection-button :provider-id="providerIdentity"/>
       </div>
+
       <div class="control__footer">
         <div class="footer__stats stats">
           <transition name="slide-up">
@@ -65,7 +73,7 @@ import AppError from '../partials/AppError'
 import config from '../config'
 import {ActionLooperConfig} from '../store/modules/connection'
 import FavouriteButton from '../components/FavouriteButton'
-
+import {toggleFavorite} from '../../app/countries'
 export default {
   name: 'Main',
   components: {
@@ -101,7 +109,11 @@ export default {
   },
   methods: {
     ...mapMutations({ hideErr: type.HIDE_ERROR }),
-    setCountry (data) { this.country = data }
+    setCountry (data) { this.country = data },
+    toggleFavorite () {
+      this.country = {...this.country, isFavorite: !this.country.isFavorite}
+      toggleFavorite(this.country.id)
+    }
   },
   async mounted () {
     this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.CONNECTION_IP, config.ipUpdateThreshold))
