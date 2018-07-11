@@ -21,10 +21,15 @@ import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 
 const COUNTRY_NAME_UNKNOWN = 'N/A'
 
+const favorites = {
+
+}
+
 type Country = {
   id: string,
   code: ?string,
-  name: string
+  name: string,
+  isFavorite: boolean
 }
 
 function getCountryLabel (country: Country, maxNameLength: ?number = null, maxIdentityLength: ?number = 9) {
@@ -51,12 +56,25 @@ function getCountryFromProposal (proposal: ProposalDTO): Country {
   return {
     id: proposal.providerId,
     code: getCountryCodeFromProposal(proposal),
-    name: getCountryNameFromProposal(proposal)
+    name: getCountryNameFromProposal(proposal),
+    isFavorite: favorites[proposal.providerId]
+  }
+}
+
+function toggleFavorite (id: string): void {
+  if (favorites[id]) {
+    favorites[id] = false
+  } else {
+    favorites[id] = true
   }
 }
 
 function compareCountries (a: Country, b: Country) {
-  if (a.name > b.name) {
+  if (a.isFavorite && !b.isFavorite) {
+    return -1
+  } else if (!a.isFavorite && b.isFavorite) {
+    return 1
+  } else if (a.name > b.name) {
     return 1
   } else if (b.name > a.name) {
     return -1
@@ -100,5 +118,6 @@ function getCountryCodeFromProposal (proposal: ProposalDTO): ?string {
 export type {Country}
 export {
   getCountryLabel,
-  getSortedCountryListFromProposals
+  getSortedCountryListFromProposals,
+  toggleFavorite
 }
