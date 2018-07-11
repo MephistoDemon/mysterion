@@ -5,6 +5,7 @@ language: js
 cache:
   directories:
   - node_modules
+  # TODO: do not cache bin
   - bin
   - "$HOME/.electron"
   - "$HOME/.cache"
