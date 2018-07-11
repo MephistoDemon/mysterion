@@ -118,7 +118,7 @@ describe('ServiceManagerInstaller', () => {
     })
 
     it('returns true when config does not match existing', async () => {
-      system.readFileReturnValue = 'invalid json'
+      system.readFileReturnValue = 'invalid config file contents'
       const installer = new ServiceManagerInstaller(system, config, '/service-manager/bin/')
       expect(await installer.needsInstallation()).to.be.eql(true)
     })
@@ -151,7 +151,7 @@ describe('ServiceManagerInstaller', () => {
     })
 
     it('writes config file when checksum does not match', async () => {
-      system.readFileReturnValue = 'xxx'
+      system.readFileReturnValue = 'invalid config file contents'
 
       const installer = new ServiceManagerInstaller(system, config, '/service-manager/bin/')
       await installer.install()
