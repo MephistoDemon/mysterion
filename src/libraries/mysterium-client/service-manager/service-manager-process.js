@@ -17,15 +17,32 @@
 
 // @flow
 
-import type { Installer } from '../index'
+import type { LogCallback, Process } from '../index'
+import type { TequilapiClient } from '../../mysterium-tequilapi/client'
 
-class StandaloneClientInstaller implements Installer {
-  async needsInstallation (): Promise<boolean> {
-    return false
+class ServiceManagerProcess implements Process {
+  _tequilapi: TequilapiClient
+
+  constructor (tequilapi: TequilapiClient) {
+    this._tequilapi = tequilapi
   }
 
-  async install (): Promise<void> {
+  async start (): Promise<void> {
+    // mysterium_client is started automatically by WIN service
+  }
+
+  async stop (): Promise<void> {
+    // we shouldn't kill the process, just make sure it's disconnected
+    // since this is service managed process
+    await this._tequilapi.connectionCancel()
+  }
+
+  async setupLogging (): Promise<void> {
+
+  }
+
+  onLog (level: string, cb: LogCallback): void {
   }
 }
 
-export default StandaloneClientInstaller
+export default ServiceManagerProcess

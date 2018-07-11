@@ -265,7 +265,7 @@ class Mysterion {
   // checks if daemon is installed or daemon file is expired
   // if the installation fails, it sends a message to the renderer window
   async _ensureDaemonInstallation () {
-    if (this.installer.needsInstallation()) {
+    if (await this.installer.needsInstallation()) {
       logInfo("Installing 'mysterium_client' process")
       try {
         await this.installer.install()
