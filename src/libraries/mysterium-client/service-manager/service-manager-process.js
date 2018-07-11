@@ -17,23 +17,23 @@
 
 // @flow
 
-import type { ClientConfig } from '../config'
 import type { LogCallback, Process } from '../index'
 import type { TequilapiClient } from '../../mysterium-tequilapi/client'
 
 class ServiceManagerProcess implements Process {
-  _config: ClientConfig
   _tequilapi: TequilapiClient
 
-  constructor (tequilapi: TequilapiClient, config: ClientConfig) {
+  constructor (tequilapi: TequilapiClient) {
     this._tequilapi = tequilapi
-    this._config = config
   }
 
   async start (): Promise<void> {
+    // mysterium_client is started automatically by WIN service
   }
 
   async stop (): Promise<void> {
+    // we shouldn't kill the process, just make sure it's disconnected
+    // since this is service managed process
     await this._tequilapi.connectionCancel()
   }
 

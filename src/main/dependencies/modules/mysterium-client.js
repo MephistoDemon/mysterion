@@ -88,7 +88,7 @@ function bootstrap (container: Container) {
         case OSX:
           return new LaunchDaemonProcess(tequilapiClient, LAUNCH_DAEMON_PORT, config.logDir)
         case WINDOWS:
-          return new ServiceManagerProcess(tequilapiClient, config)
+          return new ServiceManagerProcess(tequilapiClient)
         default:
           return new StandaloneClientProcess(config)
       }

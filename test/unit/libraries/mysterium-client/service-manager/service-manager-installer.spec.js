@@ -21,6 +21,28 @@ import { beforeEach, describe, expect, it } from '../../../../helpers/dependenci
 import ServiceManagerInstaller from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-installer'
 import type { System } from '../../../../../src/libraries/mysterium-client/system'
 
+const STRINGIFIED_CONFIG = JSON.stringify({
+  Name: 'MysteriumClient',
+  DisplayName: 'Mysterium Client',
+  Description: 'Mysterium Client service',
+  Directory: '/tmp/runtime',
+  Executable: '/tmp/clientbin',
+  Port: 4050,
+  Arguments: [
+    '--config-dir=/tmp/config',
+    '--data-dir=/tmp/data',
+    '--runtime-dir=/tmp/runtime',
+    '--openvpn.binary=/tmp/ovpnbin',
+    '--tequilapi.port=4050'
+  ],
+  Logging: {
+    Stderr: '/tmp/logs/stderr.log',
+    Stdout: '/tmp/logs/stdout.log'
+  }
+})
+
+const SERVICE_MANAGER_DIR = '/service-manager/bin/'
+
 class SystemMock implements System {
   fileExistsReturnValue = true
   readFileReturnValue = null
@@ -43,43 +65,37 @@ class SystemMock implements System {
       return this.readFileReturnValue
     }
 
-    return JSON.stringify({
-      Name: 'MysteriumClient',
-      DisplayName: 'Mysterium Client',
-      Description: 'Mysterium Client service',
-      Directory: '/tmp/runtime',
-      Executable: '/tmp/clientbin',
-      Port: 4050,
-      Arguments: [
-        '--config-dir=/tmp/config',
-        '--data-dir=/tmp/data',
-        '--runtime-dir=/tmp/runtime',
-        '--openvpn.binary=/tmp/ovpnbin',
-        '--tequilapi.port=4050'
-      ],
-      Logging: {
-        Stderr: '/tmp/logs/stderr.log',
-        Stdout: '/tmp/logs/stdout.log'
-      }
-    })
+    return STRINGIFIED_CONFIG
   }
 
   async userExec (command: string): Promise<string> {
-    // this is hacky, but userExec gets called multiple times
-    // and must return different outputs
+    const lines = this._getExecLines()
+
+    let line = ''
+    if (this.userExecCalledTimes <= lines.length - 1) {
+      line = lines[this.userExecCalledTimes]
+    }
+
     this.userExecCalledTimes++
 
-    if (this.userExecCalledTimes === 1 && this.serviceInstalled) {
-      return 'SERVICE_NAME: MysteriumClient'
+    return line
+  }
+
+  _getExecLines () {
+    let lines: Array<string> = []
+
+    if (this.serviceInstalled) {
+      lines.push('SERVICE_NAME: MysteriumClient')
     }
 
-    if (this.userExecCalledTimes === 2 && this.driverInstalled) {
-      return `123
-          'Ethernet' {F1343629-CB94-4D28-9AE4-147F9145798E}
-          asd`
+    if (this.driverInstalled) {
+      lines.push(`123
+            'Ethernet' {F1343629-CB94-4D28-9AE4-147F9145798E}
+            asd`
+      )
     }
 
-    return ''
+    return lines
   }
 
   async sudoExec (command: string): Promise<string> {
@@ -106,33 +122,33 @@ describe('ServiceManagerInstaller', () => {
       system = new SystemMock()
     })
 
-    it('does not need installation when all checks pass', async () => {
-      const installer = new ServiceManagerInstaller(system, config, '/service-manager/bin/')
-      expect(await installer.needsInstallation()).to.be.eql(false)
+    it('returns false when all checks pass', async () => {
+      const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
+      expect(await installer.needsInstallation()).to.be.false
     })
 
     it('returns true when config does not exits', async () => {
       system.fileExistsReturnValue = false
-      const installer = new ServiceManagerInstaller(system, config, '/service-manager/bin/')
-      expect(await installer.needsInstallation()).to.be.eql(true)
+      const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
+      expect(await installer.needsInstallation()).to.be.true
     })
 
     it('returns true when config does not match existing', async () => {
       system.readFileReturnValue = 'invalid config file contents'
-      const installer = new ServiceManagerInstaller(system, config, '/service-manager/bin/')
-      expect(await installer.needsInstallation()).to.be.eql(true)
+      const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
+      expect(await installer.needsInstallation()).to.be.true
     })
 
     it('returns true when service is not installed', async () => {
       system.serviceInstalled = false
-      const installer = new ServiceManagerInstaller(system, config, '/service-manager/bin/')
-      expect(await installer.needsInstallation()).to.be.eql(true)
+      const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
+      expect(await installer.needsInstallation()).to.be.true
     })
 
     it('returns true when drivers are not installed', async () => {
       system.driverInstalled = false
-      const installer = new ServiceManagerInstaller(system, config, '/service-manager/bin/')
-      expect(await installer.needsInstallation()).to.be.eql(true)
+      const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
+      expect(await installer.needsInstallation()).to.be.true
     })
   })
 
@@ -144,25 +160,25 @@ describe('ServiceManagerInstaller', () => {
     it('writes config file when config does not exist', async () => {
       system.fileExistsReturnValue = false
 
-      const installer = new ServiceManagerInstaller(system, config, '/service-manager/bin/')
+      const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       await installer.install()
 
-      expect(system.writeFileReturnValue).to.be.not.empty
+      expect(system.writeFileReturnValue).to.be.eql(STRINGIFIED_CONFIG)
     })
 
     it('writes config file when checksum does not match', async () => {
       system.readFileReturnValue = 'invalid config file contents'
 
-      const installer = new ServiceManagerInstaller(system, config, '/service-manager/bin/')
+      const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       await installer.install()
 
-      expect(system.writeFileReturnValue).to.be.not.empty
+      expect(system.writeFileReturnValue).to.be.eql(STRINGIFIED_CONFIG)
     })
 
     it('installs service when service is not installed', async () => {
       system.serviceInstalled = false
 
-      const installer = new ServiceManagerInstaller(system, config, '/service-manager/bin/')
+      const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       await installer.install()
 
       expect(system.sudoExecCalledTimes).to.be.eql(1)
@@ -171,7 +187,7 @@ describe('ServiceManagerInstaller', () => {
     it('installs TAP drivers when they are not installed', async () => {
       system.driverInstalled = false
 
-      const installer = new ServiceManagerInstaller(system, config, '/service-manager/bin/')
+      const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       await installer.install()
 
       expect(system.userExecCalledTimes).to.be.eql(3)
