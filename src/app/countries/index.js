@@ -18,12 +18,11 @@
 // @flow
 import countries from './list'
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
+import container from '../../main/dependencies'
+import type { FavoriteProviders, UserSettings } from '../user-settings/user-settings'
 
 const COUNTRY_NAME_UNKNOWN = 'N/A'
-
-const favorites = {
-
-}
+let userSettings: UserSettings
 
 type Country = {
   id: string,
@@ -52,7 +51,20 @@ function limitedLengthString (value: string, maxLength: ?number = null): string 
   return value
 }
 
+function getFavorites (): FavoriteProviders {
+  userSettings = userSettings || container.get('userSettingsStore').get()
+  return userSettings.favoriteProviders || {}
+}
+
+async function setFavorites (favorites: FavoriteProviders): Promise<void> {
+  const settingsStore = container.get('userSettingsStore')
+  userSettings = userSettings || settingsStore.get()
+  userSettings.favoriteProviders = favorites
+  await settingsStore.save()
+}
+
 function getCountryFromProposal (proposal: ProposalDTO): Country {
+  let favorites = getFavorites()
   return {
     id: proposal.providerId,
     code: getCountryCodeFromProposal(proposal),
@@ -61,12 +73,10 @@ function getCountryFromProposal (proposal: ProposalDTO): Country {
   }
 }
 
-function toggleFavorite (id: string): void {
-  if (favorites[id]) {
-    favorites[id] = false
-  } else {
-    favorites[id] = true
-  }
+async function toggleFavorite (id: string): Promise<void> {
+  const favorites = getFavorites()
+  favorites[id] = !favorites[id]
+  await setFavorites(favorites)
 }
 
 function compareCountries (a: Country, b: Country) {

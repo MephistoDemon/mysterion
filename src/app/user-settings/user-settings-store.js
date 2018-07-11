@@ -24,7 +24,8 @@ const readFileAsync = promisify(readFile)
 const writeFileAsync = promisify(writeFile)
 
 const defaultSettings: UserSettings = {
-  showDisconnectNotifications: true
+  showDisconnectNotifications: true,
+  favoriteProviders: {}
 }
 
 class UserSettingsStore {

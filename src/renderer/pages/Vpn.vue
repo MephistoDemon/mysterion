@@ -110,9 +110,9 @@ export default {
   methods: {
     ...mapMutations({ hideErr: type.HIDE_ERROR }),
     setCountry (data) { this.country = data },
-    toggleFavorite () {
+    async toggleFavorite () {
       this.country = {...this.country, isFavorite: !this.country.isFavorite}
-      toggleFavorite(this.country.id)
+      await toggleFavorite(this.country.id)
     }
   },
   async mounted () {
