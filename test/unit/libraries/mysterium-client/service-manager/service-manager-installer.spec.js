@@ -50,7 +50,8 @@ class SystemMock implements System {
   serviceInstalled = true
   driverInstalled = true
   userExecCalledTimes = 0
-  sudoExecCalledTimes = 0
+  userExecCalledCommands: Array<string> = []
+  sudoExecCalledCommand: string = ''
 
   fileExists (file: string): boolean {
     return this.fileExistsReturnValue
@@ -77,6 +78,7 @@ class SystemMock implements System {
     }
 
     this.userExecCalledTimes++
+    this.userExecCalledCommands.push(command)
 
     return line
   }
@@ -99,8 +101,7 @@ class SystemMock implements System {
   }
 
   async sudoExec (command: string): Promise<string> {
-    this.sudoExecCalledTimes++
-
+    this.sudoExecCalledCommand = command
     return ''
   }
 }
@@ -181,7 +182,7 @@ describe('ServiceManagerInstaller', () => {
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       await installer.install()
 
-      expect(system.sudoExecCalledTimes).to.be.eql(1)
+      expect(system.sudoExecCalledCommand).to.be.eql('/service-manager/bin/service.exe --do=install && /service-manager/bin/service.exe --do=start')
     })
 
     it('installs TAP drivers when they are not installed', async () => {
@@ -190,7 +191,7 @@ describe('ServiceManagerInstaller', () => {
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       await installer.install()
 
-      expect(system.userExecCalledTimes).to.be.eql(3)
+      expect(system.userExecCalledCommands[2]).to.be.eql('/service-manager/bin/windows-tap.exe')
     })
   })
 })
