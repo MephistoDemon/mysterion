@@ -31,7 +31,7 @@ type NodeHealthcheckDTO = {
  * @returns converted type
  */
 function parseHealthcheckResponse (data: mixed): NodeHealthcheckDTO {
-  const errorMessage = 'Unable to parse response'
+  const errorMessage = `Unable to parse healthcheck response: ${JSON.stringify(data)}`
   if (data == null || typeof data !== 'object') {
     throw new Error(errorMessage)
   }
