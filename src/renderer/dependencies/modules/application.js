@@ -18,7 +18,7 @@
 // @flow
 import {Container} from '../../../app/di'
 import RendererCommunication from '../../../app/communication/renderer-communication'
-import RendererMessageBus from '../../../app/communication/rendererMessageBus'
+import RendererMessageBus from '../../../app/communication/renderer-message-bus'
 import ElkCollector from '../../../app/statistics/elk-collector'
 import AggregatingCollector from '../../../app/statistics/aggregating-collector'
 import NullCollector from '../../../app/statistics/null-collector'

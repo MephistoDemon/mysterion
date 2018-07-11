@@ -18,7 +18,7 @@
 // @flow
 
 import messages from './messages'
-import type {MessageBus} from './messageBus'
+import type {MessageBus} from './message-bus'
 import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
