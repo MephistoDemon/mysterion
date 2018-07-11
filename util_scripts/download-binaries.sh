@@ -23,12 +23,17 @@ if [ ! -f "$OPENVPN_BINARY" ] || [ ! -z "$FORCE_DOWNLOAD" ]; then
 else
     echo $OPENVPN_BINARY" exists and download not forced..."
 fi
+
+MYSTERIUM_CLIENT_OSX_BINARY_NAME=mysterium_client_darwin_amd64
+
+MYSTERIUM_CLIENT_OSX_BINARY=$BIN_DIR/$MYSTERIUM_CLIENT_OSX_BINARY_NAME
 MYSTERIUM_CLIENT_BINARY=$BIN_DIR/mysterium_client
 
 if [ ! -f "$MYSTERIUM_CLIENT_BINARY" ] || [ ! -z "$FORCE_DOWNLOAD" ]; then
-    MYSTERIUM_CLIENT_PACKAGE=mysterium_client_darwin_amd64.tar.gz
+    MYSTERIUM_CLIENT_PACKAGE=${MYSTERIUM_CLIENT_OSX_BINARY_NAME}.tar.gz
     $SCRIPT_DIR/git-branch-dl.sh MysteriumNetwork build-artifacts mysterium-node $MYSTERIUM_CLIENT_PACKAGE
     tar -xf $MYSTERIUM_CLIENT_PACKAGE -C $BIN_DIR --strip 1 && rm -rf $MYSTERIUM_CLIENT_PACKAGE
+    mv $MYSTERIUM_CLIENT_OSX_BINARY $MYSTERIUM_CLIENT_BINARY
     chmod +x $MYSTERIUM_CLIENT_BINARY
 else
     echo $MYSTERIUM_CLIENT_BINARY" exists and download not forced..."
