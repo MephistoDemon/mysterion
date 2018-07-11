@@ -74,7 +74,7 @@ describe('HttpTequilapiClient', () => {
 
       const err = await capturePromiseError(api.healthCheck())
       expect(err).to.be.an('error')
-      expect(err.message).to.eql('Unable to parse response')
+      expect(err.message).to.eql('Unable to parse healthcheck response: {"uptime":"1h10m","process":1111,"version":{"commit":"0bcccc","branch":"master","buildNumber":"001"}}')
     })
 
     it('handles error', async () => {

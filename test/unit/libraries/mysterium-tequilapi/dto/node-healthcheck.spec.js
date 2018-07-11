@@ -39,13 +39,13 @@ describe('TequilapiClient DTO', () => {
     it('throws error with empty data', async () => {
       const err = captureError(() => parseHealthcheckResponse({}))
       expect(err).to.be.an('error')
-      expect(err.message).to.eql('Unable to parse response')
+      expect(err.message).to.eql('Unable to parse healthcheck response: {}')
     })
 
     it('throws error with wrong data', async () => {
       const err = captureError(() => parseHealthcheckResponse('I am wrong'))
       expect(err).to.be.an('error')
-      expect(err.message).to.eql('Unable to parse response')
+      expect(err.message).to.eql('Unable to parse healthcheck response: "I am wrong"')
     })
   })
 })
