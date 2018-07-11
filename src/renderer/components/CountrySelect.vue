@@ -17,53 +17,46 @@
 
 <template>
   <div class="countries">
-    <div>
-      <multiselect
-        class="countries__multiselect pull-left"
-        style="float: left; width: 85%"
-        :max-height="120"
-        v-model="country"
-        :custom-label="selectedCountryLabel"
-        placeholder="Choose country"
-        :options="countryList"
-        :loading="countriesAreLoading"
-        :searchable="true"
-        :show-labels="false"
-        @open="fetchCountries"
-        @input="onChange">
-        <template
-          slot="option"
-          slot-scope="props">
-          <span
-            style="color: #99cc33"
-            v-if='props.option.isFavorite'>
-            ★
-          </span>
-          <div class="multiselect__flag">
-            <img
-              :src="imagePath(props.option.code)"
-              class="multiselect__flag-svg">
-          </div>
-          <div
-            class="multiselect__option-title"
-            v-text="countryLabel(props.option)"/>
-        </template>
-      </multiselect>
-      <i class="countries__flag dropdown-image">
-        <img
-          :src="imagePath(country.code)"
-          v-if="country"
-          class="countries__flag-svg">
-        <icon-world
-          class="countries__flag-svg"
-          v-if="!country"/>
-      </i>
-      <div
-        style="float: right; width: 15%; font-size: 29px; cursor: pointer; color: #99cc33"
-        @click="buttonPressed.bind(country)"
-        v-text="buttonText(country)"/>
-      <div style="clear:both"/>
-    </div>
+    <multiselect
+      class="countries__multiselect pull-left"
+      style="float: left; width: 85%"
+      :max-height="120"
+      v-model="country"
+      :custom-label="selectedCountryLabel"
+      placeholder="Choose country"
+      :options="countryList"
+      :loading="countriesAreLoading"
+      :searchable="true"
+      :show-labels="false"
+      @open="fetchCountries"
+      @input="onChange">
+      <template
+        slot="option"
+        slot-scope="props">
+        <span
+          style="color: #99cc33"
+          v-if='props.option.isFavorite'>
+          ★
+        </span>
+        <div class="multiselect__flag">
+          <img
+            :src="imagePath(props.option.code)"
+            class="multiselect__flag-svg">
+        </div>
+        <div
+          class="multiselect__option-title"
+          v-text="countryLabel(props.option)"/>
+      </template>
+    </multiselect>
+    <i class="countries__flag dropdown-image">
+      <img
+        :src="imagePath(country.code)"
+        v-if="country"
+        class="countries__flag-svg">
+      <icon-world
+        class="countries__flag-svg"
+        v-if="!country"/>
+    </i>
   </div>
 </template>
 
@@ -71,7 +64,7 @@
 import path from 'path'
 import type from '@/store/types'
 import messages from '@/../app/messages'
-import { getCountryLabel, getSortedCountryListFromProposals, toggleFavorite } from '@/../app/countries'
+import { getCountryLabel, getSortedCountryListFromProposals } from '@/../app/countries'
 import Multiselect from 'vue-multiselect'
 import IconWorld from '@/assets/img/icon--world.svg'
 
@@ -90,13 +83,6 @@ export default {
     }
   },
   methods: {
-    buttonPressed: (country) => {
-      console.log('press', country)
-      toggleFavorite(country.id)
-    },
-    buttonText: (country) => {
-      return country ? '★' : '☆'
-    },
     onChange (country) {
       this.$emit('selected', country)
     },
@@ -127,6 +113,8 @@ export default {
     }
   },
   mounted () {
+    // eslint-disable-next-line
+    console.log('mounted')
     this.rendererCommunication.onProposalUpdate((proposals) => {
       this.countriesAreLoading = false
 

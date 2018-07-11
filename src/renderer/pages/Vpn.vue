@@ -31,6 +31,7 @@
           @selected="setCountry"
           class="control__countries"
           :class="{'is-disabled': statusCode!==-1}"/>
+        <favourite-button :country="country"/>
         <connection-button :provider-id="providerIdentity"/>
       </div>
       <div class="control__footer">
@@ -55,18 +56,20 @@
 </template>
 
 <script>
-import CountrySelect from '@/components/CountrySelect'
+import CountrySelect from '../components/CountrySelect'
 import type from '../store/types'
 import {mapGetters, mapMutations} from 'vuex'
 import StatsDisplay from '../components/StatsDisplay'
-import ConnectionButton from '@/components/ConnectionButton'
-import AppError from '@/partials/AppError'
+import ConnectionButton from '../components/ConnectionButton'
+import AppError from '../partials/AppError'
 import config from '../config'
 import {ActionLooperConfig} from '../store/modules/connection'
+import FavouriteButton from '../components/FavouriteButton'
 
 export default {
   name: 'Main',
   components: {
+    FavouriteButton,
     CountrySelect,
     ConnectionButton,
     StatsDisplay,
