@@ -18,9 +18,8 @@
 // @flow
 
 import type {Country} from '../../app/countries/index'
-import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 import type {MainCommunication} from '../../app/communication/main-communication'
-import {getCountryLabel, getSortedCountryListFromProposals} from '../../app/countries/index'
+import {getCountryLabel} from '../../app/countries/index'
 import ConnectionStatusEnum from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import TrayMenu from './menu'
@@ -34,7 +33,7 @@ function getMenuItems (
   showWindow: Function,
   toggleDevTools: Function,
   communication: MainCommunication,
-  proposals: Array<ProposalDTO>,
+  countries: Array<Country>,
   connectionStatus: ConnectionStatus
 ) {
   const disconnect = new TrayMenuItem(
@@ -43,8 +42,6 @@ function getMenuItems (
   )
 
   const connectSubmenu = new TrayMenu()
-
-  const countries = getSortedCountryListFromProposals(proposals)
 
   countries.forEach((country: Country) => {
     connectSubmenu.add(getCountryLabel(country), () => {
@@ -116,7 +113,7 @@ class TrayMenuBuilder {
   _showWindow: Function
   _toggleDevTools: Function
   _communication: MainCommunication
-  _proposals: Array<ProposalDTO> = []
+  _proposals: Array<Country> = []
   _connectionStatus: ConnectionStatus
 
   constructor (appQuit: Function, showWindow: Function, toggleDevTools: Function, communication: MainCommunication) {
@@ -126,7 +123,7 @@ class TrayMenuBuilder {
     this._communication = communication
   }
 
-  updateProposals (proposals: Array<ProposalDTO>): this {
+  updateProposals (proposals: Array<Country>): this {
     this._proposals = proposals
 
     return this

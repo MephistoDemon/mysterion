@@ -63,7 +63,7 @@
 import path from 'path'
 import type from '@/store/types'
 import messages from '@/../app/messages'
-import { getCountryLabel, getSortedCountryListFromProposals } from '@/../app/countries'
+import { getCountryLabel } from '../../app/countries'
 import Multiselect from 'vue-multiselect'
 import IconWorld from '@/assets/img/icon--world.svg'
 
@@ -125,14 +125,7 @@ export default {
         return
       }
 
-      // TODO: remove
-      for (let i = 0; i < 3; i++) {
-        const newProposal = Object.assign({}, proposals[0])
-        newProposal.providerId = 'id_' + i
-        proposals.push(newProposal)
-      }
-
-      this.countryList = getSortedCountryListFromProposals(proposals)
+      this.countryList = proposals
     })
 
     this.rendererCommunication.onConnectionRequest((proposal) => {
