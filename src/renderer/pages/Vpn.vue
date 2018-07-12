@@ -32,6 +32,9 @@
           style="display:flex"
           class="control__countries">
           <country-select
+            :country-list="countryList"
+            :countries-are-loading="countriesAreLoading"
+            :fetch-countries="fetchCountries"
             @selected="setCountry"
             style="max-width:25rem"
             :class="{'is-disabled': statusCode!==-1}"/>
@@ -73,6 +76,7 @@ import AppError from '../partials/AppError'
 import config from '../config'
 import {ActionLooperConfig} from '../store/modules/connection'
 import FavouriteButton from '../components/FavouriteButton'
+import messages from '@/../app/messages'
 export default {
   name: 'Main',
   components: {
@@ -85,7 +89,9 @@ export default {
   dependencies: ['logger', 'rendererCommunication'],
   data () {
     return {
-      country: null
+      country: null,
+      countryList: [],
+      countriesAreLoading: false
     }
   },
   computed: {
@@ -110,13 +116,29 @@ export default {
   methods: {
     ...mapMutations({ hideErr: type.HIDE_ERROR }),
     setCountry (data) { this.country = data },
+    async fetchCountries () {
+      this.countriesAreLoading = true
+      this.rendererCommunication.sendProposalUpdateRequest()
+    },
     async toggleFavorite () {
       this.country = {...this.country, isFavorite: !this.country.isFavorite}
-
       this.rendererCommunication.sendToggleFavoriteProvider({id: this.country.id, isFavorite: this.country.isFavorite})
     }
   },
   async mounted () {
+    this.rendererCommunication.onProposalUpdate((proposals) => {
+      this.countriesAreLoading = false
+
+      if (proposals.length < 1) {
+        const error = new Error(messages.countryListIsEmpty)
+
+        this.$store.commit(type.SHOW_ERROR, error)
+        this.bugReporter.captureErrorException(error)
+        return
+      }
+
+      this.countryList = proposals
+    })
     this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.CONNECTION_IP, config.ipUpdateThreshold))
     this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.FETCH_CONNECTION_STATUS, config.statusUpdateThreshold))
   }

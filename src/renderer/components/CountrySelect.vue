@@ -61,24 +61,34 @@
 
 <script>
 import path from 'path'
-import type from '@/store/types'
-import messages from '@/../app/messages'
 import { getCountryLabel } from '../../app/countries'
 import Multiselect from 'vue-multiselect'
 import IconWorld from '@/assets/img/icon--world.svg'
-
 export default {
   name: 'CountrySelect',
   dependencies: ['rendererCommunication', 'bugReporter'],
+  props: {
+    countryList: {
+      type: Array,
+      required: true
+    },
+    countriesAreLoading: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    fetchCountries: {
+      type: Function,
+      required: true
+    }
+  },
   components: {
     Multiselect,
     IconWorld
   },
   data () {
     return {
-      country: null,
-      countryList: [],
-      countriesAreLoading: false
+      country: null
     }
   },
   methods: {
@@ -105,29 +115,9 @@ export default {
       }
 
       return path.join('static', 'flags', code.toLowerCase() + '.svg')
-    },
-    async fetchCountries () {
-      this.countriesAreLoading = true
-      this.rendererCommunication.sendProposalUpdateRequest()
     }
   },
   mounted () {
-    // eslint-disable-next-line
-    console.log('mounted')
-    this.rendererCommunication.onProposalUpdate((proposals) => {
-      this.countriesAreLoading = false
-
-      if (proposals.length < 1) {
-        const error = new Error(messages.countryListIsEmpty)
-
-        this.$store.commit(type.SHOW_ERROR, error)
-        this.bugReporter.captureErrorException(error)
-        return
-      }
-
-      this.countryList = proposals
-    })
-
     this.rendererCommunication.onConnectionRequest((proposal) => {
       const selectedCountry = this.countryList.find((country) => country.id === proposal.providerId)
 
