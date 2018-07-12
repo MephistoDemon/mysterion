@@ -19,7 +19,7 @@
 
 import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
 import MainMessageBusCommunication from '../../../../src/app/communication/main-message-bus-communication'
-import type { MessageBus } from '../../../../src/app/communication/messageBus'
+import type { MessageBus } from '../../../../src/app/communication/message-bus'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import { CallbackRecorder } from '../../../helpers/utils'
 import type { MainCommunication } from '../../../../src/app/communication/main-communication'

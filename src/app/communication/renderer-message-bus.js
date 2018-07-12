@@ -17,7 +17,7 @@
 
 // @flow
 import {ipcRenderer} from 'electron'
-import type { MessageBus, MessageBusCallback } from './messageBus'
+import type { MessageBus, MessageBusCallback } from './message-bus'
 
 // Listener is used for registering to channel events.
 // It has different signature from MessageBusCallback.
