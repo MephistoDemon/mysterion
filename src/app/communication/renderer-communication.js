@@ -59,6 +59,10 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     return this._send(messages.CURRENT_IDENTITY_CHANGED, dto)
   }
 
+  sendToggleFavoriteProvider (dto: {id: string, isFavorite: boolean}): void {
+    return this._send(messages.TOGGLE_FAVORITE_PROVIDER, dto)
+  }
+
   sendProposalUpdateRequest () {
     return this._send(messages.PROPOSALS_UPDATE)
   }

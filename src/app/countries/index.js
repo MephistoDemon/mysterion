@@ -73,9 +73,9 @@ function getCountryFromProposal (proposal: ProposalDTO): Country {
   }
 }
 
-async function toggleFavorite (id: string): Promise<void> {
+async function toggleFavorite ({id, isFavorite}: {id: string, isFavorite: boolean}): Promise<void> {
   const favorites = getFavorites()
-  favorites[id] = !favorites[id]
+  favorites[id] = isFavorite
   await setFavorites(favorites)
 }
 

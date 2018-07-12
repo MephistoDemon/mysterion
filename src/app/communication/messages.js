@@ -40,6 +40,8 @@ export default {
 
   PROPOSALS_UPDATE: 'proposals.update',
 
+  TOGGLE_FAVORITE_PROVIDER: 'toggle.favorite.provider',
+
   USER_SETTINGS: 'user.settings',
   USER_SETTINGS_REQUEST: 'user.settings.request',
   USER_SETTINGS_UPDATE: 'user.settings.update',

@@ -73,7 +73,6 @@ import AppError from '../partials/AppError'
 import config from '../config'
 import {ActionLooperConfig} from '../store/modules/connection'
 import FavouriteButton from '../components/FavouriteButton'
-import {toggleFavorite} from '../../app/countries'
 export default {
   name: 'Main',
   components: {
@@ -83,6 +82,7 @@ export default {
     StatsDisplay,
     AppError
   },
+  dependencies: ['logger', 'rendererCommunication'],
   data () {
     return {
       country: null
@@ -112,7 +112,8 @@ export default {
     setCountry (data) { this.country = data },
     async toggleFavorite () {
       this.country = {...this.country, isFavorite: !this.country.isFavorite}
-      await toggleFavorite(this.country.id)
+
+      this.rendererCommunication.sendToggleFavoriteProvider({id: this.country.id, isFavorite: this.country.isFavorite})
     }
   },
   async mounted () {

@@ -48,6 +48,7 @@ import SyncReceiverMainCommunication from './communication/sync/sync-main-commun
 import { SyncIpcReceiver } from './communication/sync/sync-ipc'
 import type { StringLogger } from './logging/string-logger'
 import logger from './logger'
+import { toggleFavorite } from './countries'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -202,6 +203,7 @@ class Mysterion {
 
     this._subscribeProposals()
 
+    syncFavorites(this.userSettingsStore, this.communication)
     synchronizeUserSettings(this.userSettingsStore, this.communication)
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
     await this._loadUserSettings()
@@ -447,6 +449,12 @@ function showNotificationOnDisconnect (userSettingsStore, communication, disconn
     if (shouldShowNotification) {
       disconnectNotification.show()
     }
+  })
+}
+
+function syncFavorites (userSettingsStore, communication) {
+  communication.onToggleFavoriteProvider((fav) => {
+    toggleFavorite(fav)
   })
 }
 
