@@ -44,7 +44,11 @@ function getMenuItems (
   const connectSubmenu = new TrayMenu()
 
   countries.forEach((country: Country) => {
-    connectSubmenu.add(getCountryLabel(country), () => {
+    let label = getCountryLabel(country)
+    if (country.isFavorite) {
+      label = '* ' + label
+    }
+    connectSubmenu.add(label, () => {
       communication.sendConnectionRequest({providerId: country.id})
     })
   })
