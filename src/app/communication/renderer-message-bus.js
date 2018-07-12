@@ -26,7 +26,7 @@ type Listener = (event: Object, ...args: Array<any>) => void
 class RendererMessageBus implements MessageBus {
   // _listeners stores listener reference for each callback.
   // This is needed on .removeCallback, because Listener and Callback are different objects.
-  _listeners: { [MessageBusCallback]: ?Listener } = {}
+  _listeners: Map<MessageBusCallback, Listener> = new Map()
 
   send (channel: string, data?: mixed): void {
     ipcRenderer.send(channel, data)
@@ -34,17 +34,17 @@ class RendererMessageBus implements MessageBus {
 
   on (channel: string, callback: MessageBusCallback): void {
     const listener = this._buildListener(callback)
-    this._listeners[callback] = listener
+    this._listeners.set(callback, listener)
     this._registerListener(channel, listener)
   }
 
   removeCallback (channel: string, callback: MessageBusCallback): void {
-    const listener = this._listeners[callback]
+    const listener = this._listeners.get(callback)
     if (!listener) {
       throw new Error(`Removing callback for '${channel}' message in renderer failed - callback was not found`)
     }
     this._removeListener(channel, listener)
-    delete this._listeners[callback]
+    this._listeners.delete(callback)
   }
 
   _buildListener (callback: MessageBusCallback): Listener {
