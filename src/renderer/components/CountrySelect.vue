@@ -28,6 +28,7 @@
       :loading="countriesAreLoading"
       :searchable="true"
       :show-labels="false"
+      :show-pointer="false"
       @open="fetchCountries"
       @input="onChange">
       <template
