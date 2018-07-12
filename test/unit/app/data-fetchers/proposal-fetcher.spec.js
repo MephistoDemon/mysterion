@@ -81,7 +81,7 @@ describe('DataFetchers', () => {
       it('triggers subscriber callbacks', async () => {
         let counter = 0
 
-        fetcher.onFetchedProposals(() => counter++)
+        fetcher.onFetchedCountries(() => counter++)
         fetcher.start()
 
         await tickWithDelay(1000)
@@ -94,7 +94,7 @@ describe('DataFetchers', () => {
       it('triggers subscriber callbacks with proposals', async () => {
         let proposals = []
 
-        fetcher.onFetchedProposals((fetchedProposals) => {
+        fetcher.onFetchedCountries((fetchedProposals) => {
           proposals = fetchedProposals
         })
 
@@ -135,7 +135,7 @@ describe('DataFetchers', () => {
       it('stops fetching of proposals', async () => {
         let counter = 0
 
-        fetcher.onFetchedProposals(() => counter++)
+        fetcher.onFetchedCountries(() => counter++)
         fetcher.start()
 
         await tickWithDelay(1000)

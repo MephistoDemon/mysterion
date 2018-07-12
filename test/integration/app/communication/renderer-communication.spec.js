@@ -99,7 +99,7 @@ describe('RendererCommunication', () => {
   describe('sendUserSettingsUpdate', () => {
     it('sends message through message bus', () => {
       mainCommunication.onUserSettingsUpdate(recorder.getCallback())
-      const settingsDto = { showDisconnectNotifications: true }
+      const settingsDto = { showDisconnectNotifications: true, favoriteProviders: { 'id_123': true } }
       rendererCommunication.sendUserSettingsUpdate(settingsDto)
       expect(recorder.invoked).to.be.true
       expect(recorder.firstArgument).to.eql(settingsDto)

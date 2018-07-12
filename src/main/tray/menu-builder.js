@@ -127,7 +127,7 @@ class TrayMenuBuilder {
     this._communication = communication
   }
 
-  updateProposals (proposals: Array<Country>): this {
+  updateCountries (proposals: Array<Country>): this {
     this._proposals = proposals
 
     return this

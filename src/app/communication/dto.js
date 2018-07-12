@@ -29,7 +29,7 @@ export type CurrentIdentityChangeDTO = {
   id: string
 }
 
-export type ProposalUpdateDTO = Array<Country>
+export type CountryUpdateDTO = Array<Country>
 
 export type RequestConnectionDTO = {
   providerId: string

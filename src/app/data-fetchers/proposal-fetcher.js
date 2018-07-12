@@ -64,7 +64,7 @@ class ProposalFetcher {
     await this._loop.stop()
   }
 
-  onFetchedProposals (subscriber: Callback<Array<Country>>): void {
+  onFetchedCountries (subscriber: Callback<Array<Country>>): void {
     this._proposalSubscriber.subscribe(subscriber)
   }
 

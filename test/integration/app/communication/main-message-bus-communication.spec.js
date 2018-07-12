@@ -24,6 +24,7 @@ import RendererCommunication from '../../../../src/app/communication/renderer-co
 import { CallbackRecorder } from '../../../helpers/utils'
 import type { MainCommunication } from '../../../../src/app/communication/main-communication'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
+import type {Country} from '../../../../src/app/countries'
 
 describe('MainMessageBusCommunication', () => {
   let messageBus: DirectMessageBus
@@ -88,12 +89,12 @@ describe('MainMessageBusCommunication', () => {
   describe('sendProposals', () => {
     it('sends message through message bus', () => {
       rendererCommunication.onProposalUpdate(recorder.getCallback())
-      const proposalsDto = [
-        new ProposalDTO({id: 1, providerId: 'test provider id', serviceType: 'test service type'})
+      const countriesDto = [
+        { id: 'proposalId_123', code: 'LT', name: 'Lithuania', isFavorite: true }
       ]
-      mainCommunication.sendProposals(proposalsDto)
+      mainCommunication.sendProposals(countriesDto)
       expect(recorder.invoked).to.be.true
-      expect(recorder.firstArgument).to.eql(proposalsDto)
+      expect(recorder.firstArgument).to.eql(countriesDto)
     })
   })
 
@@ -137,7 +138,7 @@ describe('MainMessageBusCommunication', () => {
     it('sends message through message bus', () => {
       const callback = recorder.getCallback()
       rendererCommunication.onUserSettings(callback)
-      const settingsDto = { showDisconnectNotifications: true }
+      const settingsDto = { showDisconnectNotifications: true, favoriteProviders: {} }
       mainCommunication.sendUserSettings(settingsDto)
       expect(recorder.invoked).to.be.true
       expect(recorder.firstArgument).to.eql(settingsDto)

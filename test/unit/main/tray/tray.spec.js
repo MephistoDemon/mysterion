@@ -146,7 +146,7 @@ describe('tray', () => {
         const tray = new Tray(factory, (items) => items, menuItemBuilder, iconPath)
 
         tray.build()
-        tray.setProposals([])
+        tray.setCountries([])
 
         expect(calledSetContextMenu).to.equal(true)
         expect(calledUpdateProposals).to.equal(true)
@@ -171,7 +171,7 @@ describe('tray', () => {
         const tray = new Tray(factory, (items) => items, menuItemBuilder, iconPath)
         tray._canUpdateItems = false
         tray.build()
-        tray.setProposals([])
+        tray.setCountries([])
 
         // if calledSetContextMenu is larger than 1 it means tray._update() was called
         expect(calledSetContextMenu).to.equal(1)

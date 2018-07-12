@@ -49,7 +49,7 @@ const trayFactory = (
   tray.build()
 
   communication.onConnectionStatusChange((change: ConnectionStatusChangeDTO) => tray.setStatus(change.newStatus))
-  proposalFetcher.onFetchedProposals((proposals) => tray.setProposals(proposals))
+  proposalFetcher.onFetchedCountries(countries => tray.setCountries(countries))
 }
 
 export default trayFactory

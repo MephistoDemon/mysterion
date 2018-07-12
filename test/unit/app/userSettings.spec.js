@@ -34,7 +34,7 @@ describe('UserSettingsStore', () => {
 
     it('exports a valid json file', async () => {
       const userSettingsStore = new UserSettingsStore(saveSettingsPath)
-      userSettingsStore.set({showDisconnectNotifications: false})
+      userSettingsStore.set({showDisconnectNotifications: false, favoriteProviders: { 'id_123': true }})
       await userSettingsStore.save()
       const data = readFileSync(saveSettingsPath, {encoding: 'utf8'})
 
@@ -43,7 +43,7 @@ describe('UserSettingsStore', () => {
 
     it('throws error if save() fails on invalid path to file', async () => {
       const userSettingsStore = new UserSettingsStore(invalidPath)
-      userSettingsStore.set({showDisconnectNotifications: false})
+      userSettingsStore.set({showDisconnectNotifications: false, favoriteProviders: { 'id_123': true }})
       const error = await capturePromiseError(userSettingsStore.save())
 
       expect(error).to.be.an.instanceOf(Error)

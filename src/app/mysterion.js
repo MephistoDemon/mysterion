@@ -410,7 +410,7 @@ class Mysterion {
   }
 
   _subscribeProposals () {
-    this.proposalFetcher.onFetchedProposals((proposals) => this.communication.sendProposals(proposals))
+    this.proposalFetcher.onFetchedCountries((proposals) => this.communication.sendProposals(proposals))
     this.communication.onProposalUpdateRequest(() => {
       this.proposalFetcher.fetch()
     })
