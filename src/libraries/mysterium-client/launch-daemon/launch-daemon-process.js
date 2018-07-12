@@ -64,7 +64,6 @@ class LaunchDaemonProcess implements Process {
 
   async start (): Promise<void> {
     await this._spawnOsXLaunchDaemon()
-    await this._ensureProcessIsRunning()
   }
 
   async stop (): Promise<void> {
@@ -112,10 +111,6 @@ class LaunchDaemonProcess implements Process {
       // no http server is running on `_daemonPort`, so request results in a failure
       // if some service is responding on daemonPort then additional healthcheck ensures tequilapi is accessible
     }
-  }
-
-  async _ensureProcessIsRunning (): Promise<void> {
-    await this._tequilapi.healthCheck()
   }
 }
 
