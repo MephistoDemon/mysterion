@@ -21,6 +21,7 @@
       class="countries__multiselect"
       :max-height="120"
       v-model="country"
+      track-by="id"
       :custom-label="selectedCountryLabel"
       placeholder="Choose country"
       :options="countryList"

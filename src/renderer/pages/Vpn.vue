@@ -122,6 +122,8 @@ export default {
     },
     async toggleFavorite () {
       this.country = {...this.country, isFavorite: !this.country.isFavorite}
+      this.countryList.find((c) => c.id === this.country.id).isFavorite = this.country.isFavorite
+
       this.rendererCommunication.sendToggleFavoriteProvider({id: this.country.id, isFavorite: this.country.isFavorite})
     }
   },
