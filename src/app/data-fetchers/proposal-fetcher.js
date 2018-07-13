@@ -22,13 +22,11 @@ import type { TequilapiClient } from '../../libraries/mysterium-tequilapi/client
 import { FunctionLooper } from '../../libraries/functionLooper'
 import type { Callback } from '../../libraries/subscriber'
 import Subscriber from '../../libraries/subscriber'
-import { getSortedCountryListFromProposals } from '../countries'
-import type { Country } from '../countries'
 
 class ProposalFetcher {
   _api: TequilapiClient
   _loop: FunctionLooper
-  _proposalSubscriber: Subscriber<Array<Country>> = new Subscriber()
+  _proposalSubscriber: Subscriber<Array<ProposalDTO>> = new Subscriber()
   _errorSubscriber: Subscriber<Error> = new Subscriber()
 
   constructor (api: TequilapiClient, interval: number = 5000) {
@@ -55,7 +53,7 @@ class ProposalFetcher {
   async fetch (): Promise<Array<ProposalDTO>> {
     const proposals = await this._api.findProposals()
 
-    this._proposalSubscriber.notify(getSortedCountryListFromProposals(proposals))
+    this._proposalSubscriber.notify(proposals)
 
     return proposals
   }
@@ -64,7 +62,7 @@ class ProposalFetcher {
     await this._loop.stop()
   }
 
-  onFetchedCountries (subscriber: Callback<Array<Country>>): void {
+  onFetchedProposals (subscriber: Callback<Array<ProposalDTO>>): void {
     this._proposalSubscriber.subscribe(subscriber)
   }
 
