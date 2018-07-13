@@ -33,6 +33,9 @@ class RendererMessageBus implements MessageBus {
   }
 
   on (channel: string, callback: MessageBusCallback): void {
+    if (this._listeners.has(callback)) {
+      throw new Error('Callback being subscribed to RendererMessageBus is already subscribed')
+    }
     const listener = this._buildListener(callback)
     this._listeners.set(callback, listener)
     this._registerListener(channel, listener)

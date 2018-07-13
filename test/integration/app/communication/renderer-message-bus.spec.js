@@ -29,6 +29,20 @@ describe('RendererMessageBus', () => {
     messageBus = new RendererMessageBus()
   })
 
+  describe('.on', () => {
+    it('throws error when subscribing same callback twice', () => {
+      const callback = () => {}
+      const subscribe = () => messageBus.on(messages.USER_SETTINGS, callback)
+      subscribe()
+      const err = captureError(subscribe)
+      expect(err).to.be.an('error')
+      if (!err) {
+        throw new Error('Expected error not to be null')
+      }
+      expect(err.message).to.eql('Callback being subscribed to RendererMessageBus is already subscribed')
+    })
+  })
+
   describe('.removeCallback', () => {
     it('removes callback to avoid throwing process warning', async () => {
       const maxListenersLimit = 10
