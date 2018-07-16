@@ -24,30 +24,46 @@ import type { MessageBus, MessageBusCallback } from './message-bus'
 type Listener = (event: Object, ...args: Array<any>) => void
 
 class RendererMessageBus implements MessageBus {
-  // _listeners stores listener reference for each callback.
+  // _channelListeners store callback listeners for each channel
   // This is needed on .removeCallback, because Listener and Callback are different objects.
-  _listeners: Map<MessageBusCallback, Listener> = new Map()
+  _channelListeners: Map<string, Map<MessageBusCallback, Listener>> = new Map()
 
   send (channel: string, data?: mixed): void {
     ipcRenderer.send(channel, data)
   }
 
   on (channel: string, callback: MessageBusCallback): void {
-    if (this._listeners.has(callback)) {
+    const listeners = this._getListeners(channel)
+
+    if (listeners.has(callback)) {
       throw new Error('Callback being subscribed to RendererMessageBus is already subscribed')
     }
     const listener = this._buildListener(callback)
-    this._listeners.set(callback, listener)
+    listeners.set(callback, listener)
     this._registerListener(channel, listener)
   }
 
   removeCallback (channel: string, callback: MessageBusCallback): void {
-    const listener = this._listeners.get(callback)
+    const errorMessage = `Removing callback for '${channel}' message in renderer failed - callback was not found`
+    const listeners = this._channelListeners.get(channel)
+    if (!listeners) {
+      throw new Error(errorMessage)
+    }
+    const listener = listeners.get(callback)
     if (!listener) {
-      throw new Error(`Removing callback for '${channel}' message in renderer failed - callback was not found`)
+      throw new Error(errorMessage)
     }
     this._removeListener(channel, listener)
-    this._listeners.delete(callback)
+    listeners.delete(callback)
+  }
+
+  _getListeners (channel: string): Map<MessageBusCallback, Listener> {
+    let listeners = this._channelListeners.get(channel)
+    if (!listeners) {
+      listeners = new Map()
+      this._channelListeners.set(channel, listeners)
+    }
+    return listeners
   }
 
   _buildListener (callback: MessageBusCallback): Listener {

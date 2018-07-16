@@ -41,6 +41,12 @@ describe('RendererMessageBus', () => {
       }
       expect(err.message).to.eql('Callback being subscribed to RendererMessageBus is already subscribed')
     })
+
+    it('subscribes same callback to different channels', () => {
+      const callback = () => {}
+      messageBus.on(messages.USER_SETTINGS, callback)
+      messageBus.on(messages.CONNECTION_REQUEST, callback)
+    })
   })
 
   describe('.removeCallback', () => {
