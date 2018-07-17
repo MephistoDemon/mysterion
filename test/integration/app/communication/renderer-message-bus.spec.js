@@ -66,8 +66,18 @@ describe('RendererMessageBus', () => {
         messageBus.removeCallback(messages.USER_SETTINGS, callback)
       }
 
+      // wait for process warnings to be processed
       await nextTick()
+
       expect(maxListenersExceeded).to.be.false
+    })
+
+    it('allows re-subscribing same callback again', () => {
+      const callback = () => {}
+      messageBus.on(messages.USER_SETTINGS, callback)
+      messageBus.removeCallback(messages.USER_SETTINGS, callback)
+
+      messageBus.on(messages.USER_SETTINGS, callback)
     })
 
     it('throws error when invoke twice for same callback', () => {
