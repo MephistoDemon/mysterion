@@ -24,6 +24,7 @@ import FakeMessageBus from '../../../helpers/fakeMessageBus'
 import {Store} from 'vuex'
 import type from '@/store/types'
 import translations from '@/../app/messages'
+import BugReporterMock from '../../../helpers/bug-reporter-mock'
 
 const communicationProposalsResponse = [
   {
@@ -58,10 +59,7 @@ const communicationProposalsResponse = [
   }
 ]
 
-const bugReporterMock = {
-  captureErrorException: () => {},
-  captureInfoMessage: () => {}
-}
+const bugReporterMock = new BugReporterMock()
 
 function mountWith (rendererCommunication, store) {
   const vue = createLocalVue()
@@ -123,8 +121,11 @@ describe('CountrySelect', () => {
       expect(wrapper.text()).to.contain('Lithuania (0x1)')
       expect(wrapper.text()).to.contain('United Kingdom (0x2)')
       expect(wrapper.text()).to.contain('N/A (0x3)')
-      expect(wrapper.text()).to.contain('N/A unknown (0x4)')
+      expect(wrapper.text()).to.contain('N/A un.. (0x4)')
+
       expect(wrapper.vm.unresolvedCountryList).to.contain('unknown')
+      expect(bugReporterMock.infoMessages.length).to.be.eql(2)
+      expect(bugReporterMock.infoMessages[0].message).to.be.eql('Country not found, code: unknown')
     })
 
     it('clicking an item changes v-model', async () => {
