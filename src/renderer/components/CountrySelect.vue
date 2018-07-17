@@ -59,7 +59,7 @@
 import path from 'path'
 import type from '@/store/types'
 import messages from '@/../app/messages'
-import {getCountryLabel, getSortedCountryListFromProposals} from '@/../app/countries'
+import {getCountryLabel, getSortedCountryListFromProposals, countryFound} from '@/../app/countries'
 import Multiselect from 'vue-multiselect'
 import IconWorld from '@/assets/img/icon--world.svg'
 
@@ -74,6 +74,7 @@ export default {
     return {
       country: null,
       countryList: [],
+      unknownCountryList: [],
       countriesAreLoading: false
     }
   },
@@ -96,7 +97,11 @@ export default {
       return getCountryLabel(country)
     },
     imagePath (code) {
-      if (!code) {
+      if (!countryFound(code)) {
+        if (this.unknownCountryList.indexOf(code) < 0) {
+          this.unknownCountryList.push(code)
+          this.bugReporter.captureErrorMessage('Country not found, code: ' + code)
+        }
         code = 'world'
       }
 
