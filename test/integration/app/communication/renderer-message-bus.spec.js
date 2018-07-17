@@ -54,7 +54,7 @@ describe('RendererMessageBus', () => {
       const maxListenersLimit = 10
 
       let maxListenersExceeded = false
-      process.on('warning', (warning) => {
+      process.on('warning', warning => {
         if (warning.name === 'MaxListenersExceededWarning') {
           maxListenersExceeded = true
         }
