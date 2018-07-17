@@ -74,7 +74,7 @@ export default {
     return {
       country: null,
       countryList: [],
-      unknownCountryList: [],
+      unresolvedCountryList: [],
       countriesAreLoading: false
     }
   },
@@ -98,9 +98,9 @@ export default {
     },
     imagePath (code) {
       if (!countryFound(code)) {
-        if (this.unknownCountryList.indexOf(code) < 0) {
-          this.unknownCountryList.push(code)
-          this.bugReporter.captureErrorMessage('Country not found, code: ' + code)
+        if (this.unresolvedCountryList.indexOf(code) < 0) {
+          this.unresolvedCountryList.push(code)
+          this.bugReporter.captureInfoMessage('Country not found, code: ' + code)
         }
         code = 'world'
       }

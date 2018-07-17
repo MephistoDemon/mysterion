@@ -59,7 +59,8 @@ const communicationProposalsResponse = [
 ]
 
 const bugReporterMock = {
-  captureErrorException: () => {}
+  captureErrorException: () => {},
+  captureInfoMessage: () => {}
 }
 
 function mountWith (rendererCommunication, store) {
@@ -122,7 +123,8 @@ describe('CountrySelect', () => {
       expect(wrapper.text()).to.contain('Lithuania (0x1)')
       expect(wrapper.text()).to.contain('United Kingdom (0x2)')
       expect(wrapper.text()).to.contain('N/A (0x3)')
-      expect(wrapper.text()).to.contain('N/A (0x4)')
+      expect(wrapper.text()).to.contain('N/A unknown (0x4)')
+      expect(wrapper.vm.unresolvedCountryList).to.contain('unknown')
     })
 
     it('clicking an item changes v-model', async () => {

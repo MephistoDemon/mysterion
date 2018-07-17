@@ -29,7 +29,10 @@ type Country = {
 
 function getCountryLabel (country: Country, maxNameLength: ?number = null, maxIdentityLength: ?number = 9) {
   const identity = limitedLengthString(country.id, maxIdentityLength)
-  const name = limitedLengthString(country.name, maxNameLength)
+  let name = limitedLengthString(country.name, maxNameLength)
+  if (name === COUNTRY_NAME_UNKNOWN && country.code) {
+    name += ` ${country.code}`
+  }
 
   return `${name} (${identity})`
 }
@@ -66,14 +69,15 @@ function compareCountries (a: Country, b: Country) {
 }
 
 function countryFound (countryCode: string): boolean {
-  countryCode = countryCode.toLowerCase()
-  return typeof countries[countryCode] !== 'undefined'
+  return typeof countryCode !== 'undefined' &&
+    countryCode != null &&
+    typeof countries[countryCode.toLocaleLowerCase()] !== 'undefined'
 }
 
 function getCountryName (countryCode: string): string {
   countryCode = countryCode.toLowerCase()
   if (!countryFound(countryCode)) {
-    return `${COUNTRY_NAME_UNKNOWN} (${countryCode})`
+    return COUNTRY_NAME_UNKNOWN
   }
 
   return countries[countryCode]
