@@ -18,65 +18,22 @@
 // @flow
 import {ipcRenderer} from 'electron'
 import type { MessageBus, MessageBusCallback } from './message-bus'
-
-// Listener is used for registering to channel events.
-// It has different signature from MessageBusCallback.
-type Listener = (event: Object, ...args: Array<any>) => void
+import ListenerKeeper from './listener-keeper'
 
 class RendererMessageBus implements MessageBus {
-  // _channelListeners store callback listeners for each channel
-  // This is needed on .removeCallback, because Listener and Callback are different objects.
-  _channelListeners: Map<string, Map<MessageBusCallback, Listener>> = new Map()
+  _callbackKeeper: ListenerKeeper = new ListenerKeeper()
 
   send (channel: string, data?: mixed): void {
     ipcRenderer.send(channel, data)
   }
 
   on (channel: string, callback: MessageBusCallback): void {
-    const listeners = this._getListeners(channel)
-
-    if (listeners.has(callback)) {
-      throw new Error('Callback being subscribed to RendererMessageBus is already subscribed')
-    }
-    const listener = this._buildListener(callback)
-    listeners.set(callback, listener)
-    this._registerListener(channel, listener)
-  }
-
-  removeCallback (channel: string, callback: MessageBusCallback): void {
-    const errorMessage = `Removing callback for '${channel}' message in renderer failed - callback was not found`
-    const listeners = this._channelListeners.get(channel)
-    if (!listeners) {
-      throw new Error(errorMessage)
-    }
-    const listener = listeners.get(callback)
-    if (!listener) {
-      throw new Error(errorMessage)
-    }
-    this._removeListener(channel, listener)
-    listeners.delete(callback)
-  }
-
-  _getListeners (channel: string): Map<MessageBusCallback, Listener> {
-    let listeners = this._channelListeners.get(channel)
-    if (!listeners) {
-      listeners = new Map()
-      this._channelListeners.set(channel, listeners)
-    }
-    return listeners
-  }
-
-  _buildListener (callback: MessageBusCallback): Listener {
-    return (event, data) => {
-      callback(data)
-    }
-  }
-
-  _registerListener (channel: string, listener: Listener) {
+    const listener = this._callbackKeeper.createListener(channel, callback)
     ipcRenderer.on(channel, listener)
   }
 
-  _removeListener (channel: string, listener: Listener) {
+  removeCallback (channel: string, callback: MessageBusCallback): void {
+    const listener = this._callbackKeeper.removeListener(channel, callback)
     ipcRenderer.removeListener(channel, listener)
   }
 }

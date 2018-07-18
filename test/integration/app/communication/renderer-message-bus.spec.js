@@ -30,7 +30,7 @@ describe('RendererMessageBus', () => {
   })
 
   describe('.on', () => {
-    it('throws error when subscribing same callback twice', () => {
+    it('throws error when subscribing same callback to the same channel twice', () => {
       const callback = () => {}
       const subscribe = () => messageBus.on(messages.USER_SETTINGS, callback)
       subscribe()
@@ -39,7 +39,7 @@ describe('RendererMessageBus', () => {
       if (!err) {
         throw new Error('Expected error not to be null')
       }
-      expect(err.message).to.eql('Callback being subscribed to RendererMessageBus is already subscribed')
+      expect(err.message).to.eql('Callback being subscribed is already subscribed')
     })
 
     it('subscribes same callback to different channels', () => {
