@@ -436,7 +436,7 @@ class Mysterion {
     logInfo('Building tray')
     trayFactory(
       this.communication,
-      this.proposalFetcher,
+      this.countryListNotifier,
       this.window,
       path.join(this.config.staticDirectory, 'icons')
     )
