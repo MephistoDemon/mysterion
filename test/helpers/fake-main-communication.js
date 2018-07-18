@@ -21,7 +21,7 @@ import type { MainCommunication } from '../../src/app/communication/main-communi
 import type {
   AppErrorDTO, ConnectionStatusChangeDTO, CurrentIdentityChangeDTO,
   CountryUpdateDTO,
-  RequestTermsDTO, TermsAnsweredDTO
+  RequestTermsDTO, TermsAnsweredDTO, ProposalUpdateDTO
 } from '../../src/app/communication/dto'
 import type {UserSettings} from '../../src/app/user-settings/user-settings'
 
@@ -74,8 +74,12 @@ class FakeMainCommunication implements MainCommunication {
     this._registerMethod(this.sendMysteriumClientDown)
   }
 
-  sendProposals (proposals: CountryUpdateDTO): void {
+  sendProposals (proposals: ProposalUpdateDTO): void {
     this._registerMethod(this.sendProposals)
+  }
+
+  sendCountries (countries: CountryUpdateDTO): void {
+    this._registerMethod(this.sendCountries)
   }
 
   sendConnectionCancelRequest () {
