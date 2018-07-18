@@ -16,9 +16,11 @@
  */
 
 // @flow
-import {readFile, writeFile} from 'fs'
-import {promisify} from 'util'
-import type {UserSettings} from './user-settings'
+import { readFile, writeFile } from 'fs'
+import { promisify } from 'util'
+import type { FavoriteProviders, UserSettings } from './user-settings'
+import Subscriber from '../../libraries/subscriber'
+import type { Callback } from '../../libraries/subscriber'
 
 const readFileAsync = promisify(readFile)
 const writeFileAsync = promisify(writeFile)
@@ -28,9 +30,24 @@ const defaultSettings: UserSettings = {
   favoriteProviders: {}
 }
 
+const singleSettingStr = {
+  showDisconnectNotifications: 'showDisconnectNotifications',
+  favoriteProviders: 'favoriteProviders'
+}
+
+type SingleSetting = 'showDisconnectNotifications' | 'favoriteProviders'
+
 class UserSettingsStore {
   _settings: UserSettings = defaultSettings
   _path: string
+
+  _listeners: {
+    favoriteProviders: Subscriber<FavoriteProviders>,
+    showDisconnectNotifications: Subscriber<boolean>
+  } = {
+    favoriteProviders: new Subscriber(),
+    showDisconnectNotifications: new Subscriber()
+  }
 
   constructor (path: string) {
     this._path = path
@@ -45,18 +62,35 @@ class UserSettingsStore {
       }
       throw e
     }
+    this._notify(singleSettingStr.favoriteProviders)
   }
 
   async save (): Promise<void> {
     return saveSettings(this._path, this._settings)
   }
 
-  set (settings: UserSettings) {
-    this._settings = settings
+  setFavorite (toggleFavorite: FavoriteProviders) {
+    this._settings.favoriteProviders = {...this._settings.favoriteProviders, ...toggleFavorite}
+    this._notify(singleSettingStr.favoriteProviders)
   }
 
-  get (): UserSettings {
+  setAll (settings: UserSettings) {
+    this._settings = settings
+    this._notify(singleSettingStr.favoriteProviders)
+    this._notify(singleSettingStr.showDisconnectNotifications)
+  }
+
+  getAll (): UserSettings {
     return this._settings
+  }
+
+  onChange (property: SingleSetting, cb: Callback<any>) {
+    this._listeners[property].subscribe(cb)
+  }
+
+  _notify (propertyChanged: SingleSetting) {
+    const newVal = ((this._settings[propertyChanged]): any)
+    this._listeners[propertyChanged].notify(newVal)
   }
 }
 
@@ -84,4 +118,4 @@ function isFileNotExistError (error: Object): boolean {
   return (error.code && error.code === 'ENOENT')
 }
 
-export {UserSettingsStore}
+export { UserSettingsStore }

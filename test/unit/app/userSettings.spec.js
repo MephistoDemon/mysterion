@@ -34,16 +34,16 @@ describe('UserSettingsStore', () => {
 
     it('exports a valid json file', async () => {
       const userSettingsStore = new UserSettingsStore(saveSettingsPath)
-      userSettingsStore.set({showDisconnectNotifications: false, favoriteProviders: { 'id_123': true }})
+      userSettingsStore.setAll({showDisconnectNotifications: false, favoriteProviders: { 'id_123': true }})
       await userSettingsStore.save()
       const data = readFileSync(saveSettingsPath, {encoding: 'utf8'})
 
-      expect(data.toString()).to.eql('{"showDisconnectNotifications":false}')
+      expect(data.toString()).to.eql('{"showDisconnectNotifications":false,"favoriteProviders":{"id_123":true}}')
     })
 
     it('throws error if save() fails on invalid path to file', async () => {
       const userSettingsStore = new UserSettingsStore(invalidPath)
-      userSettingsStore.set({showDisconnectNotifications: false, favoriteProviders: { 'id_123': true }})
+      userSettingsStore.setAll({showDisconnectNotifications: false, favoriteProviders: { 'id_123': true }})
       const error = await capturePromiseError(userSettingsStore.save())
 
       expect(error).to.be.an.instanceOf(Error)
@@ -58,7 +58,7 @@ describe('UserSettingsStore', () => {
     before(() => {
       writeFileSync(
         loadSettingsPath,
-        JSON.stringify({showDisconnectNotifications: false})
+        JSON.stringify({showDisconnectNotifications: false, favoriteProviders: { 'id_123': true }})
       )
       writeFileSync(
         invalidJsonPath,
@@ -74,14 +74,14 @@ describe('UserSettingsStore', () => {
       const userSettingsStore = new UserSettingsStore(loadSettingsPath)
       await userSettingsStore.load()
 
-      expect(userSettingsStore.get()).to.be.eql({showDisconnectNotifications: false})
+      expect(userSettingsStore.getAll()).to.be.eql({showDisconnectNotifications: false, favoriteProviders: { 'id_123': true }})
     })
 
     it('falls back to default settings when invalid path to settings.json file is given', async () => {
       const userSettingsStore = new UserSettingsStore(invalidPath)
 
       await userSettingsStore.load()
-      expect(userSettingsStore.get()).to.be.eql({showDisconnectNotifications: true})
+      expect(userSettingsStore.getAll()).to.be.eql({showDisconnectNotifications: true, favoriteProviders: { }})
     })
 
     it('throws TypeError if parsed Object from file is not of UserSettings type', async () => {
