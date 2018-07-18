@@ -59,9 +59,7 @@ const communicationProposalsResponse = [
   }
 ]
 
-const bugReporterMock = new BugReporterMock()
-
-function mountWith (rendererCommunication, store) {
+function mountWith (rendererCommunication, bugReporterMock, store) {
   const vue = createLocalVue()
 
   const dependencies = new DIContainer(vue)
@@ -90,7 +88,9 @@ describe('CountrySelect', () => {
         }
       })
 
-      wrapper = mountWith(new RendererCommunication(fakeMessageBus), store)
+      // TODO: move out mountWith
+      const bugReporterMock = new BugReporterMock()
+      wrapper = mountWith(new RendererCommunication(fakeMessageBus), bugReporterMock, store)
       fakeMessageBus.clean()
     })
 
@@ -104,28 +104,75 @@ describe('CountrySelect', () => {
     })
   })
 
-  describe('when getting list of proposals', () => {
-    beforeEach(() => {
-      wrapper = mountWith(new RendererCommunication(fakeMessageBus))
-      fakeMessageBus.clean()
+  describe('.imagePath', () => {
+    let bugReporterMock
+
+    beforeEach(async () => {
+      bugReporterMock = new BugReporterMock()
+      wrapper = mountWith(new RendererCommunication(fakeMessageBus), bugReporterMock)
     })
 
-    it('renders a list item for each proposal', async () => {
+    it('reports bug for unresolved country code', async () => {
+      expect(bugReporterMock.infoMessages).to.have.lengthOf(0)
+      wrapper.vm.imagePath('unknown')
+      expect(bugReporterMock.infoMessages).to.have.lengthOf(1)
+      expect(bugReporterMock.infoMessages[0].message).to.be.eql('Country not found, code: unknown')
+    })
+
+    it('does not send message to bug reporter on second try', async () => {
+      expect(bugReporterMock.infoMessages).to.have.lengthOf(0)
+      wrapper.vm.imagePath('unknown')
+      wrapper.vm.imagePath('unknown')
+      expect(bugReporterMock.infoMessages).to.have.lengthOf(1)
+      expect(bugReporterMock.infoMessages[0].message).to.be.eql('Country not found, code: unknown')
+    })
+
+    it('does not send message to bug reporter known country code', async () => {
+      expect(bugReporterMock.infoMessages).to.have.lengthOf(0)
+      wrapper.vm.imagePath('lt')
+      wrapper.vm.imagePath('gb')
+      expect(bugReporterMock.infoMessages).to.have.lengthOf(0)
+    })
+  })
+
+  describe('when getting list of proposals', () => {
+    let bugReporterMock
+
+    beforeEach(async () => {
+      bugReporterMock = new BugReporterMock()
+      wrapper = mountWith(new RendererCommunication(fakeMessageBus), bugReporterMock)
+      fakeMessageBus.clean()
+
       fakeMessageBus.triggerOn(messages.PROPOSALS_UPDATE, communicationProposalsResponse)
       wrapper.vm.fetchCountries()
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
+    })
 
+    it('renders a list item for each proposal', async () => {
       expect(wrapper.vm.countryList).to.have.lengthOf(4)
-      expect(wrapper.findAll('.multiselect__option-title')).to.have.lengthOf(4)
-      expect(wrapper.text()).to.contain('Lithuania (0x1)')
-      expect(wrapper.text()).to.contain('United Kingdom (0x2)')
-      expect(wrapper.text()).to.contain('N/A (0x3)')
-      expect(wrapper.text()).to.contain('N/A un.. (0x4)')
 
-      expect(wrapper.vm.unresolvedCountryList).to.contain('unknown')
-      expect(bugReporterMock.infoMessages.length).to.be.eql(2)
-      expect(bugReporterMock.infoMessages[0].message).to.be.eql('Country not found, code: unknown')
+      const multiselectOptions = wrapper.findAll('.multiselect__option-title')
+      expect(multiselectOptions).to.have.lengthOf(4)
+
+      const flags = wrapper.findAll('.multiselect__flag-svg')
+      expect(flags.wrappers).to.have.lengthOf(4)
+
+      // country code is known
+      expect(multiselectOptions.wrappers[0].text()).to.contain('Lithuania (0x1)')
+      expect(flags.wrappers[0].element.src).to.contain('/lt.svg')
+
+      // country code is not defined
+      expect(multiselectOptions.wrappers[1].text()).to.contain('N/A (0x3)')
+      expect(flags.wrappers[1].element.src).to.contain('/world.svg')
+
+      // country code is not resolved
+      expect(multiselectOptions.wrappers[2].text()).to.contain('N/A un.. (0x4)')
+      expect(flags.wrappers[2].element.src).to.contain('/world.svg')
+
+      // country code is known
+      expect(multiselectOptions.wrappers[3].text()).to.contain('United Kingdom (0x2)')
+      expect(flags.wrappers[3].element.src).to.contain('/gb.svg')
     })
 
     it('clicking an item changes v-model', async () => {
@@ -136,10 +183,8 @@ describe('CountrySelect', () => {
       }
 
       // initiate the click and check whether it opened the dropdown
-      fakeMessageBus.triggerOn(messages.PROPOSALS_UPDATE, communicationProposalsResponse)
       fakeMessageBus.send(messages.PROPOSALS_UPDATE)
 
-      await wrapper.vm.fetchCountries()
       wrapper.find('.multiselect__option').trigger('click')
 
       expect(wrapper.emitted().selected).to.be.ok

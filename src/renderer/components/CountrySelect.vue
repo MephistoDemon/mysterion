@@ -107,7 +107,7 @@ export default {
 
       return path.join('static', 'flags', code.toLowerCase() + '.svg')
     },
-    async fetchCountries () {
+    fetchCountries () {
       this.countriesAreLoading = true
       this.rendererCommunication.sendProposalUpdateRequest()
     }
