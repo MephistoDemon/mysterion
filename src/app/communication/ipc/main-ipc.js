@@ -16,13 +16,14 @@
  */
 
 // @flow
-import {ipcMain} from 'electron'
 
-import type { MessageBus, MessageBusCallback } from './message-bus'
+import type { Ipc } from './ipc'
+import type { Listener } from '../ipc-message-bus'
+import { ipcMain } from 'electron'
 
 type Sender = (channel: string, data?: mixed) => void
 
-class MainMessageBus implements MessageBus {
+class MainIpc implements Ipc {
   _send: Sender
   _captureException: (Error) => void
 
@@ -39,16 +40,15 @@ class MainMessageBus implements MessageBus {
     }
   }
 
-  on (channel: string, callback: MessageBusCallback): void {
-    ipcMain.on(channel, (event, data) => {
-      callback(data)
-    })
+  on (channel: string, listener: Listener): void {
+    ipcMain.on(channel, listener)
   }
 
-  removeCallback (channel: string, callback: MessageBusCallback): void {
+  removeCallback (channel: string, listener: Listener): void {
     // TODO: implement
     throw new Error('Not implemented')
   }
 }
 
-export default MainMessageBus
+export type { Sender }
+export default MainIpc

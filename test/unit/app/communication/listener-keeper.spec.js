@@ -18,45 +18,73 @@
 // @flow
 
 import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
-import ListenerKeeper from '../../../../src/app/communication/listener-keeper'
-import { captureError } from '../../../helpers/utils'
+import IpcMessageBus from '../../../../src/app/communication/ipc-message-bus'
+import { CallbackRecorder, captureError } from '../../../helpers/utils'
+import MockIpc from '../../../helpers/mock-ipc'
 
-describe('ListenerKeeper', () => {
-  let keeper
+describe('IpcMessageBus', () => {
+  let messageBus
+  let mockIpc
+  let emptyCallback
 
   beforeEach(() => {
-    keeper = new ListenerKeeper()
+    mockIpc = new MockIpc()
+    messageBus = new IpcMessageBus(mockIpc)
+    emptyCallback = () => {}
   })
 
-  describe('.createListener', () => {
+  describe('.on', () => {
+    it('adds listener for callback', () => {
+      const recorder = new CallbackRecorder()
+
+      messageBus.on('channel', recorder.getCallback())
+      expect(mockIpc.addedSubscribers.length).to.eql(1)
+      const subscriber = mockIpc.addedSubscribers[0]
+      expect(subscriber.channel).to.eql('channel')
+
+      expect(recorder.invoked).to.be.false
+      subscriber.listener({}, 'data')
+      expect(recorder.invoked).to.be.true
+      expect(recorder.arguments).to.eql(['data'])
+    })
+
     it('throws error when subscribing same callback to the same channel twice', () => {
-      const callback = () => {}
-      const create = () => keeper.createListener('channel', callback)
+      const create = () => messageBus.on('channel', emptyCallback)
       create()
       const err = captureError(create)
       expect(err).to.be.an('error')
     })
 
-    it('subscribes same callback to different channels', () => {
-      const callback = () => {}
-      keeper.createListener('channel 1', callback)
-      keeper.createListener('channel 2', callback)
+    it('allows subscribing same callback to different channels', () => {
+      messageBus.on('channel 1', emptyCallback)
+      messageBus.on('channel 2', emptyCallback)
     })
   })
 
-  describe('.removeListener', () => {
-    it('allows re-subscribing same callback again', () => {
-      const callback = () => {}
-      keeper.createListener('channel', callback)
-      keeper.removeListener('channel', callback)
+  describe('.removeCallback', () => {
+    it('removes listener', () => {
+      messageBus.on('channel', emptyCallback)
+      messageBus.removeCallback('channel', emptyCallback)
 
-      keeper.createListener('channel', callback)
+      expect(mockIpc.addedSubscribers.length).to.eql(1)
+      const addedSubscriber = mockIpc.addedSubscribers[0]
+
+      expect(mockIpc.removedSubscribers.length).to.eql(1)
+      const removedSubscriber = mockIpc.removedSubscribers[0]
+      expect(removedSubscriber.channel).to.eql('channel')
+      expect(removedSubscriber.listener).to.eql(addedSubscriber.listener)
     })
 
-    it('throws error when invoke twice for same callback', () => {
-      const callback = () => {}
-      keeper.createListener('channel', callback)
-      const remove = () => keeper.removeListener('channel', callback)
+    it('allows re-subscribing same callback again', () => {
+      messageBus.on('channel', emptyCallback)
+      messageBus.removeCallback('channel', emptyCallback)
+
+      messageBus.on('channel', emptyCallback)
+    })
+
+    it('throws error when invoke twice with same callback', () => {
+      messageBus.on('channel', emptyCallback)
+      const remove = () => messageBus.removeCallback('channel', emptyCallback)
       remove()
       const err = captureError(remove)
       expect(err).to.be.an('error')

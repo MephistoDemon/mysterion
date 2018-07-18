@@ -19,39 +19,48 @@
 
 // Listener is used for registering to channel events.
 // It has different signature from MessageBusCallback.
-import type { MessageBusCallback } from './message-bus'
+import type { MessageBus, MessageBusCallback } from './message-bus'
+import type { Ipc } from './ipc/ipc'
 
 type Listener = (event: Object, ...args: Array<any>) => void
 
-class ListenerKeeper {
+class IpcMessageBus implements MessageBus {
   // _channelListeners store callback listeners for each channel
   // This is needed on .removeCallback, because Listener and Callback are different objects.
   _channelListeners: Map<string, Map<MessageBusCallback, Listener>> = new Map()
+  _ipc: Ipc
 
-  createListener (channel: string, callback: MessageBusCallback): Listener {
+  constructor (ipc: Ipc) {
+    this._ipc = ipc
+  }
+
+  send (channel: string, data?: mixed): void {
+    this._ipc.send(channel, data)
+  }
+
+  on (channel: string, callback: MessageBusCallback) {
+    const listener = this._createListener(channel, callback)
+    this._ipc.on(channel, listener)
+  }
+
+  removeCallback (channel: string, callback: MessageBusCallback) {
+    const listener = this._removeListener(channel, callback)
+    this._ipc.removeCallback(channel, listener)
+  }
+
+  _createListener (channel: string, callback: MessageBusCallback): Listener {
     if (this._hasListener(channel, callback)) {
       throw new Error('Callback being subscribed is already subscribed')
     }
 
     const listener = this._buildListener(callback)
-    const listeners = this._getOrInitializeChannelListeners(channel)
+    const listeners = this._getOrInitializeListeners(channel)
     listeners.set(callback, listener)
     return listener
   }
 
-  removeListener (channel: string, callback: MessageBusCallback): Listener {
-    let listener
-    try {
-      listener = this._getListener(channel, callback)
-    } catch (err) {
-      throw new Error(`Removing callback for '${channel}' message in renderer failed: ${err.message}`)
-    }
-    this._removeListenerFromMap(channel, callback)
-    return listener
-  }
-
   _hasListener (channel: string, callback: MessageBusCallback): boolean {
-    const listeners = this._getChannelListeners(channel)
+    const listeners = this._getListeners(channel)
     if (!listeners) {
       return false
     }
@@ -64,8 +73,8 @@ class ListenerKeeper {
     }
   }
 
-  _getOrInitializeChannelListeners (channel: string): Map<MessageBusCallback, Listener> {
-    let listeners = this._getChannelListeners(channel)
+  _getOrInitializeListeners (channel: string): Map<MessageBusCallback, Listener> {
+    let listeners = this._getListeners(channel)
     if (!listeners) {
       listeners = new Map()
       this._channelListeners.set(channel, listeners)
@@ -73,8 +82,12 @@ class ListenerKeeper {
     return listeners
   }
 
+  _getListeners (channel: string): ?Map<MessageBusCallback, Listener> {
+    return this._channelListeners.get(channel)
+  }
+
   _getListener (channel: string, callback: MessageBusCallback): Listener {
-    const listeners = this._getChannelListeners(channel)
+    const listeners = this._getListeners(channel)
     if (!listeners) {
       throw new Error(`No listeners found for "${channel}" channel`)
     }
@@ -85,17 +98,23 @@ class ListenerKeeper {
     return listener
   }
 
-  _removeListenerFromMap (channel: string, callback: MessageBusCallback) {
-    const listeners = this._getChannelListeners(channel)
+  _removeListener (channel: string, callback: MessageBusCallback): Listener {
+    let listener
+    try {
+      listener = this._getListener(channel, callback)
+    } catch (err) {
+      throw new Error(`Removing callback for '${channel}' message in renderer failed: ${err.message}`)
+    }
+
+    const listeners = this._getListeners(channel)
     if (!listeners) {
       throw new Error('No listener found')
     }
     listeners.delete(callback)
-  }
 
-  _getChannelListeners (channel: string): ?Map<MessageBusCallback, Listener> {
-    return this._channelListeners.get(channel)
+    return listener
   }
 }
 
-export default ListenerKeeper
+export type { Listener }
+export default IpcMessageBus

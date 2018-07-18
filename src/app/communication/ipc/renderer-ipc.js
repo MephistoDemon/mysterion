@@ -16,26 +16,23 @@
  */
 
 // @flow
-import {ipcRenderer} from 'electron'
-import type { MessageBus, MessageBusCallback } from './message-bus'
-import ListenerKeeper from './listener-keeper'
 
-class RendererMessageBus implements MessageBus {
-  _callbackKeeper: ListenerKeeper = new ListenerKeeper()
+import { ipcRenderer } from 'electron'
+import type { Listener } from '../ipc-message-bus'
+import type { Ipc } from './ipc'
 
+class RendererIpc implements Ipc {
   send (channel: string, data?: mixed): void {
     ipcRenderer.send(channel, data)
   }
 
-  on (channel: string, callback: MessageBusCallback): void {
-    const listener = this._callbackKeeper.createListener(channel, callback)
+  on (channel: string, listener: Listener): void {
     ipcRenderer.on(channel, listener)
   }
 
-  removeCallback (channel: string, callback: MessageBusCallback): void {
-    const listener = this._callbackKeeper.removeListener(channel, callback)
+  removeCallback (channel: string, listener: Listener): void {
     ipcRenderer.removeListener(channel, listener)
   }
 }
 
-export default RendererMessageBus
+export default RendererIpc

@@ -18,15 +18,17 @@
 // @flow
 
 import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
-import RendererMessageBus from '../../../../src/app/communication/renderer-message-bus'
+import RendererIpc from '../../../../src/app/communication/ipc/renderer-ipc'
 import messages from '../../../../src/app/communication/messages'
 import { captureError, nextTick } from '../../../helpers/utils'
+import IpcMessageBus from '../../../../src/app/communication/ipc-message-bus'
 
-describe('RendererMessageBus', () => {
-  let messageBus: RendererMessageBus
+describe('IpcMessageBus', () => {
+  let messageBus: IpcMessageBus
 
   beforeEach(() => {
-    messageBus = new RendererMessageBus()
+    const ipc = new RendererIpc()
+    messageBus = new IpcMessageBus(ipc)
   })
 
   describe('.on', () => {
@@ -87,6 +89,12 @@ describe('RendererMessageBus', () => {
       remove()
       const err = captureError(remove)
       expect(err).to.be.an('error')
+    })
+
+    it('returns error for unknown callbacks', () => {
+      const f = () => messageBus.removeCallback(messages.CONNECTION_REQUEST, () => {})
+      const error = captureError(f)
+      expect(error).to.be.an('error')
     })
   })
 })
