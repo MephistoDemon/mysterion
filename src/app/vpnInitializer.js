@@ -54,9 +54,7 @@ class VpnInitializer {
       return identities[0]
     }
 
-    const newIdentity = await identityManager.createIdentity(commit)
-    commit(types.INIT_NEW_USER)
-    return newIdentity
+    return identityManager.createIdentity(commit)
   }
 }
 

@@ -18,7 +18,7 @@
 // @flow
 
 import { describe, expect, it } from '../../../helpers/dependencies'
-import RendererMessageBus from '../../../../src/app/communication/rendererMessageBus'
+import RendererMessageBus from '../../../../src/app/communication/renderer-message-bus'
 import messages from '../../../../src/app/communication/messages'
 import { captureError } from '../../../helpers/utils'
 

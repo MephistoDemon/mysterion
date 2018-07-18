@@ -27,7 +27,7 @@ import type {
   AppErrorDTO
 } from './dto'
 import messages from './messages'
-import type { MessageBus } from './messageBus'
+import type { MessageBus } from './message-bus'
 import type { MainCommunication } from './main-communication'
 import type { UserSettings } from '../user-settings/user-settings'
 import type {MapSyncCommunication, MapSyncDTO} from '../../libraries/map-sync'

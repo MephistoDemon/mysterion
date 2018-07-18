@@ -22,7 +22,8 @@ import ProposalsResponseDTO from './dto/proposals-response'
 import ProposalsFilter from './dto/proposals-filter'
 import IdentityDTO from './dto/identity'
 import IdentitiesResponseDTO from './dto/identities-response'
-import NodeHealthcheckDTO from './dto/node-healthcheck'
+import { parseHealthcheckResponse } from './dto/node-healthcheck'
+import type { NodeHealthcheckDTO } from './dto/node-healthcheck'
 import ConnectionStatisticsDTO from './dto/connection-statistics'
 import ConnectionIPDTO from './dto/connection-ip'
 import ConnectionStatusDTO from './dto/connection-status'
@@ -60,7 +61,7 @@ class HttpTequilapiClient implements TequilapiClient {
     if (!response) {
       throw new Error('Healthcheck response body is missing')
     }
-    return new NodeHealthcheckDTO(response)
+    return parseHealthcheckResponse(response)
   }
 
   async stop (): Promise<void> {

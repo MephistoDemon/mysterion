@@ -24,7 +24,7 @@ import trayFactory from '../main/tray/factory'
 import { SUDO_PROMT_PERMISSION_DENIED } from '../libraries/mysterium-client/launch-daemon/launch-daemon-installer'
 import translations from './messages'
 import MainMessageBusCommunication from './communication/main-message-bus-communication'
-import MainMessageBus from './communication/mainMessageBus'
+import MainMessageBus from './communication/main-message-bus'
 import { onFirstEvent, onFirstEventOrTimeout } from './communication/utils'
 import path from 'path'
 import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
@@ -37,16 +37,17 @@ import ProposalFetcher from './data-fetchers/proposal-fetcher'
 import type { BugReporter } from './bug-reporting/interface'
 import { UserSettingsStore } from './user-settings/user-settings-store'
 import Notification from './notification'
-import type { MessageBus } from './communication/messageBus'
+import type { MessageBus } from './communication/message-bus'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
 import type { EnvironmentCollector } from './bug-reporting/environment/environment-collector'
 import {BugReporterMetrics, METRICS, TAGS} from '../app/bug-reporting/bug-reporter-metrics'
-import BackendLogBootstrapper from './logging/backend-log-bootstrapper'
 import LogCache from './logging/log-cache'
 import SyncCallbacksInitializer from './sync-callbacks-initializer'
 import SyncReceiverMainCommunication from './communication/sync/sync-main-communication'
 import { SyncIpcReceiver } from './communication/sync/sync-ipc'
+import type { StringLogger } from './logging/string-logger'
+import logger from './logger'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -60,7 +61,7 @@ type MysterionParams = {
   bugReporter: BugReporter,
   environmentCollector: EnvironmentCollector,
   bugReporterMetrics: BugReporterMetrics,
-  backendLogBootstrapper: BackendLogBootstrapper,
+  logger: StringLogger,
   frontendLogCache: LogCache,
   mysteriumProcessLogCache: LogCache,
   userSettingsStore: UserSettingsStore,
@@ -83,7 +84,7 @@ class Mysterion {
   bugReporter: BugReporter
   environmentCollector: EnvironmentCollector
   bugReporterMetrics: BugReporterMetrics
-  backendLogBootstrapper: BackendLogBootstrapper
+  logger: StringLogger
   frontendLogCache: LogCache
   mysteriumProcessLogCache: LogCache
   userSettingsStore: UserSettingsStore
@@ -105,7 +106,7 @@ class Mysterion {
     this.bugReporter = params.bugReporter
     this.environmentCollector = params.environmentCollector
     this.bugReporterMetrics = params.bugReporterMetrics
-    this.backendLogBootstrapper = params.backendLogBootstrapper
+    this.logger = params.logger
     this.frontendLogCache = params.frontendLogCache
     this.mysteriumProcessLogCache = params.mysteriumProcessLogCache
     this.userSettingsStore = params.userSettingsStore
@@ -113,9 +114,9 @@ class Mysterion {
   }
 
   run () {
+    logger.setLogger(this.logger)
     this.bugReporterMetrics.set(TAGS.SESSION_ID, generateSessionId())
     this._initializeSyncCallbacks()
-    this.backendLogBootstrapper.init()
     this.logUnhandledRejections()
 
     // fired when app has been launched
@@ -264,7 +265,7 @@ class Mysterion {
   // checks if daemon is installed or daemon file is expired
   // if the installation fails, it sends a message to the renderer window
   async _ensureDaemonInstallation () {
-    if (this.installer.needsInstallation()) {
+    if (await this.installer.needsInstallation()) {
       logInfo("Installing 'mysterium_client' process")
       try {
         await this.installer.install()
@@ -296,7 +297,12 @@ class Mysterion {
   async onWillQuit () {
     this.monitoring.stop()
     // TODO: fix - proposalFetcher can still be undefined at this point
-    this.proposalFetcher.stop()
+    try {
+      await this.proposalFetcher.stop()
+    } catch (e) {
+      logException('Failed to stop proposal fetcher', e)
+      this.bugReporter.captureErrorException(e)
+    }
 
     try {
       await this.process.stop()
@@ -357,6 +363,9 @@ class Mysterion {
 
     logInfo("Starting 'mysterium_client' process")
     this.process.start()
+      .then(() => { logInfo('mysterium_client start successful') })
+      .catch((e) => { logException('mysterium_client start failed', e) })
+
     try {
       this.process.setupLogging()
       this.process.onLog(processLogLevels.INFO, (data) => cacheLogs(processLogLevels.INFO, data))
@@ -412,7 +421,9 @@ class Mysterion {
       logInfo('Starting proposal fetcher')
       this.proposalFetcher.start()
     })
-    this.monitoring.onStatusDown(() => this.proposalFetcher.stop())
+    this.monitoring.onStatusDown(() => {
+      this.proposalFetcher.stop()
+    })
   }
 
   _buildTray () {
@@ -451,11 +462,11 @@ function synchronizeUserSettings (userSettingsStore, communication) {
 }
 
 function logInfo (message: string) {
-  console.info(LOG_PREFIX + message)
+  logger.info(LOG_PREFIX + message)
 }
 
 function logException (message: string, err: Error) {
-  console.error(LOG_PREFIX + message, err)
+  logger.error(LOG_PREFIX + message, err)
 }
 
 function generateSessionId () {

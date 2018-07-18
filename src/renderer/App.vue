@@ -60,17 +60,17 @@ export default {
     AppError,
     AppModal
   },
-  dependencies: ['mysterionReleaseID', 'rendererCommunication', 'syncCommunication', 'frontendLogBootstrapper', 'bugReporterMetrics'],
+  dependencies: ['mysterionReleaseID', 'rendererCommunication', 'syncCommunication', 'logger', 'bugReporterMetrics'],
   computed: {
     ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
     version () {
-      const clientVisibleVersion = this.clientBuildInfo.buildNumber ? this.clientBuildInfo.buildNumber : ''
+      const clientVisibleVersion = this.clientBuildInfo.buildNumber || ''
       return `v${this.mysterionReleaseID}.${clientVisibleVersion}`
     }
   },
   async mounted () {
     this.bugReporterMetrics.startSyncing(this.rendererCommunication)
-    this.frontendLogBootstrapper.init()
+    logger.setLogger(this.logger)
     logger.info('App view was mounted')
 
     // we need to notify the main process that we're up
@@ -100,7 +100,7 @@ export default {
     })
 
     this.rendererCommunication.onShowRendererError((error) => {
-      logger.info('App error received from communication:', error)
+      logger.info('App error received from communication:', error.hint, error.message, 'fatal:', error.fatal)
       this.$store.dispatch(type.OVERLAY_ERROR, error)
     })
 

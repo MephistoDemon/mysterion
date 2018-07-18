@@ -18,15 +18,15 @@
 // @flow
 
 import { describe, it, expect, beforeEach } from '../../../helpers/dependencies'
-import BackendLogCachingTransport from '../../../../src/app/logging/backend-log-transport'
+import WinstonTransportCaching from '../../../../src/app/logging/winston-transport-caching'
 import LogCache from '../../../../src/app/logging/log-cache'
 
-describe('BackendLogCachingTransport', () => {
+describe('WinstonTransportCaching', () => {
   describe('.log', () => {
     let backendCachingTransport, logCache
     beforeEach(() => {
       logCache = new LogCache()
-      backendCachingTransport = new BackendLogCachingTransport(logCache)
+      backendCachingTransport = new WinstonTransportCaching(logCache)
     })
 
     it('adds data to error log cache', (done) => {

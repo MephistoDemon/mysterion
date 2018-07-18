@@ -5,7 +5,6 @@ language: js
 cache:
   directories:
   - node_modules
-  - bin
   - "$HOME/.electron"
   - "$HOME/.cache"
 before_cache:

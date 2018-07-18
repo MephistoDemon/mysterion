@@ -16,20 +16,45 @@
  */
 
 // @flow
-import NodeVersionDTO from './node-version'
+import NodeBuildInfoDTO from './node-build-info'
 
-class NodeHealthcheckDTO {
-  uptime: string
-  process: number
-  version: NodeVersionDTO
-
-  constructor (data: Object) {
-    this.uptime = data.uptime
-    this.process = data.process
-    if (data.version) {
-      this.version = new NodeVersionDTO(data.version)
-    }
-  }
+type NodeHealthcheckDTO = {
+  uptime: string,
+  process: number,
+  version: string,
+  buildInfo: NodeBuildInfoDTO
 }
 
-export default NodeHealthcheckDTO
+/**
+ * Validates and converts mixed type into NodeHealthcheckDTO.
+ * @param data to be conveted
+ * @returns converted type
+ */
+function parseHealthcheckResponse (data: mixed): NodeHealthcheckDTO {
+  const errorMessage = `Unable to parse healthcheck response: ${JSON.stringify(data)}`
+  if (data == null || typeof data !== 'object') {
+    throw new Error(errorMessage)
+  }
+
+  if (typeof data.uptime !== 'string') {
+    throw new Error(errorMessage)
+  }
+
+  if (typeof data.process !== 'number') {
+    throw new Error(errorMessage)
+  }
+
+  if (typeof data.version !== 'string') {
+    throw new Error(errorMessage)
+  }
+
+  if (data.buildInfo === null || typeof data.buildInfo !== 'object') {
+    throw new Error(errorMessage)
+  }
+  const buildInfo = new NodeBuildInfoDTO(data.buildInfo)
+
+  return { uptime: data.uptime, process: data.process, version: data.version, buildInfo }
+}
+
+export type { NodeHealthcheckDTO }
+export { parseHealthcheckResponse }

@@ -18,7 +18,7 @@
 // @flow
 import {ipcMain} from 'electron'
 
-import type { MessageBus, MessageBusCallback } from './messageBus'
+import type { MessageBus, MessageBusCallback } from './message-bus'
 
 type Sender = (channel: string, data?: mixed) => void
 

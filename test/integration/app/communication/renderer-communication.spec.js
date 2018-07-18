@@ -19,7 +19,7 @@
 
 import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
 import MainMessageBusCommunication from '../../../../src/app/communication/main-message-bus-communication'
-import type { MessageBus } from '../../../../src/app/communication/messageBus'
+import type { MessageBus } from '../../../../src/app/communication/message-bus'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import { CallbackRecorder } from '../../../helpers/utils'
 import type { MainCommunication } from '../../../../src/app/communication/main-communication'
@@ -56,7 +56,7 @@ describe('RendererCommunication', () => {
       }
       rendererCommunication.sendConnectionStatusChange(statusDto)
       expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eql(statusDto)
+      expect(recorder.firstArgument).to.eql(statusDto)
     })
   })
 
@@ -66,7 +66,7 @@ describe('RendererCommunication', () => {
       const identityDto = { id: 'test id' }
       rendererCommunication.sendCurrentIdentityChange(identityDto)
       expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eql(identityDto)
+      expect(recorder.firstArgument).to.eql(identityDto)
     })
   })
 
@@ -84,7 +84,7 @@ describe('RendererCommunication', () => {
       const answeredDto = { isAccepted: true }
       rendererCommunication.sendTermsAnswered(answeredDto)
       expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eql(answeredDto)
+      expect(recorder.firstArgument).to.eql(answeredDto)
     })
   })
 
@@ -102,7 +102,7 @@ describe('RendererCommunication', () => {
       const settingsDto = { showDisconnectNotifications: true }
       rendererCommunication.sendUserSettingsUpdate(settingsDto)
       expect(recorder.invoked).to.be.true
-      expect(recorder.argument).to.eql(settingsDto)
+      expect(recorder.firstArgument).to.eql(settingsDto)
     })
   })
 })

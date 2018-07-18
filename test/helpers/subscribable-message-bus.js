@@ -17,7 +17,7 @@
 
 // @flow
 
-import type { MessageBus, MessageBusCallback } from '../../src/app/communication/messageBus'
+import type { MessageBus, MessageBusCallback } from '../../src/app/communication/message-bus'
 
 class SubscribableMessageBus implements MessageBus {
   _callbacks: { [string]: ?MessageBusCallback } = {}

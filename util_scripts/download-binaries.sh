@@ -23,6 +23,7 @@ if [ ! -f "$OPENVPN_BINARY" ] || [ ! -z "$FORCE_DOWNLOAD" ]; then
 else
     echo $OPENVPN_BINARY" exists and download not forced..."
 fi
+
 MYSTERIUM_CLIENT_BINARY=$BIN_DIR/mysterium_client
 
 if [ ! -f "$MYSTERIUM_CLIENT_BINARY" ] || [ ! -z "$FORCE_DOWNLOAD" ]; then

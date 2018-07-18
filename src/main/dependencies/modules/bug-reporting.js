@@ -20,7 +20,7 @@ import Raven from 'raven'
 import BugReporterMain from '../../../app/bug-reporting/bug-reporter-main'
 import type {Container} from '../../../app/di'
 import MainEnvironmentCollector from '../../../app/bug-reporting/environment/main-environment-collector'
-import BackendLogBootstrapper from '../../../app/logging/backend-log-bootstrapper'
+import { createWinstonCachingLogger } from '../../../app/logging/winston'
 import type { EnvironmentCollector } from '../../../app/bug-reporting/environment/environment-collector'
 import LogCache from '../../../app/logging/log-cache'
 import LogCacheBundle from '../../../app/logging/log-cache-bundle'
@@ -28,10 +28,10 @@ import { BugReporterMetrics } from '../../../app/bug-reporting/bug-reporter-metr
 
 function bootstrap (container: Container) {
   container.factory(
-    'backendLogBootstrapper',
+    'logger',
     ['backendLogCache'],
     (backendLogCache) => {
-      return new BackendLogBootstrapper(backendLogCache)
+      return createWinstonCachingLogger(backendLogCache)
     }
   )
 

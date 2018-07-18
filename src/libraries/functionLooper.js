@@ -31,9 +31,9 @@ class FunctionLooper {
   _threshold: number
   _running: boolean = false
   _stopping: boolean = false
-  _currentExecutor: ThresholdExecutor
-  _currentPromise: Promise<void>
   _errorSubscriber: Subscriber<Error> = new Subscriber()
+  _currentExecutor: ?ThresholdExecutor
+  _currentPromise: ?Promise<void>
 
   constructor (func: AsyncFunctionWithoutParams, threshold: number) {
     this._func = func
@@ -53,7 +53,6 @@ class FunctionLooper {
         try {
           await this._currentPromise
         } catch (err) {
-          console.info('FunctionLooper got error while executing given function, error:', err)
           this._errorSubscriber.notify(err)
         }
       }
@@ -81,6 +80,9 @@ class FunctionLooper {
   }
 
   async _waitForStartedPromise (): Promise<void> {
+    if (!this._currentExecutor) {
+      return
+    }
     this._currentExecutor.cancel()
     await this._currentPromise
   }

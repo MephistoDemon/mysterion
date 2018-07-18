@@ -16,6 +16,9 @@
  */
 
 // @flow
+import os from 'os'
+import path from 'path'
+
 import type { Container } from '../../../app/di'
 import type { MysterionConfig } from '../../../app/mysterionConfig'
 import { Monitoring } from '../../../libraries/mysterium-client'
@@ -26,11 +29,16 @@ import LaunchDaemonProcess from '../../../libraries/mysterium-client/launch-daem
 import StandaloneClientInstaller from '../../../libraries/mysterium-client/standalone/standalone-client-installer'
 import StandaloneClientProcess from '../../../libraries/mysterium-client/standalone/standalone-client-process'
 
-import path from 'path'
+import ServiceManagerInstaller from '../../../libraries/mysterium-client/service-manager/service-manager-installer'
+import ServiceManagerProcess from '../../../libraries/mysterium-client/service-manager/service-manager-process'
+
 import type { ClientConfig } from '../../../libraries/mysterium-client/config'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import { LAUNCH_DAEMON_PORT } from '../../../libraries/mysterium-client/launch-daemon/config'
-import os from 'os'
+import OSSystem from '../../../libraries/mysterium-client/system'
+
+const WINDOWS = 'win32'
+const OSX = 'darwin'
 
 function bootstrap (container: Container) {
   container.constant('mysteriumClient.platform', os.platform())
@@ -39,10 +47,18 @@ function bootstrap (container: Container) {
     'mysteriumClient.config',
     ['mysterionApplication.config'],
     (mysterionConfig: MysterionConfig): ClientConfig => {
+      let clientBin = path.join(mysterionConfig.contentsDirectory, 'bin', 'mysterium_client')
+      let openvpnBin = path.join(mysterionConfig.contentsDirectory, 'bin', 'openvpn')
+
+      if (os.platform() === WINDOWS) {
+        clientBin += '.exe'
+        openvpnBin += '.exe'
+      }
+
       return {
-        clientBin: path.join(mysterionConfig.contentsDirectory, 'bin', 'mysterium_client'),
+        clientBin: clientBin,
         configDir: path.join(mysterionConfig.contentsDirectory, 'bin', 'config'),
-        openVPNBin: path.join(mysterionConfig.contentsDirectory, 'bin', 'openvpn'),
+        openVPNBin: openvpnBin,
         dataDir: mysterionConfig.userDataDirectory,
         runtimeDir: mysterionConfig.runtimeDirectory,
         logDir: mysterionConfig.userDataDirectory,
@@ -52,11 +68,13 @@ function bootstrap (container: Container) {
   )
   container.service(
     'mysteriumClientInstaller',
-    ['mysteriumClient.config', 'mysteriumClient.platform'],
-    (config: ClientConfig, platform: string) => {
+    ['mysterionApplication.config', 'mysteriumClient.config', 'mysteriumClient.platform'],
+    (mysterionConfig: MysterionConfig, config: ClientConfig, platform: string) => {
       switch (platform) {
-        case 'darwin':
+        case OSX:
           return new LaunchDaemonInstaller(config)
+        case WINDOWS:
+          return new ServiceManagerInstaller(new OSSystem(), config, path.join(mysterionConfig.contentsDirectory, 'bin'))
         default:
           return new StandaloneClientInstaller()
       }
@@ -67,8 +85,10 @@ function bootstrap (container: Container) {
     ['tequilapiClient', 'mysteriumClient.config', 'mysteriumClient.platform'],
     (tequilapiClient: TequilapiClient, config: ClientConfig, platform: string) => {
       switch (platform) {
-        case 'darwin':
+        case OSX:
           return new LaunchDaemonProcess(tequilapiClient, LAUNCH_DAEMON_PORT, config.logDir)
+        case WINDOWS:
+          return new ServiceManagerProcess(tequilapiClient)
         default:
           return new StandaloneClientProcess(config)
       }

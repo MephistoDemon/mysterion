@@ -21,7 +21,7 @@ import ConnectionStatusEnum from '../../../../src/libraries/mysterium-tequilapi/
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import translations from '../../../../src/main/tray/translations'
 import { describe, it, expect, beforeEach } from '../../../helpers/dependencies'
-import FakeMainCommunication from '../../../helpers/fakeMainCommunication'
+import FakeMainCommunication from '../../../helpers/fake-main-communication'
 
 class FakeApplicationQuitter {
   didQuit: boolean = false

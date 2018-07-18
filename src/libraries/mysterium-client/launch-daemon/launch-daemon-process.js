@@ -63,19 +63,11 @@ class LaunchDaemonProcess implements Process {
   }
 
   async start (): Promise<void> {
-    try {
-      await axios.get('http://127.0.0.1:' + this._daemonPort)
-
-      console.info('Touched the daemon, now it should be up')
-    } catch (e) {
-      console.info('Touched the daemon with error, anyway it should be up')
-    }
+    await this._spawnOsXLaunchDaemon()
   }
 
   async stop (): Promise<void> {
     await this._tequilapi.stop()
-
-    console.info('Client Quit was successful')
   }
 
   async setupLogging (): Promise<void> {
@@ -111,12 +103,23 @@ class LaunchDaemonProcess implements Process {
     await createFileIfMissing(this._stdoutPath)
     await createFileIfMissing(this._stderrPath)
   }
+
+  async _spawnOsXLaunchDaemon (): Promise<void> {
+    try {
+      await axios.get('http://127.0.0.1:' + this._daemonPort)
+    } catch (e) {
+      // no http server is running on `_daemonPort`, so request results in a failure
+      // if some service is responding on daemonPort then additional healthcheck ensures tequilapi is accessible
+    }
+  }
 }
 
 function tailFile (filePath: string, cb: LogCallback): void {
   const logTail = new Tail(filePath)
   logTail.on('line', cb)
   logTail.on('error', () => {
+    // TODO: fix no-console logging in libs
+    // eslint-disable-next-line
     console.error(`log file watching failed. file probably doesn't exist: ${filePath}`)
   })
 }

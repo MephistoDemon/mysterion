@@ -19,10 +19,10 @@
 
 import Transport from 'winston-transport'
 import type { SyncRendererCommunication } from '../communication/sync/sync-communication'
-import type { WinstonLogEntry } from './winston-log-entry'
-import { mapWinstonLogLevelToMysterionLevel } from './winston-log-entry'
+import type { WinstonLogEntry } from './winston'
+import { mapWinstonLogLevelToMysterionLevel } from './winston'
 
-class SyncCommunicationTransport extends Transport {
+class WinstonTransportSyncCom extends Transport {
   _communication: SyncRendererCommunication
 
   constructor (communication: SyncRendererCommunication) {
@@ -39,4 +39,4 @@ class SyncCommunicationTransport extends Transport {
   }
 }
 
-export default SyncCommunicationTransport
+export default WinstonTransportSyncCom

@@ -34,7 +34,7 @@
 
 // @flow
 
-import type { MessageBusCallback } from '../../src/app/communication/messageBus'
+import type { MessageBusCallback } from '../../src/app/communication/message-bus'
 import SubscribableMessageBus from './subscribable-message-bus'
 
 class DirectMessageBus extends SubscribableMessageBus {

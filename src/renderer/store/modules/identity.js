@@ -17,7 +17,7 @@
 
 // @flow
 import type from '../types'
-import RendererMessageBus from '../../../app/communication/rendererMessageBus'
+import RendererMessageBus from '../../../app/communication/renderer-message-bus'
 import RendererCommunication from '../../../app/communication/renderer-communication'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../../libraries/mysterium-tequilapi/dto/identity'

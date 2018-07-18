@@ -18,7 +18,7 @@
 import {createLocalVue, mount} from '@vue/test-utils'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import DIContainer from '../../../../src/app/di/vue-container'
-import FakeMessageBus from '../../../helpers/fakeMessageBus'
+import FakeMessageBus from '../../../helpers/fake-message-bus'
 import DisconnectNotificationSetting from '@/components/DisconnectNotificationSetting'
 
 // TODO: extract this out to DRY with other occurances

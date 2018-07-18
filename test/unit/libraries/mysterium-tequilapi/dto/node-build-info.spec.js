@@ -16,37 +16,36 @@
  */
 
 import {expect} from 'chai'
-import NodeHealthcheckDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
-import NodeVersionDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-version'
+import NodeBuildInfoDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-build-info'
 
 describe('TequilapiClient DTO', () => {
-  describe('NodeHealthcheckDTO', () => {
+  describe('NodeBuildInfoDTO', () => {
     it('sets properties', async () => {
-      const status = new NodeHealthcheckDTO({
-        uptime: '1h10m',
-        process: 1111,
-        version: {}
+      const version = new NodeBuildInfoDTO({
+        commit: '0bcccc',
+        branch: 'master',
+        buildNumber: '001'
       })
 
-      expect(status.uptime).to.equal('1h10m')
-      expect(status.process).to.equal(1111)
-      expect(status.version).to.deep.equal(new NodeVersionDTO({}))
+      expect(version.commit).to.equal('0bcccc')
+      expect(version.branch).to.equal('master')
+      expect(version.buildNumber).to.equal('001')
     })
 
     it('sets empty properties', async () => {
-      const status = new NodeHealthcheckDTO({})
+      const version = new NodeBuildInfoDTO({})
 
-      expect(status.uptime).to.be.undefined
-      expect(status.process).to.be.undefined
-      expect(status.version).to.be.undefined
+      expect(version.commit).to.be.undefined
+      expect(version.branch).to.be.undefined
+      expect(version.buildNumber).to.be.undefined
     })
 
     it('sets wrong properties', async () => {
-      const status = new NodeHealthcheckDTO('I am wrong')
+      const version = new NodeBuildInfoDTO('I am wrong')
 
-      expect(status.uptime).to.be.undefined
-      expect(status.process).to.be.undefined
-      expect(status.version).to.be.undefined
+      expect(version.commit).to.be.undefined
+      expect(version.branch).to.be.undefined
+      expect(version.buildNumber).to.be.undefined
     })
   })
 })
