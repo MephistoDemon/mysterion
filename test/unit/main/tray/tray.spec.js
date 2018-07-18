@@ -127,8 +127,8 @@ describe('tray', () => {
     })
 
     describe('.setProposals', () => {
-      it('calls updateProposals and setContextMenu', () => {
-        let calledUpdateProposals = false
+      it('calls updateCountries and setContextMenu', () => {
+        let calledUpdateCountries = false
         let calledSetContextMenu = false
 
         const factory = fakeTrayFactoryBuilder(null, null, () => {
@@ -138,8 +138,8 @@ describe('tray', () => {
           build () {
 
           },
-          updateProposals () {
-            calledUpdateProposals = true
+          updateCountries () {
+            calledUpdateCountries = true
           }
         }
 
@@ -149,11 +149,11 @@ describe('tray', () => {
         tray.setCountries([])
 
         expect(calledSetContextMenu).to.equal(true)
-        expect(calledUpdateProposals).to.equal(true)
+        expect(calledUpdateCountries).to.equal(true)
       })
 
       it('doesn\'t rerender tray, but updates proposals when tray is open', () => {
-        let calledUpdateProposals = false
+        let calledUpdateCountries = false
         let calledSetContextMenu = 0
 
         const factory = fakeTrayFactoryBuilder(null, null, () => {
@@ -163,8 +163,8 @@ describe('tray', () => {
           build () {
 
           },
-          updateProposals () {
-            calledUpdateProposals = true
+          updateCountries () {
+            calledUpdateCountries = true
           }
         }
 
@@ -175,7 +175,7 @@ describe('tray', () => {
 
         // if calledSetContextMenu is larger than 1 it means tray._update() was called
         expect(calledSetContextMenu).to.equal(1)
-        expect(calledUpdateProposals).to.equal(true)
+        expect(calledUpdateCountries).to.equal(true)
       })
     })
   })
