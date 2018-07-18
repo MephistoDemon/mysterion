@@ -48,7 +48,7 @@ import SyncReceiverMainCommunication from './communication/sync/sync-main-commun
 import { SyncIpcReceiver } from './communication/sync/sync-ipc'
 import type { StringLogger } from './logging/string-logger'
 import logger from './logger'
-import { toggleFavorite } from './countries'
+import CountryListNotifier from './data-fetchers/country-list-notifier'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -59,6 +59,7 @@ type MysterionParams = {
   monitoring: ProcessMonitoring,
   process: Process,
   proposalFetcher: ProposalFetcher,
+  countryListNotifier: CountryListNotifier,
   bugReporter: BugReporter,
   environmentCollector: EnvironmentCollector,
   bugReporterMetrics: BugReporterMetrics,
@@ -82,6 +83,7 @@ class Mysterion {
   monitoring: ProcessMonitoring
   process: Process
   proposalFetcher: ProposalFetcher
+  countryListNotifier: CountryListNotifier
   bugReporter: BugReporter
   environmentCollector: EnvironmentCollector
   bugReporterMetrics: BugReporterMetrics
@@ -104,6 +106,7 @@ class Mysterion {
     this.monitoring = params.monitoring
     this.process = params.process
     this.proposalFetcher = params.proposalFetcher
+    this.countryListNotifier = params.countryListNotifier
     this.bugReporter = params.bugReporter
     this.environmentCollector = params.environmentCollector
     this.bugReporterMetrics = params.bugReporterMetrics
@@ -410,7 +413,8 @@ class Mysterion {
   }
 
   _subscribeProposals () {
-    this.proposalFetcher.onFetchedCountries((proposals) => this.communication.sendProposals(proposals))
+    this.proposalFetcher.onFetchedProposals((proposals) => this.communication.sendProposals(proposals))
+    this.countryListNotifier.onUpdate((countries) => this.communication.sendCountries(countries))
     this.communication.onProposalUpdateRequest(() => {
       this.proposalFetcher.fetch()
     })
@@ -442,7 +446,7 @@ class Mysterion {
 function showNotificationOnDisconnect (userSettingsStore, communication, disconnectNotification) {
   communication.onConnectionStatusChange((status) => {
     const shouldShowNotification =
-      userSettingsStore.get().showDisconnectNotifications &&
+      userSettingsStore.getAll().showDisconnectNotifications &&
       (status.newStatus === ConnectionStatusEnum.NOT_CONNECTED &&
         status.oldStatus === ConnectionStatusEnum.CONNECTED)
 
@@ -454,17 +458,17 @@ function showNotificationOnDisconnect (userSettingsStore, communication, disconn
 
 function syncFavorites (userSettingsStore, communication) {
   communication.onToggleFavoriteProvider((fav) => {
-    toggleFavorite(fav)
+    userSettingsStore.setFavorite({[fav.id]: fav.isFavorite})
   })
 }
 
 function synchronizeUserSettings (userSettingsStore, communication) {
   communication.onUserSettingsRequest(() => {
-    communication.sendUserSettings(userSettingsStore.get())
+    communication.sendUserSettings(userSettingsStore.getAll())
   })
 
   communication.onUserSettingsUpdate((userSettings) => {
-    userSettingsStore.set(userSettings)
+    userSettingsStore.setAll(userSettings) // FIXME
     userSettingsStore.save()
   })
 }

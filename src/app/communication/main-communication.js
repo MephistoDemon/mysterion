@@ -22,11 +22,12 @@ import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
   CountryUpdateDTO,
+  ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
   AppErrorDTO
 } from './dto'
-import type {UserSettings} from '../user-settings/user-settings'
+import type { UserSettings } from '../user-settings/user-settings'
 
 interface MainCommunication {
   onRendererBooted (callback: () => void): void,
@@ -41,7 +42,9 @@ interface MainCommunication {
 
   sendMysteriumClientDown (): void,
 
-  sendProposals (proposals: CountryUpdateDTO): void,
+  sendProposals (proposals: ProposalUpdateDTO): void,
+
+  sendCountries (countries: CountryUpdateDTO): void,
 
   sendConnectionCancelRequest (): void,
 

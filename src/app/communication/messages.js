@@ -39,6 +39,7 @@ export default {
   HEALTHCHECK_DOWN: 'healthcheck.down',
 
   PROPOSALS_UPDATE: 'proposals.update',
+  COUNTRY_UPDATE: 'country.update',
 
   TOGGLE_FAVORITE_PROVIDER: 'toggle.favorite.provider',
 
