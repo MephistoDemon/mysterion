@@ -38,17 +38,9 @@ import BugReporterMock from '../../../helpers/bug-reporter-mock'
 import type { BugReporter } from '../../../../src/app/bug-reporting/interface'
 import { nextTick } from '../../../helpers/utils'
 
-class VpnLoaderBugReporter extends BugReporterMock {
-  errorException: ?Error = null
-
-  captureErrorException (err: Error, _context?: any): void {
-    this.errorException = err
-  }
-}
-
 describe('VpnLoader', () => {
   const tequilapi: TequilapiClient = tequilapiMockCreate()
-  let bugReporter: VpnLoaderBugReporter
+  let bugReporter: BugReporterMock
 
   async function mountComponent (tequilapi: TequilapiClient, vpnInitializer: Object, bugReporter: BugReporter): Vue {
     const localVue = createLocalVue()
@@ -88,7 +80,7 @@ describe('VpnLoader', () => {
   }
 
   beforeEach(() => {
-    bugReporter = new VpnLoaderBugReporter()
+    bugReporter = new BugReporterMock()
   })
 
   describe('when initialization succeeds', () => {
@@ -160,7 +152,8 @@ describe('VpnLoader', () => {
     })
 
     it('reports error', () => {
-      const error = bugReporter.errorException
+      expect(bugReporter.errorExceptions.length).to.eql(1)
+      const error = bugReporter.errorExceptions[0].error
       if (!error) {
         throw new Error('Expected error was not captured')
       }
