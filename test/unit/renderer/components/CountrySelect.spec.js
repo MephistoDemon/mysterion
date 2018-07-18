@@ -15,51 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {createLocalVue, mount} from '@vue/test-utils'
+import { createLocalVue, mount } from '@vue/test-utils'
 import CountrySelect from '@/components/CountrySelect'
-import messages from '../../../../src/app/communication/messages'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import DIContainer from '../../../../src/app/di/vue-container'
 import FakeMessageBus from '../../../helpers/fake-message-bus'
-import {Store} from 'vuex'
-import type from '@/store/types'
-import translations from '@/../app/messages'
 
-const communicationProposalsResponse = [
+const countryList = [
   {
-    providerId: '0x1',
-    serviceDefinition: {
-      locationOriginate: {
-        country: 'lt'
-      }
-    }
+    id: '0x1',
+    code: 'lt',
+    name: 'Lithuania'
   },
   {
-    providerId: '0x2',
-    serviceDefinition: {
-      locationOriginate: {
-        country: 'gb'
-      }
-    }
+    id: '0x2',
+    code: 'gb',
+    name: 'United Kingdom'
   },
   {
-    providerId: '0x3',
-    serviceDefinition: {
-      locationOriginate: {}
-    }
+    id: '0x3',
+    name: 'N/A'
   },
   {
-    providerId: '0x4',
-    serviceDefinition: {
-      locationOriginate: {
-        country: 'unknown'
-      }
-    }
+    id: '0x4',
+    name: 'N/A'
   }
 ]
 
 const bugReporterMock = {
-  captureErrorException: () => {}
+  captureErrorException: () => {
+  }
 }
 
 function mountWith (rendererCommunication, store) {
@@ -71,7 +56,12 @@ function mountWith (rendererCommunication, store) {
 
   return mount(CountrySelect, {
     localVue: vue,
-    store
+    store,
+    propsData: {
+      countryList: countryList,
+      fetchCountries: () => {},
+      countriesAreLoading: false
+    }
   })
 }
 
@@ -80,31 +70,6 @@ describe('CountrySelect', () => {
 
   const fakeMessageBus = new FakeMessageBus()
 
-  describe('errors', () => {
-    let store
-    beforeEach(() => {
-      store = new Store({
-        mutations: {
-          [type.SHOW_ERROR] (state, error) {
-            state.errorMessage = error.message
-          }
-        }
-      })
-
-      wrapper = mountWith(new RendererCommunication(fakeMessageBus), store)
-      fakeMessageBus.clean()
-    })
-
-    it(`commits ${translations.countryListIsEmpty} when empty proposal list is received`, async () => {
-      fakeMessageBus.triggerOn(messages.PROPOSALS_UPDATE, [])
-
-      wrapper.vm.fetchCountries()
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.$store.state.errorMessage).to.eql(translations.countryListIsEmpty)
-    })
-  })
-
   describe('when getting list of proposals', () => {
     beforeEach(() => {
       wrapper = mountWith(new RendererCommunication(fakeMessageBus))
@@ -112,11 +77,6 @@ describe('CountrySelect', () => {
     })
 
     it('renders a list item for each proposal', async () => {
-      fakeMessageBus.triggerOn(messages.PROPOSALS_UPDATE, communicationProposalsResponse)
-      wrapper.vm.fetchCountries()
-      await wrapper.vm.$nextTick()
-      await wrapper.vm.$nextTick()
-
       expect(wrapper.vm.countryList).to.have.lengthOf(4)
       expect(wrapper.findAll('.multiselect__option-title')).to.have.lengthOf(4)
       expect(wrapper.text()).to.contain('Lithuania (0x1)')
@@ -132,13 +92,8 @@ describe('CountrySelect', () => {
         name: 'Lithuania'
       }
 
-      // initiate the click and check whether it opened the dropdown
-      fakeMessageBus.triggerOn(messages.PROPOSALS_UPDATE, communicationProposalsResponse)
-      fakeMessageBus.send(messages.PROPOSALS_UPDATE)
-
-      await wrapper.vm.fetchCountries()
-      wrapper.find('.multiselect__option').trigger('click')
-
+      // wrapper.find('.multiselect__option').trigger('click') // TODO: do this instead of vm.onChange() when the issue is resolved https://github.com/vuejs/vue-test-utils/issues/754
+      wrapper.vm.onChange(countryExpected)
       expect(wrapper.emitted().selected).to.be.ok
       expect(wrapper.emitted().selected[0]).to.eql([countryExpected])
     })

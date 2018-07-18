@@ -86,7 +86,7 @@ export default {
     StatsDisplay,
     AppError
   },
-  dependencies: ['logger', 'rendererCommunication'],
+  dependencies: ['bugReporter', 'rendererCommunication'],
   data () {
     return {
       country: null,
@@ -128,10 +128,10 @@ export default {
     }
   },
   async mounted () {
-    this.rendererCommunication.onProposalUpdate((proposals) => {
+    this.rendererCommunication.onCountriesUpdate((countries) => {
       this.countriesAreLoading = false
 
-      if (proposals.length < 1) {
+      if (countries.length < 1) {
         const error = new Error(messages.countryListIsEmpty)
 
         this.$store.commit(type.SHOW_ERROR, error)
@@ -139,7 +139,7 @@ export default {
         return
       }
 
-      this.countryList = proposals
+      this.countryList = countries
     })
     this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.CONNECTION_IP, config.ipUpdateThreshold))
     this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.FETCH_CONNECTION_STATUS, config.statusUpdateThreshold))
