@@ -23,6 +23,10 @@ install:
 script:
 - yarn ci
 - util_scripts/check-headers.sh
+jobs:
+  include:
+    - stage: Test
+      script: yarn ci
 before_deploy:
 - bash util_scripts/travis-number.sh
 - FORCE_DOWNLOAD=1 yarn download:bins
