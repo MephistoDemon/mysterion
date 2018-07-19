@@ -19,7 +19,6 @@
 
 import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
 import RendererIpc from '../../../../src/app/communication/ipc/renderer-ipc'
-import messages from '../../../../src/app/communication/messages'
 import { captureError, nextTick } from '../../../helpers/utils'
 import IpcMessageBus from '../../../../src/app/communication/ipc-message-bus'
 
@@ -34,7 +33,7 @@ describe('IpcMessageBus', () => {
   describe('.on', () => {
     it('throws error when subscribing same callback to the same channel twice', () => {
       const callback = () => {}
-      const subscribe = () => messageBus.on(messages.USER_SETTINGS, callback)
+      const subscribe = () => messageBus.on('channel', callback)
       subscribe()
       const err = captureError(subscribe)
       expect(err).to.be.an('error')
@@ -44,10 +43,10 @@ describe('IpcMessageBus', () => {
       expect(err.message).to.eql('Callback being subscribed is already subscribed')
     })
 
-    it('subscribes same callback to different channels', () => {
+    it('alls subscribing same callback to different channels', () => {
       const callback = () => {}
-      messageBus.on(messages.USER_SETTINGS, callback)
-      messageBus.on(messages.CONNECTION_REQUEST, callback)
+      messageBus.on('channel 1', callback)
+      messageBus.on('channel 2', callback)
     })
   })
 
@@ -64,8 +63,8 @@ describe('IpcMessageBus', () => {
 
       for (let i = 0; i < maxListenersLimit + 1; ++i) {
         const callback = () => {}
-        messageBus.on(messages.USER_SETTINGS, callback)
-        messageBus.removeCallback(messages.USER_SETTINGS, callback)
+        messageBus.on('channel', callback)
+        messageBus.removeCallback('channel', callback)
       }
 
       // wait for process warnings to be processed
@@ -76,23 +75,23 @@ describe('IpcMessageBus', () => {
 
     it('allows re-subscribing same callback again', () => {
       const callback = () => {}
-      messageBus.on(messages.USER_SETTINGS, callback)
-      messageBus.removeCallback(messages.USER_SETTINGS, callback)
+      messageBus.on('channel', callback)
+      messageBus.removeCallback('channel', callback)
 
-      messageBus.on(messages.USER_SETTINGS, callback)
+      messageBus.on('channel', callback)
     })
 
     it('throws error when invoke twice for same callback', () => {
       const callback = () => {}
-      messageBus.on(messages.USER_SETTINGS, callback)
-      const remove = () => messageBus.removeCallback(messages.USER_SETTINGS, callback)
+      messageBus.on('channel', callback)
+      const remove = () => messageBus.removeCallback('channel', callback)
       remove()
       const err = captureError(remove)
       expect(err).to.be.an('error')
     })
 
     it('returns error for unknown callbacks', () => {
-      const f = () => messageBus.removeCallback(messages.CONNECTION_REQUEST, () => {})
+      const f = () => messageBus.removeCallback('channel', () => {})
       const error = captureError(f)
       expect(error).to.be.an('error')
     })

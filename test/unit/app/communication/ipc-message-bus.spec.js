@@ -42,7 +42,6 @@ describe('IpcMessageBus', () => {
       const subscriber = mockIpc.addedSubscribers[0]
       expect(subscriber.channel).to.eql('channel')
 
-      expect(recorder.invoked).to.be.false
       subscriber.listener({}, 'data')
       expect(recorder.invoked).to.be.true
       expect(recorder.arguments).to.eql(['data'])
@@ -52,7 +51,11 @@ describe('IpcMessageBus', () => {
       const create = () => messageBus.on('channel', emptyCallback)
       create()
       const err = captureError(create)
+      if (!err) {
+        throw new Error('Expected error to be thrown')
+      }
       expect(err).to.be.an('error')
+      expect(err.message).to.eql('Callback being subscribed is already subscribed')
     })
 
     it('allows subscribing same callback to different channels', () => {
@@ -87,7 +90,13 @@ describe('IpcMessageBus', () => {
       const remove = () => messageBus.removeCallback('channel', emptyCallback)
       remove()
       const err = captureError(remove)
+      if (!err) {
+        throw new Error('Expected error to be thrown')
+      }
       expect(err).to.be.an('error')
+      expect(err.message).to.eql(
+        "Removing callback for 'channel' message in renderer failed: No listener found for callback on channel channel"
+      )
     })
   })
 })
