@@ -34,18 +34,15 @@
     "files": [
       "dist/electron/**/*"
     ],
-    "extraFiles": [
-      "./bin/openvpn",
-      "./bin/mysterium_client",
-      "./bin/openvpn",
-      "./bin/config"
-    ],
     "extraResources": [
       "./static/icons/trayActiveTemplate.png",
       "./static/icons/trayActiveTemplate@2x.png",
       "./static/icons/trayPassiveTemplate.png",
       "./static/icons/trayPassiveTemplate@2x.png",
       "./static/terms/terms.html"
+    ],
+    "extraFiles": [
+      "./bin/config"
     ],
     "dmg": {
       "contents": [
@@ -63,13 +60,33 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/myst_logo.icns"
+      "icon": "build/icons/myst_logo.icns",
+      "extraFiles": [
+        "./bin/openvpn",
+        "./bin/mysterium_client",
+        "./bin/openvpn"
+      ]
     },
     "win": {
-      "icon": "build/icons/icon.ico"
+      "icon": "build/icons/icon.ico",
+      "extraFiles": [
+        "./bin/openvpn.exe",
+        "./bin/mysterium_client.exe",
+        "./bin/openvpn.exe",
+        "./bin/windows-tap.exe"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     },
     "linux": {
       "icon": "build/icons",
+      "extraFiles": [
+        "./bin/openvpn",
+        "./bin/mysterium_client",
+        "./bin/openvpn"
+      ],
       "target": "AppImage",
       "category": "Network"
     }
