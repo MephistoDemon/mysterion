@@ -17,17 +17,17 @@
 
 // @flow
 
-// Listener is used for registering to channel events.
+// EventListener is used for registering to channel events.
 // It has different signature from MessageBusCallback.
 import type { MessageBus, MessageBusCallback } from './message-bus'
 import type { Ipc } from './ipc/ipc'
 
-type Listener = (event: Object, ...args: Array<any>) => void
+type EventListener = (event: Object, ...args: Array<any>) => void
 
 class IpcMessageBus implements MessageBus {
   // _channelListeners store callback listeners for each channel
-  // This is needed on .removeCallback, because Listener and Callback are different objects.
-  _channelListeners: Map<string, Map<MessageBusCallback, Listener>> = new Map()
+  // This is needed on .removeCallback, because EventListener and MessageBusCallback are different objects.
+  _channelListeners: Map<string, Map<MessageBusCallback, EventListener>> = new Map()
   _ipc: Ipc
 
   constructor (ipc: Ipc) {
@@ -48,7 +48,7 @@ class IpcMessageBus implements MessageBus {
     this._ipc.removeCallback(channel, listener)
   }
 
-  _createListener (channel: string, callback: MessageBusCallback): Listener {
+  _createListener (channel: string, callback: MessageBusCallback): EventListener {
     if (this._hasListener(channel, callback)) {
       throw new Error('Callback being subscribed is already subscribed')
     }
@@ -67,13 +67,13 @@ class IpcMessageBus implements MessageBus {
     return listeners.has(callback)
   }
 
-  _buildListener (callback: MessageBusCallback): Listener {
+  _buildListener (callback: MessageBusCallback): EventListener {
     return (event, data) => {
       callback(data)
     }
   }
 
-  _getOrInitializeListeners (channel: string): Map<MessageBusCallback, Listener> {
+  _getOrInitializeListeners (channel: string): Map<MessageBusCallback, EventListener> {
     let listeners = this._getListeners(channel)
     if (!listeners) {
       listeners = new Map()
@@ -82,11 +82,11 @@ class IpcMessageBus implements MessageBus {
     return listeners
   }
 
-  _getListeners (channel: string): ?Map<MessageBusCallback, Listener> {
+  _getListeners (channel: string): ?Map<MessageBusCallback, EventListener> {
     return this._channelListeners.get(channel)
   }
 
-  _getListener (channel: string, callback: MessageBusCallback): Listener {
+  _getListener (channel: string, callback: MessageBusCallback): EventListener {
     const listeners = this._getListeners(channel)
     if (!listeners) {
       throw new Error(`No listeners found for "${channel}" channel`)
@@ -98,7 +98,7 @@ class IpcMessageBus implements MessageBus {
     return listener
   }
 
-  _removeListener (channel: string, callback: MessageBusCallback): Listener {
+  _removeListener (channel: string, callback: MessageBusCallback): EventListener {
     let listener
     try {
       listener = this._getListener(channel, callback)
@@ -116,5 +116,5 @@ class IpcMessageBus implements MessageBus {
   }
 }
 
-export type { Listener }
+export type { EventListener }
 export default IpcMessageBus

@@ -17,7 +17,7 @@
 
 // @flow
 
-import type { Listener } from '../../src/app/communication/ipc-message-bus'
+import type { EventListener } from '../../src/app/communication/ipc-message-bus'
 import type { Ipc } from '../../src/app/communication/ipc/ipc'
 
 class MockIpc implements Ipc {
@@ -27,18 +27,18 @@ class MockIpc implements Ipc {
   send (channel: string, data?: mixed): void {
   }
 
-  on (channel: string, listener: Listener): void {
+  on (channel: string, listener: EventListener): void {
     this.addedSubscribers.push({channel, listener})
   }
 
-  removeCallback (channel: string, listener: Listener): void {
+  removeCallback (channel: string, listener: EventListener): void {
     this.removedSubscribers.push({channel, listener})
   }
 }
 
 type ChannelListener = {
   channel: string,
-  listener: Listener
+  listener: EventListener
 }
 
 export default MockIpc

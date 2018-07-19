@@ -18,7 +18,7 @@
 // @flow
 
 import type { Ipc } from './ipc'
-import type { Listener } from '../ipc-message-bus'
+import type { EventListener } from '../ipc-message-bus'
 import { ipcMain } from 'electron'
 
 type Sender = (channel: string, data?: mixed) => void
@@ -40,11 +40,11 @@ class MainIpc implements Ipc {
     }
   }
 
-  on (channel: string, listener: Listener): void {
+  on (channel: string, listener: EventListener): void {
     ipcMain.on(channel, listener)
   }
 
-  removeCallback (channel: string, listener: Listener): void {
+  removeCallback (channel: string, listener: EventListener): void {
     // TODO: implement
     throw new Error('Not implemented')
   }

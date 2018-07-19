@@ -16,15 +16,15 @@
  */
 
 // @flow
-import type { Listener } from '../ipc-message-bus'
+import type { EventListener } from '../ipc-message-bus'
 
 /**
  * Inter-process communication
  */
 interface Ipc {
   send (channel: string, data?: mixed): void,
-  on (channel: string, listener: Listener): void,
-  removeCallback (channel: string, listener: Listener): void
+  on (channel: string, listener: EventListener): void,
+  removeCallback (channel: string, listener: EventListener): void
 }
 
 export type { Ipc }

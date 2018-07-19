@@ -18,7 +18,7 @@
 // @flow
 
 import { ipcRenderer } from 'electron'
-import type { Listener } from '../ipc-message-bus'
+import type { EventListener } from '../ipc-message-bus'
 import type { Ipc } from './ipc'
 
 class RendererIpc implements Ipc {
@@ -26,11 +26,11 @@ class RendererIpc implements Ipc {
     ipcRenderer.send(channel, data)
   }
 
-  on (channel: string, listener: Listener): void {
+  on (channel: string, listener: EventListener): void {
     ipcRenderer.on(channel, listener)
   }
 
-  removeCallback (channel: string, listener: Listener): void {
+  removeCallback (channel: string, listener: EventListener): void {
     ipcRenderer.removeListener(channel, listener)
   }
 }
