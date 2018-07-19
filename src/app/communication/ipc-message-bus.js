@@ -60,10 +60,7 @@ class IpcMessageBus implements MessageBus {
   }
 
   _hasListener (channel: string, callback: MessageBusCallback): boolean {
-    const listeners = this._getListeners(channel)
-    if (!listeners) {
-      return false
-    }
+    const listeners = this._getOrInitializeListeners(channel)
     return listeners.has(callback)
   }
 
@@ -74,7 +71,7 @@ class IpcMessageBus implements MessageBus {
   }
 
   _getOrInitializeListeners (channel: string): Map<MessageBusCallback, EventListener> {
-    let listeners = this._getListeners(channel)
+    let listeners = this._channelListeners.get(channel)
     if (!listeners) {
       listeners = new Map()
       this._channelListeners.set(channel, listeners)
@@ -82,15 +79,8 @@ class IpcMessageBus implements MessageBus {
     return listeners
   }
 
-  _getListeners (channel: string): ?Map<MessageBusCallback, EventListener> {
-    return this._channelListeners.get(channel)
-  }
-
   _getListener (channel: string, callback: MessageBusCallback): EventListener {
-    const listeners = this._getListeners(channel)
-    if (!listeners) {
-      throw new Error(`No listeners found for "${channel}" channel`)
-    }
+    const listeners = this._getOrInitializeListeners(channel)
     const listener = listeners.get(callback)
     if (!listener) {
       throw new Error(`No listener found for callback on ${channel} channel`)
@@ -106,10 +96,7 @@ class IpcMessageBus implements MessageBus {
       throw new Error(`Removing callback for '${channel}' message in renderer failed: ${err.message}`)
     }
 
-    const listeners = this._getListeners(channel)
-    if (!listeners) {
-      throw new Error('No listener found')
-    }
+    const listeners = this._getOrInitializeListeners(channel)
     listeners.delete(callback)
 
     return listener
