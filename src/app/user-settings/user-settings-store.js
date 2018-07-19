@@ -74,6 +74,11 @@ class UserSettingsStore {
     this._notify(singleSettingStr.favoriteProviders)
   }
 
+  setShowDisconnectNotifications (show: boolean) {
+    this._settings.showDisconnectNotifications = show
+    this._notify(singleSettingStr.showDisconnectNotifications)
+  }
+
   setAll (settings: UserSettings) {
     this._settings = settings
     this._notify(singleSettingStr.favoriteProviders)

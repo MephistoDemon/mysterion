@@ -413,7 +413,7 @@ class Mysterion {
   }
 
   _subscribeProposals () {
-    this.proposalFetcher.onFetchedProposals((proposals) => this.communication.sendProposals(proposals))
+    // this.proposalFetcher.onFetchedProposals((proposals) => this.communication.sendProposals(proposals))
     this.countryListNotifier.onUpdate((countries) => this.communication.sendCountries(countries))
     this.communication.onProposalUpdateRequest(() => {
       this.proposalFetcher.fetch()
@@ -459,6 +459,7 @@ function showNotificationOnDisconnect (userSettingsStore, communication, disconn
 function syncFavorites (userSettingsStore, communication) {
   communication.onToggleFavoriteProvider((fav) => {
     userSettingsStore.setFavorite({[fav.id]: fav.isFavorite})
+    userSettingsStore.save()
   })
 }
 
@@ -467,8 +468,8 @@ function synchronizeUserSettings (userSettingsStore, communication) {
     communication.sendUserSettings(userSettingsStore.getAll())
   })
 
-  communication.onUserSettingsUpdate((userSettings) => {
-    userSettingsStore.setAll(userSettings) // FIXME
+  communication.onUserSettingsShowDisconnectNotifications((show) => {
+    userSettingsStore.setShowDisconnectNotifications(show)
     userSettingsStore.save()
   })
 }

@@ -60,10 +60,6 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     return this._send(messages.CURRENT_IDENTITY_CHANGED, dto)
   }
 
-  sendToggleFavoriteProvider (dto: {id: string, isFavorite: boolean}): void {
-    return this._send(messages.TOGGLE_FAVORITE_PROVIDER, dto)
-  }
-
   sendProposalUpdateRequest () {
     return this._send(messages.PROPOSALS_UPDATE)
   }
@@ -78,6 +74,14 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
 
   sendUserSettingsUpdate (dto: UserSettings): void {
     return this._send(messages.USER_SETTINGS_UPDATE, dto)
+  }
+
+  sendUserSettingsShowDisconnectNotifications (data: boolean): void {
+    return this._send(messages.SHOW_DISCONNECT_NOTIFICATION, data)
+  }
+
+  sendToggleFavoriteProvider (data: {id: string, isFavorite: boolean}): void {
+    return this._send(messages.TOGGLE_FAVORITE_PROVIDER, data)
   }
 
   sendMapUpdate (data: MapSyncDTO<Metric>): void {

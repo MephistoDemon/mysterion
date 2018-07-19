@@ -135,6 +135,10 @@ class MainMessageBusCommunication implements MainCommunication, MapSyncCommunica
     this._on(messages.USER_SETTINGS_UPDATE, callback)
   }
 
+  onUserSettingsShowDisconnectNotifications (callback: (boolean) => void): void {
+    this._on(messages.SHOW_DISCONNECT_NOTIFICATION, callback)
+  }
+
   onToggleFavoriteProvider (callback: ({id: string, isFavorite: boolean}) => void): void {
     this._on(messages.TOGGLE_FAVORITE_PROVIDER, callback)
   }
