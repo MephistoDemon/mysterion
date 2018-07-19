@@ -19,7 +19,8 @@
 import countries from './list'
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 
-const COUNTRY_NAME_UNKNOWN = 'N/A'
+const COUNTRY_NAME_UNRESOLVED = 'N/A'
+const COUNTRY_CODE_LENGTH = 2
 
 type Country = {
   id: string,
@@ -29,9 +30,12 @@ type Country = {
 
 function getCountryLabel (country: Country, maxNameLength: ?number = null, maxIdentityLength: ?number = 9) {
   const identity = limitedLengthString(country.id, maxIdentityLength)
-  const name = limitedLengthString(country.name, maxNameLength)
+  let title = limitedLengthString(country.name, maxNameLength)
+  if (title === COUNTRY_NAME_UNRESOLVED && country.code) {
+    title += ` ${limitedLengthString(country.code, COUNTRY_CODE_LENGTH)}`
+  }
 
-  return `${name} (${identity})`
+  return `${title} (${identity})`
 }
 
 function getSortedCountryListFromProposals (proposals: Array<ProposalDTO>): Array<Country> {
@@ -65,10 +69,15 @@ function compareCountries (a: Country, b: Country) {
   return 0
 }
 
+function isCountryUnresolved (countryCode: string): boolean {
+  return countryCode != null &&
+    typeof countries[countryCode.toLocaleLowerCase()] !== 'undefined'
+}
+
 function getCountryName (countryCode: string): string {
   countryCode = countryCode.toLowerCase()
-  if (typeof countries[countryCode] === 'undefined') {
-    return COUNTRY_NAME_UNKNOWN
+  if (!isCountryUnresolved(countryCode)) {
+    return COUNTRY_NAME_UNRESOLVED
   }
 
   return countries[countryCode]
@@ -77,7 +86,7 @@ function getCountryName (countryCode: string): string {
 function getCountryNameFromProposal (proposal: ProposalDTO): string {
   const countryCode = getCountryCodeFromProposal(proposal)
   if (!countryCode) {
-    return COUNTRY_NAME_UNKNOWN
+    return COUNTRY_NAME_UNRESOLVED
   }
 
   return getCountryName(countryCode)
@@ -100,5 +109,6 @@ function getCountryCodeFromProposal (proposal: ProposalDTO): ?string {
 export type {Country}
 export {
   getCountryLabel,
-  getSortedCountryListFromProposals
+  getSortedCountryListFromProposals,
+  isCountryUnresolved
 }

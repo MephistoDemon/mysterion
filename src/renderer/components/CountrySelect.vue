@@ -59,7 +59,7 @@
 import path from 'path'
 import type from '@/store/types'
 import messages from '@/../app/messages'
-import {getCountryLabel, getSortedCountryListFromProposals} from '@/../app/countries'
+import {getCountryLabel, getSortedCountryListFromProposals, isCountryUnresolved} from '@/../app/countries'
 import Multiselect from 'vue-multiselect'
 import IconWorld from '@/assets/img/icon--world.svg'
 
@@ -74,6 +74,7 @@ export default {
     return {
       country: null,
       countryList: [],
+      unresolvedCountryList: [],
       countriesAreLoading: false
     }
   },
@@ -96,13 +97,17 @@ export default {
       return getCountryLabel(country)
     },
     imagePath (code) {
-      if (!code) {
+      if (!isCountryUnresolved(code)) {
+        if (this.unresolvedCountryList.indexOf(code) < 0) {
+          this.unresolvedCountryList.push(code)
+          this.bugReporter.captureInfoMessage('Country not found, code: ' + code)
+        }
         code = 'world'
       }
 
       return path.join('static', 'flags', code.toLowerCase() + '.svg')
     },
-    async fetchCountries () {
+    fetchCountries () {
       this.countriesAreLoading = true
       this.rendererCommunication.sendProposalUpdateRequest()
     },

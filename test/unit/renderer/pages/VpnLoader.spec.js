@@ -40,17 +40,9 @@ import { nextTick } from '../../../helpers/utils'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import FakeMessageBus from '../../../helpers/fake-message-bus'
 
-class VpnLoaderBugReporter extends BugReporterMock {
-  errorException: ?Error = null
-
-  captureErrorException (err: Error, _context?: any): void {
-    this.errorException = err
-  }
-}
-
 describe('VpnLoader', () => {
   const tequilapi: TequilapiClient = tequilapiMockCreate()
-  let bugReporter: VpnLoaderBugReporter
+  let bugReporter: BugReporterMock
 
   async function mountComponent (tequilapi: TequilapiClient, vpnInitializer: Object, bugReporter: BugReporter): Vue {
     const localVue = createLocalVue()
@@ -92,7 +84,7 @@ describe('VpnLoader', () => {
   }
 
   beforeEach(() => {
-    bugReporter = new VpnLoaderBugReporter()
+    bugReporter = new BugReporterMock()
   })
 
   describe('when initialization succeeds', () => {
@@ -164,10 +156,8 @@ describe('VpnLoader', () => {
     })
 
     it('reports error', () => {
-      const error = bugReporter.errorException
-      if (!error) {
-        throw new Error('Expected error was not captured')
-      }
+      expect(bugReporter.errorExceptions.length).to.eql(1)
+      const error = bugReporter.errorExceptions[0].error
       expect(error).to.be.an('error')
       expect(error.message).to.eql('Application loading failed: Mock initialization error')
     })
