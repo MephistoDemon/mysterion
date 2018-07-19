@@ -88,7 +88,6 @@ describe('CountrySelect', () => {
         }
       })
 
-      // TODO: move out mountWith
       const bugReporterMock = new BugReporterMock()
       wrapper = mountWith(new RendererCommunication(fakeMessageBus), bugReporterMock, store)
       fakeMessageBus.clean()
