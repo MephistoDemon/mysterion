@@ -63,8 +63,7 @@
       "icon": "build/icons/myst_logo.icns",
       "extraFiles": [
         "./bin/openvpn",
-        "./bin/mysterium_client",
-        "./bin/openvpn"
+        "./bin/mysterium_client"
       ]
     },
     "win": {
@@ -72,7 +71,6 @@
       "extraFiles": [
         "./bin/openvpn.exe",
         "./bin/mysterium_client.exe",
-        "./bin/openvpn.exe",
         "./bin/windows-tap.exe"
       ]
     },
@@ -84,8 +82,7 @@
       "icon": "build/icons",
       "extraFiles": [
         "./bin/openvpn",
-        "./bin/mysterium_client",
-        "./bin/openvpn"
+        "./bin/mysterium_client"
       ],
       "target": "AppImage",
       "category": "Network"
