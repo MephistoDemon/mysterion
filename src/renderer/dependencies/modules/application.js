@@ -18,7 +18,7 @@
 // @flow
 import {Container} from '../../../app/di'
 import RendererCommunication from '../../../app/communication/renderer-communication'
-import RendererMessageBus from '../../../app/communication/renderer-message-bus'
+import RendererIpc from '../../../app/communication/ipc/renderer-ipc'
 import ElkCollector from '../../../app/statistics/elk-collector'
 import AggregatingCollector from '../../../app/statistics/aggregating-collector'
 import NullCollector from '../../../app/statistics/null-collector'
@@ -28,6 +28,7 @@ import {createEventFactory} from '../../../app/statistics/events'
 import VpnInitializer from '../../../app/vpnInitializer'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import realSleep from '../../../libraries/sleep'
+import IpcMessageBus from '../../../app/communication/ipc-message-bus'
 
 function bootstrap (container: Container) {
   const mysterionReleaseID = remote.getGlobal('__mysterionReleaseID')
@@ -37,7 +38,8 @@ function bootstrap (container: Container) {
     'rendererCommunication',
     ['bugReporterMetrics'],
     (bugReporterMetrics) => {
-      const messageBus = new RendererMessageBus()
+      const ipc = new RendererIpc()
+      const messageBus = new IpcMessageBus(ipc)
       const communication = new RendererCommunication(messageBus)
       return communication
     }

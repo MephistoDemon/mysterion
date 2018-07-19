@@ -110,10 +110,8 @@ export default {
     fetchCountries () {
       this.countriesAreLoading = true
       this.rendererCommunication.sendProposalUpdateRequest()
-    }
-  },
-  mounted () {
-    this.rendererCommunication.onProposalUpdate((proposals) => {
+    },
+    onProposalUpdate (proposals) {
       this.countriesAreLoading = false
 
       if (proposals.length < 1) {
@@ -125,14 +123,21 @@ export default {
       }
 
       this.countryList = getSortedCountryListFromProposals(proposals)
-    })
-
-    this.rendererCommunication.onConnectionRequest((proposal) => {
+    },
+    onConnectionRequest (proposal) {
       const selectedCountry = this.countryList.find((country) => country.id === proposal.providerId)
 
       this.country = selectedCountry
       this.$emit('selected', selectedCountry)
-    })
+    }
+  },
+  mounted () {
+    this.rendererCommunication.onProposalUpdate(this.onProposalUpdate)
+    this.rendererCommunication.onConnectionRequest(this.onConnectionRequest)
+  },
+  beforeDestroy () {
+    this.rendererCommunication.removeProposalUpdateCallback(this.onProposalUpdate)
+    this.rendererCommunication.removeConnectionRequestCallback(this.onConnectionRequest)
   }
 }
 </script>

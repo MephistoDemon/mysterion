@@ -47,7 +47,7 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     return this._send(messages.RENDERER_BOOTED)
   }
 
-  onShowRendererError (callback: (AppErrorDTO) => void): void {
+  onShowRendererError (callback: AppErrorDTO => void): void {
     this._on(messages.RENDERER_SHOW_ERROR, callback)
   }
 
@@ -79,20 +79,24 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     this._send(messages.METRIC_SYNC, data)
   }
 
-  onMapUpdate (callback: (MapSyncDTO<Metric>) => void): void {
+  onMapUpdate (callback: MapSyncDTO<Metric> => void): void {
     this._on(messages.METRIC_SYNC, callback)
   }
 
-  onUserSettings (callback: (UserSettings) => void): void {
+  onUserSettings (callback: UserSettings => void): void {
     this._on(messages.USER_SETTINGS, callback)
   }
 
-  removeOnUserSettingsCallback (callback: (UserSettings) => void): void {
+  removeOnUserSettingsCallback (callback: UserSettings => void): void {
     this._removeCallback(messages.USER_SETTINGS, callback)
   }
 
-  onConnectionRequest (callback: (RequestConnectionDTO) => void) {
+  onConnectionRequest (callback: RequestConnectionDTO => void) {
     this._on(messages.CONNECTION_REQUEST, callback)
+  }
+
+  removeConnectionRequestCallback (callback: UserSettings => void): void {
+    this._removeCallback(messages.CONNECTION_REQUEST, callback)
   }
 
   // TODO: unify naming 'disconnection' and 'connection cancel'
@@ -100,8 +104,12 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     this._on(messages.CONNECTION_CANCEL, callback)
   }
 
-  onProposalUpdate (callback: (ProposalUpdateDTO) => void) {
+  onProposalUpdate (callback: ProposalUpdateDTO => void) {
     this._on(messages.PROPOSALS_UPDATE, callback)
+  }
+
+  removeProposalUpdateCallback (callback: UserSettings => void): void {
+    this._removeCallback(messages.PROPOSALS_UPDATE, callback)
   }
 
   onMysteriumClientIsReady (callback: () => void) {
@@ -116,7 +124,7 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     this._on(messages.HEALTHCHECK_DOWN, callback)
   }
 
-  onTermsRequest (callback: (RequestTermsDTO) => void): void {
+  onTermsRequest (callback: RequestTermsDTO => void): void {
     this._on(messages.TERMS_REQUESTED, callback)
   }
 

@@ -44,10 +44,6 @@ export default {
       type: Boolean,
       default: true
     }
-  },
-  computed: {},
-  methods: {},
-  mounted () {
   }
 }
 </script>

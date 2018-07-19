@@ -24,7 +24,6 @@ import trayFactory from '../main/tray/factory'
 import { SUDO_PROMT_PERMISSION_DENIED } from '../libraries/mysterium-client/launch-daemon/launch-daemon-installer'
 import translations from './messages'
 import MainMessageBusCommunication from './communication/main-message-bus-communication'
-import MainMessageBus from './communication/main-message-bus'
 import { onFirstEvent, onFirstEventOrTimeout } from './communication/utils'
 import path from 'path'
 import ConnectionStatusEnum from '../libraries/mysterium-tequilapi/dto/connection-status-enum'
@@ -48,6 +47,8 @@ import SyncReceiverMainCommunication from './communication/sync/sync-main-commun
 import { SyncIpcReceiver } from './communication/sync/sync-ipc'
 import type { StringLogger } from './logging/string-logger'
 import logger from './logger'
+import MainIpc from './communication/ipc/main-ipc'
+import IpcMessageBus from './communication/ipc-message-bus'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -173,7 +174,8 @@ class Mysterion {
     this.window = this._createWindow(windowSize)
 
     const send = this._getSendFunction(browserWindow)
-    this.messageBus = new MainMessageBus(send, this.bugReporter.captureErrorException)
+    const ipc = new MainIpc(send, this.bugReporter.captureErrorException)
+    this.messageBus = new IpcMessageBus(ipc)
     this.communication = new MainMessageBusCommunication(this.messageBus)
     this.communication.onCurrentIdentityChange((identityChange: CurrentIdentityChangeDTO) => {
       const identity = new IdentityDTO({id: identityChange.id})

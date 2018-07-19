@@ -15,16 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// @flow
+
 import {createLocalVue, mount} from '@vue/test-utils'
 import CountrySelect from '@/components/CountrySelect'
 import messages from '../../../../src/app/communication/messages'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import DIContainer from '../../../../src/app/di/vue-container'
+import Vuex, {Store} from 'vuex'
 import FakeMessageBus from '../../../helpers/fake-message-bus'
-import {Store} from 'vuex'
+import Vue from 'vue'
 import type from '@/store/types'
 import translations from '@/../app/messages'
+import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
 import BugReporterMock from '../../../helpers/bug-reporter-mock'
+
+Vue.use(Vuex)
 
 const communicationProposalsResponse = [
   {
@@ -75,7 +81,11 @@ function mountWith (rendererCommunication, bugReporterMock, store) {
 describe('CountrySelect', () => {
   let wrapper
 
-  const fakeMessageBus = new FakeMessageBus()
+  let fakeMessageBus
+
+  beforeEach(() => {
+    fakeMessageBus = new FakeMessageBus()
+  })
 
   describe('errors', () => {
     let store
@@ -217,6 +227,11 @@ describe('CountrySelect', () => {
 
       const label = wrapper.vm.selectedCountryLabel(country)
       expect(label).to.be.eql('Lithuania (0x1234567..)')
+    })
+
+    it('cleans all message bus callbacks after being destroyed', async () => {
+      wrapper.destroy()
+      expect(fakeMessageBus.noRemainingCallbacks()).to.be.true
     })
   })
 })

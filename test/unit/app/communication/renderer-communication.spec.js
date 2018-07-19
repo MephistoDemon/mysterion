@@ -17,21 +17,46 @@
 
 // @flow
 
-import { describe, expect, it } from '../../../helpers/dependencies'
+import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import SubscribableMessageBus from '../../../helpers/subscribable-message-bus'
 
 describe('RendererCommunication', () => {
+  let messageBus
+  let rendererCommunication
+  const callback = () => {}
+
+  beforeEach(() => {
+    messageBus = new SubscribableMessageBus()
+    rendererCommunication = new RendererCommunication(messageBus)
+  })
+
   describe('.removeOnUserSettingsCallback', () => {
     it('removes callback', () => {
-      const messageBus = new SubscribableMessageBus()
-      const rendererCommunication = new RendererCommunication(messageBus)
-      const callback = () => {}
-
       rendererCommunication.onUserSettings(callback)
       expect(messageBus.noRemainingCallbacks()).to.be.false
 
       rendererCommunication.removeOnUserSettingsCallback(callback)
+      expect(messageBus.noRemainingCallbacks()).to.be.true
+    })
+  })
+
+  describe('.removeProposalUpdateCallback', () => {
+    it('removes callback', () => {
+      rendererCommunication.onProposalUpdate(callback)
+      expect(messageBus.noRemainingCallbacks()).to.be.false
+
+      rendererCommunication.removeProposalUpdateCallback(callback)
+      expect(messageBus.noRemainingCallbacks()).to.be.true
+    })
+  })
+
+  describe('.removeConnectionRequestCallback', () => {
+    it('removes callback', () => {
+      rendererCommunication.onConnectionRequest(callback)
+      expect(messageBus.noRemainingCallbacks()).to.be.false
+
+      rendererCommunication.removeConnectionRequestCallback(callback)
       expect(messageBus.noRemainingCallbacks()).to.be.true
     })
   })

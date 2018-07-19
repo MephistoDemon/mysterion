@@ -37,6 +37,8 @@ import DIContainer from '../../../../src/app/di/vue-container'
 import BugReporterMock from '../../../helpers/bug-reporter-mock'
 import type { BugReporter } from '../../../../src/app/bug-reporting/interface'
 import { nextTick } from '../../../helpers/utils'
+import RendererCommunication from '../../../../src/app/communication/renderer-communication'
+import FakeMessageBus from '../../../helpers/fake-message-bus'
 
 describe('VpnLoader', () => {
   const tequilapi: TequilapiClient = tequilapiMockCreate()
@@ -49,9 +51,11 @@ describe('VpnLoader', () => {
     const fakeSleeper = {
       async sleep (_time: number): Promise<void> {}
     }
+    const rendererCommunication = new RendererCommunication(new FakeMessageBus())
     dependencies.constant('bugReporter', bugReporter)
     dependencies.constant('vpnInitializer', vpnInitializer)
     dependencies.constant('sleeper', fakeSleeper)
+    dependencies.constant('rendererCommunication', rendererCommunication)
 
     localVue.use(Router)
     const router = new Router({routes: []})
