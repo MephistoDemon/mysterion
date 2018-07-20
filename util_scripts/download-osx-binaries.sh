@@ -12,6 +12,7 @@ fi
 mkdir -p $BIN_DIR
 
 
+# openvpn
 
 OPENVPN_VERSION=2.4.6-2 #standalone build version
 OPENVPN_BINARY=$BIN_DIR/openvpn
@@ -23,6 +24,8 @@ if [ ! -f "$OPENVPN_BINARY" ] || [ ! -z "$FORCE_DOWNLOAD" ]; then
 else
     echo $OPENVPN_BINARY" exists and download not forced..."
 fi
+
+# mysterium-client
 
 MYSTERIUM_CLIENT_BINARY=$BIN_DIR/mysterium_client
 

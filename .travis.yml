@@ -25,11 +25,17 @@ script:
 - util_scripts/check-headers.sh
 before_deploy:
 - bash util_scripts/travis-number.sh
-- FORCE_DOWNLOAD=1 yarn download:bins
-- yarn build
 - mkdir binaries && mkdir releases
+# OS X
+- FORCE_DOWNLOAD=1 yarn download:bins:osx
+- yarn build
 - cp build/Mysterion-*.dmg binaries/Mysterion-latest.dmg
 - cp build/Mysterion-*.dmg releases/
+# Windows
+- FORCE_DOWNLOAD=1 yarn download:bins:win
+- yarn build:win
+- cp build/Mysterion\ Setup\ *.exe binaries/Mysterion\ Setup\ Latest.exe
+- cp build/Mysterion\ Setup\ *.exe releases/
 deploy:
   # Latest (master branch)
   - provider: pages
@@ -37,8 +43,7 @@ deploy:
     skip-cleanup: true
     github-token: "$GITHUB_API_TOKEN"
     keep-history: false
-    # Example: mysterion_osx
-    target-branch: mysterion_$TRAVIS_OS_NAME
+    target-branch: mysterion
     repo: MysteriumNetwork/build-artifacts
     on:
       tags: false
@@ -49,8 +54,7 @@ deploy:
     skip-cleanup: true
     github-token: "$GITHUB_API_TOKEN"
     keep-history: false
-    # Example: mysterion_osx_rc
-    target-branch: mysterion_${TRAVIS_OS_NAME}_rc
+    target-branch: mysterion_rc
     repo: MysteriumNetwork/build-artifacts
     on:
       tags: false

@@ -191,7 +191,7 @@ describe('ServiceManagerInstaller', () => {
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       await installer.install()
 
-      expect(system.userExecCalledCommands[2]).to.be.eql('/service-manager/bin/windows-tap.exe')
+      expect(system.userExecCalledCommands[2]).to.be.eql('/service-manager/bin/tap-windows.exe')
     })
   })
 })

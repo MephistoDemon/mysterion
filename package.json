@@ -6,9 +6,11 @@
   "license": "GPL-3.0",
   "main": "./dist/electron/main.js",
   "scripts": {
-    "download:bins": "util_scripts/download-binaries.sh",
+    "download:bins:osx": "util_scripts/download-osx-binaries.sh",
+    "download:bins:win": "util_scripts/download-win-binaries.sh",
     "copy:bins": "util_scripts/copy-binaries.sh",
     "build": "node .electron-vue/build.js && electron-builder --publish never",
+    "build:win": "node .electron-vue/build.js && node ./node_modules/electron-builder/out/cli/cli.js --win --publish=never",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
@@ -71,7 +73,7 @@
       "extraFiles": [
         "./bin/openvpn.exe",
         "./bin/mysterium_client.exe",
-        "./bin/windows-tap.exe",
+        "./bin/tap-windows.exe",
         "./bin/servicemanager.exe"
       ]
     },
