@@ -71,7 +71,8 @@
       "extraFiles": [
         "./bin/openvpn.exe",
         "./bin/mysterium_client.exe",
-        "./bin/windows-tap.exe"
+        "./bin/windows-tap.exe",
+        "./bin/servicemanager.exe"
       ]
     },
     "nsis": {
