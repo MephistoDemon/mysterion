@@ -182,7 +182,7 @@ describe('ServiceManagerInstaller', () => {
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       await installer.install()
 
-      expect(system.sudoExecCalledCommand).to.be.eql('/service-manager/bin/service.exe --do=install && /service-manager/bin/service.exe --do=start')
+      expect(system.sudoExecCalledCommand).to.be.eql('/service-manager/bin/servicemanager.exe --do=install && /service-manager/bin/servicemanager.exe --do=start')
     })
 
     it('installs TAP drivers when they are not installed', async () => {
