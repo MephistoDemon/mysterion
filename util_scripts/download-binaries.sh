@@ -13,7 +13,7 @@ mkdir -p $BIN_DIR
 
 
 
-OPENVPN_VERSION=v2.4.4-1 #standalone build version
+OPENVPN_VERSION=2.4.6-2 #standalone build version
 OPENVPN_BINARY=$BIN_DIR/openvpn
 
 if [ ! -f "$OPENVPN_BINARY" ] || [ ! -z "$FORCE_DOWNLOAD" ]; then
