@@ -17,8 +17,8 @@ OPENVPN_VERSION=2.4.6-2 #standalone build version
 OPENVPN_BINARY=$BIN_DIR/openvpn
 
 if [ ! -f "$OPENVPN_BINARY" ] || [ ! -z "$FORCE_DOWNLOAD" ]; then
-    $SCRIPT_DIR/git-asset-dl.sh MysteriumNetwork standalone-openvpn $OPENVPN_VERSION openvpn_osx
-    mv openvpn_osx $OPENVPN_BINARY
+    $SCRIPT_DIR/git-asset-dl.sh MysteriumNetwork standalone-openvpn $OPENVPN_VERSION openvpn_osx64
+    mv openvpn_osx64 $OPENVPN_BINARY
     chmod +x $OPENVPN_BINARY
 else
     echo $OPENVPN_BINARY" exists and download not forced..."
