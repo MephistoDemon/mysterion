@@ -27,7 +27,7 @@ const writeFileAsync = promisify(writeFile)
 
 const defaultSettings: UserSettings = {
   showDisconnectNotifications: true,
-  favoriteProviders: {}
+  favoriteProviders: new Set()
 }
 
 const singleSettingStr = {
@@ -35,7 +35,9 @@ const singleSettingStr = {
   favoriteProviders: 'favoriteProviders'
 }
 
-type SingleSetting = 'showDisconnectNotifications' | 'favoriteProviders'
+export type FavoriteProviderToggle = {id: string, isFavorite: boolean}
+
+type SingleSetting = $Values<typeof singleSettingStr> // 'showDisconnectNotifications' | 'favoriteProviders'
 
 class UserSettingsStore {
   _settings: UserSettings = defaultSettings
@@ -69,8 +71,9 @@ class UserSettingsStore {
     return saveSettings(this._path, this._settings)
   }
 
-  setFavorite (toggleFavorite: FavoriteProviders) {
-    this._settings.favoriteProviders = {...this._settings.favoriteProviders, ...toggleFavorite}
+  setFavorite (toggleFavorite: FavoriteProviderToggle) {
+    if (toggleFavorite.isFavorite) this._settings.favoriteProviders.add(toggleFavorite.id)
+    else this._settings.favoriteProviders.delete(toggleFavorite.id)
     this._notify(singleSettingStr.favoriteProviders)
   }
 

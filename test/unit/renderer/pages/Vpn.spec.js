@@ -24,17 +24,15 @@ import RendererCommunication from '../../../../src/app/communication/renderer-co
 import messages from '../../../../src/app/communication/messages'
 import type from '@/store/types'
 import FakeMessageBus from '../../../helpers/fake-message-bus'
+import BugReporterMock from '../../../helpers/bug-reporter-mock'
 import translations from '@/../app/messages'
 import Vue from 'vue'
 Vue.use(Vuex)
 
-const bugReporterMock = {
-  captureErrorException: () => {}
-}
-
 describe('Vpn page', () => {
   let vpnWrapper
   let fakeMessageBus
+  const bugReporterMock = new BugReporterMock()
 
   function mountWith (store) {
     const vue = createLocalVue()
@@ -43,8 +41,6 @@ describe('Vpn page', () => {
     dependencies.constant('rendererCommunication', new RendererCommunication(fakeMessageBus))
     dependencies.constant('bugReporter', bugReporterMock)
 
-    // eslint-disable-next-line
-    console.log(store.getters)
     return mount(Vpn, {
       localVue: vue,
       store: store
@@ -67,7 +63,6 @@ describe('Vpn page', () => {
     expect(vpnWrapper).to.be.ok
   })
 
-  // TODO: move to VPN page
   describe('errors', () => {
     let store
     beforeEach(() => {

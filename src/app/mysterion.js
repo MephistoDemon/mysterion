@@ -209,7 +209,7 @@ class Mysterion {
     this._subscribeProposals()
 
     syncFavorites(this.userSettingsStore, this.communication)
-    synchronizeUserSettings(this.userSettingsStore, this.communication)
+    syncShowDisconnectNotifications(this.userSettingsStore, this.communication)
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
     await this._loadUserSettings()
   }
@@ -460,12 +460,12 @@ function showNotificationOnDisconnect (userSettingsStore, communication, disconn
 
 function syncFavorites (userSettingsStore, communication) {
   communication.onToggleFavoriteProvider((fav) => {
-    userSettingsStore.setFavorite({[fav.id]: fav.isFavorite})
+    userSettingsStore.setFavorite(fav)
     userSettingsStore.save()
   })
 }
 
-function synchronizeUserSettings (userSettingsStore, communication) {
+function syncShowDisconnectNotifications (userSettingsStore, communication) { // only set notification toggle here
   communication.onUserSettingsRequest(() => {
     communication.sendUserSettings(userSettingsStore.getAll())
   })

@@ -40,8 +40,8 @@ function getCountryLabel (country: Country, maxNameLength: ?number = null, maxId
   return `${title} (${identity})`
 }
 
-function getSortedCountryListFromProposals (proposals: Array<ProposalDTO>, favorites?: FavoriteProviders): Array<Country> {
-  const countries = proposals.map(getCountryFromProposal).map(countryFavoriteMapper(favorites || {}))
+function getSortedCountryListFromProposals (proposals: Array<ProposalDTO>, favorites: FavoriteProviders): Array<Country> {
+  const countries = proposals.map(getCountryFromProposal).map(countryFavoriteMapper(favorites))
   return countries.sort(compareCountries)
 }
 
@@ -52,11 +52,12 @@ function limitedLengthString (value: string, maxLength: ?number = null): string 
   return value
 }
 
-function countryFavoriteMapper (favorites): Function {
+function countryFavoriteMapper (favorites: FavoriteProviders): (Country) => Country {
   return (country: Country) => {
-    return {...country, isFavorite: favorites[country.id]}
+    return {...country, isFavorite: favorites.has(country.id)}
   }
 }
+
 function getCountryFromProposal (proposal: ProposalDTO): Country {
   return {
     id: proposal.providerId,

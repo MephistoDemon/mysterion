@@ -31,7 +31,7 @@ class CountryListNotifier {
   _listeners: Subscriber<Array<Country>> = new Subscriber()
 
   _proposals: ProposalDTO[] = []
-  _favorites: FavoriteProviders = {}
+  _favorites: FavoriteProviders = new Set()
 
   constructor (proposalFetcher: ProposalFetcher, store: UserSettingsStore) {
     this._proposalFetcher = proposalFetcher

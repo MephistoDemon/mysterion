@@ -16,7 +16,7 @@
  */
 
 // @flow
-export type FavoriteProviders = { [providerId: string]: boolean }
+export type FavoriteProviders = Set<string>
 
 export type UserSettings = {
   showDisconnectNotifications: boolean,
