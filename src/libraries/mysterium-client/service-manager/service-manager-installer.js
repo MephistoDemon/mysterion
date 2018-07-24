@@ -26,7 +26,7 @@ import type { System } from '../system'
 
 const SERVICE_NAME = 'MysteriumClient'
 const SERVICE_MANAGER_BIN = 'servicemanager.exe'
-const SERVICE_MANAGER_CONFIG = 'service.json'
+const SERVICE_MANAGER_CONFIG = 'servicemanager.json'
 const TAP_DRIVER_BIN = 'tap-windows.exe'
 
 class ServiceManagerInstaller implements Installer {
