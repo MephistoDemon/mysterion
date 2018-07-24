@@ -24,7 +24,6 @@ import type {
   CurrentIdentityChangeDTO,
   RequestConnectionDTO,
   CountryUpdateDTO,
-  ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
   AppErrorDTO
@@ -113,12 +112,8 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     this._on(messages.CONNECTION_CANCEL, callback)
   }
 
-  onProposalUpdate (callback: ProposalUpdateDTO => void) {
-    this._on(messages.PROPOSALS_UPDATE, callback)
-  }
-
-  removeProposalUpdateCallback (callback: UserSettings => void): void {
-    this._removeCallback(messages.PROPOSALS_UPDATE, callback)
+  removeCountriesUpdateCallback (callback: UserSettings => void): void {
+    this._removeCallback(messages.COUNTRY_UPDATE, callback)
   }
 
   onCountriesUpdate (callback: (CountryUpdateDTO) => void) {

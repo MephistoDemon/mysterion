@@ -85,18 +85,6 @@ describe('MainMessageBusCommunication', () => {
     })
   })
 
-  describe('sendProposals', () => {
-    it('sends message through message bus', () => {
-      rendererCommunication.onProposalUpdate(recorder.getCallback())
-      const proposalsDto = [
-        new ProposalDTO({id: 1, providerId: 'test provider id', serviceType: 'test service type'})
-      ]
-      mainCommunication.sendProposals(proposalsDto)
-      expect(recorder.invoked).to.be.true
-      expect(recorder.firstArgument).to.eql(proposalsDto)
-    })
-  })
-
   describe('sendCountries', () => {
     it('sends message through message bus', () => {
       rendererCommunication.onCountriesUpdate(recorder.getCallback())

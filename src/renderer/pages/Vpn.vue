@@ -146,7 +146,7 @@ export default {
     this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.FETCH_CONNECTION_STATUS, config.statusUpdateThreshold))
   },
   beforeDestroy () {
-    this.rendererCommunication.removeCountriesUpdateCallback(this.onProposalUpdate)
+    this.rendererCommunication.removeCountriesUpdateCallback(this.onCountriesUpdate)
   }
 }
 </script>

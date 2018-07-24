@@ -22,7 +22,6 @@ import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
   CountryUpdateDTO,
-  ProposalUpdateDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
   AppErrorDTO
@@ -41,8 +40,6 @@ interface MainCommunication {
   sendMysteriumClientUp (): void,
 
   sendMysteriumClientDown (): void,
-
-  sendProposals (proposals: ProposalUpdateDTO): void,
 
   sendCountries (countries: CountryUpdateDTO): void,
 
