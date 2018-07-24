@@ -17,18 +17,28 @@
 
 // @flow
 
-import { describe, expect, it } from '../../../helpers/dependencies'
-import RendererMessageBus from '../../../../src/app/communication/renderer-message-bus'
-import messages from '../../../../src/app/communication/messages'
-import { captureError } from '../../../helpers/utils'
+import type { EventListener } from '../../src/app/communication/ipc-message-bus'
+import type { Ipc } from '../../src/app/communication/ipc/ipc'
 
-describe('RendererMessageBus', () => {
-  describe('.removeCallback', () => {
-    it('returns error for unknown callbacks', () => {
-      const messageBus = new RendererMessageBus()
-      const f = () => messageBus.removeCallback(messages.CONNECTION_REQUEST, () => {})
-      const error = captureError(f)
-      expect(error).to.be.an('error')
-    })
-  })
-})
+class MockIpc implements Ipc {
+  addedSubscribers: Array<ChannelListener> = []
+  removedSubscribers: Array<ChannelListener> = []
+
+  send (channel: string, data?: mixed): void {
+  }
+
+  on (channel: string, listener: EventListener): void {
+    this.addedSubscribers.push({channel, listener})
+  }
+
+  removeCallback (channel: string, listener: EventListener): void {
+    this.removedSubscribers.push({channel, listener})
+  }
+}
+
+type ChannelListener = {
+  channel: string,
+  listener: EventListener
+}
+
+export default MockIpc

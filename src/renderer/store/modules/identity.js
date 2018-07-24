@@ -17,8 +17,6 @@
 
 // @flow
 import type from '../types'
-import RendererMessageBus from '../../../app/communication/renderer-message-bus'
-import RendererCommunication from '../../../app/communication/renderer-communication'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../../libraries/mysterium-tequilapi/dto/identity'
 import type {Container} from '../../../app/di'
@@ -35,14 +33,13 @@ const state: State = {
 
 function mutationsFactory (dependencies: Container) {
   const bugReporter = dependencies.get('bugReporter')
+  const rendererCommunication = dependencies.get('rendererCommunication')
   return {
     // TODO: rename to SET_CURRENT_IDENTITY
     [type.IDENTITY_GET_SUCCESS] (state, identity: IdentityDTO) {
       state.current = identity
       bugReporter.setUser(identity)
-      const messageBus = new RendererMessageBus()
-      const communication = new RendererCommunication(messageBus)
-      communication.sendCurrentIdentityChange(identity)
+      rendererCommunication.sendCurrentIdentityChange(identity)
     },
     // TODO: rename to SET_IDENTITIES
     [type.IDENTITY_LIST_SUCCESS] (state, data) {

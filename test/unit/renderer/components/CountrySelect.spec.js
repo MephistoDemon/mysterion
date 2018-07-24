@@ -15,11 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// @flow
+
 import { createLocalVue, mount } from '@vue/test-utils'
 import CountrySelect from '@/components/CountrySelect'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import DIContainer from '../../../../src/app/di/vue-container'
 import FakeMessageBus from '../../../helpers/fake-message-bus'
+import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
+import BugReporterMock from '../../../helpers/bug-reporter-mock'
 
 const countryList = [
   {
@@ -34,6 +38,12 @@ const countryList = [
   },
   {
     id: '0x3',
+    code: 'unknown',
+    name: 'N/A'
+  },
+  {
+    id: '0x4',
+    code: 'unknown',
     name: 'N/A'
   },
   {
@@ -42,12 +52,7 @@ const countryList = [
   }
 ]
 
-const bugReporterMock = {
-  captureErrorException: () => {
-  }
-}
-
-function mountWith (rendererCommunication, store) {
+function mountWith (countryList, rendererCommunication, bugReporterMock) {
   const vue = createLocalVue()
 
   const dependencies = new DIContainer(vue)
@@ -56,7 +61,6 @@ function mountWith (rendererCommunication, store) {
 
   return mount(CountrySelect, {
     localVue: vue,
-    store,
     propsData: {
       countryList: countryList,
       fetchCountries: () => {},
@@ -67,22 +71,70 @@ function mountWith (rendererCommunication, store) {
 
 describe('CountrySelect', () => {
   let wrapper
+  let fakeMessageBus
 
-  const fakeMessageBus = new FakeMessageBus()
+  beforeEach(() => {
+    fakeMessageBus = new FakeMessageBus()
+  })
+
+  describe('.imagePath', () => {
+    let bugReporterMock
+
+    beforeEach(async () => {
+      bugReporterMock = new BugReporterMock()
+    })
+
+    it('reports bug for unresolved country code', async () => {
+      wrapper = mountWith([countryList[4]], new RendererCommunication(fakeMessageBus), bugReporterMock)
+      expect(bugReporterMock.infoMessages).to.have.lengthOf(1)
+      expect(bugReporterMock.infoMessages[0].message).to.eql('Country not found, code: undefined')
+    })
+
+    it('does not send message to bug reporter on second try', async () => {
+      wrapper = mountWith([countryList[2], countryList[3]], new RendererCommunication(fakeMessageBus), bugReporterMock)
+      expect(bugReporterMock.infoMessages).to.have.lengthOf(1)
+      expect(bugReporterMock.infoMessages[0].message).to.eql('Country not found, code: unknown')
+    })
+
+    it('does not send message to bug reporter known country code', async () => {
+      wrapper = mountWith([countryList[0], countryList[1]], new RendererCommunication(fakeMessageBus), bugReporterMock)
+      expect(bugReporterMock.infoMessages).to.have.lengthOf(0)
+    })
+  })
 
   describe('when getting list of proposals', () => {
-    beforeEach(() => {
-      wrapper = mountWith(new RendererCommunication(fakeMessageBus))
+    let bugReporterMock
+
+    beforeEach(async () => {
+      bugReporterMock = new BugReporterMock()
+      wrapper = mountWith(countryList, new RendererCommunication(fakeMessageBus), bugReporterMock)
       fakeMessageBus.clean()
     })
 
     it('renders a list item for each proposal', async () => {
-      expect(wrapper.vm.countryList).to.have.lengthOf(4)
-      expect(wrapper.findAll('.multiselect__option-title')).to.have.lengthOf(4)
-      expect(wrapper.text()).to.contain('Lithuania (0x1)')
-      expect(wrapper.text()).to.contain('United Kingdom (0x2)')
-      expect(wrapper.text()).to.contain('N/A (0x3)')
-      expect(wrapper.text()).to.contain('N/A (0x4)')
+      expect(wrapper.vm.countryList).to.have.lengthOf(5)
+
+      const multiselectOptions = wrapper.findAll('.multiselect__option-title')
+      expect(multiselectOptions).to.have.lengthOf(5)
+
+      const flags = wrapper.findAll('.multiselect__flag-svg')
+      expect(flags.wrappers).to.have.lengthOf(5)
+
+      // country code is known
+      expect(multiselectOptions.wrappers[0].text()).to.contain('Lithuania (0x1)')
+      expect(flags.wrappers[0].element.src).to.contain('/lt.svg')
+
+      // country code is known
+      expect(multiselectOptions.wrappers[1].text()).to.contain('United Kingdom (0x2)')
+      expect(flags.wrappers[1].element.src).to.contain('/gb.svg')
+
+      // country code is not defined
+      expect(multiselectOptions.wrappers[2].text()).to.contain('N/A un.. (0x3)')
+      expect(flags.wrappers[2].element.src).to.contain('/world.svg')
+
+      // country code is not resolved
+      expect(multiselectOptions.wrappers[3].text()).to.contain('N/A un.. (0x4)')
+      expect(flags.wrappers[3].element.src).to.contain('/world.svg')
     })
 
     it('clicking an item changes v-model', async () => {
@@ -101,7 +153,7 @@ describe('CountrySelect', () => {
 
   describe('selectedCountryLabel()', () => {
     beforeEach(() => {
-      wrapper = mountWith(new RendererCommunication(fakeMessageBus))
+      wrapper = mountWith([], new RendererCommunication(fakeMessageBus))
       fakeMessageBus.clean()
     })
 
@@ -125,6 +177,11 @@ describe('CountrySelect', () => {
 
       const label = wrapper.vm.selectedCountryLabel(country)
       expect(label).to.be.eql('Lithuania (0x1234567..)')
+    })
+
+    it('cleans all message bus callbacks after being destroyed', async () => {
+      wrapper.destroy()
+      expect(fakeMessageBus.noRemainingCallbacks()).to.be.true
     })
   })
 })

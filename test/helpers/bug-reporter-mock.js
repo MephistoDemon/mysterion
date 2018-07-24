@@ -20,20 +20,42 @@
 import type { BugReporter } from '../../src/app/bug-reporting/interface'
 import IdentityDTO from '../../src/libraries/mysterium-tequilapi/dto/identity'
 
+type ErrorCapture = {
+  error: Error,
+  context: any
+}
+
+type StringCapture = {
+  message: string,
+  context: any
+}
+
 class BugReporterMock implements BugReporter {
+  identity: IdentityDTO
+
+  errorMessages: Array<StringCapture> = []
+  infoMessages: Array<StringCapture> = []
+  errorExceptions: Array<ErrorCapture> = []
+  infoExceptions: Array<ErrorCapture> = []
+
   setUser (identity: IdentityDTO): void {
+    this.identity = identity
   }
 
   captureErrorMessage (_message: string, _context?: any): void {
+    this.errorMessages.push({ message: _message, context: _context })
   }
 
   captureInfoMessage (_message: string, _context?: any): void {
+    this.infoMessages.push({ message: _message, context: _context })
   }
 
   captureErrorException (_err: Error, _context?: any): void {
+    this.errorExceptions.push({ error: _err, context: _context })
   }
 
   captureInfoException (_err: Error, _context?: any): void {
+    this.infoExceptions.push({ error: _err, context: _context })
   }
 }
 

@@ -15,16 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Vue from 'vue'
+// @flow
+
 import Vuex from 'vuex'
 import ConnectionButton from '../../../../src/renderer/components/ConnectionButton'
 import type from '../../../../src/renderer/store/types'
 import ConnectionStatusEnum from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
 import {state, mutations, getters} from '@/store/modules/connection'
-
-Vue.use(Vuex)
+import {createLocalVue, mount} from '@vue/test-utils'
+import { describe, expect, it } from '../../../helpers/dependencies'
 
 const mountWithStore = function () {
+  const localVue = createLocalVue()
+  localVue.use(Vuex)
+
   const store = new Vuex.Store({
     modules: {
       identity: {
@@ -55,36 +59,37 @@ const mountWithStore = function () {
     }
   })
 
-  const Constructor = Vue.extend(ConnectionButton)
-  const vm = new Constructor({store,
+  return mount(ConnectionButton, {
+    localVue: localVue,
+    store,
     propsData: {
       providerId: 'dummy'
     }
   })
-
-  return vm.$mount()
 }
 
 describe('ConnectionButton', () => {
   it('renders button text based on state', async () => {
-    let rules = [
+    const rules = [
       ['NotConnected', 'Connect'],
       ['Connected', 'Disconnect'],
       ['Connecting', 'Cancel'],
       ['Disconnecting', 'Disconnecting']
     ]
-    const vm = mountWithStore()
-    for (let index in rules) {
-      vm.$store.commit(type.SET_CONNECTION_STATUS, rules[index][0])
+    const wrapper = mountWithStore()
+    const vm = wrapper.vm
+    for (let rule of rules) {
+      vm.$store.commit(type.SET_CONNECTION_STATUS, rule[0])
       vm._watcher.run()
-      expect(vm.$el.textContent).to.eql(rules[index][1])
+      expect(vm.$el.textContent).to.eql(rule[1])
     }
     // reset store
     vm.$store.commit(type.SET_CONNECTION_STATUS, ConnectionStatusEnum.NOT_CONNECTED)
   })
 
   it('clicks change state', () => {
-    const vm = mountWithStore()
+    const wrapper = mountWithStore()
+    const vm = wrapper.vm
 
     const clickEvent = new window.Event('click')
     const button = vm.$el.querySelector('.control__action')

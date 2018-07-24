@@ -22,33 +22,26 @@ import FakeMessageBus from '../../../helpers/fake-message-bus'
 import DisconnectNotificationSetting from '@/components/DisconnectNotificationSetting'
 
 // TODO: extract this out to DRY with other occurances
-function mountWith (rendererCommunication, store) {
+function mountWith (rendererCommunication) {
   const vue = createLocalVue()
 
   const dependencies = new DIContainer(vue)
   dependencies.constant('rendererCommunication', rendererCommunication)
 
   return mount(DisconnectNotificationSetting, {
-    localVue: vue,
-    store
+    localVue: vue
   })
 }
 
 describe('DisconnectNotificationSetting', () => {
-  let wrapper
+  it('cleans all message bus callbacks after being destroyed', async () => {
+    const fakeMessageBus = new FakeMessageBus()
 
-  const fakeMessageBus = new FakeMessageBus()
+    const communication = new RendererCommunication(fakeMessageBus)
 
-  describe('when getting list of proposals', () => {
-    beforeEach(() => {
-      const communication = new RendererCommunication(fakeMessageBus)
-      wrapper = mountWith(communication)
-      fakeMessageBus.clean()
-    })
-
-    it('cleans all message bus callbacks after being destroyed', async () => {
-      wrapper.destroy()
-      expect(fakeMessageBus.noRemainingCallbacks()).to.be.true
-    })
+    const wrapper = mountWith(communication)
+    fakeMessageBus.clean()
+    wrapper.destroy()
+    expect(fakeMessageBus.noRemainingCallbacks()).to.be.true
   })
 })

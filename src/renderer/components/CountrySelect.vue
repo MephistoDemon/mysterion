@@ -49,6 +49,7 @@
           v-text="countryLabel(props.option)"/>
       </template>
     </multiselect>
+
     <i class="countries__flag dropdown-image">
       <img
         :src="imagePath(country.code)"
@@ -63,9 +64,10 @@
 
 <script>
 import path from 'path'
-import { getCountryLabel } from '../../app/countries'
+import { getCountryLabel, isCountryUnresolved } from '../../app/countries'
 import Multiselect from 'vue-multiselect'
 import IconWorld from '@/assets/img/icon--world.svg'
+
 export default {
   name: 'CountrySelect',
   dependencies: ['rendererCommunication', 'bugReporter'],
@@ -90,7 +92,8 @@ export default {
   },
   data () {
     return {
-      country: null
+      country: null,
+      unresolvedCountryList: []
     }
   },
   methods: {
@@ -112,20 +115,28 @@ export default {
       return getCountryLabel(country)
     },
     imagePath (code) {
-      if (!code) {
+      if (!isCountryUnresolved(code)) {
+        if (this.unresolvedCountryList.indexOf(code) < 0) {
+          this.unresolvedCountryList.push(code)
+          this.bugReporter.captureInfoMessage('Country not found, code: ' + code)
+        }
         code = 'world'
       }
 
       return path.join('static', 'flags', code.toLowerCase() + '.svg')
-    }
-  },
-  mounted () {
-    this.rendererCommunication.onConnectionRequest((proposal) => {
+    },
+    onConnectionRequest (proposal) {
       const selectedCountry = this.countryList.find((country) => country.id === proposal.providerId)
 
       this.country = selectedCountry
       this.$emit('selected', selectedCountry)
-    })
+    }
+  },
+  mounted () {
+    this.rendererCommunication.onConnectionRequest(this.onConnectionRequest)
+  },
+  beforeDestroy () {
+    this.rendererCommunication.removeConnectionRequestCallback(this.onConnectionRequest)
   }
 }
 </script>

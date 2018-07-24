@@ -18,13 +18,15 @@
 import {createLocalVue, mount} from '@vue/test-utils'
 import { beforeEach } from '../../../helpers/dependencies'
 import Vpn from '../../../../src/renderer/pages/Vpn'
-import {Store} from 'vuex'
+import Vuex, {Store} from 'vuex'
 import DIContainer from '../../../../src/app/di/vue-container'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import messages from '../../../../src/app/communication/messages'
 import type from '@/store/types'
 import FakeMessageBus from '../../../helpers/fake-message-bus'
 import translations from '@/../app/messages'
+import Vue from 'vue'
+Vue.use(Vuex)
 
 const bugReporterMock = {
   captureErrorException: () => {}
@@ -41,9 +43,11 @@ describe('Vpn page', () => {
     dependencies.constant('rendererCommunication', new RendererCommunication(fakeMessageBus))
     dependencies.constant('bugReporter', bugReporterMock)
 
+    // eslint-disable-next-line
+    console.log(store.getters)
     return mount(Vpn, {
       localVue: vue,
-      store
+      store: store
     })
   }
 
@@ -92,8 +96,6 @@ describe('Vpn page', () => {
       vpnWrapper.vm.fetchCountries()
       await vpnWrapper.vm.$nextTick()
 
-      // eslint-disable-next-line
-      console.log(vpnWrapper.vm.$store.state)
       expect(vpnWrapper.vm.$store.state.errorMessage).to.eql(translations.countryListIsEmpty)
     })
   })

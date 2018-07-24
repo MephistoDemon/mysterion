@@ -116,7 +116,7 @@ export default {
   methods: {
     ...mapMutations({ hideErr: type.HIDE_ERROR }),
     setCountry (data) { this.country = data },
-    async fetchCountries () {
+    fetchCountries () {
       this.countriesAreLoading = true
       this.rendererCommunication.sendProposalUpdateRequest()
     },
@@ -125,10 +125,8 @@ export default {
       this.countryList.find((c) => c.id === this.country.id).isFavorite = this.country.isFavorite
 
       this.rendererCommunication.sendToggleFavoriteProvider({id: this.country.id, isFavorite: this.country.isFavorite})
-    }
-  },
-  async mounted () {
-    this.rendererCommunication.onCountriesUpdate((countries) => {
+    },
+    onCountriesUpdate (countries) {
       this.countriesAreLoading = false
 
       if (countries.length < 1) {
@@ -140,9 +138,15 @@ export default {
       }
 
       this.countryList = countries
-    })
+    }
+  },
+  async mounted () {
+    this.rendererCommunication.onCountriesUpdate(this.onCountriesUpdate)
     this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.CONNECTION_IP, config.ipUpdateThreshold))
     this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.FETCH_CONNECTION_STATUS, config.statusUpdateThreshold))
+  },
+  beforeDestroy () {
+    this.rendererCommunication.removeCountriesUpdateCallback(this.onProposalUpdate)
   }
 }
 </script>
