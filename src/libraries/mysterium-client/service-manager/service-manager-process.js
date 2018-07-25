@@ -19,12 +19,15 @@
 
 import type { LogCallback, Process } from '../index'
 import type { TequilapiClient } from '../../mysterium-tequilapi/client'
+import ClientLogSubscriber from '../client-log-subscriber'
 
 class ServiceManagerProcess implements Process {
   _tequilapi: TequilapiClient
+  _logs: ClientLogSubscriber
 
-  constructor (tequilapi: TequilapiClient) {
+  constructor (tequilapi: TequilapiClient, logs: ClientLogSubscriber) {
     this._tequilapi = tequilapi
+    this._logs = logs
   }
 
   async start (): Promise<void> {
@@ -38,10 +41,11 @@ class ServiceManagerProcess implements Process {
   }
 
   async setupLogging (): Promise<void> {
-
+    await this._logs.setup()
   }
 
   onLog (level: string, cb: LogCallback): void {
+    this._logs.onLog(level, cb)
   }
 }
 

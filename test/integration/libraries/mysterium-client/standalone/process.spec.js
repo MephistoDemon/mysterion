@@ -41,7 +41,10 @@ xdescribe('Standalone Process', () => {
       dataDir: tmpDirectory,
       runtimeDir: tmpDirectory,
       logDir: tmpDirectory,
-      tequilapiPort: tequilapiPort
+      tequilapiPort: tequilapiPort,
+      stdErrFileName: 'stderr.log',
+      stdOutFileName: 'stdout.log',
+      systemLogPath: '/tmp/logs/system.log'
     })
     process.start()
     process.onLog(processLogLevels.INFO, data => logs.push(data))

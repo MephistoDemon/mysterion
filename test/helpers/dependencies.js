@@ -27,10 +27,11 @@ declare var describe: Function
 declare var xdescribe: Function
 declare var before: Function
 declare var beforeEach: Function
+declare var afterEach: Function
 declare var after: Function
 declare var it: Function
 
 // chai
 declare var expect: Function
 
-export { describe, xdescribe, before, beforeEach, after, it, expect }
+export { describe, xdescribe, before, beforeEach, afterEach, after, it, expect }

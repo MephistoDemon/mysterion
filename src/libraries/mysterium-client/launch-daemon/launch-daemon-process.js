@@ -17,23 +17,10 @@
 
 // @flow
 
-import { Tail } from 'tail'
-import path from 'path'
 import type { TequilapiClient } from '../../mysterium-tequilapi/client'
 import type { LogCallback, Process } from '../index'
-import processLogLevels from '../log-levels'
-import { INVERSE_DOMAIN_PACKAGE_NAME } from './config'
 import axios from 'axios'
-import createFileIfMissing from '../../create-file-if-missing'
-import { prependWithFn, getCurrentTimeISOFormat } from '../../strings'
-
-const SYSTEM_LOG = '/var/log/system.log'
-const stdoutFileName = 'stdout.log'
-const stderrFileName = 'stderr.log'
-
-type Subscribers = {
-  [processLogLevels.INFO | processLogLevels.ERROR]: Array<LogCallback>,
-}
+import ClientLogSubscriber from '../client-log-subscriber'
 
 /**
  * Spawns and stops 'mysterium_client' daemon on OSX
@@ -41,25 +28,18 @@ type Subscribers = {
 class LaunchDaemonProcess implements Process {
   _tequilapi: TequilapiClient
   _daemonPort: number
-  _stdoutPath: string
-  _stderrPath: string
-  _subscribers: Subscribers
+  _logs: ClientLogSubscriber
 
   /**
    * @constructor
    * @param {TequilapiClient} tequilapi - api to be used
    * @param {string} daemonPort - port at which the daemon is spawned
-   * @param {string} logDirectory - directory where it's looking for logs
+   * @param {ClientLogSubscriber} logs
    */
-  constructor (tequilapi: TequilapiClient, daemonPort: number, logDirectory: string) {
+  constructor (tequilapi: TequilapiClient, logs: ClientLogSubscriber, daemonPort: number) {
     this._tequilapi = tequilapi
+    this._logs = logs
     this._daemonPort = daemonPort
-    this._stdoutPath = path.join(logDirectory, stdoutFileName)
-    this._stderrPath = path.join(logDirectory, stderrFileName)
-    this._subscribers = {
-      [processLogLevels.INFO]: [],
-      [processLogLevels.ERROR]: []
-    }
   }
 
   async start (): Promise<void> {
@@ -71,37 +51,11 @@ class LaunchDaemonProcess implements Process {
   }
 
   async setupLogging (): Promise<void> {
-    await this._prepareLogFiles()
-
-    const notifyOnErrorSubscribers = this._notifySubscribersWithLog.bind(this, processLogLevels.ERROR)
-
-    tailFile(this._stdoutPath, this._notifySubscribersWithLog.bind(this, processLogLevels.INFO))
-    tailFile(this._stderrPath, (data) => {
-      notifyOnErrorSubscribers(prependWithCurrentTime(prependWithSpace(data)))
-    })
-
-    tailFile(SYSTEM_LOG, (data) => {
-      if (data.includes(INVERSE_DOMAIN_PACKAGE_NAME)) notifyOnErrorSubscribers(data)
-    })
+    await this._logs.setup()
   }
 
   onLog (level: string, cb: LogCallback): void {
-    if (!this._subscribers[level]) {
-      throw new Error(`Unknown process logging level: ${level}`)
-    }
-
-    this._subscribers[level].push(cb)
-  }
-
-  _notifySubscribersWithLog (level: string, data: mixed): void {
-    for (let sub of this._subscribers[level]) {
-      sub(data)
-    }
-  }
-
-  async _prepareLogFiles (): Promise<void> {
-    await createFileIfMissing(this._stdoutPath)
-    await createFileIfMissing(this._stderrPath)
+    this._logs.onLog(level, cb)
   }
 
   async _spawnOsXLaunchDaemon (): Promise<void> {
@@ -113,18 +67,5 @@ class LaunchDaemonProcess implements Process {
     }
   }
 }
-
-function tailFile (filePath: string, cb: LogCallback): void {
-  const logTail = new Tail(filePath)
-  logTail.on('line', cb)
-  logTail.on('error', () => {
-    // TODO: fix no-console logging in libs
-    // eslint-disable-next-line
-    console.error(`log file watching failed. file probably doesn't exist: ${filePath}`)
-  })
-}
-
-const prependWithCurrentTime = prependWithFn(getCurrentTimeISOFormat)
-const prependWithSpace = prependWithFn(() => ` `)
 
 export default LaunchDaemonProcess

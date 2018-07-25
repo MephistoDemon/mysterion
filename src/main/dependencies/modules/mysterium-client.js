@@ -18,10 +18,17 @@
 // @flow
 import os from 'os'
 import path from 'path'
+import { Tail } from 'tail'
 
 import type { Container } from '../../../app/di'
 import type { MysterionConfig } from '../../../app/mysterionConfig'
+import type { LogCallback } from '../../../libraries/mysterium-client'
+import type { TailFunction } from '../../../libraries/mysterium-client/client-log-subscriber'
+import type { ClientConfig } from '../../../libraries/mysterium-client/config'
+import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
+
 import { Monitoring } from '../../../libraries/mysterium-client'
+import ClientLogSubscriber from '../../../libraries/mysterium-client/client-log-subscriber'
 
 import LaunchDaemonInstaller from '../../../libraries/mysterium-client/launch-daemon/launch-daemon-installer'
 import LaunchDaemonProcess from '../../../libraries/mysterium-client/launch-daemon/launch-daemon-process'
@@ -32,8 +39,6 @@ import StandaloneClientProcess from '../../../libraries/mysterium-client/standal
 import ServiceManagerInstaller from '../../../libraries/mysterium-client/service-manager/service-manager-installer'
 import ServiceManagerProcess from '../../../libraries/mysterium-client/service-manager/service-manager-process'
 
-import type { ClientConfig } from '../../../libraries/mysterium-client/config'
-import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import { LAUNCH_DAEMON_PORT } from '../../../libraries/mysterium-client/launch-daemon/config'
 import OSSystem from '../../../libraries/mysterium-client/system'
 
@@ -62,6 +67,9 @@ function bootstrap (container: Container) {
         dataDir: mysterionConfig.userDataDirectory,
         runtimeDir: mysterionConfig.runtimeDirectory,
         logDir: mysterionConfig.userDataDirectory,
+        stdOutFileName: 'stdout.log',
+        stdErrFileName: 'stderr.log',
+        systemLogPath: '/var/log/system.log',
         tequilapiPort: 4050
       }
     }
@@ -80,20 +88,49 @@ function bootstrap (container: Container) {
       }
     }
   )
+
+  container.service(
+    'mysteriumClient.tailFunction', [], () => {
+      return (file: string, logCallback: LogCallback) => {
+        const logTail = new Tail(file)
+        logTail.on('line', logCallback)
+        logTail.on('error', () => {
+          // eslint-disable-next-line
+          console.error(`log file watching failed. file probably doesn't exist: ${file}`)
+        })
+      }
+    }
+  )
+
+  container.service(
+    'mysteriumClient.logSubscriber',
+    ['mysteriumClient.config', 'mysteriumClient.tailFunction'],
+    (config: ClientConfig, tailFunction: TailFunction) => {
+      return new ClientLogSubscriber(
+        path.join(config.logDir, config.stdOutFileName),
+        path.join(config.logDir, config.stdErrFileName),
+        config.systemLogPath,
+        () => new Date(),
+        tailFunction
+      )
+    }
+  )
+
   container.service(
     'mysteriumClientProcess',
-    ['tequilapiClient', 'mysteriumClient.config', 'mysteriumClient.platform'],
-    (tequilapiClient: TequilapiClient, config: ClientConfig, platform: string) => {
+    ['tequilapiClient', 'mysteriumClient.config', 'mysteriumClient.logSubscriber', 'mysteriumClient.platform'],
+    (tequilapiClient: TequilapiClient, config: ClientConfig, logSubscriber: ClientLogSubscriber, platform: string) => {
       switch (platform) {
         case OSX:
-          return new LaunchDaemonProcess(tequilapiClient, LAUNCH_DAEMON_PORT, config.logDir)
+          return new LaunchDaemonProcess(tequilapiClient, logSubscriber, LAUNCH_DAEMON_PORT)
         case WINDOWS:
-          return new ServiceManagerProcess(tequilapiClient)
+          return new ServiceManagerProcess(tequilapiClient, logSubscriber)
         default:
           return new StandaloneClientProcess(config)
       }
     }
   )
+
   container.service(
     'mysteriumClientMonitoring',
     ['tequilapiClient'],
