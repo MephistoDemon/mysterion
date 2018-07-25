@@ -33,8 +33,8 @@ class LaunchDaemonProcess implements Process {
   /**
    * @constructor
    * @param {TequilapiClient} tequilapi - api to be used
-   * @param {string} daemonPort - port at which the daemon is spawned
    * @param {ClientLogSubscriber} logs
+   * @param {string} daemonPort - port at which the daemon is spawned
    */
   constructor (tequilapi: TequilapiClient, logs: ClientLogSubscriber, daemonPort: number) {
     this._tequilapi = tequilapi
