@@ -16,12 +16,12 @@
  */
 
 // @flow
-import {UserSettingsStore} from '../../../src/app/user-settings/user-settings-store'
-import {describe, expect, it, after, before} from '../../helpers/dependencies'
-import {tmpdir} from 'os'
-import {join} from 'path'
-import {readFileSync, writeFileSync, unlinkSync} from 'fs'
-import {capturePromiseError} from '../../helpers/utils'
+import { UserSettingsStore } from '../../../src/app/user-settings/user-settings-store'
+import { describe, expect, it, after, before, beforeEach } from '../../helpers/dependencies'
+import { tmpdir } from 'os'
+import { join } from 'path'
+import { readFileSync, writeFileSync, unlinkSync } from 'fs'
+import { CallbackRecorder, capturePromiseError } from '../../helpers/utils'
 
 describe('UserSettingsStore', () => {
   describe('save()', () => {
@@ -89,6 +89,59 @@ describe('UserSettingsStore', () => {
       const userSettingsStore = new UserSettingsStore(invalidJsonPath)
       const error = await capturePromiseError(userSettingsStore.load())
       expect(error).to.be.instanceOf(TypeError)
+    })
+  })
+
+  describe('changing settings', () => {
+    let userSettingsStore
+
+    beforeEach(() => {
+      userSettingsStore = new UserSettingsStore('')
+    })
+
+    describe('setAll', () => {
+      const cbRecDisconnect = new CallbackRecorder()
+      const cbRecFavorites = new CallbackRecorder()
+
+      it('notifies all changed setting subscribers', () => {
+        userSettingsStore.onChange('showDisconnectNotifications', cbRecDisconnect.getCallback())
+        userSettingsStore.onChange('favoriteProviders', cbRecFavorites.getCallback())
+        userSettingsStore.setAll({showDisconnectNotifications: false, favoriteProviders: new Set(['id_123'])})
+        expect(cbRecDisconnect.firstArgument).to.be.false
+        expect(cbRecFavorites.firstArgument.has('id_123')).to.be.true
+      })
+    })
+
+    describe('setShowDisconnectNotifications', async () => {
+      it('sets showDisconnectNotification', () => {
+        userSettingsStore.setShowDisconnectNotifications(false)
+        expect(userSettingsStore.getAll().showDisconnectNotifications).to.be.false
+      })
+
+      it('notifies subscribers on favorite add', () => {
+        const cbRec = new CallbackRecorder()
+
+        userSettingsStore.onChange('showDisconnectNotifications', cbRec.getCallback())
+        userSettingsStore.setShowDisconnectNotifications(false)
+        expect(cbRec.invoked).to.be.true
+        expect(cbRec.firstArgument).to.be.false
+      })
+    })
+
+    describe('setFavorite', async () => {
+      it('adds favoriteId to settings store', () => {
+        userSettingsStore.setFavorite({id: '0xfax', isFavorite: true})
+        expect(userSettingsStore.getAll().favoriteProviders.has('0xfax')).to.eql(true)
+      })
+
+      it('notifies subscribers on favorite add', () => {
+        const cbRec = new CallbackRecorder()
+
+        userSettingsStore.onChange('favoriteProviders', cbRec.getCallback())
+        userSettingsStore.setFavorite({id: '0xfax', isFavorite: true})
+        expect(cbRec.invoked).to.be.true
+        expect(cbRec.firstArgument.has('0xfax')).to.be.true
+      })
     })
   })
 })
