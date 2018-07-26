@@ -25,7 +25,7 @@ import { UserSettingsStore } from '../user-settings/user-settings-store'
 import type { FavoriteProviders } from '../user-settings/user-settings'
 import type { ProposalFetcher } from './proposal-fetcher'
 
-class CountryListNotifier {
+class CountryList {
   _proposalFetcher: ProposalFetcher
   _userSettingsStore: UserSettingsStore
   _listeners: Subscriber<Array<Country>> = new Subscriber()
@@ -63,4 +63,4 @@ class CountryListNotifier {
   }
 }
 
-export default CountryListNotifier
+export default CountryList

@@ -20,7 +20,7 @@ import type { ProposalFetcher } from '../../../../src/app/data-fetchers/proposal
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import type { Callback } from '../../../../src/libraries/subscriber'
 import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
-import CountryListNotifier from '../../../../src/app/data-fetchers/country-list-notifier'
+import CountryList from '../../../../src/app/data-fetchers/country-list'
 import { UserSettingsStore } from '../../../../src/app/user-settings/user-settings-store'
 import { CallbackRecorder } from '../../../helpers/utils'
 
@@ -42,7 +42,7 @@ class ProposalFetcherMock implements ProposalFetcher {
   }
 }
 
-describe.only('CountryListNotifier', () => {
+describe('CountryListNotifier', () => {
   let countryListNotifier
   const proposalFetcher = new ProposalFetcherMock()
   const store = new UserSettingsStore('')
@@ -58,7 +58,7 @@ describe.only('CountryListNotifier', () => {
   })]
 
   beforeEach(() => {
-    countryListNotifier = new CountryListNotifier(proposalFetcher, store)
+    countryListNotifier = new CountryList(proposalFetcher, store)
   })
 
   it('notifies subscribers with Country each time proposals arrive', () => {

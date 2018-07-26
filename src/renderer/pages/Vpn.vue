@@ -38,7 +38,7 @@
             @selected="setCountry"
             style="max-width:25rem"
             :class="{'is-disabled': statusCode!==-1}"/>
-          <favourite-button
+          <favorite-button
             :country="country"
             :toggle-favorite="toggleFavorite"/>
         </div>
@@ -75,12 +75,12 @@ import ConnectionButton from '../components/ConnectionButton'
 import AppError from '../partials/AppError'
 import config from '../config'
 import {ActionLooperConfig} from '../store/modules/connection'
-import FavouriteButton from '../components/FavouriteButton'
+import FavoriteButton from '../components/favorite-button'
 import messages from '@/../app/messages'
 export default {
   name: 'Main',
   components: {
-    FavouriteButton,
+    FavoriteButton,
     CountrySelect,
     ConnectionButton,
     StatsDisplay,
@@ -121,6 +121,7 @@ export default {
       this.rendererCommunication.sendProposalUpdateRequest()
     },
     async toggleFavorite () {
+      if (!this.country) return
       this.country = {...this.country, isFavorite: !this.country.isFavorite}
       this.countryList.find((c) => c.id === this.country.id).isFavorite = this.country.isFavorite
 

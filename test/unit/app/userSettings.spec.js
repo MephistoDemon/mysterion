@@ -76,7 +76,7 @@ describe('UserSettingsStore', () => {
       const userSettingsStore = new UserSettingsStore(loadSettingsPath)
       await userSettingsStore.load()
       expect(userSettingsStore.getAll().showDisconnectNotifications).to.be.eql(false)
-      expect(userSettingsStore.getAll().favoriteProviders).to.be.eql(['id_123'])
+      expect(userSettingsStore.getAll().favoriteProviders).to.be.eql(new Set(['id_123']))
     })
 
     it('falls back to default settings when invalid path to settings.json file is given', async () => {

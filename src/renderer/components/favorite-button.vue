@@ -29,13 +29,13 @@
 <script>
 
 export default {
-  name: 'FavouriteButton',
+  name: 'FavoriteButton',
   computed: {
     buttonText () { return this.country && this.country.isFavorite ? '★' : '☆' }
   },
   props: {
     country: {
-      type: [Object, null],
+      type: [Object],
       default: () => { return {isFavorite: false} }
     },
     toggleFavorite: {

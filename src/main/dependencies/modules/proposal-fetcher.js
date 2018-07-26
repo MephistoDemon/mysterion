@@ -20,7 +20,7 @@
 import TequilapiProposalFetcher from '../../../app/data-fetchers/tequilapi-proposal-fetcher'
 import type {Container} from '../../../app/di'
 import { UserSettingsStore } from '../../../app/user-settings/user-settings-store'
-import CountryListNotifier from '../../../app/data-fetchers/country-list-notifier'
+import CountryList from '../../../app/data-fetchers/country-list'
 
 function bootstrap (container: Container) {
   container.constant(
@@ -38,10 +38,10 @@ function bootstrap (container: Container) {
   )
 
   container.factory(
-    'countryListNotifier',
+    'countryList',
     ['proposalFetcher', 'userSettingsStore'],
     (proposalFetcher: TequilapiProposalFetcher, userSettingsStore: UserSettingsStore) => {
-      return new CountryListNotifier(proposalFetcher, userSettingsStore)
+      return new CountryList(proposalFetcher, userSettingsStore)
     }
   )
 }

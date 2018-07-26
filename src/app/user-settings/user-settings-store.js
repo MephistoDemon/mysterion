@@ -25,11 +25,6 @@ import type { Callback } from '../../libraries/subscriber'
 const readFileAsync = promisify(readFile)
 const writeFileAsync = promisify(writeFile)
 
-const defaultSettings: UserSettings = {
-  showDisconnectNotifications: true,
-  favoriteProviders: new Set()
-}
-
 const userStoreSettingString = {
   showDisconnectNotifications: 'showDisconnectNotifications',
   favoriteProviders: 'favoriteProviders'
@@ -40,7 +35,10 @@ export type FavoriteProviderToggle = { id: string, isFavorite: boolean }
 type UserStoreSetting = $Values<typeof userStoreSettingString>
 
 class UserSettingsStore {
-  _settings: UserSettings = defaultSettings
+  _settings: UserSettings = {
+    showDisconnectNotifications: true,
+    favoriteProviders: new Set()
+  }
   _path: string
 
   _listeners: {
@@ -56,14 +54,17 @@ class UserSettingsStore {
   }
 
   async load (): Promise<void> {
+    let parsed
     try {
-      this._settings = await loadSettings(this._path)
+      parsed = await loadSettings(this._path)
     } catch (e) {
       if (isFileNotExistError(e)) {
         return
       }
       throw e
     }
+    this._settings.favoriteProviders = new Set(parsed.favoriteProviders)
+    this._settings.showDisconnectNotifications = parsed.showDisconnectNotifications
     this._notify(userStoreSettingString.favoriteProviders)
     this._notify(userStoreSettingString.showDisconnectNotifications)
   }

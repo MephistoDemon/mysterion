@@ -126,7 +126,7 @@ describe('tray', () => {
       })
     })
 
-    describe('.setProposals', () => {
+    describe('.setCountries', () => {
       it('calls updateCountries and setContextMenu', () => {
         let calledUpdateCountries = false
         let calledSetContextMenu = false

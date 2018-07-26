@@ -33,7 +33,7 @@ import Window from './window'
 import Terms from './terms'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
 import TequilapiProposalFetcher from './data-fetchers/tequilapi-proposal-fetcher'
-import CountryListNotifier from './data-fetchers/country-list-notifier'
+import CountryList from './data-fetchers/country-list'
 import type { BugReporter } from './bug-reporting/interface'
 import { UserSettingsStore } from './user-settings/user-settings-store'
 import Notification from './notification'
@@ -60,7 +60,7 @@ type MysterionParams = {
   monitoring: ProcessMonitoring,
   process: Process,
   proposalFetcher: TequilapiProposalFetcher,
-  countryListNotifier: CountryListNotifier,
+  countryList: CountryList,
   bugReporter: BugReporter,
   environmentCollector: EnvironmentCollector,
   bugReporterMetrics: BugReporterMetrics,
@@ -84,7 +84,7 @@ class Mysterion {
   monitoring: ProcessMonitoring
   process: Process
   proposalFetcher: TequilapiProposalFetcher
-  countryListNotifier: CountryListNotifier
+  countryList: CountryList
   bugReporter: BugReporter
   environmentCollector: EnvironmentCollector
   bugReporterMetrics: BugReporterMetrics
@@ -107,7 +107,7 @@ class Mysterion {
     this.monitoring = params.monitoring
     this.process = params.process
     this.proposalFetcher = params.proposalFetcher
-    this.countryListNotifier = params.countryListNotifier
+    this.countryList = params.countryList
     this.bugReporter = params.bugReporter
     this.environmentCollector = params.environmentCollector
     this.bugReporterMetrics = params.bugReporterMetrics
@@ -415,8 +415,7 @@ class Mysterion {
   }
 
   _subscribeProposals () {
-    // this.proposalFetcher.onFetchedProposals((proposals) => this.communication.sendProposals(proposals))
-    this.countryListNotifier.onUpdate((countries) => this.communication.sendCountries(countries))
+    this.countryList.onUpdate((countries) => this.communication.sendCountries(countries))
     this.communication.onProposalUpdateRequest(() => {
       this.proposalFetcher.fetch()
     })
@@ -438,7 +437,7 @@ class Mysterion {
     logInfo('Building tray')
     trayFactory(
       this.communication,
-      this.countryListNotifier,
+      this.countryList,
       this.window,
       path.join(this.config.staticDirectory, 'icons')
     )

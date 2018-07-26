@@ -22,11 +22,11 @@ import Window from '../../app/window'
 import TrayMenuBuilder from './menu-builder'
 import Tray from './tray'
 import type { ConnectionStatusChangeDTO } from '../../app/communication/dto'
-import CountryListNotifier from '../../app/data-fetchers/country-list-notifier'
+import CountryList from '../../app/data-fetchers/country-list'
 
 const trayFactory = (
   communication: MainCommunication,
-  countryListNotifier: CountryListNotifier,
+  countryList: CountryList,
   window: Window,
   iconPath: string
 ) => {
@@ -49,7 +49,7 @@ const trayFactory = (
   tray.build()
 
   communication.onConnectionStatusChange((change: ConnectionStatusChangeDTO) => tray.setStatus(change.newStatus))
-  countryListNotifier.onUpdate(countries => tray.setCountries(countries))
+  countryList.onUpdate(countries => tray.setCountries(countries))
 }
 
 export default trayFactory
