@@ -82,13 +82,13 @@ function bootstrap (container: Container) {
   )
   container.service(
     'mysteriumClientProcess',
-    ['tequilapiClient', 'mysteriumClient.config', 'mysteriumClient.platform'],
-    (tequilapiClient: TequilapiClient, config: ClientConfig, platform: string) => {
+    ['tequilapiClient', 'mysteriumClient.config', 'mysteriumClient.platform', 'mysterionApplication.config'],
+    (tequilapiClient: TequilapiClient, config: ClientConfig, platform: string, mysterionConfig: MysterionConfig) => {
       switch (platform) {
         case OSX:
           return new LaunchDaemonProcess(tequilapiClient, LAUNCH_DAEMON_PORT, config.logDir)
         case WINDOWS:
-          return new ServiceManagerProcess(tequilapiClient)
+          return new ServiceManagerProcess(tequilapiClient, path.join(mysterionConfig.contentsDirectory, 'bin'), new OSSystem())
         default:
           return new StandaloneClientProcess(config)
       }

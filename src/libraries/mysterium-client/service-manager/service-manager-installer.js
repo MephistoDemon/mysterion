@@ -141,7 +141,7 @@ class ServiceManagerInstaller implements Installer {
 
   async _installService () {
     const serviceManagerPath = path.join(this._serviceManagerDir, SERVICE_MANAGER_BIN)
-    const command = `${serviceManagerPath} --do=install && ${serviceManagerPath} --do=start`
+    const command = `${serviceManagerPath} --do=install`
 
     await this._system.sudoExec(command)
   }
@@ -175,4 +175,5 @@ class ServiceManagerInstaller implements Installer {
   }
 }
 
+export {SERVICE_MANAGER_BIN, SERVICE_NAME}
 export default ServiceManagerInstaller

@@ -17,18 +17,79 @@
 
 // @flow
 
+import path from 'path'
+import logger from '../../../app/logger'
 import type { LogCallback, Process } from '../index'
 import type { TequilapiClient } from '../../mysterium-tequilapi/client'
+import type { System } from '../system'
+import { SERVICE_MANAGER_BIN, SERVICE_NAME } from './service-manager-installer'
+import sleep from '../../sleep'
+
+/***
+ * Time in milliseconds requires to fully activate Mysterium client
+ * @type {number}
+ */
+const SERVICE_INIT_TIME = 8000
+
+const SERVICE_STATE = {
+  NOT_INSTALLED: 'NOT_INSTALLED',
+  RUNNING: 'RUNNING',
+  STOPPED: 'STOPPED',
+  START_PENDING: 'START_PENDING',
+  STOP_PENDING: 'STOP_PENDING'
+}
+type ServiceState = $Values<typeof SERVICE_STATE>
 
 class ServiceManagerProcess implements Process {
   _tequilapi: TequilapiClient
+  _serviceManagerDir: string
+  _system: System
+  _startIsRunning: boolean
+  _startingFirstTime: boolean
 
-  constructor (tequilapi: TequilapiClient) {
+  constructor (tequilapi: TequilapiClient, serviceManagerDir: string, system: System) {
     this._tequilapi = tequilapi
+    this._serviceManagerDir = serviceManagerDir
+    this._system = system
+    this._startingFirstTime = true
   }
 
+  get IsStarting () { return this._startIsRunning }
+
   async start (): Promise<void> {
-    // mysterium_client is started automatically by WIN service
+    if (this._startIsRunning) {
+      return
+    }
+    this._startIsRunning = true
+    try {
+      let state = await this._serviceState()
+      logger.info(`Service state: [${state}]`)
+      if (state === SERVICE_STATE.START_PENDING) {
+        return
+      }
+      if (this._startingFirstTime && state === SERVICE_STATE.RUNNING) {
+        return
+      }
+      const serviceManagerPath = path.join(this._serviceManagerDir, SERVICE_MANAGER_BIN)
+      const operation = state === SERVICE_STATE.RUNNING ? 'restart' : 'start'
+      const command = `${serviceManagerPath} --do=${operation}`
+      logger.info('Running command', command)
+      const serviceInfo = await this._system.sudoExec(command)
+      state = this._parseServiceState(serviceInfo)
+
+      // wait until service will be started
+      while (state !== SERVICE_STATE.RUNNING) {
+        state = await this._serviceState()
+      }
+
+      // Wait for client initialization
+      await sleep(SERVICE_INIT_TIME)
+    } catch (e) {
+      throw e
+    } finally {
+      this._startIsRunning = false
+      this._startingFirstTime = false
+    }
   }
 
   async stop (): Promise<void> {
@@ -42,6 +103,34 @@ class ServiceManagerProcess implements Process {
   }
 
   onLog (level: string, cb: LogCallback): void {
+  }
+
+  async _serviceState (): Promise<ServiceState> {
+    let stdout
+    try {
+      stdout = await this._system.userExec(`sc.exe query "${SERVICE_NAME}"`)
+    } catch (e) {
+      logger.info('Service check failed', e.message)
+      return SERVICE_STATE.NOT_INSTALLED
+    }
+    return this._parseServiceState(stdout)
+  }
+
+  _parseServiceState (serviceInfo: string): ServiceState {
+    const isInstalled: boolean = serviceInfo.indexOf(`SERVICE_NAME: ${SERVICE_NAME}`) > -1
+    if (!isInstalled) {
+      return SERVICE_STATE.NOT_INSTALLED
+    }
+
+    let start = serviceInfo.indexOf('STATE')
+    start = serviceInfo.indexOf(':', start)
+    start = serviceInfo.indexOf('  ', start) + 2
+    const length = serviceInfo.indexOf('\r', start) - start - 1
+    const state = serviceInfo.substr(start, length)
+    if (Object.values(SERVICE_STATE).indexOf(state) < 0) {
+      throw new Error('Unknown Windows service state: ' + state)
+    }
+    return (state: ServiceState)
   }
 }
 
