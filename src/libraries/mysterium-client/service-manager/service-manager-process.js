@@ -54,8 +54,6 @@ class ServiceManagerProcess implements Process {
     this._startingFirstTime = true
   }
 
-  get IsStarting () { return this._startIsRunning }
-
   async start (): Promise<void> {
     if (this._startIsRunning) {
       return
