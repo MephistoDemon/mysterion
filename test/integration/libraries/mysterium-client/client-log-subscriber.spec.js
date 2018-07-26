@@ -19,13 +19,15 @@
 
 import type { LogCallback } from '../../../../src/libraries/mysterium-client'
 import logLevels from '../../../../src/libraries/mysterium-client/log-levels'
-import { afterEach, describe, expect, it } from '../../../helpers/dependencies'
+import { afterEach, beforeEach, describe, expect, it } from '../../../helpers/dependencies'
 import ClientLogSubscriber from '../../../../src/libraries/mysterium-client/client-log-subscriber'
 import { existsSync, unlinkSync } from 'fs'
 import path from 'path'
+import { CallbackRecorder } from '../../../helpers/utils'
 
 describe('ClientLogSubscriber', () => {
   let logCallbackParam = ''
+  let subscriber
   const stdout = path.join(process.cwd(), __dirname, 'stdout.log')
   const stderr = path.join(process.cwd(), __dirname, 'stderr.log')
   const dateFunction = () => new Date('2018-01-01')
@@ -33,14 +35,20 @@ describe('ClientLogSubscriber', () => {
     logCallback(logCallbackParam)
   }
 
+  beforeEach(() => {
+    subscriber = new ClientLogSubscriber(stdout, stderr, stdout, dateFunction, tailFunction)
+  })
+
   afterEach(() => {
     unlinkSync(stdout)
     unlinkSync(stderr)
   })
 
-  describe('setup()', () => {
+  describe('.setup', () => {
     it('creates missing files', async () => {
-      const subscriber = new ClientLogSubscriber(stdout, stderr, stdout, dateFunction, tailFunction)
+      expect(existsSync(stdout)).to.be.false
+      expect(existsSync(stderr)).to.be.false
+
       await subscriber.setup()
 
       expect(existsSync(stdout)).to.be.true
@@ -48,34 +56,29 @@ describe('ClientLogSubscriber', () => {
     })
   })
 
-  describe('onLog()', () => {
+  describe('.onLog', () => {
     it('binds info level log callback', async () => {
-      logCallbackParam = 'error line'
+      logCallbackParam = 'info line'
 
-      const subscriber = new ClientLogSubscriber(stdout, stderr, stdout, dateFunction, tailFunction)
-      let tailLine = ''
-      subscriber.onLog(logLevels.INFO, (line) => {
-        tailLine = line
-      })
+      const sub = new CallbackRecorder()
+      subscriber.onLog(logLevels.INFO, sub.getCallback())
 
       await subscriber.setup()
 
-      expect(tailLine).to.be.eql(logCallbackParam)
+      expect(sub.invoked).to.be.true
+      expect(sub.arguments).to.be.eql([logCallbackParam])
     })
 
     it('binds error level log callback', async () => {
       logCallbackParam = 'error line'
+      const sub = new CallbackRecorder()
 
-      const subscriber = new ClientLogSubscriber(stdout, stderr, stdout, dateFunction, tailFunction)
-
-      let tailLine = ''
-      subscriber.onLog(logLevels.ERROR, (line) => {
-        tailLine = line
-      })
+      subscriber.onLog(logLevels.ERROR, sub.getCallback())
 
       await subscriber.setup()
 
-      expect(tailLine).to.be.eql('2018-01-01T00:00:00.000Z error line')
+      expect(sub.invoked).to.be.true
+      expect(sub.arguments).to.be.eql(['2018-01-01T00:00:00.000Z error line'])
     })
   })
 })

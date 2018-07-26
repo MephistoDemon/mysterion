@@ -17,14 +17,15 @@
 
 // @flow
 
-import processLogLevels from './log-levels'
+import Subscriber from '../subscriber'
+import logLevels from './log-levels'
 import type { LogCallback } from './index'
 import createFileIfMissing from '../create-file-if-missing'
 import { INVERSE_DOMAIN_PACKAGE_NAME } from './launch-daemon/config'
 import { toISOString, prependWithFn } from '../strings'
 
 type Subscribers = {
-  [processLogLevels.INFO | processLogLevels.ERROR]: Array<LogCallback>,
+  [logLevels.INFO | logLevels.ERROR]: Subscriber<string>,
 }
 
 type DateFunction = () => Date
@@ -40,26 +41,26 @@ class ClientLogSubscriber {
   _dateFunction: DateFunction
   _tailFunction: TailFunction
 
-  constructor (stdoutFilePath: string, stderrFilePath: string, systemLogFilePath: string, dateFunction: DateFunction, tailFunction: TailFunction) {
-    this._stdoutPath = stdoutFilePath
-    this._stderrPath = stderrFilePath
-    this._systemFilePath = systemLogFilePath
+  constructor (stdoutPath: string, stderrPath: string, systemFilePath: string, dateFunction: DateFunction, tailFunction: TailFunction) {
+    this._stdoutPath = stdoutPath
+    this._stderrPath = stderrPath
+    this._systemFilePath = systemFilePath
     this._dateFunction = dateFunction
     this._tailFunction = tailFunction
 
     this._subscribers = {
-      [processLogLevels.INFO]: [],
-      [processLogLevels.ERROR]: []
+      [logLevels.INFO]: new Subscriber(),
+      [logLevels.ERROR]: new Subscriber()
     }
   }
 
   async setup (): Promise<void> {
     await this._prepareLogFiles()
 
-    const notifyOnErrorSubscribers = this._notifySubscribersWithLog.bind(this, processLogLevels.ERROR)
+    const notifyOnErrorSubscribers = this._notifySubscribersWithLog.bind(this, logLevels.ERROR)
     const prependWithCurrentTime = prependWithFn(() => toISOString(this._dateFunction()))
 
-    this._tailFile(this._stdoutPath, this._notifySubscribersWithLog.bind(this, processLogLevels.INFO))
+    this._tailFile(this._stdoutPath, this._notifySubscribersWithLog.bind(this, logLevels.INFO))
     this._tailFile(this._stderrPath, (data) => {
       notifyOnErrorSubscribers(prependWithCurrentTime(prependWithSpace(data)))
     })
@@ -76,13 +77,11 @@ class ClientLogSubscriber {
       throw new Error(`Unknown process logging level: ${level}`)
     }
 
-    this._subscribers[level].push(cb)
+    this._subscribers[level].subscribe(cb)
   }
 
-  _notifySubscribersWithLog (level: string, data: mixed): void {
-    for (let subscriberCallback of this._subscribers[level]) {
-      subscriberCallback(data)
-    }
+  _notifySubscribersWithLog (level: string, data: string): void {
+    this._subscribers[level].notify(data)
   }
 
   _tailFile (filePath: string, subscriberCallback: LogCallback): void {
