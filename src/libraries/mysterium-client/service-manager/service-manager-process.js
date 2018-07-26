@@ -43,13 +43,15 @@ type ServiceState = $Values<typeof SERVICE_STATE>
 class ServiceManagerProcess implements Process {
   _tequilapi: TequilapiClient
   _serviceManagerDir: string
+  _serviceInitTime: number
   _system: System
   _startIsRunning: boolean
   _startingFirstTime: boolean
 
-  constructor (tequilapi: TequilapiClient, serviceManagerDir: string, system: System) {
+  constructor (tequilapi: TequilapiClient, serviceManagerDir: string, system: System, serviceInitTime: number = SERVICE_INIT_TIME) {
     this._tequilapi = tequilapi
     this._serviceManagerDir = serviceManagerDir
+    this._serviceInitTime = serviceInitTime
     this._system = system
     this._startingFirstTime = true
   }
@@ -81,7 +83,7 @@ class ServiceManagerProcess implements Process {
       }
 
       // Wait for client initialization
-      await sleep(SERVICE_INIT_TIME)
+      await sleep(this._serviceInitTime)
     } catch (e) {
       throw e
     } finally {
@@ -132,4 +134,6 @@ class ServiceManagerProcess implements Process {
   }
 }
 
+export { SERVICE_STATE }
+export type { ServiceState }
 export default ServiceManagerProcess
