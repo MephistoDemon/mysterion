@@ -34,7 +34,8 @@ describe('UserSettingsStore', () => {
 
     it('exports a valid json file', async () => {
       const userSettingsStore = new UserSettingsStore(saveSettingsPath)
-      userSettingsStore.setAll({showDisconnectNotifications: false, favoriteProviders: new Set(['id_123'])})
+      userSettingsStore.setShowDisconnectNotifications(false)
+      userSettingsStore.setFavorite({id: 'id_123', isFavorite: true})
       await userSettingsStore.save()
       const data = readFileSync(saveSettingsPath, {encoding: 'utf8'})
 
@@ -43,7 +44,8 @@ describe('UserSettingsStore', () => {
 
     it('throws error if save() fails on invalid path to file', async () => {
       const userSettingsStore = new UserSettingsStore(invalidPath)
-      userSettingsStore.setAll({showDisconnectNotifications: false, favoriteProviders: new Set(['id_123'])})
+      userSettingsStore.setShowDisconnectNotifications(false)
+      userSettingsStore.setFavorite({id: 'id_123', isFavorite: true})
       const error = await capturePromiseError(userSettingsStore.save())
 
       expect(error).to.be.an.instanceOf(Error)
@@ -97,19 +99,6 @@ describe('UserSettingsStore', () => {
 
     beforeEach(() => {
       userSettingsStore = new UserSettingsStore('')
-    })
-
-    describe('setAll', () => {
-      const cbRecDisconnect = new CallbackRecorder()
-      const cbRecFavorites = new CallbackRecorder()
-
-      it('notifies all changed setting subscribers', () => {
-        userSettingsStore.onChange('showDisconnectNotifications', cbRecDisconnect.getCallback())
-        userSettingsStore.onChange('favoriteProviders', cbRecFavorites.getCallback())
-        userSettingsStore.setAll({showDisconnectNotifications: false, favoriteProviders: new Set(['id_123'])})
-        expect(cbRecDisconnect.firstArgument).to.be.false
-        expect(cbRecFavorites.firstArgument.has('id_123')).to.be.true
-      })
     })
 
     describe('setShowDisconnectNotifications', async () => {

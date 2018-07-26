@@ -30,14 +30,14 @@ const defaultSettings: UserSettings = {
   favoriteProviders: new Set()
 }
 
-const singleSettingStr = {
+const userStoreSettingString = {
   showDisconnectNotifications: 'showDisconnectNotifications',
   favoriteProviders: 'favoriteProviders'
 }
 
-export type FavoriteProviderToggle = {id: string, isFavorite: boolean}
+export type FavoriteProviderToggle = { id: string, isFavorite: boolean }
 
-type SingleSetting = $Values<typeof singleSettingStr> // 'showDisconnectNotifications' | 'favoriteProviders'
+type UserStoreSetting = $Values<typeof userStoreSettingString>
 
 class UserSettingsStore {
   _settings: UserSettings = defaultSettings
@@ -64,7 +64,8 @@ class UserSettingsStore {
       }
       throw e
     }
-    this._notify(singleSettingStr.favoriteProviders)
+    this._notify(userStoreSettingString.favoriteProviders)
+    this._notify(userStoreSettingString.showDisconnectNotifications)
   }
 
   async save (): Promise<void> {
@@ -72,31 +73,29 @@ class UserSettingsStore {
   }
 
   setFavorite (toggleFavorite: FavoriteProviderToggle) {
+    if (toggleFavorite.isFavorite === this._settings.favoriteProviders.has(toggleFavorite.id)) {
+      return // nothing changed
+    }
+
     if (toggleFavorite.isFavorite) this._settings.favoriteProviders.add(toggleFavorite.id)
     else this._settings.favoriteProviders.delete(toggleFavorite.id)
-    this._notify(singleSettingStr.favoriteProviders)
+    this._notify(userStoreSettingString.favoriteProviders)
   }
 
   setShowDisconnectNotifications (show: boolean) {
     this._settings.showDisconnectNotifications = show
-    this._notify(singleSettingStr.showDisconnectNotifications)
-  }
-
-  setAll (settings: UserSettings) {
-    this._settings = settings
-    this._notify(singleSettingStr.favoriteProviders)
-    this._notify(singleSettingStr.showDisconnectNotifications)
+    this._notify(userStoreSettingString.showDisconnectNotifications)
   }
 
   getAll (): UserSettings {
     return this._settings
   }
 
-  onChange (property: SingleSetting, cb: Callback<any>) {
+  onChange (property: UserStoreSetting, cb: Callback<any>) {
     this._listeners[property].subscribe(cb)
   }
 
-  _notify (propertyChanged: SingleSetting) {
+  _notify (propertyChanged: UserStoreSetting) {
     const newVal = ((this._settings[propertyChanged]): any)
     this._listeners[propertyChanged].notify(newVal)
   }
