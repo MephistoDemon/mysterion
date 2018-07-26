@@ -32,7 +32,7 @@ import type { MysterionConfig } from './mysterionConfig'
 import Window from './window'
 import Terms from './terms'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
-import ProposalFetcher from './data-fetchers/proposal-fetcher'
+import TequilapiProposalFetcher from './data-fetchers/tequilapi-proposal-fetcher'
 import CountryListNotifier from './data-fetchers/country-list-notifier'
 import type { BugReporter } from './bug-reporting/interface'
 import { UserSettingsStore } from './user-settings/user-settings-store'
@@ -59,7 +59,7 @@ type MysterionParams = {
   installer: Installer,
   monitoring: ProcessMonitoring,
   process: Process,
-  proposalFetcher: ProposalFetcher,
+  proposalFetcher: TequilapiProposalFetcher,
   countryListNotifier: CountryListNotifier,
   bugReporter: BugReporter,
   environmentCollector: EnvironmentCollector,
@@ -83,7 +83,7 @@ class Mysterion {
   installer: Installer
   monitoring: ProcessMonitoring
   process: Process
-  proposalFetcher: ProposalFetcher
+  proposalFetcher: TequilapiProposalFetcher
   countryListNotifier: CountryListNotifier
   bugReporter: BugReporter
   environmentCollector: EnvironmentCollector

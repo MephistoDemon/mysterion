@@ -17,7 +17,7 @@
 
 // @flow
 
-import ProposalFetcher from '../../../app/data-fetchers/proposal-fetcher'
+import TequilapiProposalFetcher from '../../../app/data-fetchers/tequilapi-proposal-fetcher'
 import type {Container} from '../../../app/di'
 import { UserSettingsStore } from '../../../app/user-settings/user-settings-store'
 import CountryListNotifier from '../../../app/data-fetchers/country-list-notifier'
@@ -33,14 +33,14 @@ function bootstrap (container: Container) {
     'proposalFetcher',
     ['tequilapiClient', 'proposalFetcher.config'],
     (tequilapiClient, config: any) => {
-      return new ProposalFetcher(tequilapiClient, config.interval)
+      return new TequilapiProposalFetcher(tequilapiClient, config.interval)
     }
   )
 
   container.factory(
     'countryListNotifier',
     ['proposalFetcher', 'userSettingsStore'],
-    (proposalFetcher: ProposalFetcher, userSettingsStore: UserSettingsStore) => {
+    (proposalFetcher: TequilapiProposalFetcher, userSettingsStore: UserSettingsStore) => {
       return new CountryListNotifier(proposalFetcher, userSettingsStore)
     }
   )
