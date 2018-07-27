@@ -17,10 +17,11 @@
 
 // @flow
 
+import type { Callback } from '../subscriber'
 import Monitoring from './monitoring'
 import logLevels from './log-levels'
 
-type LogCallback = (data: any) => any
+type LogCallback = Callback<any>
 
 interface Installer {
   needsInstallation (): Promise<boolean>,

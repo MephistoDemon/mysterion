@@ -23,6 +23,7 @@ import type { LogCallback, Process } from '../index'
 import type { TequilapiClient } from '../../mysterium-tequilapi/client'
 import type { System } from '../system'
 import { SERVICE_MANAGER_BIN, SERVICE_NAME } from './service-manager-installer'
+import ClientLogSubscriber from '../client-log-subscriber'
 
 /***
  * Time in milliseconds requires to fully activate Mysterium client
@@ -41,14 +42,16 @@ type ServiceState = $Values<typeof SERVICE_STATE>
 
 class ServiceManagerProcess implements Process {
   _tequilapi: TequilapiClient
+  _logs: ClientLogSubscriber
   _serviceManagerDir: string
   _serviceInitTime: number
   _system: System
   _startIsRunning: boolean
   _startingFirstTime: boolean
 
-  constructor (tequilapi: TequilapiClient, serviceManagerDir: string, system: System, serviceInitTime: number = SERVICE_INIT_TIME) {
+  constructor (tequilapi: TequilapiClient, logs: ClientLogSubscriber, serviceManagerDir: string, system: System, serviceInitTime: number = SERVICE_INIT_TIME) {
     this._tequilapi = tequilapi
+    this._logs = logs
     this._serviceManagerDir = serviceManagerDir
     this._serviceInitTime = serviceInitTime
     this._system = system
@@ -106,10 +109,11 @@ class ServiceManagerProcess implements Process {
   }
 
   async setupLogging (): Promise<void> {
-
+    await this._logs.setup()
   }
 
   onLog (level: string, cb: LogCallback): void {
+    this._logs.onLog(level, cb)
   }
 
   async _getServiceState (): Promise<ServiceState> {

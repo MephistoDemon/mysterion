@@ -18,7 +18,8 @@
 // @flow
 
 import { beforeEach, describe, expect, it } from '../../../../helpers/dependencies'
-import ServiceManagerInstaller from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-installer'
+import ServiceManagerInstaller
+  from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-installer'
 import SystemMock from '../../../../helpers/system-mock'
 
 const STRINGIFIED_CONFIG = JSON.stringify({
@@ -62,7 +63,10 @@ describe('ServiceManagerInstaller', () => {
     dataDir: '/tmp/data',
     runtimeDir: '/tmp/runtime',
     logDir: '/tmp/logs',
-    tequilapiPort: 4050
+    tequilapiPort: 4050,
+    stdErrFileName: 'stderr.log',
+    stdOutFileName: 'stdout.log',
+    systemLogPath: '/tmp/logs/system.log'
   }
 
   let system

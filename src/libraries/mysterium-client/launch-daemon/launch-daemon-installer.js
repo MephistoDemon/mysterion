@@ -85,9 +85,9 @@ class LaunchDaemonInstaller implements Installer {
           <key>WorkingDirectory</key>
           <string>${this._config.runtimeDir}</string>
           <key>StandardOutPath</key>
-          <string>${this._config.logDir}/stdout.log</string>
+          <string>${this._config.logDir}/${this._config.stdOutFileName}</string>
           <key>StandardErrorPath</key>
-          <string>${this._config.logDir}/stderr.log</string>
+          <string>${this._config.logDir}/${this._config.stdErrFileName}</string>
          </dict>
       </plist>`
   }
@@ -98,11 +98,9 @@ class LaunchDaemonInstaller implements Installer {
 
   async install (): Promise<void> {
     let tempPlistFile = path.join(this._config.runtimeDir, PROPERTY_LIST_NAME)
-    let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
     let script = `\
       cp ${tempPlistFile} ${PROPERTY_LIST_FILE}\
       && launchctl load ${PROPERTY_LIST_FILE}\
-      && launchctl setenv PATH "${envPath}"\
     `
     if (processInstalled()) {
       script = `launchctl unload ${PROPERTY_LIST_FILE} && ` + script
@@ -122,8 +120,8 @@ class LaunchDaemonInstaller implements Installer {
   }
 
   async _createLogFilesIfMissing (): Promise<void> {
-    await createFileIfMissing(path.join(this._config.logDir, 'stdout.log'))
-    await createFileIfMissing(path.join(this._config.logDir, 'stderr.log'))
+    await createFileIfMissing(path.join(this._config.logDir, this._config.stdOutFileName))
+    await createFileIfMissing(path.join(this._config.logDir, this._config.stdErrFileName))
   }
 }
 
