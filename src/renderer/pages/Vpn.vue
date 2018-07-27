@@ -29,16 +29,16 @@
 
       <div class="control__bottom">
         <div
-          style="display:flex"
           class="control__countries">
+          <div class="control__countries__row" />
           <country-select
             :country-list="countryList"
             :countries-are-loading="countriesAreLoading"
             :fetch-countries="fetchCountries"
             @selected="setCountry"
-            style="max-width:25rem"
             :class="{'is-disabled': statusCode!==-1}"/>
           <favorite-button
+            style="flex:1 0 0; text-align:left;"
             :country="country"
             :toggle-favorite="toggleFavorite"/>
         </div>

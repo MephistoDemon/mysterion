@@ -35,7 +35,7 @@
         slot="option"
         slot-scope="props">
         <span
-          style="color: #99cc33"
+          class="multiselect__option-star"
           v-if='props.option.isFavorite'>
           ★
         </span>

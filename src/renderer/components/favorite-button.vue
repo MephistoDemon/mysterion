@@ -16,14 +16,12 @@
   -->
 
 <template>
-  <div>
-    <div
-      style="font-size: 29px; cursor: pointer; color: #99cc33; margin-left: 1rem"
-      v-bind="country"
-      @click="toggleFavorite(country)"
-      v-text="buttonText"/>
-    <div style="clear:both"/>
-  </div>
+  <div
+    class="favorite-button"
+    style=""
+    v-bind="country"
+    @click="toggleFavorite(country)"
+    v-text="buttonText"/>
 </template>
 
 <script>
