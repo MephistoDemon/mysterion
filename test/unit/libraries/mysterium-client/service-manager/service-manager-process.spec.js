@@ -22,6 +22,8 @@ import ServiceManagerProcess, {SERVICE_STATE} from '../../../../../src/libraries
 import type {ServiceState} from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-process'
 import EmptyTequilapiClientMock from '../../../renderer/store/modules/empty-tequilapi-client-mock'
 import SystemMock from '../../../../helpers/system-mock'
+import type {NodeHealthcheckDTO} from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
+import NodeBuildInfoDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-build-info'
 
 const SERVICE_MANAGER_DIR = '/service-manager/bin/'
 
@@ -38,9 +40,24 @@ const createSystemMock = () =>
 
 class TequilapiMock extends EmptyTequilapiClientMock {
   cancelIsCalled: boolean = false
+  healthCheckThrowsError: boolean = false
+  healthCheckIsCalled: boolean = false
 
   async connectionCancel (): Promise<void> {
     this.cancelIsCalled = true
+  }
+
+  async healthCheck (_timeout: ?number): Promise<NodeHealthcheckDTO> {
+    this.healthCheckIsCalled = true
+    if (this.healthCheckThrowsError) {
+      throw new Error('HEALTHCHECK_TEST_ERROR')
+    }
+    return {
+      uptime: '',
+      process: 0,
+      version: '',
+      buildInfo: new NodeBuildInfoDTO({})
+    }
   }
 }
 
@@ -102,6 +119,27 @@ describe('ServiceManagerProcess', () => {
 
       expect(system.sudoExecCalledCommands).to.have.length(1)
       expect(system.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=start')
+    })
+
+    it('waits for healthcheck after service restart', async () => {
+      tequilapiClient.healthCheckThrowsError = true
+
+      system.execs.set('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.STOPPED))
+
+      // second call must restart service
+      let startExecuted = false
+      const startPromise = process.start().then(() => {
+        startExecuted = true
+      })
+      system.execs.set('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.RUNNING))
+
+      expect(startExecuted).to.be.false
+
+      tequilapiClient.healthCheckThrowsError = false
+      await startPromise
+
+      expect(tequilapiClient.healthCheckIsCalled).to.be.true
+      expect(startExecuted).to.be.true
     })
   })
 
