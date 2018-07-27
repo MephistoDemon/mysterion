@@ -67,6 +67,11 @@ yarn unit:start-server
 yarn unit:run --grep="loading screen"
 ```
 
+To check test coverage, run:
+```bash
+TEST_COVERAGE=true yarn unit
+```
+
 ## Conventions
 
 We are using [StandardJS](https://standardjs.com/) style.
