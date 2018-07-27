@@ -166,8 +166,8 @@ class ServiceManagerInstaller implements Installer {
         `--tequilapi.port=${this._config.tequilapiPort}`
       ],
       Logging: {
-        Stderr: path.join(this._config.logDir, 'stderr.log'),
-        Stdout: path.join(this._config.logDir, 'stdout.log')
+        Stderr: path.join(this._config.logDir, this._config.stdErrFileName),
+        Stdout: path.join(this._config.logDir, this._config.stdOutFileName)
       }
     }
 
