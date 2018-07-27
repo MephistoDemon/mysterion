@@ -23,7 +23,6 @@ import type { LogCallback, Process } from '../index'
 import type { TequilapiClient } from '../../mysterium-tequilapi/client'
 import type { System } from '../system'
 import { SERVICE_MANAGER_BIN, SERVICE_NAME } from './service-manager-installer'
-import sleep from '../../sleep'
 
 /***
  * Time in milliseconds requires to fully activate Mysterium client
@@ -62,7 +61,7 @@ class ServiceManagerProcess implements Process {
     }
     this._startIsRunning = true
     try {
-      let state = await this._serviceState()
+      let state = await this._getServiceState()
       logger.info(`Service state: [${state}]`)
       if (state === SERVICE_STATE.START_PENDING) {
         return
@@ -77,13 +76,21 @@ class ServiceManagerProcess implements Process {
       const serviceInfo = await this._system.sudoExec(command)
       state = this._parseServiceState(serviceInfo)
 
+      const now = () => (new Date()).getTime()
+      const startTime = now()
+
       // wait until service will be started
-      while (state !== SERVICE_STATE.RUNNING) {
-        state = await this._serviceState()
+      while (state !== SERVICE_STATE.RUNNING && now() - startTime < this._serviceInitTime) {
+        state = await this._getServiceState()
       }
 
-      // Wait for client initialization
-      await sleep(this._serviceInitTime)
+      // wait until first health check successes
+      while (now() - startTime < this._serviceInitTime) {
+        try {
+          await this._tequilapi.healthCheck()
+          break
+        } catch (e) {}
+      }
     } catch (e) {
       throw e
     } finally {
@@ -105,7 +112,7 @@ class ServiceManagerProcess implements Process {
   onLog (level: string, cb: LogCallback): void {
   }
 
-  async _serviceState (): Promise<ServiceState> {
+  async _getServiceState (): Promise<ServiceState> {
     let stdout
     try {
       stdout = await this._system.userExec(`sc.exe query "${SERVICE_NAME}"`)

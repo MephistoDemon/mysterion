@@ -53,7 +53,7 @@ describe('ServiceManagerProcess', () => {
     beforeEach(() => {
       tequilapiClient = new TequilapiMock()
       system = createSystemMock()
-      process = new ServiceManagerProcess(tequilapiClient, SERVICE_MANAGER_DIR, system, 0)
+      process = new ServiceManagerProcess(tequilapiClient, SERVICE_MANAGER_DIR, system)
     })
 
     it('does nothing with started service at first call', async () => {
