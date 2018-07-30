@@ -16,7 +16,7 @@
  */
 
 // @flow
-
+import fs from 'fs'
 import Subscriber from '../subscriber'
 import logLevels from './log-levels'
 import type { LogCallback } from './index'
@@ -57,19 +57,7 @@ class ClientLogSubscriber {
   async setup (): Promise<void> {
     await this._prepareLogFiles()
 
-    const notifyOnErrorSubscribers = this._notifySubscribersWithLog.bind(this, logLevels.ERROR)
-    const prependWithCurrentTime = prependWithFn(() => toISOString(this._dateFunction()))
-
-    this._tailFile(this._stdoutPath, this._notifySubscribersWithLog.bind(this, logLevels.INFO))
-    this._tailFile(this._stderrPath, (data) => {
-      notifyOnErrorSubscribers(prependWithCurrentTime(prependWithSpace(data)))
-    })
-
-    this._tailFile(this._systemFilePath, (data) => {
-      if (data.includes(INVERSE_DOMAIN_PACKAGE_NAME)) {
-        notifyOnErrorSubscribers(data)
-      }
-    })
+    this._tailLogs()
   }
 
   onLog (level: string, cb: LogCallback): void {
@@ -82,6 +70,27 @@ class ClientLogSubscriber {
 
   _notifySubscribersWithLog (level: string, data: string): void {
     this._subscribers[level].notify(data)
+  }
+
+  _tailLogs () {
+    const notifyOnErrorSubscribers = this._notifySubscribersWithLog.bind(this, logLevels.ERROR)
+    const prependWithCurrentTime = prependWithFn(() => toISOString(this._dateFunction()))
+
+    this._tailFile(this._stdoutPath, this._notifySubscribersWithLog.bind(this, logLevels.INFO))
+    this._tailFile(this._stderrPath, (data) => {
+      notifyOnErrorSubscribers(prependWithCurrentTime(prependWithSpace(data)))
+    })
+
+    // not all OSs have a system file
+    if (!fs.existsSync(this._systemFilePath)) {
+      return
+    }
+
+    this._tailFile(this._systemFilePath, (data) => {
+      if (data.includes(INVERSE_DOMAIN_PACKAGE_NAME)) {
+        notifyOnErrorSubscribers(data)
+      }
+    })
   }
 
   _tailFile (filePath: string, subscriberCallback: LogCallback): void {
