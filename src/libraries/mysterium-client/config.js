@@ -49,9 +49,24 @@ type ClientConfig = {
   logDir: string,
 
   /**
+   * Stdout log file name
+   */
+  stdOutFileName: string,
+
+  /**
+   * Stderr log file name
+   */
+  stdErrFileName: string,
+
+  /**
+   * System log file path
+   */
+  systemLogPath: string,
+
+  /**
    * Port on which to launch Tequilapi requests
    */
   tequilapiPort: number
 }
 
-export type {ClientConfig}
+export type { ClientConfig }

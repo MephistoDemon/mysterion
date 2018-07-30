@@ -26,8 +26,8 @@ import type { System } from '../system'
 
 const SERVICE_NAME = 'MysteriumClient'
 const SERVICE_MANAGER_BIN = 'servicemanager.exe'
-const SERVICE_MANAGER_CONFIG = 'service.json'
-const TAP_DRIVER_BIN = 'windows-tap.exe'
+const SERVICE_MANAGER_CONFIG = 'servicemanager.json'
+const TAP_DRIVER_BIN = 'tap-windows.exe'
 
 class ServiceManagerInstaller implements Installer {
   _system: System
@@ -166,8 +166,8 @@ class ServiceManagerInstaller implements Installer {
         `--tequilapi.port=${this._config.tequilapiPort}`
       ],
       Logging: {
-        Stderr: path.join(this._config.logDir, 'stderr.log'),
-        Stdout: path.join(this._config.logDir, 'stdout.log')
+        Stderr: path.join(this._config.logDir, this._config.stdErrFileName),
+        Stdout: path.join(this._config.logDir, this._config.stdOutFileName)
       }
     }
 
