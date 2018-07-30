@@ -88,11 +88,9 @@ describe('Vpn', () => {
 
     it(`it shows error when empty proposal list is received`, async () => {
       fakeMessageBus.triggerOn(messages.COUNTRY_UPDATE, [])
-
       vpnWrapper.vm.fetchCountries()
-      await vpnWrapper.vm.$nextTick()
 
-      expect(vpnWrapper.vm.$store.state.errorMessage).to.eql(translations.countryListIsEmpty)
+      expect(bugReporterMock.infoMessages[0].message).to.eql(translations.countryListIsEmpty)
     })
   })
 })

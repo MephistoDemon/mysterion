@@ -130,13 +130,7 @@ export default {
     onCountriesUpdate (countries) {
       this.countriesAreLoading = false
 
-      if (countries.length < 1) {
-        const error = new Error(messages.countryListIsEmpty)
-
-        this.$store.commit(type.SHOW_ERROR, error)
-        this.bugReporter.captureErrorException(error)
-        return
-      }
+      if (countries.length < 1) this.bugReporter.captureInfoMessage(messages.countryListIsEmpty)
 
       this.countryList = countries
     }
