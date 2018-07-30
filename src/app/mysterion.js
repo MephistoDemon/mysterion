@@ -392,7 +392,7 @@ class Mysterion {
     this.monitoring.onStatus((status) => {
       if (status === false) {
         logInfo("Starting 'mysterium_client' process, because it's currently down")
-        this.process.start()
+        this.process.repair()
       }
     })
 

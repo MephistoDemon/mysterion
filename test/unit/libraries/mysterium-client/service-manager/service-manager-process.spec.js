@@ -95,66 +95,22 @@ describe('ServiceManagerProcess', () => {
     process = new ServiceManagerProcess(tequilapiClient, clientLogSubscriber, SERVICE_MANAGER_DIR, system)
   })
 
-  describe('.start()', () => {
-    it('does nothing with started service at first call', async () => {
+  describe('.start', () => {
+    it('does nothing with running service', async () => {
       await process.start()
       expect(systemMockManager.sudoExecCalledCommands).to.have.length(0)
     })
 
-    it('restart started service at second call', async () => {
-      // first call does nothing
-      await process.start()
-
-      // second call must restart service
-      const startPromise = process.start()
-      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.RUNNING))
-      await startPromise
-
-      expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
-      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=restart')
-    })
-
-    it('starts stopped service', async () => {
-      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.STOPPED))
-
-      const startPromise = process.start()
-      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.RUNNING))
-      await startPromise
-
-      expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
-      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=start')
-    })
-
-    it('starts stopped service once', async () => {
-      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.STOPPED))
-
-      const startPromise = process.start()
-      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.RUNNING))
-
-      // those calls should be ignored until first "start" call is running
-      await process.start()
-      await process.start()
-      await process.start()
-      await process.start()
-
-      // wait until first "start" call ends
-      await startPromise
-
-      expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
-      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=start')
-    })
-
-    it('waits for healthcheck after service restart', async () => {
+    it('starts stopped service and waits for healthcheck', async () => {
       tequilapiClient.healthCheckThrowsError = true
 
       systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.STOPPED))
 
-      // second call must restart service
       let startExecuted = false
-      const startPromise = process.start().then(() => {
+      const startPromise = process.start()
+      startPromise.then(() => {
         startExecuted = true
       })
-      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.RUNNING))
 
       expect(startExecuted).to.be.false
 
@@ -166,7 +122,55 @@ describe('ServiceManagerProcess', () => {
     })
   })
 
-  describe('.stop()', () => {
+  describe('.repair', () => {
+    it('restarts running service', async () => {
+      const repairPromise = process.repair()
+      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.RUNNING))
+      await repairPromise
+
+      expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
+      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=restart')
+    })
+
+    it('starts stopped service and waits for healthcheck', async () => {
+      tequilapiClient.healthCheckThrowsError = true
+
+      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.STOPPED))
+
+      let startExecuted = false
+      const startPromise = process.repair()
+      startPromise.then(() => {
+        startExecuted = true
+      })
+
+      expect(startExecuted).to.be.false
+
+      tequilapiClient.healthCheckThrowsError = false
+      await startPromise
+
+      expect(tequilapiClient.healthCheckIsCalled).to.be.true
+      expect(startExecuted).to.be.true
+    })
+
+    it('restarts stopped service only once', async () => {
+      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.STOPPED))
+
+      const repairPromise = process.repair()
+      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.RUNNING))
+
+      // those calls should be ignored until first "repair" call is running
+      process.repair()
+      await process.repair()
+
+      // wait until first "start" call ends
+      await repairPromise
+
+      expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
+      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=start')
+    })
+  })
+
+  describe('.stop', () => {
     it('cancels tequilapi connection', async () => {
       await process.stop()
       expect(systemMockManager.sudoExecCalledCommands).to.have.length(0)

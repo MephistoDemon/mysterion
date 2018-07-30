@@ -47,7 +47,6 @@ class ServiceManagerProcess implements Process {
   _serviceInitTime: number
   _system: System
   _startIsRunning: boolean
-  _startingFirstTime: boolean
 
   constructor (tequilapi: TequilapiClient, logs: ClientLogSubscriber, serviceManagerDir: string, system: System, serviceInitTime: number = SERVICE_INIT_TIME) {
     this._tequilapi = tequilapi
@@ -55,50 +54,53 @@ class ServiceManagerProcess implements Process {
     this._serviceManagerDir = serviceManagerDir
     this._serviceInitTime = serviceInitTime
     this._system = system
-    this._startingFirstTime = true
   }
 
   async start (): Promise<void> {
+    const state = await this._getServiceState()
+    if (state === SERVICE_STATE.RUNNING) {
+      return
+    }
+
+    await this.repair()
+  }
+
+  async repair (): Promise<void> {
+    await this._doStart()
+  }
+
+  async _doStart (state: ?ServiceState = null): Promise<void> {
     if (this._startIsRunning) {
       return
     }
     this._startIsRunning = true
     try {
-      let state = await this._getServiceState()
+      state = state || await this._getServiceState()
       logger.info(`Service state: [${state}]`)
       if (state === SERVICE_STATE.START_PENDING) {
-        return
-      }
-      if (this._startingFirstTime && state === SERVICE_STATE.RUNNING) {
         return
       }
       const serviceManagerPath = path.join(this._serviceManagerDir, SERVICE_MANAGER_BIN)
       const operation = state === SERVICE_STATE.RUNNING ? 'restart' : 'start'
       const command = `${serviceManagerPath} --do=${operation}`
       logger.info('Running command', command)
-      const serviceInfo = await this._system.sudoExec(command)
-      state = this._parseServiceState(serviceInfo)
-
-      const now = () => (new Date()).getTime()
-      const startTime = now()
-
-      // wait until service will be started
-      while (state !== SERVICE_STATE.RUNNING && now() - startTime < this._serviceInitTime) {
-        state = await this._getServiceState()
-      }
-
-      // wait until first health check successes
-      while (now() - startTime < this._serviceInitTime) {
-        try {
-          await this._tequilapi.healthCheck()
-          break
-        } catch (e) {}
-      }
-    } catch (e) {
-      throw e
+      await this._system.sudoExec(command)
+      await this._waitForService()
     } finally {
       this._startIsRunning = false
-      this._startingFirstTime = false
+    }
+  }
+
+  async _waitForService (): Promise<void> {
+    const now = () => (new Date()).getTime()
+    const startTime = now()
+
+    // wait until first health check successes
+    while (now() - startTime < this._serviceInitTime) {
+      try {
+        await this._tequilapi.healthCheck()
+        break
+      } catch (e) {}
     }
   }
 
