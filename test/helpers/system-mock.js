@@ -19,23 +19,42 @@
 
 import type {System} from '../../src/libraries/mysterium-client/system'
 
-export default class SystemMock implements System {
-  writeFileReturnValue = null
-  get userExecCalledTimes (): number {
-    return this.userExecCalledCommands.length
-  }
+export interface SystemMockManager {
+  writeFileReturnValue: ?string,
+  userExecCalledCommands: Array<string>,
+  sudoExecCalledCommands: Array<string>,
+
+  setMockFile (path: string, content: string): void,
+  unsetMockFile (path: string): void,
+  setMockCommand (command: string, response: string): void,
+  unsetMockCommand (command: string): void
+}
+
+export default class SystemMock implements System, SystemMockManager {
+  writeFileReturnValue: ?string = null
   userExecCalledCommands: Array<string> = []
   sudoExecCalledCommands: Array<string> = []
-  files: Map<string, string>
-  execs: Map<string, string>
+  _files: Map<string, string> = new Map()
+  _commands: Map<string, string> = new Map()
 
-  constructor (files: ?Map<string, string> = null, execs: ?Map<string, string> = null) {
-    this.files = files || new Map()
-    this.execs = execs || new Map()
+  setMockFile (path: string, content: string): void {
+    this._files.set(path, content)
+  }
+
+  unsetMockFile (path: string): void {
+    this._files.delete(path)
+  }
+
+  setMockCommand (command: string, response: string): void {
+    this._commands.set(command, response)
+  }
+
+  unsetMockCommand (command: string): void {
+    this._commands.delete(command)
   }
 
   fileExists (file: string): boolean {
-    return this.files.has(file)
+    return this._files.has(file)
   }
 
   async writeFile (file: string, content: string): Promise<void> {
@@ -43,7 +62,7 @@ export default class SystemMock implements System {
   }
 
   readFile (file: string): string {
-    const content = this.files.get(file)
+    const content = this._files.get(file)
     if (content) {
       return content
     }
@@ -63,7 +82,7 @@ export default class SystemMock implements System {
   }
 
   _getExecResult (command: string) {
-    const result = this.execs.get(command)
+    const result = this._commands.get(command)
     if (result) {
       return result
     }

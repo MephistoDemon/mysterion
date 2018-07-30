@@ -21,6 +21,8 @@ import { beforeEach, describe, expect, it } from '../../../../helpers/dependenci
 import ServiceManagerInstaller
   from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-installer'
 import SystemMock from '../../../../helpers/system-mock'
+import type {SystemMockManager} from '../../../../helpers/system-mock'
+import type {System} from '../../../../../src/libraries/mysterium-client/system'
 
 const STRINGIFIED_CONFIG = JSON.stringify({
   Name: 'MysteriumClient',
@@ -45,15 +47,15 @@ const STRINGIFIED_CONFIG = JSON.stringify({
 const SERVICE_MANAGER_DIR = '/service-manager/bin/'
 const CONFIG_FILE = SERVICE_MANAGER_DIR + 'servicemanager.json'
 
-const createSystemMock = () =>
-  new SystemMock(new Map([
-    [CONFIG_FILE, STRINGIFIED_CONFIG]
-  ]), new Map([
-    ['sc.exe query "MysteriumClient"', 'SERVICE_NAME: MysteriumClient'],
-    ['/tmp/ovpnbin --show-adapters', `123
-            'Ethernet' {F1343629-CB94-4D28-9AE4-147F9145798E}
-            asd`]
-  ]))
+const createSystemMock = () => {
+  const systemMock = new SystemMock()
+  systemMock.setMockFile(CONFIG_FILE, STRINGIFIED_CONFIG)
+  systemMock.setMockCommand('sc.exe query "MysteriumClient"', 'SERVICE_NAME: MysteriumClient')
+  systemMock.setMockCommand('/tmp/ovpnbin --show-adapters', `123
+    'Ethernet' {F1343629-CB94-4D28-9AE4-147F9145798E}
+    asd`)
+  return systemMock
+}
 
 describe('ServiceManagerInstaller', () => {
   const config = {
@@ -69,81 +71,81 @@ describe('ServiceManagerInstaller', () => {
     systemLogPath: '/tmp/logs/system.log'
   }
 
-  let system
-  describe('.needsInstallation()', () => {
-    beforeEach(() => {
-      system = createSystemMock()
-    })
+  let systemMockManager: SystemMockManager
+  let system: System
 
+  beforeEach(() => {
+    const systemMock = createSystemMock()
+    system = (systemMock: System)
+    systemMockManager = (systemMock: SystemMockManager)
+  })
+
+  describe('.needsInstallation()', () => {
     it('returns false when all checks pass', async () => {
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       expect(await installer.needsInstallation()).to.be.false
     })
 
     it('returns true when config does not exits', async () => {
-      system.files.delete(CONFIG_FILE)
+      systemMockManager.unsetMockFile(CONFIG_FILE)
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       expect(await installer.needsInstallation()).to.be.true
     })
 
     it('returns true when config does not match existing', async () => {
-      system.files.set(CONFIG_FILE, 'invalid config file contents')
+      systemMockManager.setMockFile(CONFIG_FILE, 'invalid config file contents')
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       expect(await installer.needsInstallation()).to.be.true
     })
 
     it('returns true when service is not installed', async () => {
-      system.execs.delete('sc.exe query "MysteriumClient"')
+      systemMockManager.unsetMockCommand('sc.exe query "MysteriumClient"')
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       expect(await installer.needsInstallation()).to.be.true
     })
 
     it('returns true when drivers are not installed', async () => {
-      system.execs.delete('/tmp/ovpnbin --show-adapters')
+      systemMockManager.unsetMockCommand('/tmp/ovpnbin --show-adapters')
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       expect(await installer.needsInstallation()).to.be.true
     })
   })
 
   describe('.install()', () => {
-    beforeEach(() => {
-      system = createSystemMock()
-    })
-
     it('writes config file when config does not exist', async () => {
-      system.files.delete(CONFIG_FILE)
+      systemMockManager.unsetMockFile(CONFIG_FILE)
 
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       await installer.install()
 
-      expect(system.writeFileReturnValue).to.be.eql(STRINGIFIED_CONFIG)
+      expect(systemMockManager.writeFileReturnValue).to.be.eql(STRINGIFIED_CONFIG)
     })
 
     it('writes config file when checksum does not match', async () => {
-      system.files.set(CONFIG_FILE, 'invalid config file contents')
+      systemMockManager.setMockFile(CONFIG_FILE, 'invalid config file contents')
 
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       await installer.install()
 
-      expect(system.writeFileReturnValue).to.be.eql(STRINGIFIED_CONFIG)
+      expect(systemMockManager.writeFileReturnValue).to.be.eql(STRINGIFIED_CONFIG)
     })
 
     it('installs service when service is not installed', async () => {
-      system.execs.delete('sc.exe query "MysteriumClient"')
+      systemMockManager.unsetMockCommand('sc.exe query "MysteriumClient"')
 
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       await installer.install()
 
-      expect(system.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=install')
+      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=install')
     })
 
     it('installs TAP drivers when they are not installed', async () => {
-      system.execs.delete('/tmp/ovpnbin --show-adapters')
+      systemMockManager.unsetMockCommand('/tmp/ovpnbin --show-adapters')
 
       const installer = new ServiceManagerInstaller(system, config, SERVICE_MANAGER_DIR)
       await installer.install()
 
-      expect(system.userExecCalledCommands[2]).to.be.eql('/service-manager/bin/tap-windows.exe')
+      expect(systemMockManager.userExecCalledCommands[2]).to.be.eql('/service-manager/bin/tap-windows.exe')
     })
   })
 })
