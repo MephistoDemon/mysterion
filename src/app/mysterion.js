@@ -119,6 +119,7 @@ class Mysterion {
     this.bugReporterMetrics.set(TAGS.SESSION_ID, generateSessionId())
     this._initializeSyncCallbacks()
     this.logUnhandledRejections()
+    this._makeSureOnlySingleInstanceIsRunning()
 
     // fired when app has been launched
     app.on('ready', async () => {
@@ -287,6 +288,19 @@ class Mysterion {
       await this.userSettingsStore.load()
     } catch (e) {
       this.bugReporter.captureInfoException(e)
+    }
+  }
+
+  _makeSureOnlySingleInstanceIsRunning () {
+    const secondInstanceIsRunning = app.makeSingleInstance(() => {
+      // Someone tried to run a second instance, we should focus our first instance window.
+      if (this.window.exists()) {
+        this.window.show()
+      }
+    })
+
+    if (secondInstanceIsRunning) {
+      app.quit()
     }
   }
 
