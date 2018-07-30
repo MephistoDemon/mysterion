@@ -24,6 +24,8 @@ import EmptyTequilapiClientMock from '../../../renderer/store/modules/empty-tequ
 import SystemMock from '../../../../helpers/system-mock'
 import type {NodeHealthcheckDTO} from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
 import NodeBuildInfoDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-build-info'
+import ClientLogSubscriber from '../../../../../src/libraries/mysterium-client/client-log-subscriber'
+import type {LogCallback} from '../../../../../src/libraries/mysterium-client'
 
 const SERVICE_MANAGER_DIR = '/service-manager/bin/'
 
@@ -61,16 +63,30 @@ class TequilapiMock extends EmptyTequilapiClientMock {
   }
 }
 
+class ClientLogSubscriberMock extends ClientLogSubscriber {
+  constructor () {
+    super('', '', '', () => new Date(), (filePath: string, logCallback: LogCallback) => {})
+  }
+
+  async setup (): Promise<void> {}
+
+  onLog (level: string, cb: LogCallback): void {}
+
+  async _prepareLogFiles (): Promise<void> {}
+}
+
 describe('ServiceManagerProcess', () => {
   let system: SystemMock
   let tequilapiClient: TequilapiMock
   let process: ServiceManagerProcess
+  let clientLogSubscriber: ClientLogSubscriberMock
 
   describe('.start()', () => {
     beforeEach(() => {
       tequilapiClient = new TequilapiMock()
       system = createSystemMock()
-      process = new ServiceManagerProcess(tequilapiClient, SERVICE_MANAGER_DIR, system)
+      clientLogSubscriber = new ClientLogSubscriberMock()
+      process = new ServiceManagerProcess(tequilapiClient, clientLogSubscriber, SERVICE_MANAGER_DIR, system)
     })
 
     it('does nothing with started service at first call', async () => {
@@ -147,7 +163,8 @@ describe('ServiceManagerProcess', () => {
     beforeEach(() => {
       tequilapiClient = new TequilapiMock()
       system = createSystemMock()
-      process = new ServiceManagerProcess(tequilapiClient, SERVICE_MANAGER_DIR, system, 0)
+      clientLogSubscriber = new ClientLogSubscriberMock()
+      process = new ServiceManagerProcess(tequilapiClient, clientLogSubscriber, SERVICE_MANAGER_DIR, system, 0)
     })
 
     it('cancels tequilapi connection', async () => {
