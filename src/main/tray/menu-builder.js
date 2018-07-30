@@ -117,7 +117,7 @@ class TrayMenuBuilder {
   _showWindow: Function
   _toggleDevTools: Function
   _communication: MainCommunication
-  _proposals: Array<Country> = []
+  _countries: Array<Country> = []
   _connectionStatus: ConnectionStatus
 
   constructor (appQuit: Function, showWindow: Function, toggleDevTools: Function, communication: MainCommunication) {
@@ -128,7 +128,7 @@ class TrayMenuBuilder {
   }
 
   updateCountries (proposals: Array<Country>): this {
-    this._proposals = proposals
+    this._countries = proposals
 
     return this
   }
@@ -145,7 +145,7 @@ class TrayMenuBuilder {
       this._showWindow,
       this._toggleDevTools,
       this._communication,
-      this._proposals,
+      this._countries,
       this._connectionStatus
     )
   }

@@ -26,7 +26,7 @@ import Subscriber from '../../libraries/subscriber'
 class TequilapiProposalFetcher {
   _api: TequilapiClient
   _loop: FunctionLooper
-  _proposalSubscriber: Subscriber<Array<ProposalDTO>> = new Subscriber()
+  _proposalSubscriber: Subscriber<ProposalDTO[]> = new Subscriber()
   _errorSubscriber: Subscriber<Error> = new Subscriber()
 
   constructor (api: TequilapiClient, interval: number = 5000) {
@@ -50,7 +50,7 @@ class TequilapiProposalFetcher {
   /**
    * Forces proposals to be fetched without delaying.
    */
-  async fetch (): Promise<Array<ProposalDTO>> {
+  async fetch (): Promise<ProposalDTO[]> {
     const proposals = await this._api.findProposals()
 
     this._proposalSubscriber.notify(proposals)
@@ -62,7 +62,7 @@ class TequilapiProposalFetcher {
     await this._loop.stop()
   }
 
-  onFetchedProposals (subscriber: Callback<Array<ProposalDTO>>): void {
+  onFetchedProposals (subscriber: Callback<ProposalDTO[]>): void {
     this._proposalSubscriber.subscribe(subscriber)
   }
 

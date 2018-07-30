@@ -18,7 +18,6 @@
 <template>
   <div
     class="favorite-button"
-    style=""
     v-bind="country"
     @click="toggleFavorite(country)"
     v-text="buttonText"/>
