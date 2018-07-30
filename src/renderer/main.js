@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import dependencies from './dependencies'
+import { bootstrap } from './dependencies'
 
+const dependencies = bootstrap()
 dependencies.get('vue-application').$mount()
