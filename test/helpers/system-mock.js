@@ -17,7 +17,7 @@
 
 // @flow
 
-import type {System} from '../../src/libraries/mysterium-client/system'
+import type { System } from '../../src/libraries/mysterium-client/system'
 
 export interface SystemMockManager {
   writeFileReturnValue: ?string,
@@ -26,6 +26,7 @@ export interface SystemMockManager {
 
   setMockFile (path: string, content: string): void,
   unsetMockFile (path: string): void,
+
   setMockCommand (command: string, response: string): void,
   unsetMockCommand (command: string): void
 }

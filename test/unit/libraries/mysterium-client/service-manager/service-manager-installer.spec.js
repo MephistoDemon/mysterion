@@ -21,8 +21,8 @@ import { beforeEach, describe, expect, it } from '../../../../helpers/dependenci
 import ServiceManagerInstaller
   from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-installer'
 import SystemMock from '../../../../helpers/system-mock'
-import type {SystemMockManager} from '../../../../helpers/system-mock'
-import type {System} from '../../../../../src/libraries/mysterium-client/system'
+import type { SystemMockManager } from '../../../../helpers/system-mock'
+import type { System } from '../../../../../src/libraries/mysterium-client/system'
 
 const STRINGIFIED_CONFIG = JSON.stringify({
   Name: 'MysteriumClient',

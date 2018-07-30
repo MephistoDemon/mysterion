@@ -18,16 +18,16 @@
 // @flow
 
 import { beforeEach, describe, expect, it } from '../../../../helpers/dependencies'
-import ServiceManagerProcess, {SERVICE_STATE} from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-process'
-import type {ServiceState} from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-process'
+import ServiceManagerProcess, { SERVICE_STATE } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-process'
+import type { ServiceState } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-process'
 import EmptyTequilapiClientMock from '../../../renderer/store/modules/empty-tequilapi-client-mock'
 import SystemMock from '../../../../helpers/system-mock'
-import type {NodeHealthcheckDTO} from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
+import type { NodeHealthcheckDTO } from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
 import NodeBuildInfoDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-build-info'
 import ClientLogSubscriber from '../../../../../src/libraries/mysterium-client/client-log-subscriber'
-import type {LogCallback} from '../../../../../src/libraries/mysterium-client'
-import type {SystemMockManager} from '../../../../helpers/system-mock'
-import type {System} from '../../../../../src/libraries/mysterium-client/system'
+import type { LogCallback } from '../../../../../src/libraries/mysterium-client'
+import type { SystemMockManager } from '../../../../helpers/system-mock'
+import type { System } from '../../../../../src/libraries/mysterium-client/system'
 
 const SERVICE_MANAGER_DIR = '/service-manager/bin/'
 
