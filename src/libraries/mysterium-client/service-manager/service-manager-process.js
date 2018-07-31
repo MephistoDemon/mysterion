@@ -51,7 +51,13 @@ class ServiceManagerProcess implements Process {
   _monitoring: Monitoring
   _startIsRunning: boolean
 
-  constructor (tequilapi: TequilapiClient, logs: ClientLogSubscriber, serviceManagerDir: string, system: System, monitoring: Monitoring, serviceInitTime: number = SERVICE_INIT_TIME) {
+  constructor (
+    tequilapi: TequilapiClient,
+    logs: ClientLogSubscriber,
+    serviceManagerDir: string,
+    system: System,
+    monitoring: Monitoring,
+    serviceInitTime: number = SERVICE_INIT_TIME) {
     this._tequilapi = tequilapi
     this._logs = logs
     this._serviceManagerDir = serviceManagerDir
@@ -135,10 +141,10 @@ class ServiceManagerProcess implements Process {
       logger.info('Service check failed', e.message)
       return SERVICE_STATE.NOT_INSTALLED
     }
-    return this._parseServiceState(stdout)
+    return ServiceManagerProcess._parseServiceState(stdout)
   }
 
-  _parseServiceState (serviceInfo: string): ServiceState {
+  static _parseServiceState (serviceInfo: string): ServiceState {
     const isInstalled: boolean = serviceInfo.indexOf(`SERVICE_NAME: ${SERVICE_NAME}`) > -1
     if (!isInstalled) {
       return SERVICE_STATE.NOT_INSTALLED
