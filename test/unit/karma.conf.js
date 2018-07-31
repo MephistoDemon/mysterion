@@ -24,7 +24,6 @@ const baseConfig = require('../../../mysterion/.electron-vue/webpack.renderer.co
 
 // Set BABEL_ENV to use proper preset config
 process.env.BABEL_ENV = 'test'
-process.env.TEST_COVERAGE = 'false'
 
 let webpackConfig = merge(baseConfig, {
   devtool: '#inline-source-map',

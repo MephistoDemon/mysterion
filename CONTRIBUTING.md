@@ -67,6 +67,14 @@ yarn unit:start-server
 yarn unit:run --grep="loading screen"
 ```
 
+To check test coverage, run:
+
+```bash
+TEST_COVERAGE=true yarn unit
+```
+
+HTML report can be found in *test/unit/coverage/lcov-report/index.html*.
+
 ## Conventions
 
 We are using [StandardJS](https://standardjs.com/) style.
