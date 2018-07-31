@@ -3,6 +3,7 @@
 # Checks whether all source files have valid license header
 
 DIRS='src test'
+IGNORE_PATH="test/unit/coverage/"
 COPYRIGHT="Copyright (C) \d\{4\} The \"MysteriumNetwork/mysterion\" Authors."
 
 # Colorful output
@@ -22,7 +23,7 @@ print_error () {
 
 # Checking for license
 
-all_files=`find $DIRS -name '*.js' -or -name '*.vue'`
+all_files=`find $DIRS -name '*.js' -or -name '*.vue' | grep -v $IGNORE_PATH`
 
 bad_files=""
 for file in $all_files; do
