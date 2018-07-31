@@ -115,6 +115,8 @@ class Mysterion {
   }
 
   run () {
+    this._makeSureOnlySingleInstanceIsRunning()
+
     logger.setLogger(this.logger)
     this.bugReporterMetrics.set(TAGS.SESSION_ID, generateSessionId())
     this._initializeSyncCallbacks()
@@ -287,6 +289,21 @@ class Mysterion {
       await this.userSettingsStore.load()
     } catch (e) {
       this.bugReporter.captureInfoException(e)
+    }
+  }
+
+  _makeSureOnlySingleInstanceIsRunning () {
+    // this hook is fired when someone tries to launch another instance of the app
+    const secondInstanceIsRunning = app.makeSingleInstance(() => {
+      // display the existing instance's app window
+      if (this.window.exists()) {
+        this.window.show()
+      }
+    })
+
+    // quit all new app instances
+    if (secondInstanceIsRunning) {
+      app.quit()
     }
   }
 
