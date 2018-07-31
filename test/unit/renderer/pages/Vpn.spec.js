@@ -26,7 +26,6 @@ import messages from '../../../../src/app/communication/messages'
 import type from '@/store/types'
 import FakeMessageBus from '../../../helpers/fake-message-bus'
 import BugReporterMock from '../../../helpers/bug-reporter-mock'
-import translations from '@/../app/messages'
 import Vue from 'vue'
 Vue.use(Vuex)
 
@@ -86,11 +85,11 @@ describe('Vpn', () => {
       fakeMessageBus.clean()
     })
 
-    it(`it shows error when empty proposal list is received`, async () => {
+    it('it shows error when empty proposal list is received', async () => {
       fakeMessageBus.triggerOn(messages.COUNTRY_UPDATE, [])
       vpnWrapper.vm.fetchCountries()
 
-      expect(bugReporterMock.infoMessages[0].message).to.eql(translations.countryListIsEmpty)
+      expect(bugReporterMock.infoMessages[0].message).to.eql('Renderer received empty countries list')
     })
   })
 })

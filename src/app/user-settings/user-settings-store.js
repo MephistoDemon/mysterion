@@ -126,4 +126,4 @@ function isFileNotExistError (error: Object): boolean {
   return (error.code && error.code === 'ENOENT')
 }
 
-export { UserSettingsStore }
+export { UserSettingsStore, userStoreSettingString }

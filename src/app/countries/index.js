@@ -27,7 +27,7 @@ type Country = {
   id: string,
   code: ?string,
   name: string,
-  isFavorite?: boolean
+  isFavorite: boolean
 }
 
 function getCountryLabel (country: Country, maxNameLength: ?number = null, maxIdentityLength: ?number = 9) {
@@ -62,7 +62,8 @@ function getCountryFromProposal (proposal: ProposalDTO): Country {
   return {
     id: proposal.providerId,
     code: getCountryCodeFromProposal(proposal),
-    name: getCountryNameFromProposal(proposal)
+    name: getCountryNameFromProposal(proposal),
+    isFavorite: false
   }
 }
 

@@ -16,7 +16,7 @@
  */
 
 // @flow
-import { UserSettingsStore } from '../../../src/app/user-settings/user-settings-store'
+import { UserSettingsStore, userStoreSettingString } from '../../../src/app/user-settings/user-settings-store'
 import { describe, expect, it, after, before, beforeEach } from '../../helpers/dependencies'
 import { tmpdir } from 'os'
 import { join } from 'path'
@@ -24,7 +24,7 @@ import { readFileSync, writeFileSync, unlinkSync } from 'fs'
 import { CallbackRecorder, capturePromiseError } from '../../helpers/utils'
 
 describe('UserSettingsStore', () => {
-  describe('save()', () => {
+  describe('.save', () => {
     const saveSettingsPath = join(tmpdir(), 'settings.test.saving.json')
     const invalidPath = join(tmpdir(), 'some', 'dir')
 
@@ -52,7 +52,7 @@ describe('UserSettingsStore', () => {
     })
   })
 
-  describe('load()', () => {
+  describe('.load', () => {
     const loadSettingsPath = join(tmpdir(), 'settings.test.loading.json')
     const invalidPath = join(tmpdir(), 'someother', 'another')
     const invalidJsonPath = join(tmpdir(), 'invalidJsonFile')
@@ -101,16 +101,16 @@ describe('UserSettingsStore', () => {
       userSettingsStore = new UserSettingsStore('')
     })
 
-    describe('setShowDisconnectNotifications', async () => {
+    describe('.setShowDisconnectNotifications', async () => {
       it('sets showDisconnectNotification', () => {
         userSettingsStore.setShowDisconnectNotifications(false)
         expect(userSettingsStore.getAll().showDisconnectNotifications).to.be.false
       })
 
-      it('notifies subscribers on favorite add', () => {
+      it('notifies subscribers on showDisconnectNotifications change', () => {
         const cbRec = new CallbackRecorder()
 
-        userSettingsStore.onChange('showDisconnectNotifications', cbRec.getCallback())
+        userSettingsStore.onChange(userStoreSettingString.showDisconnectNotifications, cbRec.getCallback())
         userSettingsStore.setShowDisconnectNotifications(false)
         expect(cbRec.invoked).to.be.true
         expect(cbRec.firstArgument).to.be.false
@@ -120,7 +120,7 @@ describe('UserSettingsStore', () => {
     describe('setFavorite', async () => {
       it('adds favoriteId to settings store', () => {
         userSettingsStore.setFavorite({id: '0xfax', isFavorite: true})
-        expect(userSettingsStore.getAll().favoriteProviders.has('0xfax')).to.eql(true)
+        expect(userSettingsStore.getAll().favoriteProviders.has('0xfax')).to.be.true
       })
 
       it('notifies subscribers on favorite add', () => {

@@ -23,7 +23,7 @@ import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
   RequestConnectionDTO,
-  CountryUpdateDTO,
+  CountriesDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
   AppErrorDTO
@@ -113,12 +113,12 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     this._on(messages.CONNECTION_CANCEL, callback)
   }
 
-  removeCountriesUpdateCallback (callback: UserSettings => void): void {
-    this._removeCallback(messages.COUNTRY_UPDATE, callback)
+  onCountriesUpdate (callback: CountriesDTO => void) {
+    this._on(messages.COUNTRY_UPDATE, callback)
   }
 
-  onCountriesUpdate (callback: (CountryUpdateDTO) => void) {
-    this._on(messages.COUNTRY_UPDATE, callback)
+  removeCountriesUpdateCallback (callback: UserSettings => void): void {
+    this._removeCallback(messages.COUNTRY_UPDATE, callback)
   }
 
   onMysteriumClientIsReady (callback: () => void) {

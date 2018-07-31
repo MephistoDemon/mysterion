@@ -30,7 +30,7 @@ class ProposalFetcherMock implements ProposalFetcher {
 
   async fetch (): Promise<Array<ProposalDTO>> {
     this._subscriber(this._data)
-    return new Promise(resolve => resolve(this._data))
+    return this._data
   }
 
   onFetchedProposals (cb: Callback<ProposalDTO[]>) {
@@ -42,12 +42,10 @@ class ProposalFetcherMock implements ProposalFetcher {
   }
 }
 
-describe('CountryListNotifier', () => {
-  let countryListNotifier
+describe('CountryList', () => {
+  let countryList, cbRec
   const proposalFetcher = new ProposalFetcherMock()
   const store = new UserSettingsStore('')
-
-  const cbRec = new CallbackRecorder()
 
   const proposal1 = [new ProposalDTO({id: '1', providerId: '0x1', serviceType: 'mock'})]
   const proposal2 = [new ProposalDTO({
@@ -58,26 +56,29 @@ describe('CountryListNotifier', () => {
   })]
 
   beforeEach(() => {
-    countryListNotifier = new CountryList(proposalFetcher, store)
+    countryList = new CountryList(proposalFetcher, store)
+    cbRec = new CallbackRecorder()
   })
 
-  it('notifies subscribers with Country each time proposals arrive', () => {
-    countryListNotifier.onUpdate(cbRec.getCallback())
-    proposalFetcher.setFetchData(proposal1)
-    proposalFetcher.fetch()
-    expect(cbRec.firstArgument).to.be.eql([{id: '0x1', code: null, name: 'N/A', isFavorite: false}])
+  describe('.onUpdate', () => {
+    it('notifies subscribers with Country each time proposals arrive', () => {
+      countryList.onUpdate(cbRec.getCallback())
+      proposalFetcher.setFetchData(proposal1)
+      proposalFetcher.fetch()
+      expect(cbRec.firstArgument).to.be.eql([{id: '0x1', code: null, name: 'N/A', isFavorite: false}])
 
-    proposalFetcher.setFetchData(proposal2)
-    proposalFetcher.fetch()
-    expect(cbRec.firstArgument).to.be.eql([{id: '0x2', code: 'lt', name: 'Lithuania', isFavorite: false}])
-  })
+      proposalFetcher.setFetchData(proposal2)
+      proposalFetcher.fetch()
+      expect(cbRec.firstArgument).to.be.eql([{id: '0x2', code: 'lt', name: 'Lithuania', isFavorite: false}])
+    })
 
-  it('notifies subscribers when favorite providers change', () => {
-    proposalFetcher.setFetchData(proposal2)
-    proposalFetcher.fetch()
+    it('notifies subscribers when favorite providers change', () => {
+      proposalFetcher.setFetchData(proposal2)
+      proposalFetcher.fetch()
 
-    countryListNotifier.onUpdate(cbRec.getCallback())
-    store.setFavorite({id: '0x2', isFavorite: true})
-    expect(cbRec.firstArgument).to.be.eql([{id: '0x2', code: 'lt', name: 'Lithuania', isFavorite: true}])
+      countryList.onUpdate(cbRec.getCallback())
+      store.setFavorite({id: '0x2', isFavorite: true})
+      expect(cbRec.firstArgument).to.be.eql([{id: '0x2', code: 'lt', name: 'Lithuania', isFavorite: true}])
+    })
   })
 })

@@ -464,7 +464,7 @@ function syncFavorites (userSettingsStore, communication) {
   })
 }
 
-function syncShowDisconnectNotifications (userSettingsStore, communication) { // only set notification toggle here
+function syncShowDisconnectNotifications (userSettingsStore, communication) {
   communication.onUserSettingsRequest(() => {
     communication.sendUserSettings(userSettingsStore.getAll())
   })

@@ -76,7 +76,6 @@ import AppError from '../partials/AppError'
 import config from '../config'
 import {ActionLooperConfig} from '../store/modules/connection'
 import FavoriteButton from '../components/favorite-button'
-import messages from '@/../app/messages'
 export default {
   name: 'Main',
   components: {
@@ -130,7 +129,7 @@ export default {
     onCountriesUpdate (countries) {
       this.countriesAreLoading = false
 
-      if (countries.length < 1) this.bugReporter.captureInfoMessage(messages.countryListIsEmpty)
+      if (countries.length < 1) this.bugReporter.captureInfoMessage('Renderer received empty countries list')
 
       this.countryList = countries
     }

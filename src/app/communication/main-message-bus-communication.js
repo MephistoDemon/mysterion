@@ -21,7 +21,7 @@ import type {
   RequestConnectionDTO,
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
-  CountryUpdateDTO,
+  CountriesDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
   AppErrorDTO
@@ -75,7 +75,7 @@ class MainMessageBusCommunication implements MainCommunication, MapSyncCommunica
     this._send(messages.HEALTHCHECK_DOWN)
   }
 
-  sendCountries (countries: CountryUpdateDTO) {
+  sendCountries (countries: CountriesDTO) {
     this._send(messages.COUNTRY_UPDATE, countries)
   }
 
