@@ -207,6 +207,8 @@ class Mysterion {
     synchronizeUserSettings(this.userSettingsStore, this.communication)
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
     await this._loadUserSettings()
+    this.disconnectNotification.addReconnectFn(this.communication.sendReconnectRequest.bind(this.communication))
+    this.communication.sendReconnectRequest()
   }
 
   _getWindowSize (showTerms: boolean) {

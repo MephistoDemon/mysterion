@@ -75,6 +75,11 @@ export default {
 
     // we need to notify the main process that we're up
     this.rendererCommunication.sendRendererBooted()
+
+    this.rendererCommunication.onReconnectRequest(() => {
+      this.$store.dispatch(type.RECONNECT)
+    })
+
     this.rendererCommunication.onConnectionRequest((proposal) => {
       this.$store.dispatch(type.CONNECT, {
         consumerId: this.$store.getters.currentIdentity,

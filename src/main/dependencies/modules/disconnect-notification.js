@@ -21,9 +21,21 @@ import type {Container} from '../../../app/di'
 import Notification from '../../../app/notification/index'
 
 function bootstrap (container: Container) {
-  container.constant(
+  container.factory(
     'disconnectNotification',
-    new Notification('Disconnected', 'You have been disconnected from VPN server')
+    [],
+    (com) => {
+      return new Notification(
+        'Disconnected',
+        'from VPN server',
+        {text: 'Reconnect',
+          action: () => {
+            // eslint-disable-next-line
+            console.log('g')
+          }
+        }
+      )
+    }
   )
 }
 

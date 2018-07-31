@@ -34,6 +34,7 @@ import EmptyTequilapiClientMock from './empty-tequilapi-client-mock'
 import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
 import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 import BugReporterMock from '../../../../helpers/bug-reporter-mock'
+import ConnectionRequestDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-request'
 
 function factoryTequilapiManipulator () {
   let statusFail = false
@@ -483,7 +484,7 @@ describe('actions', () => {
         actionLoopers: {},
         location: {originalCountry: ''}
       }
-      const committed = await executeAction(type.CONNECT, state)
+      const committed = await executeAction(type.CONNECT, state, new ConnectionRequestDTO('consumer', 'provider'))
       expect(committed).to.eql([
         {
           key: type.SET_CONNECTION_STATUS,
@@ -492,6 +493,10 @@ describe('actions', () => {
         {
           key: type.CONNECTION_STATISTICS_RESET,
           value: undefined
+        },
+        {
+          key: type.SET_LAST_CONNECTION_PROVIDER,
+          value: 'provider'
         },
         {
           key: type.HIDE_ERROR,

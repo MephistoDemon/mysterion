@@ -91,6 +91,10 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     this._removeCallback(messages.USER_SETTINGS, callback)
   }
 
+  onReconnectRequest (callback: () => void): void {
+    this._on(messages.RECONNECT_REQUEST, callback)
+  }
+
   onConnectionRequest (callback: RequestConnectionDTO => void) {
     this._on(messages.CONNECTION_REQUEST, callback)
   }
