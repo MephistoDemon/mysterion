@@ -144,7 +144,9 @@ describe('CountrySelect', () => {
         name: 'Lithuania'
       }
 
-      // wrapper.find('.multiselect__option').trigger('click') // TODO: do this instead of vm.onChange() when the issue is resolved https://github.com/vuejs/vue-test-utils/issues/754
+      // TODO: do this instead of vm.onChange() when https://github.com/vuejs/vue-test-utils/issues/754 is resolved
+      // wrapper.find('.multiselect__option').trigger('click')
+
       wrapper.vm.onChange(countryExpected)
       expect(wrapper.emitted().selected).to.be.ok
       expect(wrapper.emitted().selected[0]).to.eql([countryExpected])
