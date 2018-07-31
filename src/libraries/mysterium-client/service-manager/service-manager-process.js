@@ -26,7 +26,7 @@ import { SERVICE_MANAGER_BIN, SERVICE_NAME } from './service-manager-installer'
 import ClientLogSubscriber from '../client-log-subscriber'
 
 /***
- * Time in milliseconds requires to fully activate Mysterium client
+ * Time in milliseconds required to fully activate Mysterium client
  * @type {number}
  */
 const SERVICE_INIT_TIME = 8000

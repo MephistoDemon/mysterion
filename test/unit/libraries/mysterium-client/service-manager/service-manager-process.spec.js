@@ -85,6 +85,26 @@ describe('ServiceManagerProcess', () => {
   let process: ServiceManagerProcess
   let clientLogSubscriber: ClientLogSubscriberMock
 
+  const healthCheckTest = async (func: () => Promise<void>) => {
+    tequilapiClient.healthCheckThrowsError = true
+
+    systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.STOPPED))
+
+    let startExecuted = false
+    const promise = func()
+    promise.then(() => {
+      startExecuted = true
+    })
+
+    expect(startExecuted).to.be.false
+
+    tequilapiClient.healthCheckThrowsError = false
+    await promise
+
+    expect(tequilapiClient.healthCheckIsCalled).to.be.true
+    expect(startExecuted).to.be.true
+  }
+
   beforeEach(() => {
     const systemMock = createSystemMock()
     system = (systemMock: System)
@@ -102,23 +122,7 @@ describe('ServiceManagerProcess', () => {
     })
 
     it('starts stopped service and waits for healthcheck', async () => {
-      tequilapiClient.healthCheckThrowsError = true
-
-      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.STOPPED))
-
-      let startExecuted = false
-      const startPromise = process.start()
-      startPromise.then(() => {
-        startExecuted = true
-      })
-
-      expect(startExecuted).to.be.false
-
-      tequilapiClient.healthCheckThrowsError = false
-      await startPromise
-
-      expect(tequilapiClient.healthCheckIsCalled).to.be.true
-      expect(startExecuted).to.be.true
+      healthCheckTest(() => process.start())
     })
   })
 
@@ -133,23 +137,7 @@ describe('ServiceManagerProcess', () => {
     })
 
     it('starts stopped service and waits for healthcheck', async () => {
-      tequilapiClient.healthCheckThrowsError = true
-
-      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.STOPPED))
-
-      let startExecuted = false
-      const startPromise = process.repair()
-      startPromise.then(() => {
-        startExecuted = true
-      })
-
-      expect(startExecuted).to.be.false
-
-      tequilapiClient.healthCheckThrowsError = false
-      await startPromise
-
-      expect(tequilapiClient.healthCheckIsCalled).to.be.true
-      expect(startExecuted).to.be.true
+      healthCheckTest(() => process.repair())
     })
 
     it('restarts stopped service only once', async () => {
