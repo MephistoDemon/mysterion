@@ -19,6 +19,7 @@
 
 import type { LogCallback } from '../../../../src/libraries/mysterium-client'
 import logLevels from '../../../../src/libraries/mysterium-client/log-levels'
+import BugReporterMock from '../../../helpers/bug-reporter-mock'
 import { afterEach, beforeEach, describe, expect, it } from '../../../helpers/dependencies'
 import ClientLogSubscriber from '../../../../src/libraries/mysterium-client/client-log-subscriber'
 import { existsSync, unlinkSync } from 'fs'
@@ -36,7 +37,7 @@ describe('ClientLogSubscriber', () => {
   }
 
   beforeEach(() => {
-    subscriber = new ClientLogSubscriber(stdout, stderr, stdout, dateFunction, tailFunction)
+    subscriber = new ClientLogSubscriber(new BugReporterMock(), stdout, stderr, stdout, dateFunction, tailFunction)
   })
 
   afterEach(() => {

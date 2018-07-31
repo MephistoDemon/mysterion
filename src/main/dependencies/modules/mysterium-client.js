@@ -19,6 +19,7 @@
 import os from 'os'
 import path from 'path'
 import { Tail } from 'tail'
+import type { BugReporter } from '../../../app/bug-reporting/interface'
 
 import type { Container } from '../../../app/di'
 import type { MysterionConfig } from '../../../app/mysterionConfig'
@@ -50,14 +51,16 @@ function bootstrap (container: Container) {
 
   container.service(
     'mysteriumClient.config',
-    ['mysterionApplication.config'],
-    (mysterionConfig: MysterionConfig): ClientConfig => {
+    ['mysteriumClient.platform', 'mysterionApplication.config'],
+    (platform: string, mysterionConfig: MysterionConfig): ClientConfig => {
       let clientBin = path.join(mysterionConfig.contentsDirectory, 'bin', 'mysterium_client')
       let openvpnBin = path.join(mysterionConfig.contentsDirectory, 'bin', 'openvpn')
+      let systemLogPath = '/var/log/system.log'
 
-      if (os.platform() === WINDOWS) {
+      if (platform === WINDOWS) {
         clientBin += '.exe'
         openvpnBin += '.exe'
+        systemLogPath = null
       }
 
       return {
@@ -69,7 +72,7 @@ function bootstrap (container: Container) {
         logDir: mysterionConfig.userDataDirectory,
         stdOutFileName: 'stdout.log',
         stdErrFileName: 'stderr.log',
-        systemLogPath: '/var/log/system.log',
+        systemLogPath: systemLogPath,
         tequilapiPort: 4050
       }
     }
@@ -104,9 +107,10 @@ function bootstrap (container: Container) {
 
   container.service(
     'mysteriumClient.logSubscriber',
-    ['mysteriumClient.config', 'mysteriumClient.tailFunction'],
-    (config: ClientConfig, tailFunction: TailFunction) => {
+    ['bugReporter', 'mysteriumClient.config', 'mysteriumClient.tailFunction', 'mysteriumClient.platform'],
+    (bugReporter: BugReporter, config: ClientConfig, tailFunction: TailFunction, platform: string) => {
       return new ClientLogSubscriber(
+        bugReporter,
         path.join(config.logDir, config.stdOutFileName),
         path.join(config.logDir, config.stdErrFileName),
         config.systemLogPath,
