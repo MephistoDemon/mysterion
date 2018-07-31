@@ -17,7 +17,8 @@
 
 // @flow
 
-import { beforeEach, describe, expect, it } from '../../../../helpers/dependencies'
+import { before, beforeEach, after, describe, expect, it } from '../../../../helpers/dependencies'
+import lolex from 'lolex'
 import ServiceManagerProcess, { SERVICE_STATE } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-process'
 import type { ServiceState } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-process'
 import EmptyTequilapiClientMock from '../../../renderer/store/modules/empty-tequilapi-client-mock'
@@ -28,6 +29,8 @@ import ClientLogSubscriber from '../../../../../src/libraries/mysterium-client/c
 import type { LogCallback } from '../../../../../src/libraries/mysterium-client'
 import type { SystemMockManager } from '../../../../helpers/system-mock'
 import type { System } from '../../../../../src/libraries/mysterium-client/system'
+import Monitoring from '../../../../../src/libraries/mysterium-client/monitoring'
+import { nextTick } from '../../../../helpers/utils'
 
 const SERVICE_MANAGER_DIR = '/service-manager/bin/'
 
@@ -84,6 +87,8 @@ describe('ServiceManagerProcess', () => {
   let tequilapiClient: TequilapiMock
   let process: ServiceManagerProcess
   let clientLogSubscriber: ClientLogSubscriberMock
+  let monitoring: Monitoring
+  let clock: lolex
 
   const healthCheckTest = async (func: () => Promise<void>) => {
     tequilapiClient.healthCheckThrowsError = true
@@ -105,6 +110,19 @@ describe('ServiceManagerProcess', () => {
     expect(startExecuted).to.be.true
   }
 
+  async function tickWithDelay (duration) {
+    clock.tick(duration)
+    await nextTick()
+  }
+
+  before(() => {
+    clock = lolex.install()
+  })
+
+  after(() => {
+    clock.uninstall()
+  })
+
   beforeEach(() => {
     const systemMock = createSystemMock()
     system = (systemMock: System)
@@ -112,7 +130,10 @@ describe('ServiceManagerProcess', () => {
 
     tequilapiClient = new TequilapiMock()
     clientLogSubscriber = new ClientLogSubscriberMock()
-    process = new ServiceManagerProcess(tequilapiClient, clientLogSubscriber, SERVICE_MANAGER_DIR, system)
+    // $FlowFixMe
+    monitoring = new Monitoring(tequilapiClient)
+    process = new ServiceManagerProcess(tequilapiClient, clientLogSubscriber, SERVICE_MANAGER_DIR, system, monitoring)
+    monitoring.start()
   })
 
   describe('.start', () => {
@@ -130,6 +151,7 @@ describe('ServiceManagerProcess', () => {
     it('restarts running service', async () => {
       const repairPromise = process.repair()
       systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.RUNNING))
+      await tickWithDelay(2000)
       await repairPromise
 
       expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
@@ -151,6 +173,7 @@ describe('ServiceManagerProcess', () => {
       await process.repair()
 
       // wait until first "start" call ends
+      await tickWithDelay(2000)
       await repairPromise
 
       expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)

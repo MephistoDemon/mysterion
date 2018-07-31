@@ -17,6 +17,7 @@
 
 // @flow
 import TequilapiClient from '../mysterium-tequilapi/client'
+import logger from '../../app/logger'
 
 const healthCheckInterval = 1500
 const healthCheckTimeout = 500
@@ -50,6 +51,14 @@ class Monitoring {
 
   onStatus (callback: StatusCallback) {
     this._subscribersStatus.push(callback)
+    callback(this._lastIsRunning)
+  }
+
+  removeOnStatus (callback: StatusCallback) {
+    const i = this._subscribersStatus.indexOf(callback)
+    if (i >= 0) {
+      this._subscribersStatus.splice(i, 0)
+    }
   }
 
   onStatusUp (callback: UpCallback) {
@@ -69,7 +78,11 @@ class Monitoring {
       isRunning = false
     }
 
-    this._notifySubscribers(isRunning)
+    try {
+      this._notifySubscribers(isRunning)
+    } catch (e) {
+      logger.error(e)
+    }
 
     this._timer = setTimeout(() => this._healthCheckLoop(), healthCheckInterval)
   }

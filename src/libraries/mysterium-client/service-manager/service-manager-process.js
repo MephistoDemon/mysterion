@@ -24,6 +24,8 @@ import type { TequilapiClient } from '../../mysterium-tequilapi/client'
 import type { System } from '../system'
 import { SERVICE_MANAGER_BIN, SERVICE_NAME } from './service-manager-installer'
 import ClientLogSubscriber from '../client-log-subscriber'
+import Monitoring from '../monitoring'
+import type { StatusCallback } from '../monitoring'
 
 /***
  * Time in milliseconds required to fully activate Mysterium client
@@ -46,14 +48,16 @@ class ServiceManagerProcess implements Process {
   _serviceManagerDir: string
   _serviceInitTime: number
   _system: System
+  _monitoring: Monitoring
   _startIsRunning: boolean
 
-  constructor (tequilapi: TequilapiClient, logs: ClientLogSubscriber, serviceManagerDir: string, system: System, serviceInitTime: number = SERVICE_INIT_TIME) {
+  constructor (tequilapi: TequilapiClient, logs: ClientLogSubscriber, serviceManagerDir: string, system: System, monitoring: Monitoring, serviceInitTime: number = SERVICE_INIT_TIME) {
     this._tequilapi = tequilapi
     this._logs = logs
     this._serviceManagerDir = serviceManagerDir
     this._serviceInitTime = serviceInitTime
     this._system = system
+    this._monitoring = monitoring
   }
 
   async start (): Promise<void> {
@@ -62,7 +66,7 @@ class ServiceManagerProcess implements Process {
       return
     }
 
-    await this.repair()
+    await this._doStart(state)
   }
 
   async repair (): Promise<void> {
@@ -85,22 +89,27 @@ class ServiceManagerProcess implements Process {
       const command = `${serviceManagerPath} --do=${operation}`
       logger.info('Running command', command)
       await this._system.sudoExec(command)
-      await this._waitForService()
+      await this._waitForHealthCheck()
     } finally {
       this._startIsRunning = false
     }
   }
 
-  async _waitForService (): Promise<void> {
-    const now = () => (new Date()).getTime()
-    const startTime = now()
+  async _waitForHealthCheck (): Promise<void> {
+    let statusCallback: ?StatusCallback
+    await new Promise((resolve, reject) => {
+      statusCallback = (isRunning: boolean) => {
+        if (isRunning) {
+          resolve()
+        }
+      }
+      // setTimeout(resolve, this._serviceInitTime)
+      setTimeout(() => reject(new Error('Unable to start service')), this._serviceInitTime)
+      this._monitoring.onStatus(statusCallback)
+    })
 
-    // wait until first health check successes
-    while (now() - startTime < this._serviceInitTime) {
-      try {
-        await this._tequilapi.healthCheck()
-        break
-      } catch (e) {}
+    if (statusCallback) {
+      this._monitoring.removeOnStatus(statusCallback)
     }
   }
 
