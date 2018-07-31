@@ -19,6 +19,7 @@
 import os from 'os'
 import path from 'path'
 import { Tail } from 'tail'
+import type { BugReporter } from '../../../app/bug-reporting/interface'
 
 import type { Container } from '../../../app/di'
 import type { MysterionConfig } from '../../../app/mysterionConfig'
@@ -104,12 +105,19 @@ function bootstrap (container: Container) {
 
   container.service(
     'mysteriumClient.logSubscriber',
-    ['mysteriumClient.config', 'mysteriumClient.tailFunction'],
-    (config: ClientConfig, tailFunction: TailFunction) => {
+    ['bugReporter', 'mysteriumClient.config', 'mysteriumClient.tailFunction', 'mysteriumClient.platform'],
+    (bugReporter: BugReporter, config: ClientConfig, tailFunction: TailFunction, platform: string) => {
+      let systemLogPath = null
+
+      if (platform === 'darwin') {
+        systemLogPath = config.systemLogPath
+      }
+
       return new ClientLogSubscriber(
+        bugReporter,
         path.join(config.logDir, config.stdOutFileName),
         path.join(config.logDir, config.stdErrFileName),
-        config.systemLogPath,
+        systemLogPath,
         () => new Date(),
         tailFunction
       )
