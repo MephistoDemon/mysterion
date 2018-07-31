@@ -26,13 +26,25 @@
           class="control__location"
           v-if="ip">current IP: {{ ip }}</div>
       </div>
+
       <div class="control__bottom">
-        <country-select
-          @selected="setCountry"
-          class="control__countries"
-          :class="{'is-disabled': statusCode!==-1}"/>
+        <div
+          class="control__countries">
+          <div class="control__countries__row" />
+          <country-select
+            :country-list="countryList"
+            :countries-are-loading="countriesAreLoading"
+            :fetch-countries="fetchCountries"
+            @selected="setCountry"
+            :class="{'is-disabled': statusCode!==-1}"/>
+          <favorite-button
+            style="flex:1 0 0; text-align:left;"
+            :country="country"
+            :toggle-favorite="toggleFavorite"/>
+        </div>
         <connection-button :provider-id="providerIdentity"/>
       </div>
+
       <div class="control__footer">
         <div class="footer__stats stats">
           <transition name="slide-up">
@@ -55,26 +67,30 @@
 </template>
 
 <script>
-import CountrySelect from '@/components/CountrySelect'
+import CountrySelect from '../components/CountrySelect'
 import type from '../store/types'
 import {mapGetters, mapMutations} from 'vuex'
 import StatsDisplay from '../components/StatsDisplay'
-import ConnectionButton from '@/components/ConnectionButton'
-import AppError from '@/partials/AppError'
+import ConnectionButton from '../components/ConnectionButton'
+import AppError from '../partials/AppError'
 import config from '../config'
 import {ActionLooperConfig} from '../store/modules/connection'
-
+import FavoriteButton from '../components/favorite-button'
 export default {
   name: 'Main',
   components: {
+    FavoriteButton,
     CountrySelect,
     ConnectionButton,
     StatsDisplay,
     AppError
   },
+  dependencies: ['bugReporter', 'rendererCommunication'],
   data () {
     return {
-      country: null
+      country: null,
+      countryList: [],
+      countriesAreLoading: false
     }
   },
   computed: {
@@ -98,11 +114,33 @@ export default {
   },
   methods: {
     ...mapMutations({ hideErr: type.HIDE_ERROR }),
-    setCountry (data) { this.country = data }
+    setCountry (data) { this.country = data },
+    fetchCountries () {
+      this.countriesAreLoading = true
+      this.rendererCommunication.sendProposalUpdateRequest()
+    },
+    async toggleFavorite () {
+      if (!this.country) return
+      this.country = {...this.country, isFavorite: !this.country.isFavorite}
+      this.countryList.find((c) => c.id === this.country.id).isFavorite = this.country.isFavorite
+
+      this.rendererCommunication.sendToggleFavoriteProvider({id: this.country.id, isFavorite: this.country.isFavorite})
+    },
+    onCountriesUpdate (countries) {
+      this.countriesAreLoading = false
+
+      if (countries.length < 1) this.bugReporter.captureInfoMessage('Renderer received empty countries list')
+
+      this.countryList = countries
+    }
   },
   async mounted () {
+    this.rendererCommunication.onCountriesUpdate(this.onCountriesUpdate)
     this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.CONNECTION_IP, config.ipUpdateThreshold))
     this.$store.dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.FETCH_CONNECTION_STATUS, config.statusUpdateThreshold))
+  },
+  beforeDestroy () {
+    this.rendererCommunication.removeCountriesUpdateCallback(this.onCountriesUpdate)
   }
 }
 </script>
