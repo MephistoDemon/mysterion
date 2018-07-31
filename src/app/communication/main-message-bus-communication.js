@@ -24,7 +24,8 @@ import type {
   CountriesDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO
+  AppErrorDTO,
+  FavoriteProviderDTO
 } from './dto'
 import messages from './messages'
 import type { MessageBus } from './message-bus'
@@ -32,7 +33,6 @@ import type { MainCommunication } from './main-communication'
 import type { UserSettings } from '../user-settings/user-settings'
 import type {MapSyncCommunication, MapSyncDTO} from '../../libraries/map-sync'
 import type {Metric} from '../bug-reporting/bug-reporter-metrics'
-import type { FavoriteProviderToggle } from '../user-settings/user-settings-store'
 
 /**
  * This allows main process communicating with renderer process.
@@ -135,7 +135,7 @@ class MainMessageBusCommunication implements MainCommunication, MapSyncCommunica
     this._on(messages.SHOW_DISCONNECT_NOTIFICATION, callback)
   }
 
-  onToggleFavoriteProvider (callback: (FavoriteProviderToggle) => void): void {
+  onToggleFavoriteProvider (callback: (FavoriteProviderDTO) => void): void {
     this._on(messages.TOGGLE_FAVORITE_PROVIDER, callback)
   }
 

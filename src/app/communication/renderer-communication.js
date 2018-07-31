@@ -26,13 +26,13 @@ import type {
   CountriesDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO
+  AppErrorDTO,
+  FavoriteProviderDTO
 } from './dto'
 
 import type {UserSettings} from '../user-settings/user-settings'
 import type {Metric} from '../bug-reporting/bug-reporter-metrics'
 import type {MapSyncCommunication, MapSyncDTO} from '../../libraries/map-sync'
-import type { FavoriteProviderToggle } from '../user-settings/user-settings-store'
 
 /**
  * This allows renderer process communicating with main process.
@@ -80,7 +80,7 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     return this._send(messages.SHOW_DISCONNECT_NOTIFICATION, data)
   }
 
-  sendToggleFavoriteProvider (data: FavoriteProviderToggle): void {
+  sendToggleFavoriteProvider (data: FavoriteProviderDTO): void {
     return this._send(messages.TOGGLE_FAVORITE_PROVIDER, data)
   }
 

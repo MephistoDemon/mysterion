@@ -30,8 +30,6 @@ const userStoreSettingString = {
   favoriteProviders: 'favoriteProviders'
 }
 
-export type FavoriteProviderToggle = { id: string, isFavorite: boolean }
-
 type UserStoreSetting = $Values<typeof userStoreSettingString>
 
 class UserSettingsStore {
