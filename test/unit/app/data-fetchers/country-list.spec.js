@@ -77,7 +77,7 @@ describe('CountryList', () => {
       proposalFetcher.fetch()
 
       countryList.onUpdate(cbRec.getCallback())
-      store.setFavorite({id: '0x2', isFavorite: true})
+      store.setFavorite('0x2', true)
       expect(cbRec.firstArgument).to.be.eql([{id: '0x2', code: 'lt', name: 'Lithuania', isFavorite: true}])
     })
   })

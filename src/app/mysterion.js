@@ -459,7 +459,7 @@ function showNotificationOnDisconnect (userSettingsStore, communication, disconn
 
 function syncFavorites (userSettingsStore, communication) {
   communication.onToggleFavoriteProvider((fav) => {
-    userSettingsStore.setFavorite(fav)
+    userSettingsStore.setFavorite(fav.id, fav.isFavorite)
     userSettingsStore.save()
   })
 }

@@ -35,7 +35,7 @@ describe('UserSettingsStore', () => {
     it('exports a valid json file', async () => {
       const userSettingsStore = new UserSettingsStore(saveSettingsPath)
       userSettingsStore.setShowDisconnectNotifications(false)
-      userSettingsStore.setFavorite({id: 'id_123', isFavorite: true})
+      userSettingsStore.setFavorite('id_123', true)
       await userSettingsStore.save()
       const data = readFileSync(saveSettingsPath, {encoding: 'utf8'})
 
@@ -45,7 +45,7 @@ describe('UserSettingsStore', () => {
     it('throws error if save() fails on invalid path to file', async () => {
       const userSettingsStore = new UserSettingsStore(invalidPath)
       userSettingsStore.setShowDisconnectNotifications(false)
-      userSettingsStore.setFavorite({id: 'id_123', isFavorite: true})
+      userSettingsStore.setFavorite('id_123', true)
       const error = await capturePromiseError(userSettingsStore.save())
 
       expect(error).to.be.an.instanceOf(Error)
@@ -119,7 +119,7 @@ describe('UserSettingsStore', () => {
 
     describe('setFavorite', async () => {
       it('adds favoriteId to settings store', () => {
-        userSettingsStore.setFavorite({id: '0xfax', isFavorite: true})
+        userSettingsStore.setFavorite('0xfax', true)
         expect(userSettingsStore.getAll().favoriteProviders.has('0xfax')).to.be.true
       })
 
@@ -127,7 +127,7 @@ describe('UserSettingsStore', () => {
         const cbRec = new CallbackRecorder()
 
         userSettingsStore.onChange('favoriteProviders', cbRec.getCallback())
-        userSettingsStore.setFavorite({id: '0xfax', isFavorite: true})
+        userSettingsStore.setFavorite('0xfax', true)
         expect(cbRec.invoked).to.be.true
         expect(cbRec.firstArgument.has('0xfax')).to.be.true
       })

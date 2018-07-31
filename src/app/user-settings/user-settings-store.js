@@ -73,13 +73,13 @@ class UserSettingsStore {
     return saveSettings(this._path, this._settings)
   }
 
-  setFavorite (toggleFavorite: FavoriteProviderToggle) {
-    if (toggleFavorite.isFavorite === this._settings.favoriteProviders.has(toggleFavorite.id)) {
+  setFavorite (id: string, isFavorite: boolean) {
+    if (isFavorite === this._settings.favoriteProviders.has(id)) {
       return // nothing changed
     }
 
-    if (toggleFavorite.isFavorite) this._settings.favoriteProviders.add(toggleFavorite.id)
-    else this._settings.favoriteProviders.delete(toggleFavorite.id)
+    if (isFavorite) this._settings.favoriteProviders.add(id)
+    else this._settings.favoriteProviders.delete(id)
     this._notify(userStoreSettingString.favoriteProviders)
   }
 
