@@ -51,9 +51,7 @@ export default {
   methods: {
     toggle () {
       this.isDisconnectNotificationEnabled = !this.isDisconnectNotificationEnabled
-      this.rendererCommunication.sendUserSettingsUpdate({
-        showDisconnectNotifications: this.isDisconnectNotificationEnabled
-      })
+      this.rendererCommunication.sendUserSettingsShowDisconnectNotifications(this.isDisconnectNotificationEnabled)
     },
     updateUserSettings (settings) {
       this.isDisconnectNotificationEnabled = settings.showDisconnectNotifications

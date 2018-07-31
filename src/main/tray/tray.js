@@ -18,11 +18,11 @@
 // @flow
 import path from 'path'
 import {Tray as ElectronTray} from 'electron'
-import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 import TrayMenuBuilder from './menu-builder'
 import translations from './translations'
 import ConnectionStatusEnum from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
+import type {Country} from '../../app/countries'
 
 const TrayIcon = {
   active: 'active',
@@ -69,8 +69,8 @@ class Tray {
     return this
   }
 
-  setProposals (proposals: Array<ProposalDTO>) {
-    this._menuBuilder.updateProposals(proposals)
+  setCountries (countries: Array<Country>) {
+    this._menuBuilder.updateCountries(countries)
 
     if (!this._canUpdateItems) {
       return

@@ -18,6 +18,7 @@
 // @flow
 import countries from './list'
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
+import type { FavoriteProviders } from '../user-settings/user-settings'
 
 const COUNTRY_NAME_UNRESOLVED = 'N/A'
 const COUNTRY_CODE_LENGTH = 2
@@ -25,7 +26,8 @@ const COUNTRY_CODE_LENGTH = 2
 type Country = {
   id: string,
   code: ?string,
-  name: string
+  name: string,
+  isFavorite: boolean
 }
 
 function getCountryLabel (country: Country, maxNameLength: ?number = null, maxIdentityLength: ?number = 9) {
@@ -38,9 +40,8 @@ function getCountryLabel (country: Country, maxNameLength: ?number = null, maxId
   return `${title} (${identity})`
 }
 
-function getSortedCountryListFromProposals (proposals: Array<ProposalDTO>): Array<Country> {
-  const countries = proposals.map(getCountryFromProposal)
-
+function getSortedCountryListFromProposals (proposals: Array<ProposalDTO>, favorites: FavoriteProviders): Array<Country> {
+  const countries = proposals.map(getCountryFromProposal).map(countryFavoriteMapper(favorites))
   return countries.sort(compareCountries)
 }
 
@@ -51,16 +52,27 @@ function limitedLengthString (value: string, maxLength: ?number = null): string 
   return value
 }
 
+function countryFavoriteMapper (favorites: FavoriteProviders): (Country) => Country {
+  return (country: Country) => {
+    return {...country, isFavorite: favorites.has(country.id)}
+  }
+}
+
 function getCountryFromProposal (proposal: ProposalDTO): Country {
   return {
     id: proposal.providerId,
     code: getCountryCodeFromProposal(proposal),
-    name: getCountryNameFromProposal(proposal)
+    name: getCountryNameFromProposal(proposal),
+    isFavorite: false
   }
 }
 
 function compareCountries (a: Country, b: Country) {
-  if (a.name > b.name) {
+  if (a.isFavorite && !b.isFavorite) {
+    return -1
+  } else if (!a.isFavorite && b.isFavorite) {
+    return 1
+  } else if (a.name > b.name) {
     return 1
   } else if (b.name > a.name) {
     return -1

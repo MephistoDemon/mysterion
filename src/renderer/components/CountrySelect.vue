@@ -21,17 +21,24 @@
       class="countries__multiselect"
       :max-height="120"
       v-model="country"
+      track-by="id"
       :custom-label="selectedCountryLabel"
       placeholder="Choose country"
       :options="countryList"
       :loading="countriesAreLoading"
       :searchable="true"
       :show-labels="false"
+      :show-pointer="false"
       @open="fetchCountries"
       @input="onChange">
       <template
         slot="option"
         slot-scope="props">
+        <span
+          class="multiselect__option-star"
+          v-if='props.option.isFavorite'>
+          ★
+        </span>
         <div class="multiselect__flag">
           <img
             :src="imagePath(props.option.code)"
@@ -57,15 +64,28 @@
 
 <script>
 import path from 'path'
-import type from '@/store/types'
-import messages from '@/../app/messages'
-import {getCountryLabel, getSortedCountryListFromProposals, isCountryUnresolved} from '@/../app/countries'
+import { getCountryLabel, isCountryUnresolved } from '../../app/countries'
 import Multiselect from 'vue-multiselect'
 import IconWorld from '@/assets/img/icon--world.svg'
 
 export default {
   name: 'CountrySelect',
   dependencies: ['rendererCommunication', 'bugReporter'],
+  props: {
+    countryList: {
+      type: Array,
+      required: true
+    },
+    countriesAreLoading: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    fetchCountries: {
+      type: Function,
+      required: true
+    }
+  },
   components: {
     Multiselect,
     IconWorld
@@ -73,9 +93,7 @@ export default {
   data () {
     return {
       country: null,
-      countryList: [],
-      unresolvedCountryList: [],
-      countriesAreLoading: false
+      unresolvedCountryList: []
     }
   },
   methods: {
@@ -107,23 +125,6 @@ export default {
 
       return path.join('static', 'flags', code.toLowerCase() + '.svg')
     },
-    fetchCountries () {
-      this.countriesAreLoading = true
-      this.rendererCommunication.sendProposalUpdateRequest()
-    },
-    onProposalUpdate (proposals) {
-      this.countriesAreLoading = false
-
-      if (proposals.length < 1) {
-        const error = new Error(messages.countryListIsEmpty)
-
-        this.$store.commit(type.SHOW_ERROR, error)
-        this.bugReporter.captureErrorException(error)
-        return
-      }
-
-      this.countryList = getSortedCountryListFromProposals(proposals)
-    },
     onConnectionRequest (proposal) {
       const selectedCountry = this.countryList.find((country) => country.id === proposal.providerId)
 
@@ -132,11 +133,9 @@ export default {
     }
   },
   mounted () {
-    this.rendererCommunication.onProposalUpdate(this.onProposalUpdate)
     this.rendererCommunication.onConnectionRequest(this.onConnectionRequest)
   },
   beforeDestroy () {
-    this.rendererCommunication.removeProposalUpdateCallback(this.onProposalUpdate)
     this.rendererCommunication.removeConnectionRequestCallback(this.onConnectionRequest)
   }
 }

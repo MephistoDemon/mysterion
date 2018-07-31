@@ -45,6 +45,8 @@ module.exports = {
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     "no-restricted-globals": ['error', 'event'],
-    'no-console': ['error']
+    'no-console': ['error'],
+    // TODO: reduce this limit to 120
+    "max-len": ["error", { "code": 140 }]
   }
 }

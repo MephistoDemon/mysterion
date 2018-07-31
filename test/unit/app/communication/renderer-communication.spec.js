@@ -41,12 +41,12 @@ describe('RendererCommunication', () => {
     })
   })
 
-  describe('.removeProposalUpdateCallback', () => {
+  describe('.removeCountriesUpdateCallback', () => {
     it('removes callback', () => {
-      rendererCommunication.onProposalUpdate(callback)
+      rendererCommunication.onCountriesUpdate(callback)
       expect(messageBus.noRemainingCallbacks()).to.be.false
 
-      rendererCommunication.removeProposalUpdateCallback(callback)
+      rendererCommunication.removeCountriesUpdateCallback(callback)
       expect(messageBus.noRemainingCallbacks()).to.be.true
     })
   })

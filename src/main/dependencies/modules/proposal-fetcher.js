@@ -17,8 +17,10 @@
 
 // @flow
 
-import ProposalFetcher from '../../../app/data-fetchers/proposal-fetcher'
+import TequilapiProposalFetcher from '../../../app/data-fetchers/tequilapi-proposal-fetcher'
 import type {Container} from '../../../app/di'
+import { UserSettingsStore } from '../../../app/user-settings/user-settings-store'
+import CountryList from '../../../app/data-fetchers/country-list'
 
 function bootstrap (container: Container) {
   container.constant(
@@ -31,7 +33,15 @@ function bootstrap (container: Container) {
     'proposalFetcher',
     ['tequilapiClient', 'proposalFetcher.config'],
     (tequilapiClient, config: any) => {
-      return new ProposalFetcher(tequilapiClient, config.interval)
+      return new TequilapiProposalFetcher(tequilapiClient, config.interval)
+    }
+  )
+
+  container.factory(
+    'countryList',
+    ['proposalFetcher', 'userSettingsStore'],
+    (proposalFetcher: TequilapiProposalFetcher, userSettingsStore: UserSettingsStore) => {
+      return new CountryList(proposalFetcher, userSettingsStore)
     }
   )
 }

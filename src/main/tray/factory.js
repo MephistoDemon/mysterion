@@ -18,15 +18,15 @@
 // @flow
 import { app, Tray as ElectronTray, Menu } from 'electron'
 import type { MainCommunication } from '../../app/communication/main-communication'
-import ProposalFetcher from '../../app/data-fetchers/proposal-fetcher'
 import Window from '../../app/window'
 import TrayMenuBuilder from './menu-builder'
 import Tray from './tray'
 import type { ConnectionStatusChangeDTO } from '../../app/communication/dto'
+import CountryList from '../../app/data-fetchers/country-list'
 
 const trayFactory = (
   communication: MainCommunication,
-  proposalFetcher: ProposalFetcher,
+  countryList: CountryList,
   window: Window,
   iconPath: string
 ) => {
@@ -49,7 +49,7 @@ const trayFactory = (
   tray.build()
 
   communication.onConnectionStatusChange((change: ConnectionStatusChangeDTO) => tray.setStatus(change.newStatus))
-  proposalFetcher.onFetchedProposals((proposals) => tray.setProposals(proposals))
+  countryList.onUpdate(countries => tray.setCountries(countries))
 }
 
 export default trayFactory

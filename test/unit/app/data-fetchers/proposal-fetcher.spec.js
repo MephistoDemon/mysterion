@@ -18,7 +18,7 @@
 // @flow
 import {describe, it, expect, before, beforeEach, after} from '../../../helpers/dependencies'
 import lolex from 'lolex'
-import ProposalFetcher from '../../../../src/app/data-fetchers/proposal-fetcher'
+import TequilapiProposalFetcher from '../../../../src/app/data-fetchers/tequilapi-proposal-fetcher'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import {nextTick} from '../../../helpers/utils'
 import EmptyTequilapiClientMock from '../../renderer/store/modules/empty-tequilapi-client-mock'
@@ -69,7 +69,7 @@ describe('DataFetchers', () => {
     })
 
     beforeEach(() => {
-      fetcher = new ProposalFetcher(tequilapi, interval)
+      fetcher = new TequilapiProposalFetcher(tequilapi, interval)
     })
 
     async function tickWithDelay (duration) {
