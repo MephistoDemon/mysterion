@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 The "MysteriumNetwork/mysterion" Authors.
+ * Copyright (C) 2018 The "MysteriumNetwork/mysterion" Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,58 +17,12 @@
 
 // @flow
 
-import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
-import type { TequilapiClient } from '../../libraries/mysterium-tequilapi/client'
-import { FunctionLooper } from '../../libraries/functionLooper'
 import type { Callback } from '../../libraries/subscriber'
-import Subscriber from '../../libraries/subscriber'
+import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 
-class ProposalFetcher {
-  _api: TequilapiClient
-  _loop: FunctionLooper
-  _proposalSubscriber: Subscriber<Array<ProposalDTO>> = new Subscriber()
-  _errorSubscriber: Subscriber<Error> = new Subscriber()
-
-  constructor (api: TequilapiClient, interval: number = 5000) {
-    this._api = api
-
-    this._loop = new FunctionLooper(async () => {
-      await this.fetch()
-    }, interval)
-    this._loop.onFunctionError((error) => {
-      this._errorSubscriber.notify(error)
-    })
-  }
-
-  /**
-   * Starts periodic proposal fetching.
-   */
-  start (): void {
-    this._loop.start()
-  }
-
-  /**
-   * Forces proposals to be fetched without delaying.
-   */
-  async fetch (): Promise<Array<ProposalDTO>> {
-    const proposals = await this._api.findProposals()
-
-    this._proposalSubscriber.notify(proposals)
-
-    return proposals
-  }
-
-  async stop (): Promise<void> {
-    await this._loop.stop()
-  }
-
-  onFetchedProposals (subscriber: Callback<Array<ProposalDTO>>): void {
-    this._proposalSubscriber.subscribe(subscriber)
-  }
-
-  onFetchingError (subscriber: Callback<Error>): void {
-    this._errorSubscriber.subscribe(subscriber)
-  }
+interface ProposalFetcher {
+  fetch(): Promise<ProposalDTO[]>,
+  onFetchedProposals(Callback<ProposalDTO[]>): void
 }
 
-export default ProposalFetcher
+export type {ProposalFetcher}

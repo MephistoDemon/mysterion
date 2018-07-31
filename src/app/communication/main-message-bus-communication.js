@@ -21,10 +21,11 @@ import type {
   RequestConnectionDTO,
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
-  ProposalUpdateDTO,
+  CountriesDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO
+  AppErrorDTO,
+  FavoriteProviderDTO
 } from './dto'
 import messages from './messages'
 import type { MessageBus } from './message-bus'
@@ -74,8 +75,8 @@ class MainMessageBusCommunication implements MainCommunication, MapSyncCommunica
     this._send(messages.HEALTHCHECK_DOWN)
   }
 
-  sendProposals (proposals: ProposalUpdateDTO) {
-    this._send(messages.PROPOSALS_UPDATE, proposals)
+  sendCountries (countries: CountriesDTO) {
+    this._send(messages.COUNTRY_UPDATE, countries)
   }
 
   sendConnectionCancelRequest () {
@@ -132,6 +133,14 @@ class MainMessageBusCommunication implements MainCommunication, MapSyncCommunica
 
   onUserSettingsUpdate (callback: (UserSettings) => void): void {
     this._on(messages.USER_SETTINGS_UPDATE, callback)
+  }
+
+  onUserSettingsShowDisconnectNotifications (callback: (boolean) => void): void {
+    this._on(messages.SHOW_DISCONNECT_NOTIFICATION, callback)
+  }
+
+  onToggleFavoriteProvider (callback: (FavoriteProviderDTO) => void): void {
+    this._on(messages.TOGGLE_FAVORITE_PROVIDER, callback)
   }
 
   _send (channel: string, dto: mixed): void {

@@ -18,7 +18,6 @@
 // @flow
 import TrayMenuBuilder from '../../../../src/main/tray/menu-builder'
 import ConnectionStatusEnum from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
-import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import translations from '../../../../src/main/tray/translations'
 import { describe, it, expect, beforeEach } from '../../../helpers/dependencies'
 import FakeMainCommunication from '../../../helpers/fake-main-communication'
@@ -100,18 +99,21 @@ describe('tray', () => {
         expect(items[0].label).to.equal(translations.statusDisconnecting)
       })
 
+      it('renders favourite country with an asterisk (*)', () => {
+        builder.updateCountries([
+          { id: 'proposalId_123', code: 'LT', name: 'Lithuania', isFavorite: true },
+          { id: 'proposalId_456', code: 'US', name: 'USA', isFavorite: false }
+        ])
+
+        const items = builder.build()
+        expect(items[2].submenu[0].label).to.include('*')
+        expect(items[2].submenu[1].label).to.not.include('*')
+      })
+
       it('connects', () => {
-        builder.updateProposals([
-          new ProposalDTO({
-            id: 1,
-            providerId: '0x0',
-            serviceType: 'openvpn',
-            serviceDefinition: {
-              locationOriginate: {
-                country: 'NL'
-              }
-            }
-          })
+        builder.updateCountries([
+          { id: 'proposalId_123', code: 'LT', name: 'Lithuania', isFavorite: true },
+          { id: 'proposalId_456', code: 'US', name: 'USA', isFavorite: false }
         ])
 
         const items = builder.build()

@@ -28,7 +28,7 @@ export default class Notification {
     this._subtitle = subtitle
   }
 
-  addReconnectFn (reconnect: () => void) {
+  onReconnect (reconnect: () => void) {
     this._reconnect = reconnect
   }
 
@@ -36,11 +36,13 @@ export default class Notification {
     const disconnect = notifier.notify('Disconnected', {
       message: this._subtitle,
       duration: 10000,
-      buttons: ['reconnect']
+      buttons: [this._reconnect ? 'reconnect' : null]
     })
 
-    disconnect.on('buttonClicked', (text: string, btnIdx) => {
-      this._reconnect()
-    })
+    if (this._reconnect) {
+      disconnect.on('buttonClicked', () => {
+        if (this._reconnect) this._reconnect()
+      })
+    }
   }
 }

@@ -17,8 +17,8 @@
 
 // @flow
 import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
-import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 import type { LogLevel } from '../logging/mysterion-log-levels'
+import type { Country } from '../countries'
 
 export type ConnectionStatusChangeDTO = {
   oldStatus: ConnectionStatus,
@@ -29,7 +29,9 @@ export type CurrentIdentityChangeDTO = {
   id: string
 }
 
-export type ProposalUpdateDTO = Array<ProposalDTO>
+export type CountriesDTO = Array<Country>
+
+export type FavoriteProviderDTO = { id: string, isFavorite: boolean }
 
 export type RequestConnectionDTO = {
   providerId: string

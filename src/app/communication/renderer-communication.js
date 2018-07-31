@@ -23,10 +23,11 @@ import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
   RequestConnectionDTO,
-  ProposalUpdateDTO,
+  CountriesDTO,
   RequestTermsDTO,
   TermsAnsweredDTO,
-  AppErrorDTO
+  AppErrorDTO,
+  FavoriteProviderDTO
 } from './dto'
 
 import type {UserSettings} from '../user-settings/user-settings'
@@ -75,6 +76,14 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     return this._send(messages.USER_SETTINGS_UPDATE, dto)
   }
 
+  sendUserSettingsShowDisconnectNotifications (data: boolean): void {
+    return this._send(messages.SHOW_DISCONNECT_NOTIFICATION, data)
+  }
+
+  sendToggleFavoriteProvider (data: FavoriteProviderDTO): void {
+    return this._send(messages.TOGGLE_FAVORITE_PROVIDER, data)
+  }
+
   sendMapUpdate (data: MapSyncDTO<Metric>): void {
     this._send(messages.METRIC_SYNC, data)
   }
@@ -108,12 +117,12 @@ class RendererCommunication implements MapSyncCommunication<Metric> {
     this._on(messages.CONNECTION_CANCEL, callback)
   }
 
-  onProposalUpdate (callback: ProposalUpdateDTO => void) {
-    this._on(messages.PROPOSALS_UPDATE, callback)
+  onCountriesUpdate (callback: CountriesDTO => void) {
+    this._on(messages.COUNTRY_UPDATE, callback)
   }
 
-  removeProposalUpdateCallback (callback: UserSettings => void): void {
-    this._removeCallback(messages.PROPOSALS_UPDATE, callback)
+  removeCountriesUpdateCallback (callback: UserSettings => void): void {
+    this._removeCallback(messages.COUNTRY_UPDATE, callback)
   }
 
   onMysteriumClientIsReady (callback: () => void) {

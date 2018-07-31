@@ -17,25 +17,13 @@
 
 // @flow
 
-import type {Container} from '../../../app/di'
+import type { Container } from '../../../app/di'
 import Notification from '../../../app/notification/index'
 
 function bootstrap (container: Container) {
-  container.factory(
+  container.constant(
     'disconnectNotification',
-    [],
-    (com) => {
-      return new Notification(
-        'Disconnected',
-        'from VPN server',
-        {text: 'Reconnect',
-          action: () => {
-            // eslint-disable-next-line
-            console.log('g')
-          }
-        }
-      )
-    }
+    new Notification('Disconnected', 'from VPN server')
   )
 }
 

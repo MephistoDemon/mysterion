@@ -32,7 +32,8 @@ import type { MysterionConfig } from './mysterionConfig'
 import Window from './window'
 import Terms from './terms'
 import ProcessMonitoring from '../libraries/mysterium-client/monitoring'
-import ProposalFetcher from './data-fetchers/proposal-fetcher'
+import TequilapiProposalFetcher from './data-fetchers/tequilapi-proposal-fetcher'
+import CountryList from './data-fetchers/country-list'
 import type { BugReporter } from './bug-reporting/interface'
 import { UserSettingsStore } from './user-settings/user-settings-store'
 import Notification from './notification'
@@ -58,7 +59,8 @@ type MysterionParams = {
   installer: Installer,
   monitoring: ProcessMonitoring,
   process: Process,
-  proposalFetcher: ProposalFetcher,
+  proposalFetcher: TequilapiProposalFetcher,
+  countryList: CountryList,
   bugReporter: BugReporter,
   environmentCollector: EnvironmentCollector,
   bugReporterMetrics: BugReporterMetrics,
@@ -81,7 +83,8 @@ class Mysterion {
   installer: Installer
   monitoring: ProcessMonitoring
   process: Process
-  proposalFetcher: ProposalFetcher
+  proposalFetcher: TequilapiProposalFetcher
+  countryList: CountryList
   bugReporter: BugReporter
   environmentCollector: EnvironmentCollector
   bugReporterMetrics: BugReporterMetrics
@@ -104,6 +107,7 @@ class Mysterion {
     this.monitoring = params.monitoring
     this.process = params.process
     this.proposalFetcher = params.proposalFetcher
+    this.countryList = params.countryList
     this.bugReporter = params.bugReporter
     this.environmentCollector = params.environmentCollector
     this.bugReporterMetrics = params.bugReporterMetrics
@@ -206,11 +210,11 @@ class Mysterion {
 
     this._subscribeProposals()
 
-    synchronizeUserSettings(this.userSettingsStore, this.communication)
+    syncFavorites(this.userSettingsStore, this.communication)
+    syncShowDisconnectNotifications(this.userSettingsStore, this.communication)
     showNotificationOnDisconnect(this.userSettingsStore, this.communication, this.disconnectNotification)
     await this._loadUserSettings()
-    this.disconnectNotification.addReconnectFn(this.communication.sendReconnectRequest.bind(this.communication))
-    this.communication.sendReconnectRequest()
+    this.disconnectNotification.onReconnect(this.communication.sendReconnectRequest.bind(this.communication))
   }
 
   _getWindowSize (showTerms: boolean) {
@@ -429,7 +433,7 @@ class Mysterion {
   }
 
   _subscribeProposals () {
-    this.proposalFetcher.onFetchedProposals((proposals) => this.communication.sendProposals(proposals))
+    this.countryList.onUpdate((countries) => this.communication.sendCountries(countries))
     this.communication.onProposalUpdateRequest(() => {
       this.proposalFetcher.fetch()
     })
@@ -451,7 +455,7 @@ class Mysterion {
     logInfo('Building tray')
     trayFactory(
       this.communication,
-      this.proposalFetcher,
+      this.countryList,
       this.window,
       path.join(this.config.staticDirectory, 'icons')
     )
@@ -461,7 +465,7 @@ class Mysterion {
 function showNotificationOnDisconnect (userSettingsStore, communication, disconnectNotification) {
   communication.onConnectionStatusChange((status) => {
     const shouldShowNotification =
-      userSettingsStore.get().showDisconnectNotifications &&
+      userSettingsStore.getAll().showDisconnectNotifications &&
       (status.newStatus === ConnectionStatusEnum.NOT_CONNECTED &&
         status.oldStatus === ConnectionStatusEnum.CONNECTED)
 
@@ -471,13 +475,20 @@ function showNotificationOnDisconnect (userSettingsStore, communication, disconn
   })
 }
 
-function synchronizeUserSettings (userSettingsStore, communication) {
+function syncFavorites (userSettingsStore, communication) {
+  communication.onToggleFavoriteProvider((fav) => {
+    userSettingsStore.setFavorite(fav.id, fav.isFavorite)
+    userSettingsStore.save()
+  })
+}
+
+function syncShowDisconnectNotifications (userSettingsStore, communication) {
   communication.onUserSettingsRequest(() => {
-    communication.sendUserSettings(userSettingsStore.get())
+    communication.sendUserSettings(userSettingsStore.getAll())
   })
 
-  communication.onUserSettingsUpdate((userSettings) => {
-    userSettingsStore.set(userSettings)
+  communication.onUserSettingsShowDisconnectNotifications((show) => {
+    userSettingsStore.setShowDisconnectNotifications(show)
     userSettingsStore.save()
   })
 }
