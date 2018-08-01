@@ -4,7 +4,7 @@ Code of Conduct
 This document describes how we collaborate developing Mysterion.
 
 Main collaboration goals:
-- Fast features delivery
+- Fast feature delivery
 - Stable product
 - Well-being of teammates and contributors
 
@@ -27,30 +27,30 @@ Choose appropriate branch name to clarify what this PR is about.
     
 ### Communication
 
-We are all humans, so have in mind that we can make mistakes, be subjective and we have a feelings.
+We're all people, so have in mind that we can make mistakes, be subjective and have a feelings.
 When communicating in PRs, we should:
 
-- Be subjective when possible - i.e. using statistics or external resources instead of yourself opinions
-- Be open to different opinions - everybody have different mindset, and by merging different mindsets we can get 
+- Be objective when possible - i.e. using statistics or external resources instead of yourself opinions
+- Be open to different opinions - everyone can have a different mindset and by merging different mindsets we can get to a group solution
 - Consider talking in real life (or even pair-programming) when communication online gets tricky
 
 ### Making PR
 
-When making a PR, make sure you've prepared it well to safe time and energy of yours and you teammates:
+When making a PR, make sure you've prepared it well in order to save your own time as well as time and energy of your teammates:
 
 - Make sure CI is passing
-- Before making PR, review changes as you were a reviewer - see *Reviewing PR* section
+- Before making a PR, review changes as you were the reviewer - see *Reviewing PR* section
 - (Optional) Add a PR description if changes are not obvious
 
 ### Getting feedback
 
-Not many people think reviewing PR is fun, so getting a feedback is like getting a 🎁.
-If you disagree with comment, try discussing it and understanding why opinions differ and how to make both sides happy.
+Not many people think reviewing PRs is fun, so getting a feedback is like getting a 🎁.
+If you disagree with a comment, try discussing it and understanding why opinions differ and how to make all sides happy.
 Consider asking opinions of others.
 
 ### Reviewing PR
 
-When reviewing PR, try focusing to most important things first. More about that in *Coding values* section.
+When reviewing PRs, try focusing on the most important things first. More about that in *Coding values* section.
 Commenting:
 - Be aware that it's very easy to misinterpret comments
 If something is very unclear:
