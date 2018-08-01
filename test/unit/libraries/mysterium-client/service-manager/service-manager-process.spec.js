@@ -30,7 +30,7 @@ import type { LogCallback } from '../../../../../src/libraries/mysterium-client'
 import type { SystemMockManager } from '../../../../helpers/system-mock'
 import type { System } from '../../../../../src/libraries/mysterium-client/system'
 import Monitoring from '../../../../../src/libraries/mysterium-client/monitoring'
-import { nextTick } from '../../../../helpers/utils'
+import { captureAsyncError, nextTick } from '../../../../helpers/utils'
 
 const SERVICE_MANAGER_DIR = '/service-manager/bin/'
 
@@ -178,6 +178,12 @@ describe('ServiceManagerProcess', () => {
 
       expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
       expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=start')
+    })
+
+    it('throws error when service is not installed', async () => {
+      systemMockManager.setMockCommand('sc.exe query "MysteriumClient"', 'RANDOM RESPONSE TO COMMAND, SAME AS NON-INSTALLED SERVICE')
+      const error = await captureAsyncError(() => process.repair())
+      expect(error).to.be.an('error')
     })
   })
 

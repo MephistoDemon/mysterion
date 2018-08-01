@@ -34,7 +34,7 @@ import type { StatusCallback } from '../monitoring'
 const SERVICE_INIT_TIME = 8000
 
 const SERVICE_STATE = {
-  NOT_INSTALLED: 'NOT_INSTALLED',
+  UNKNOWN: 'UNKNOWN',
   RUNNING: 'RUNNING',
   STOPPED: 'STOPPED',
   START_PENDING: 'START_PENDING',
@@ -49,7 +49,7 @@ class ServiceManagerProcess implements Process {
   _serviceInitTime: number
   _system: System
   _monitoring: Monitoring
-  _startIsRunning: boolean
+  _fixIsRunning: boolean
 
   constructor (
     tequilapi: TequilapiClient,
@@ -72,51 +72,11 @@ class ServiceManagerProcess implements Process {
       return
     }
 
-    await this._doStart(state)
+    await this._fixService(state)
   }
 
   async repair (): Promise<void> {
-    await this._doStart()
-  }
-
-  async _doStart (state: ?ServiceState = null): Promise<void> {
-    if (this._startIsRunning) {
-      return
-    }
-    this._startIsRunning = true
-    try {
-      state = state || await this._getServiceState()
-      logger.info(`Service state: [${state}]`)
-      if (state === SERVICE_STATE.START_PENDING) {
-        return
-      }
-      const serviceManagerPath = path.join(this._serviceManagerDir, SERVICE_MANAGER_BIN)
-      const operation = state === SERVICE_STATE.RUNNING ? 'restart' : 'start'
-      const command = `${serviceManagerPath} --do=${operation}`
-      logger.info('Running command', command)
-      await this._system.sudoExec(command)
-      await this._waitForHealthCheck()
-    } finally {
-      this._startIsRunning = false
-    }
-  }
-
-  async _waitForHealthCheck (): Promise<void> {
-    let statusCallback: ?StatusCallback
-    await new Promise((resolve, reject) => {
-      statusCallback = (isRunning: boolean) => {
-        if (isRunning) {
-          resolve()
-        }
-      }
-      // setTimeout(resolve, this._serviceInitTime)
-      setTimeout(() => reject(new Error('Unable to start service')), this._serviceInitTime)
-      this._monitoring.onStatus(statusCallback)
-    })
-
-    if (statusCallback) {
-      this._monitoring.removeOnStatus(statusCallback)
-    }
+    await this._fixService()
   }
 
   async stop (): Promise<void> {
@@ -133,13 +93,55 @@ class ServiceManagerProcess implements Process {
     this._logs.onLog(level, cb)
   }
 
+  async _fixService (state: ?ServiceState = null): Promise<void> {
+    if (this._fixIsRunning) {
+      return
+    }
+    this._fixIsRunning = true
+    try {
+      state = state || await this._getServiceState()
+      logger.info(`Service state: [${state}]`)
+      if (state === SERVICE_STATE.START_PENDING) {
+        return
+      } else if (state === SERVICE_STATE.UNKNOWN) {
+        throw new Error('Cannot start non-installed service')
+      }
+      const serviceManagerPath = path.join(this._serviceManagerDir, SERVICE_MANAGER_BIN)
+      const operation = state === SERVICE_STATE.RUNNING ? 'restart' : 'start'
+      const command = `${serviceManagerPath} --do=${operation}`
+      logger.info('Running command', command)
+      await this._system.sudoExec(command)
+      await this._waitForHealthCheck()
+    } finally {
+      this._fixIsRunning = false
+    }
+  }
+
+  async _waitForHealthCheck (): Promise<void> {
+    let statusCallback: ?StatusCallback
+    await new Promise((resolve, reject) => {
+      const rejectTimer = setTimeout(() => reject(new Error('Unable to start service')), this._serviceInitTime)
+      statusCallback = (isRunning: boolean) => {
+        if (isRunning) {
+          clearTimeout(rejectTimer)
+          resolve()
+        }
+      }
+      this._monitoring.onStatus(statusCallback)
+    })
+
+    if (statusCallback) {
+      this._monitoring.removeOnStatus(statusCallback)
+    }
+  }
+
   async _getServiceState (): Promise<ServiceState> {
     let stdout
     try {
       stdout = await this._system.userExec(`sc.exe query "${SERVICE_NAME}"`)
     } catch (e) {
-      logger.info('Service check failed', e.message)
-      return SERVICE_STATE.NOT_INSTALLED
+      logger.error('Service check failed', e.message)
+      return SERVICE_STATE.UNKNOWN
     }
     return ServiceManagerProcess._parseServiceState(stdout)
   }
@@ -147,7 +149,7 @@ class ServiceManagerProcess implements Process {
   static _parseServiceState (serviceInfo: string): ServiceState {
     const isInstalled: boolean = serviceInfo.indexOf(`SERVICE_NAME: ${SERVICE_NAME}`) > -1
     if (!isInstalled) {
-      return SERVICE_STATE.NOT_INSTALLED
+      return SERVICE_STATE.UNKNOWN
     }
 
     let start = serviceInfo.indexOf('STATE')
