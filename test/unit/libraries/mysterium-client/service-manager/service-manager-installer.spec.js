@@ -50,7 +50,12 @@ const CONFIG_FILE = SERVICE_MANAGER_DIR + 'servicemanager.json'
 const createSystemMock = () => {
   const systemMock = new SystemMock()
   systemMock.setMockFile(CONFIG_FILE, STRINGIFIED_CONFIG)
-  systemMock.setMockCommand('sc.exe query "MysteriumClient"', 'SERVICE_NAME: MysteriumClient')
+
+  systemMock.setMockCommand(
+    'sc.exe query "MysteriumClient"',
+    `SERVICE_NAME: MysteriumClient
+      STATE       : 0  RUNNING \r\n`)
+
   systemMock.setMockCommand('/tmp/ovpnbin --show-adapters', `123
     'Ethernet' {F1343629-CB94-4D28-9AE4-147F9145798E}
     asd`)

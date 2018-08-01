@@ -17,7 +17,6 @@
 
 // @flow
 import TequilapiClient from '../mysterium-tequilapi/client'
-import logger from '../../app/logger'
 
 const healthCheckInterval = 1500
 const healthCheckTimeout = 500
@@ -87,10 +86,11 @@ class Monitoring {
     try {
       this._notifySubscribers(isRunning)
     } catch (e) {
-      logger.error(e)
+      e.message = 'Bad subscriber added to Monitoring: ' + e.message
+      throw e
+    } finally {
+      this._timer = setTimeout(() => this._healthCheckLoop(), healthCheckInterval)
     }
-
-    this._timer = setTimeout(() => this._healthCheckLoop(), healthCheckInterval)
   }
 
   _notifySubscribers (isRunning: boolean) {

@@ -19,8 +19,7 @@
 
 import { before, beforeEach, after, describe, expect, it } from '../../../../helpers/dependencies'
 import lolex from 'lolex'
-import ServiceManagerProcess, { SERVICE_STATE } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-process'
-import type { ServiceState } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-process'
+import ServiceManagerProcess from '../../../../../src/libraries/mysterium-client/service-manager/service-manager-process'
 import EmptyTequilapiClientMock from '../../../renderer/store/modules/empty-tequilapi-client-mock'
 import SystemMock from '../../../../helpers/system-mock'
 import type { NodeHealthcheckDTO } from '../../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
@@ -32,6 +31,8 @@ import type { System } from '../../../../../src/libraries/mysterium-client/syste
 import Monitoring from '../../../../../src/libraries/mysterium-client/monitoring'
 import { captureAsyncError, nextTick } from '../../../../helpers/utils'
 import BugReporterMock from '../../../../helpers/bug-reporter-mock'
+import type { ServiceState } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager'
+import { SERVICE_STATE } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager'
 
 const SERVICE_MANAGER_DIR = '/service-manager/bin/'
 

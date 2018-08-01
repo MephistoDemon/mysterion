@@ -22,10 +22,12 @@ import logger from '../../../app/logger'
 import type { LogCallback, Process } from '../index'
 import type { TequilapiClient } from '../../mysterium-tequilapi/client'
 import type { System } from '../system'
-import { SERVICE_MANAGER_BIN, SERVICE_NAME } from './service-manager-installer'
+import { SERVICE_MANAGER_BIN } from './service-manager-installer'
 import ClientLogSubscriber from '../client-log-subscriber'
 import Monitoring from '../monitoring'
 import type { StatusCallback } from '../monitoring'
+import ServiceManager, { SERVICE_STATE } from './service-manager'
+import type { ServiceState } from './service-manager'
 
 /***
  * Time in milliseconds required to fully activate Mysterium client
@@ -33,41 +35,31 @@ import type { StatusCallback } from '../monitoring'
  */
 const SERVICE_INIT_TIME = 8000
 
-const SERVICE_STATE = {
-  UNKNOWN: 'UNKNOWN',
-  RUNNING: 'RUNNING',
-  STOPPED: 'STOPPED',
-  START_PENDING: 'START_PENDING',
-  STOP_PENDING: 'STOP_PENDING'
-}
-type ServiceState = $Values<typeof SERVICE_STATE>
-
 class ServiceManagerProcess implements Process {
   _tequilapi: TequilapiClient
   _logs: ClientLogSubscriber
   _serviceManagerDir: string
-  _serviceInitTime: number
+  _serviceManager: ServiceManager
   _system: System
   _monitoring: Monitoring
-  _fixIsRunning: boolean
+  _fixIsRunning: boolean = false
 
   constructor (
     tequilapi: TequilapiClient,
     logs: ClientLogSubscriber,
     serviceManagerDir: string,
     system: System,
-    monitoring: Monitoring,
-    serviceInitTime: number = SERVICE_INIT_TIME) {
+    monitoring: Monitoring) {
     this._tequilapi = tequilapi
     this._logs = logs
     this._serviceManagerDir = serviceManagerDir
-    this._serviceInitTime = serviceInitTime
+    this._serviceManager = new ServiceManager(path.join(this._serviceManagerDir, SERVICE_MANAGER_BIN), system)
     this._system = system
     this._monitoring = monitoring
   }
 
   async start (): Promise<void> {
-    const state = await this._getServiceState()
+    const state = await this._serviceManager.getServiceState()
     if (state === SERVICE_STATE.RUNNING) {
       return
     }
@@ -99,18 +91,18 @@ class ServiceManagerProcess implements Process {
     }
     this._fixIsRunning = true
     try {
-      state = state || await this._getServiceState()
+      state = state || await this._serviceManager.getServiceState()
       logger.info(`Service state: [${state}]`)
       if (state === SERVICE_STATE.START_PENDING) {
         return
       } else if (state === SERVICE_STATE.UNKNOWN) {
         throw new Error('Cannot start non-installed service')
       }
-      const serviceManagerPath = path.join(this._serviceManagerDir, SERVICE_MANAGER_BIN)
-      const operation = state === SERVICE_STATE.RUNNING ? 'restart' : 'start'
-      const command = `${serviceManagerPath} --do=${operation}`
-      logger.info('Running command', command)
-      await this._system.sudoExec(command)
+      if (state === SERVICE_STATE.RUNNING) {
+        await this._serviceManager.restart()
+      } else {
+        await this._serviceManager.start()
+      }
       await this._waitForHealthCheck()
     } finally {
       this._fixIsRunning = false
@@ -120,7 +112,7 @@ class ServiceManagerProcess implements Process {
   async _waitForHealthCheck (): Promise<void> {
     let statusCallback: ?StatusCallback
     await new Promise((resolve, reject) => {
-      const rejectTimer = setTimeout(() => reject(new Error('Unable to start service')), this._serviceInitTime)
+      const rejectTimer = setTimeout(() => reject(new Error('Unable to start service')), SERVICE_INIT_TIME)
       statusCallback = (isRunning: boolean) => {
         if (isRunning) {
           clearTimeout(rejectTimer)
@@ -134,48 +126,6 @@ class ServiceManagerProcess implements Process {
       this._monitoring.removeOnStatus(statusCallback)
     }
   }
-
-  async _getServiceState (): Promise<ServiceState> {
-    let stdout
-    try {
-      stdout = await this._system.userExec(`sc.exe query "${SERVICE_NAME}"`)
-    } catch (e) {
-      logger.error('Service check failed', e.message)
-      return SERVICE_STATE.UNKNOWN
-    }
-    return ServiceManagerProcess._parseServiceState(stdout)
-  }
-
-  static _parseServiceState (serviceInfo: string): ServiceState {
-    const isInstalled: boolean = serviceInfo.indexOf(`SERVICE_NAME: ${SERVICE_NAME}`) > -1
-    if (!isInstalled) {
-      return SERVICE_STATE.UNKNOWN
-    }
-
-    let start = serviceInfo.indexOf('STATE')
-    if (start < 0) {
-      return SERVICE_STATE.UNKNOWN
-    }
-    start = serviceInfo.indexOf(':', start)
-    if (start < 0) {
-      return SERVICE_STATE.UNKNOWN
-    }
-    start = serviceInfo.indexOf('  ', start) + 2
-    if (start < 0) {
-      return SERVICE_STATE.UNKNOWN
-    }
-    const length = serviceInfo.indexOf('\r', start) - start - 1
-    if (length < 0) {
-      return SERVICE_STATE.UNKNOWN
-    }
-    const state = serviceInfo.substr(start, length)
-    if (Object.values(SERVICE_STATE).indexOf(state) < 0) {
-      throw new Error('Unknown Windows service state: ' + state)
-    }
-    return (state: ServiceState)
-  }
 }
 
-export { SERVICE_STATE }
-export type { ServiceState }
 export default ServiceManagerProcess
