@@ -106,7 +106,7 @@ async function saveSettings (path: string, settings: UserSettings): Promise<void
 }
 
 async function loadSettings (path: string): Promise<UserSettings> {
-  let data = await readFileAsync(path, {encoding: 'utf8'})
+  let data = await readFileAsync(path, { encoding: 'utf8' })
   const parsedSettings = JSON.parse(data)
 
   if (!validateUserSettings(parsedSettings)) {

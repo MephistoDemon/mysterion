@@ -21,8 +21,8 @@ import Vuex from 'vuex'
 import ConnectionButton from '../../../../src/renderer/components/ConnectionButton'
 import type from '../../../../src/renderer/store/types'
 import ConnectionStatusEnum from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
-import {state, mutations, getters} from '@/store/modules/connection'
-import {createLocalVue, mount} from '@vue/test-utils'
+import { state, mutations, getters } from '@/store/modules/connection'
+import { createLocalVue, mount } from '@vue/test-utils'
 import { describe, expect, it } from '../../../helpers/dependencies'
 
 const mountWithStore = function () {
@@ -48,10 +48,10 @@ const mountWithStore = function () {
         mutations,
         getters,
         actions: {
-          [type.CONNECT] ({dispatch, commit}) {
+          [type.CONNECT] ({ dispatch, commit }) {
             commit(type.SET_CONNECTION_STATUS, ConnectionStatusEnum.CONNECTED)
           },
-          [type.DISCONNECT] ({dispatch, commit}) {
+          [type.DISCONNECT] ({ dispatch, commit }) {
             commit(type.SET_CONNECTION_STATUS, ConnectionStatusEnum.NOT_CONNECTED)
           }
         }

@@ -16,9 +16,9 @@
  */
 
 // @flow
-import type {Container} from '../../../app/di'
-import {UserSettingsStore} from '../../../app/user-settings/user-settings-store'
-import {join} from 'path'
+import type { Container } from '../../../app/di'
+import { UserSettingsStore } from '../../../app/user-settings/user-settings-store'
+import { join } from 'path'
 
 const userSettingsFilename = 'userSettings.json'
 

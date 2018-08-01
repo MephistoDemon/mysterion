@@ -16,13 +16,13 @@
  */
 
 // @flow
-import {ChildProcess} from 'child_process'
+import { ChildProcess } from 'child_process'
 import sleep from '../../../../../src/libraries/sleep'
 import Process from '../../../../../src/libraries/mysterium-client/standalone/standalone-client-process'
 import Monitoring from '../../../../../src/libraries/mysterium-client/monitoring'
 import processLogLevels from '../../../../../src/libraries/mysterium-client/log-levels'
 import tequilapiClientFactory from '../../../../../src/libraries/mysterium-tequilapi/client-factory'
-import {describe, xdescribe, it, before, after, expect} from '../../../../helpers/dependencies'
+import { describe, xdescribe, it, before, after, expect } from '../../../../helpers/dependencies'
 import path from 'path'
 import os from 'os'
 

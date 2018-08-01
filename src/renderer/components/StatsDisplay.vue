@@ -36,14 +36,14 @@
 </template>
 
 <script>
-import {bytesReadable, timeDisplay} from '../../libraries/unitConverter'
+import { bytesReadable, timeDisplay } from '../../libraries/unitConverter'
 
 export default {
   name: 'StatsDisplay',
   props: {
     connection: {
       type: Object,
-      default () { return {stats: {}} }
+      default () { return { stats: {} } }
     }
   },
   computed: {

@@ -25,4 +25,4 @@ interface ProposalFetcher {
   onFetchedProposals(Callback<ProposalDTO[]>): void
 }
 
-export type {ProposalFetcher}
+export type { ProposalFetcher }

@@ -18,9 +18,9 @@
 // @flow
 
 // TODO: find better name - AppWindow?
-import {BrowserWindow} from 'electron'
-import type {RequestRewriter} from './interface'
-import type {HeaderRule} from './requestHeaders'
+import { BrowserWindow } from 'electron'
+import type { RequestRewriter } from './interface'
+import type { HeaderRule } from './requestHeaders'
 import registerHeaderRules from './requestHeaders'
 
 class Window implements RequestRewriter {

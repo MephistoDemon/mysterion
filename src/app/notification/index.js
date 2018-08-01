@@ -16,7 +16,7 @@
  */
 
 // @flow
-import {Notification as NativeNotification} from 'electron'
+import { Notification as NativeNotification } from 'electron'
 
 export default class Notification {
   _title: string

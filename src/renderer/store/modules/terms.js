@@ -34,7 +34,7 @@ const getters = {
 }
 
 const actions = {
-  [type.TERMS] ({commit}, terms) {
+  [type.TERMS] ({ commit }, terms) {
     commit(type.TERMS, terms)
   }
 }

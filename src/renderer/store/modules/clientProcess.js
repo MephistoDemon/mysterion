@@ -32,7 +32,7 @@ const getters = {
 }
 
 const actions = {
-  setClientRunningState ({commit}, clientIsRunning) {
+  setClientRunningState ({ commit }, clientIsRunning) {
     commit(type.MYST_PROCESS_RUNNING, clientIsRunning)
   }
 }

@@ -19,8 +19,8 @@
 import type { Container } from '../app/di'
 import os from 'os'
 import type { EnvironmentCollector } from '../app/bug-reporting/environment/environment-collector'
-import {BugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
-import {MapSync} from '../libraries/map-sync'
+import { BugReporterMetrics } from '../app/bug-reporting/bug-reporter-metrics'
+import { MapSync } from '../libraries/map-sync'
 
 function bootstrap (container: Container) {
   const extendedProcess = (process: { type?: string })

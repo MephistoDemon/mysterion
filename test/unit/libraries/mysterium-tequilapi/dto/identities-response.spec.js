@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {describe, it} from '../../../../helpers/dependencies'
-import {expect} from 'chai'
+import { describe, it } from '../../../../helpers/dependencies'
+import { expect } from 'chai'
 import IdentitiesResponseDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/identities-response'
 import IdentityDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/identity'
 

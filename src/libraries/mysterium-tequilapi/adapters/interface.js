@@ -28,4 +28,4 @@ interface HttpInterface {
   put (path: string, data: mixed, timeout: ?number): Promise<?any>;
 }
 
-export type {HttpInterface, HttpQueryParams}
+export type { HttpInterface, HttpQueryParams }

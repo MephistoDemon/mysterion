@@ -72,8 +72,8 @@
 </template>
 
 <script>
-import {remote, shell} from 'electron'
-import {mapGetters, mapActions} from 'vuex'
+import { remote, shell } from 'electron'
+import { mapGetters, mapActions } from 'vuex'
 import IconIssue from '@/assets/img/icon--issue.svg'
 import IconEye from '@/assets/img/icon--eye.svg'
 import IconQuit from '@/assets/img/icon--quit.svg'

@@ -16,7 +16,7 @@
  */
 
 // @flow
-import type {HttpInterface} from './adapters/interface'
+import type { HttpInterface } from './adapters/interface'
 import ProposalDTO from './dto/proposal'
 import ProposalsResponseDTO from './dto/proposals-response'
 import ProposalsFilter from './dto/proposals-filter'
@@ -29,7 +29,7 @@ import ConnectionIPDTO from './dto/connection-ip'
 import ConnectionStatusDTO from './dto/connection-status'
 import ConnectionRequestDTO from './dto/connection-request'
 import ConsumerLocationDTO from './dto/consumer-location'
-import {TIMEOUT_DISABLED} from './timeouts'
+import { TIMEOUT_DISABLED } from './timeouts'
 
 interface TequilapiClient {
   healthCheck (timeout: ?number): Promise<NodeHealthcheckDTO>,
@@ -79,7 +79,7 @@ class HttpTequilapiClient implements TequilapiClient {
   }
 
   async identityCreate (passphrase: string): Promise<IdentityDTO> {
-    const response = await this.http.post('identities', {passphrase})
+    const response = await this.http.post('identities', { passphrase })
     if (!response) {
       throw new Error('Identities creation response body is missing')
     }
@@ -87,7 +87,7 @@ class HttpTequilapiClient implements TequilapiClient {
   }
 
   async identityUnlock (id: string, passphrase: string): Promise<void> {
-    await this.http.put('identities/' + id + '/unlock', {passphrase})
+    await this.http.put('identities/' + id + '/unlock', { passphrase })
   }
 
   async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {

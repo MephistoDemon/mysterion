@@ -17,9 +17,9 @@
 
 import ElkCollector from '../../../../src/app/statistics/elk-collector'
 import MockAdapter from 'axios-mock-adapter'
-import {capturePromiseError} from '../../../helpers/utils'
-import {newEvent} from '../../../../src/app/statistics/events'
-import {describe, it} from '../../../helpers/dependencies'
+import { capturePromiseError } from '../../../helpers/utils'
+import { newEvent } from '../../../../src/app/statistics/events'
+import { describe, it } from '../../../helpers/dependencies'
 
 describe('ElkCollector', () => {
   const elk = new ElkCollector('http://mocked.stuff')
@@ -28,7 +28,7 @@ describe('ElkCollector', () => {
   it('sends events to elk', async () => {
     const event1 = newEvent({}, 'event1', 123, {})
     const event2 = newEvent({}, 'event2', 123, {})
-    axiosMock.onPost('/').reply(({url, data}) => {
+    axiosMock.onPost('/').reply(({ url, data }) => {
       expect(url).to.be.eql('/')
       expect(JSON.parse(data)).to.be.eql([event1, event2])
       return [200, 'ok']

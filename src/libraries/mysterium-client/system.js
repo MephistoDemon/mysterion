@@ -52,7 +52,7 @@ class OSSystem implements System {
 
   sudoExec (command: string): Promise<string> {
     return new Promise(function (resolve, reject) {
-      sudo.exec(command, {name: 'Mysterion'}, (error, stdout, stderr) => {
+      sudo.exec(command, { name: 'Mysterion' }, (error, stdout, stderr) => {
         if (error) {
           reject(error)
           return

@@ -31,4 +31,4 @@ class FeedbackForm {
   }
 }
 
-export {FeedbackForm}
+export { FeedbackForm }

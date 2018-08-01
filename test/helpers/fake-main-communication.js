@@ -23,7 +23,7 @@ import type {
   CountriesDTO,
   RequestTermsDTO, TermsAnsweredDTO
 } from '../../src/app/communication/dto'
-import type {UserSettings} from '../../src/app/user-settings/user-settings'
+import type { UserSettings } from '../../src/app/user-settings/user-settings'
 
 /**
  * Allows tracking method invocations.

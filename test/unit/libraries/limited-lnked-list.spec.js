@@ -24,7 +24,7 @@ describe('LimitedLinkedList', () => {
     limitedLinkedList = new LimitedLinkedList(5)
     limitedLinkedList.insert('some string')
     limitedLinkedList.insert(['some', 'array'])
-    limitedLinkedList.insert({some: 'object'})
+    limitedLinkedList.insert({ some: 'object' })
     limitedLinkedList.insert(2)
     err = new Error('err')
     limitedLinkedList.insert(err)
@@ -35,7 +35,7 @@ describe('LimitedLinkedList', () => {
       [
         'some string',
         ['some', 'array'],
-        {some: 'object'},
+        { some: 'object' },
         2,
         err
       ])

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ConnectEventTracker} from '../../../../src/app/statistics/events-connection'
-import {capturePromiseError} from '../../../helpers/utils'
-import {describe, it} from '../../../helpers/dependencies'
+import { ConnectEventTracker } from '../../../../src/app/statistics/events-connection'
+import { capturePromiseError } from '../../../helpers/utils'
+import { describe, it } from '../../../helpers/dependencies'
 
 describe('Connection statistics', () => {
   let mockedCollector = {
@@ -44,8 +44,8 @@ describe('Connection statistics', () => {
 
   beforeEach(() => {
     let timestamps = [
-      {utcTime: 123, localTime: 321},
-      {utcTime: 246, localTime: 444}
+      { utcTime: 123, localTime: 321 },
+      { utcTime: 246, localTime: 444 }
     ]
     let i = 0
     mockedTimeProvider = () => {
