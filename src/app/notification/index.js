@@ -22,10 +22,12 @@ export default class Notification {
   _title: string
   _subtitle: string
   _reconnect: ?() => void
+  _iconPath: string
 
-  constructor (title: string, subtitle: string) {
+  constructor (title: string, subtitle: string, iconPath: string) {
     this._title = title
     this._subtitle = subtitle
+    this._iconPath = iconPath
   }
 
   onReconnect (reconnect: () => void) {
@@ -36,6 +38,7 @@ export default class Notification {
     const disconnect = notifier.notify('Disconnected', {
       message: this._subtitle,
       duration: 10000,
+      icon: this._iconPath,
       buttons: [this._reconnect ? 'reconnect' : null]
     })
 
