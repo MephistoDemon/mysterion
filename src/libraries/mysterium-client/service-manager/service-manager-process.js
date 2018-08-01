@@ -153,9 +153,21 @@ class ServiceManagerProcess implements Process {
     }
 
     let start = serviceInfo.indexOf('STATE')
+    if (start < 0) {
+      return SERVICE_STATE.UNKNOWN
+    }
     start = serviceInfo.indexOf(':', start)
+    if (start < 0) {
+      return SERVICE_STATE.UNKNOWN
+    }
     start = serviceInfo.indexOf('  ', start) + 2
+    if (start < 0) {
+      return SERVICE_STATE.UNKNOWN
+    }
     const length = serviceInfo.indexOf('\r', start) - start - 1
+    if (length < 0) {
+      return SERVICE_STATE.UNKNOWN
+    }
     const state = serviceInfo.substr(start, length)
     if (Object.values(SERVICE_STATE).indexOf(state) < 0) {
       throw new Error('Unknown Windows service state: ' + state)

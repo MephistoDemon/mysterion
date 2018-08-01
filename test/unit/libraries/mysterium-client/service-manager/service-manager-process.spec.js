@@ -31,6 +31,7 @@ import type { SystemMockManager } from '../../../../helpers/system-mock'
 import type { System } from '../../../../../src/libraries/mysterium-client/system'
 import Monitoring from '../../../../../src/libraries/mysterium-client/monitoring'
 import { captureAsyncError, nextTick } from '../../../../helpers/utils'
+import BugReporterMock from '../../../../helpers/bug-reporter-mock'
 
 const SERVICE_MANAGER_DIR = '/service-manager/bin/'
 
@@ -71,7 +72,8 @@ class TequilapiMock extends EmptyTequilapiClientMock {
 
 class ClientLogSubscriberMock extends ClientLogSubscriber {
   constructor () {
-    super('', '', '', () => new Date(), (filePath: string, logCallback: LogCallback) => {})
+    const bugReporter = new BugReporterMock()
+    super(bugReporter, '', '', '', () => new Date(), (filePath: string, logCallback: LogCallback) => {})
   }
 
   async setup (): Promise<void> {}
