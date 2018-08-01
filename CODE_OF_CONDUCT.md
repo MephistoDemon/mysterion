@@ -30,57 +30,82 @@ Choose appropriate branch name to clarify what this PR is about.
 We're all people, so have in mind that we can make mistakes, be subjective and have a feelings.
 When communicating in PRs, we should:
 
-- Be objective when possible - i.e. using statistics or external resources instead of yourself opinions
-- Be open to different opinions - everyone can have a different mindset and by merging different mindsets we can get to a group solution
-- Consider talking in real life (or even pair-programming) when communication online gets tricky
+- Be **polite** and **friendly** - mis-communicating online is common, so it's very easy to mis-understand other people
+- Be **objective** when possible - i.e. using statistics or external resources instead of yourself opinions
+- Be **open to different opinions** - everyone can have a different mindset and by merging different mindsets we can get to a group solution
+- Consider **talking in real life** (or even **pair-programming**) when communication online gets tricky
 
 ### Making PR
 
 When making a PR, make sure you've prepared it well in order to save your own time as well as time and energy of your teammates:
 
-- Make sure CI is passing
-- Before making a PR, review changes as you were the reviewer - see *Reviewing PR* section
-- (Optional) Add a PR description if changes are not obvious
+- Make sure **CI passes**
+- Before making a PR, **review changes as you were the reviewer** - see *Reviewing PR* section
+- (Optional) Add a **PR description** if changes are not obvious
 
 ### Getting feedback
 
-Not many people think reviewing PRs is fun, so getting a feedback is like getting a 🎁.
-If you disagree with a comment, try discussing it and understanding why opinions differ and how to make all sides happy.
-Consider asking opinions of others.
+Not many people think reviewing PRs is fun, so getting feedback is like getting a 🎁.
+
+When disagreements happen:
+- Try discussing it and understanding why opinions differ and how to make all sides happy.
+- Consider asking opinions of contributors outside of the discussion by tagging them.
+- Try referencing topics (articles/documentations) which explains your arguments
 
 ### Reviewing PR
 
-When reviewing PRs, try focusing on the most important things first. More about that in *Coding values* section.
-Commenting:
-- Be aware that it's very easy to misinterpret comments
-If something is very unclear:
-- Try checking-out PR branch and play around with it
+When reviewing PRs:
+- **Focus** on the most important things first. More about that in *Coding values* section.
+- **Talk in person** before reviewing if PR is very unclear
+- Consider **checking-out PR branch and play around** with it to see PR in action or try applying some improvements yourself
+- Use **comment markers** (see below)
 
-consider talking in person
-be nice and considerate
-try checking-out code and trying it out yourself
+#### Comment markers
+
+Use markers to show comment intention. 
+First 2 symbols in comments describes comment type:
+
+1. Comment starts with `!!`:
+
+    Developer should react to this comment - make code change or describe why code can't be changed
+    
+2. Comment starts with `??`:
+
+    Code is hard to understand, developer should describe solution and reason
+    
+3. Comment starts with any other symbols:
+
+    It's just idea shared with developer. Developer can make changes or ignore comment
 
 Coding values
 -------------
 
 ### Functionality
 
-Code should do what it's supposed to do.
-Functionality should cover all cases, including unhappy paths.
-If it's a feature PR, 
+Code should do what it's supposed to do:
+- Changes should be **aligned with Jira task** (if present) and all acceptance criteria should be covered
+- All cases should be covered, including **unhappy paths** when user is not behaving as we expect him to behave
 
 ### Testing:
 
-Most of code should be covered with unit-tests.
-For essential features and GUI, higher-level integration tests should be used.
-Unit-tests and integration tests should be separated.
-
+Most of domain classes should be covered with **unit tests**.
+For essential features , higher-level **integration tests** should be used to see whether units work when joined together.
+UI should be tested separately from domain logic with **UI tests** - domain logic should be tested in unit tests, not in UI.
 
 ![testPyramid](https://martinfowler.com/articles/practical-test-pyramid/testPyramid.png)
 - Happy, unhappy paths
     
 ### Maintainability
 
-DRY
-SOLID
-other principles?
+To avoid slowing down once project gets bigger, we have to keep our code maintainable.
+It's not obvious what maintainable code is, so to have some objectivity, we prefer using popular design principles instead of personal opinions.
+These include:
+
+- [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) - don't repeat yourself
+- [SOLID](https://en.wikipedia.org/wiki/SOLID):
+    - [SRP](https://en.wikipedia.org/wiki/Single_responsibility_principle) - single responsibility principle
+    - [Open/closed principle](https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle)
+    - [Liskov substitution principle](https://en.wikipedia.org/wiki/Liskov_substitution_principle)
+    - [Interface segregation principle](https://en.wikipedia.org/wiki/Interface_segregation_principle)
+    - [Dependency inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle)
+- [KISS](https://en.wikipedia.org/wiki/KISS_principle) - keep it simple, stupid 
