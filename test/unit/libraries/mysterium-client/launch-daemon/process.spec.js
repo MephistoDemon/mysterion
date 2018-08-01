@@ -18,6 +18,7 @@
 // @flow
 
 import ClientLogSubscriber from '../../../../../src/libraries/mysterium-client/client-log-subscriber'
+import BugReporterMock from '../../../../helpers/bug-reporter-mock'
 import { describe, expect, it } from '../../../../helpers/dependencies'
 import Process from '../../../../../src/libraries/mysterium-client/launch-daemon/launch-daemon-process'
 import MockAdapter from 'axios-mock-adapter'
@@ -34,7 +35,7 @@ describe('Process', () => {
         return [200]
       })
 
-      const logSubscriber = new ClientLogSubscriber('', '', '', () => new Date(), () => {})
+      const logSubscriber = new ClientLogSubscriber(new BugReporterMock(), '', '', '', () => new Date(), () => {})
       const tequilApi = new EmptyTequilapiClientMock()
       const process = new Process(
         tequilApi,
