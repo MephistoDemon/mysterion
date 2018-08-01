@@ -61,7 +61,7 @@ type ClientConfig = {
   /**
    * System log file path
    */
-  systemLogPath: string,
+  systemLogPath: ?string,
 
   /**
    * Port on which to launch Tequilapi requests

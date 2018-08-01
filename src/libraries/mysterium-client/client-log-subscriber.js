@@ -16,7 +16,8 @@
  */
 
 // @flow
-
+import fs from 'fs'
+import type { BugReporter } from '../../app/bug-reporting/interface'
 import Subscriber from '../subscriber'
 import logLevels from './log-levels'
 import type { LogCallback } from './index'
@@ -35,13 +36,22 @@ const prependWithSpace = prependWithFn(() => ` `)
 
 class ClientLogSubscriber {
   _subscribers: Subscribers
+  _bugReporter: BugReporter
   _stdoutPath: string
   _stderrPath: string
-  _systemFilePath: string
+  _systemFilePath: ?string
   _dateFunction: DateFunction
   _tailFunction: TailFunction
 
-  constructor (stdoutPath: string, stderrPath: string, systemFilePath: string, dateFunction: DateFunction, tailFunction: TailFunction) {
+  constructor (
+    bugReporter: BugReporter,
+    stdoutPath: string,
+    stderrPath: string,
+    systemFilePath: ?string,
+    dateFunction: DateFunction,
+    tailFunction: TailFunction
+  ) {
+    this._bugReporter = bugReporter
     this._stdoutPath = stdoutPath
     this._stderrPath = stderrPath
     this._systemFilePath = systemFilePath
@@ -57,19 +67,7 @@ class ClientLogSubscriber {
   async setup (): Promise<void> {
     await this._prepareLogFiles()
 
-    const notifyOnErrorSubscribers = this._notifySubscribersWithLog.bind(this, logLevels.ERROR)
-    const prependWithCurrentTime = prependWithFn(() => toISOString(this._dateFunction()))
-
-    this._tailFile(this._stdoutPath, this._notifySubscribersWithLog.bind(this, logLevels.INFO))
-    this._tailFile(this._stderrPath, (data) => {
-      notifyOnErrorSubscribers(prependWithCurrentTime(prependWithSpace(data)))
-    })
-
-    this._tailFile(this._systemFilePath, (data) => {
-      if (data.includes(INVERSE_DOMAIN_PACKAGE_NAME)) {
-        notifyOnErrorSubscribers(data)
-      }
-    })
+    this._tailLogs()
   }
 
   onLog (level: string, cb: LogCallback): void {
@@ -78,6 +76,47 @@ class ClientLogSubscriber {
     }
 
     this._subscribers[level].subscribe(cb)
+  }
+
+  _tailLogs () {
+    this._tailInfoFile()
+    this._tailErrorFile()
+    this._tailSystemFile()
+  }
+
+  _tailInfoFile () {
+    this._tailFile(this._stdoutPath, this._notifySubscribersWithLog.bind(this, logLevels.INFO))
+  }
+
+  _tailErrorFile () {
+    const prependWithCurrentTime = prependWithFn(() => toISOString(this._dateFunction()))
+
+    this._tailFile(this._stderrPath, (data) => {
+      this._notifyOnErrorSubscribers(prependWithCurrentTime(prependWithSpace(data)))
+    })
+  }
+
+  _tailSystemFile () {
+    const systemFilePath = this._systemFilePath
+
+    if (!systemFilePath) {
+      return
+    }
+
+    if (!fs.existsSync(systemFilePath)) {
+      this._bugReporter.captureErrorException(new Error(`System log file doesn't exist`))
+      return
+    }
+
+    this._tailFile(systemFilePath, (data) => {
+      if (data.includes(INVERSE_DOMAIN_PACKAGE_NAME)) {
+        this._notifyOnErrorSubscribers(data)
+      }
+    })
+  }
+
+  _notifyOnErrorSubscribers (data: string): void {
+    this._notifySubscribersWithLog(logLevels.ERROR, data)
   }
 
   _notifySubscribersWithLog (level: string, data: string): void {
