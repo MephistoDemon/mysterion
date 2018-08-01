@@ -34,16 +34,22 @@ class Monitoring {
   _subscribersStatus: Array<StatusCallback> = []
   _subscribersUp: Array<UpCallback> = []
   _subscribersDown: Array<DownCallback> = []
+  _isStarted: boolean = false
 
   constructor (tequilapi: TequilapiClient) {
     this.api = tequilapi
   }
 
   start () {
+    if (this._isStarted) {
+      return
+    }
+    this._isStarted = true
     this._healthCheckLoop()
   }
 
   stop () {
+    this._isStarted = false
     if (this._timer) {
       clearTimeout(this._timer)
     }
@@ -57,7 +63,7 @@ class Monitoring {
   removeOnStatus (callback: StatusCallback) {
     const i = this._subscribersStatus.indexOf(callback)
     if (i >= 0) {
-      this._subscribersStatus.splice(i, 0)
+      this._subscribersStatus.splice(i, 1)
     }
   }
 

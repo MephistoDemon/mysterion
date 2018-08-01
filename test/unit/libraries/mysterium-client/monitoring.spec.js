@@ -28,14 +28,17 @@ import { nextTick } from '../../../helpers/utils'
 class TequilapiMock extends EmptyTequilapiClientMock {
   cancelIsCalled: boolean = false
   healthCheckThrowsError: boolean = false
-  healthCheckIsCalled: boolean = false
+  healthCheckCallCount: number = 0
+  get healthCheckIsCalled () {
+    return this.healthCheckCallCount > 0
+  }
 
   async connectionCancel (): Promise<void> {
     this.cancelIsCalled = true
   }
 
   async healthCheck (_timeout: ?number): Promise<NodeHealthcheckDTO> {
-    this.healthCheckIsCalled = true
+    this.healthCheckCallCount++
     if (this.healthCheckThrowsError) {
       throw new Error('HEALTHCHECK_TEST_ERROR')
     }
@@ -78,6 +81,18 @@ describe('Monitoring', () => {
       monitoring.start()
       expect(tequilapiClient.healthCheckIsCalled).to.be.true
     })
+
+    it('calls healthCheck each 1.5 seconds', async () => {
+      monitoring.start()
+      await nextTick()
+      expect(tequilapiClient.healthCheckCallCount).to.be.eql(1)
+
+      await tickWithDelay(1500)
+      expect(tequilapiClient.healthCheckCallCount).to.be.eql(2)
+
+      await tickWithDelay(1500)
+      expect(tequilapiClient.healthCheckCallCount).to.be.eql(3)
+    })
   })
 
   describe('.onStatus', () => {
@@ -106,6 +121,26 @@ describe('Monitoring', () => {
       tequilapiClient.healthCheckThrowsError = false
       await tickWithDelay(2000)
       expect(lastStatus).to.be.true
+    })
+  })
+
+  describe('.removeOnStatus', () => {
+    it('do not calls callback after remove', async () => {
+      let called = false
+      const callback = () => { called = true }
+
+      monitoring.onStatus(callback)
+      expect(called).to.be.true
+
+      called = false
+      monitoring.start()
+      await nextTick()
+      expect(called).to.be.true
+
+      called = false
+      monitoring.removeOnStatus(callback)
+      await tickWithDelay(4000)
+      expect(called).to.be.false
     })
   })
 })
