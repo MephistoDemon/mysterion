@@ -90,15 +90,16 @@ class ServiceManagerProcess implements Process {
     try {
       state = state || await this._serviceManager.getServiceState()
       logger.info(`Service state: [${state}]`)
-      if (state === SERVICE_STATE.START_PENDING) {
-        return
-      } else if (state === SERVICE_STATE.UNKNOWN) {
-        throw new Error('Cannot start non-installed service')
-      }
-      if (state === SERVICE_STATE.RUNNING) {
-        await this._serviceManager.restart()
-      } else {
-        await this._serviceManager.start()
+      switch (state) {
+        case SERVICE_STATE.START_PENDING:
+          return
+        case SERVICE_STATE.UNKNOWN:
+          throw new Error('Cannot start non-installed service')
+        case SERVICE_STATE.RUNNING:
+          await this._serviceManager.restart()
+          break
+        default:
+          await this._serviceManager.start()
       }
       await this._waitForHealthCheck()
     } finally {
