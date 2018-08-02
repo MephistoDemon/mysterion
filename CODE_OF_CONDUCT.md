@@ -17,7 +17,7 @@ Choose appropriate branch name to clarify what this PR is about.
 
 - Select appropriate tag:
     - `hotfix` for small and/or urgent bug fixes without JIRA story
-    - `bugfix` for bugfixes for JIRA story
+    - `bugfix` for bug-fixes for JIRA story
     - `feature` for changes that change or add new functionality
     - `refactor` for changes that does not change program behaviour
 - Append tag with JIRA task and description, i.e.:
@@ -31,8 +31,8 @@ We're all people, so have in mind that we can make mistakes, be subjective and h
 When communicating in PRs, we should:
 
 - Be **polite** and **friendly** - mis-communicating online is common, so it's very easy to mis-understand other people
-- Be **objective** when possible - i.e. using statistics or external resources instead of yourself opinions
-- Be **open to different opinions** - everyone can have a different mindset and by merging different mindsets we can get to a group solution
+- Be **objective** when possible - i.e. using statistics or external resources instead of simply expressing your opinion
+- Be **open to different opinions** - everyone has a different mindset and the best solution could be achieved by investigating and considering different approaches
 - Consider **talking in real life** (or even **pair-programming**) when communication online gets tricky
 
 ### Making PR
@@ -40,7 +40,7 @@ When communicating in PRs, we should:
 When making a PR, make sure you've prepared it well in order to save your own time as well as time and energy of your teammates:
 
 - Make sure **CI passes**
-- Before making a PR, **review changes as you were the reviewer** - see *Reviewing PR* section
+- Before making a PR, **review changes as if you were the reviewer** - see *Reviewing PR* section
 - (Optional) Add a **PR description** if changes are not obvious
 
 ### Getting feedback
@@ -48,14 +48,17 @@ When making a PR, make sure you've prepared it well in order to save your own ti
 Not many people think reviewing PRs is fun, so getting feedback is like getting a 🎁.
 
 When disagreements happen:
-- Try discussing it and understanding why opinions differ and how to make all sides happy.
-- Consider asking opinions of contributors outside of the discussion by tagging them.
+- Try discussing it and understanding why opinions differ and how to achieve the best solution without conflicts
+- Consider asking opinions of contributors outside of the discussion by tagging them
 - Try referencing topics (articles/documentations) which explains your arguments
 
 ### Reviewing PR
 
-When reviewing PRs:
-- **Focus** on the most important things first. More about that in *Coding values* section.
+When reviewing PR, focus on the coding values first.
+It would be good if you could review functionality/business logic first.
+A good start could be making sure that the presented implementation is acceptable or can be improved, followed by reviewing tests that freeze the solution, and only after that commenting on code style and readability improvements.
+
+Tips:
 - **Talk in person** before reviewing if PR is very unclear
 - Consider **checking-out PR branch and play around** with it to see PR in action or try applying some improvements yourself
 - Use **comment markers** (see below)
@@ -84,7 +87,9 @@ Coding values
 
 Code should do what it's supposed to do:
 - Changes should be **aligned with Jira task** (if present) and all acceptance criteria should be covered
-- All cases should be covered, including **unhappy paths** when user is not behaving as we expect him to behave
+- All cases should be covered, including **unhappy paths** when user is not behaving as we expect him to behave. Make sure unhappy paths are covered:
+    - They do not break application more than necessary
+    - The team receives necessary debug info via bug reporting tools
 
 ### Testing:
 
