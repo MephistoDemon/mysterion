@@ -56,7 +56,9 @@ class Monitoring {
 
   onStatus (callback: StatusCallback) {
     this._subscribersStatus.push(callback)
-    callback(this._lastIsRunning)
+    if (this._isStarted) {
+      callback(this._lastIsRunning)
+    }
   }
 
   removeOnStatus (callback: StatusCallback) {

@@ -96,8 +96,9 @@ describe('Monitoring', () => {
   })
 
   describe('.onStatus', () => {
-    it('notifies about default status', () => {
+    it('notifies about default status if monitoring is started', () => {
       let lastStatus: ?boolean = null
+      monitoring.start()
       monitoring.onStatus(isRunning => {
         lastStatus = isRunning
       })
@@ -126,11 +127,11 @@ describe('Monitoring', () => {
 
   describe('.removeOnStatus', () => {
     it('do not calls callback after remove', async () => {
-      let called = false
+      let called = null
       const callback = () => { called = true }
 
       monitoring.onStatus(callback)
-      expect(called).to.be.true
+      expect(called).to.be.null
 
       called = false
       monitoring.start()
