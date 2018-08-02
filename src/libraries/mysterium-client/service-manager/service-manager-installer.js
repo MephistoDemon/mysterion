@@ -36,11 +36,11 @@ class ServiceManagerInstaller implements Installer {
   _serviceManagerDir: string
   _serviceManager: ServiceManager
 
-  constructor (system: System, config: ClientConfig, serviceManagerDir: string) {
+  constructor (system: System, config: ClientConfig, serviceManager: ServiceManager) {
     this._system = system
     this._config = config
-    this._serviceManagerDir = serviceManagerDir
-    this._serviceManager = new ServiceManager(path.join(serviceManagerDir, SERVICE_MANAGER_BIN), system)
+    this._serviceManagerDir = serviceManager.directory
+    this._serviceManager = serviceManager
   }
 
   async needsInstallation (): Promise<boolean> {

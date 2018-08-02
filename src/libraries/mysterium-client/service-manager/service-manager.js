@@ -17,6 +17,7 @@
 
 // @flow
 
+import path from 'path'
 import type { System } from '../system'
 import logger from '../../../app/logger'
 import { SERVICE_NAME } from './service-manager-installer'
@@ -40,6 +41,10 @@ export default class ServiceManager {
   constructor (serviceManagerPath: string, system: System) {
     this._path = serviceManagerPath
     this._system = system
+  }
+
+  get directory (): string {
+    return path.dirname(this._path)
   }
 
   async install (): Promise<string> {
@@ -84,22 +89,27 @@ export default class ServiceManager {
     if (start < 0) {
       return SERVICE_STATE.UNKNOWN
     }
+
     start = serviceInfo.indexOf(':', start)
     if (start < 0) {
       return SERVICE_STATE.UNKNOWN
     }
+
     start = serviceInfo.indexOf('  ', start) + 2
     if (start < 0) {
       return SERVICE_STATE.UNKNOWN
     }
+
     const length = serviceInfo.indexOf('\r', start) - start - 1
     if (length < 0) {
       return SERVICE_STATE.UNKNOWN
     }
+
     const state = serviceInfo.substr(start, length)
     if (Object.values(SERVICE_STATE).indexOf(state) < 0) {
       throw new Error('Unknown Windows service state: ' + state)
     }
+
     return (state: ServiceState)
   }
 }

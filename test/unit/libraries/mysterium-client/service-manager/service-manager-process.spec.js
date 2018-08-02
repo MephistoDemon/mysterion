@@ -32,9 +32,9 @@ import Monitoring from '../../../../../src/libraries/mysterium-client/monitoring
 import { captureAsyncError, nextTick } from '../../../../helpers/utils'
 import BugReporterMock from '../../../../helpers/bug-reporter-mock'
 import type { ServiceState } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager'
-import { SERVICE_STATE } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager'
+import ServiceManager, { SERVICE_STATE } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager'
 
-const SERVICE_MANAGER_DIR = '/service-manager/bin/'
+const SERVICE_MANAGER_PATH = '/service-manager/bin/servicemanager.exe'
 
 const getServiceInfo = (state: ServiceState) =>
   `SERVICE_NAME: MysteriumClient
@@ -91,6 +91,7 @@ describe('ServiceManagerProcess', () => {
   let process: ServiceManagerProcess
   let clientLogSubscriber: ClientLogSubscriberMock
   let monitoring: Monitoring
+  let serviceManager: ServiceManager
   let clock: lolex
 
   const healthCheckTest = async (func: () => Promise<void>) => {
@@ -135,7 +136,8 @@ describe('ServiceManagerProcess', () => {
     clientLogSubscriber = new ClientLogSubscriberMock()
     // $FlowFixMe
     monitoring = new Monitoring(tequilapiClient)
-    process = new ServiceManagerProcess(tequilapiClient, clientLogSubscriber, SERVICE_MANAGER_DIR, system, monitoring)
+    serviceManager = new ServiceManager(SERVICE_MANAGER_PATH, system)
+    process = new ServiceManagerProcess(tequilapiClient, clientLogSubscriber, serviceManager, system, monitoring)
     monitoring.start()
   })
 

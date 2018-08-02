@@ -37,11 +37,12 @@ import LaunchDaemonProcess from '../../../libraries/mysterium-client/launch-daem
 import StandaloneClientInstaller from '../../../libraries/mysterium-client/standalone/standalone-client-installer'
 import StandaloneClientProcess from '../../../libraries/mysterium-client/standalone/standalone-client-process'
 
-import ServiceManagerInstaller from '../../../libraries/mysterium-client/service-manager/service-manager-installer'
+import ServiceManagerInstaller, { SERVICE_MANAGER_BIN } from '../../../libraries/mysterium-client/service-manager/service-manager-installer'
 import ServiceManagerProcess from '../../../libraries/mysterium-client/service-manager/service-manager-process'
 
 import { LAUNCH_DAEMON_PORT } from '../../../libraries/mysterium-client/launch-daemon/config'
 import OSSystem from '../../../libraries/mysterium-client/system'
+import ServiceManager from '../../../libraries/mysterium-client/service-manager/service-manager'
 
 const WINDOWS = 'win32'
 const OSX = 'darwin'
@@ -77,15 +78,30 @@ function bootstrap (container: Container) {
       }
     }
   )
+
+  container.service(
+    'serviceManager',
+    ['mysterionApplication.config', 'mysteriumClient.platform'],
+    (mysterionConfig: MysterionConfig, platform: string) => {
+      switch (platform) {
+        case WINDOWS:
+          let serviceManagerPath = path.join(mysterionConfig.contentsDirectory, 'bin', SERVICE_MANAGER_BIN)
+          return new ServiceManager(serviceManagerPath, new OSSystem())
+        default:
+          return null
+      }
+    }
+  )
+
   container.service(
     'mysteriumClientInstaller',
-    ['mysterionApplication.config', 'mysteriumClient.config', 'mysteriumClient.platform'],
-    (mysterionConfig: MysterionConfig, config: ClientConfig, platform: string) => {
+    ['mysterionApplication.config', 'mysteriumClient.config', 'mysteriumClient.platform', 'serviceManager'],
+    (mysterionConfig: MysterionConfig, config: ClientConfig, platform: string, serviceManager: ServiceManager) => {
       switch (platform) {
         case OSX:
           return new LaunchDaemonInstaller(config)
         case WINDOWS:
-          return new ServiceManagerInstaller(new OSSystem(), config, path.join(mysterionConfig.contentsDirectory, 'bin'))
+          return new ServiceManagerInstaller(new OSSystem(), config, serviceManager)
         default:
           return new StandaloneClientInstaller()
       }
@@ -107,8 +123,8 @@ function bootstrap (container: Container) {
 
   container.service(
     'mysteriumClient.logSubscriber',
-    ['bugReporter', 'mysteriumClient.config', 'mysteriumClient.tailFunction', 'mysteriumClient.platform'],
-    (bugReporter: BugReporter, config: ClientConfig, tailFunction: TailFunction, platform: string) => {
+    ['bugReporter', 'mysteriumClient.config', 'mysteriumClient.tailFunction'],
+    (bugReporter: BugReporter, config: ClientConfig, tailFunction: TailFunction) => {
       return new ClientLogSubscriber(
         bugReporter,
         path.join(config.logDir, config.stdOutFileName),
@@ -123,9 +139,9 @@ function bootstrap (container: Container) {
   container.service(
     'mysteriumClientProcess',
     ['tequilapiClient', 'mysteriumClient.config', 'mysteriumClient.logSubscriber', 'mysteriumClient.platform',
-      'mysterionApplication.config', 'mysteriumClientMonitoring'],
+      'mysterionApplication.config', 'mysteriumClientMonitoring', 'serviceManager'],
     (tequilapiClient: TequilapiClient, config: ClientConfig, logSubscriber: ClientLogSubscriber, platform: string,
-      mysterionConfig: MysterionConfig, monitoring: Monitoring) => {
+      mysterionConfig: MysterionConfig, monitoring: Monitoring, serviceManager: ServiceManager) => {
       switch (platform) {
         case OSX:
           return new LaunchDaemonProcess(tequilapiClient, logSubscriber, LAUNCH_DAEMON_PORT)
@@ -133,7 +149,7 @@ function bootstrap (container: Container) {
           return new ServiceManagerProcess(
             tequilapiClient,
             logSubscriber,
-            path.join(mysterionConfig.contentsDirectory, 'bin'),
+            serviceManager,
             new OSSystem(),
             monitoring)
         default:

@@ -17,12 +17,10 @@
 
 // @flow
 
-import path from 'path'
 import logger from '../../../app/logger'
 import type { LogCallback, Process } from '../index'
 import type { TequilapiClient } from '../../mysterium-tequilapi/client'
 import type { System } from '../system'
-import { SERVICE_MANAGER_BIN } from './service-manager-installer'
 import ClientLogSubscriber from '../client-log-subscriber'
 import Monitoring from '../monitoring'
 import type { StatusCallback } from '../monitoring'
@@ -47,13 +45,12 @@ class ServiceManagerProcess implements Process {
   constructor (
     tequilapi: TequilapiClient,
     logs: ClientLogSubscriber,
-    serviceManagerDir: string,
+    serviceManager: ServiceManager,
     system: System,
     monitoring: Monitoring) {
     this._tequilapi = tequilapi
     this._logs = logs
-    this._serviceManagerDir = serviceManagerDir
-    this._serviceManager = new ServiceManager(path.join(this._serviceManagerDir, SERVICE_MANAGER_BIN), system)
+    this._serviceManager = serviceManager
     this._system = system
     this._monitoring = monitoring
   }
