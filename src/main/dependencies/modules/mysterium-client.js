@@ -95,8 +95,8 @@ function bootstrap (container: Container) {
 
   container.service(
     'mysteriumClientInstaller',
-    ['mysterionApplication.config', 'mysteriumClient.config', 'mysteriumClient.platform', 'serviceManager'],
-    (mysterionConfig: MysterionConfig, config: ClientConfig, platform: string, serviceManager: ServiceManager) => {
+    ['mysteriumClient.config', 'mysteriumClient.platform', 'serviceManager'],
+    (config: ClientConfig, platform: string, serviceManager: ServiceManager) => {
       switch (platform) {
         case OSX:
           return new LaunchDaemonInstaller(config)
@@ -139,9 +139,9 @@ function bootstrap (container: Container) {
   container.service(
     'mysteriumClientProcess',
     ['tequilapiClient', 'mysteriumClient.config', 'mysteriumClient.logSubscriber', 'mysteriumClient.platform',
-      'mysterionApplication.config', 'mysteriumClientMonitoring', 'serviceManager'],
+      'mysteriumClientMonitoring', 'serviceManager'],
     (tequilapiClient: TequilapiClient, config: ClientConfig, logSubscriber: ClientLogSubscriber, platform: string,
-      mysterionConfig: MysterionConfig, monitoring: Monitoring, serviceManager: ServiceManager) => {
+      monitoring: Monitoring, serviceManager: ServiceManager) => {
       switch (platform) {
         case OSX:
           return new LaunchDaemonProcess(tequilapiClient, logSubscriber, LAUNCH_DAEMON_PORT)
