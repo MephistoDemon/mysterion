@@ -33,8 +33,8 @@ export interface SystemMockManager {
 
 export default class SystemMock implements System, SystemMockManager {
   writeFileReturnValue: ?string = null
-  userExecCalledCommands: Array<string> = []
-  sudoExecCalledCommands: Array<string> = []
+  userExecCalledCommands: string[] = []
+  sudoExecCalledCommands: string[] = []
   _files: Map<string, string> = new Map()
   _commands: Map<string, string> = new Map()
 
