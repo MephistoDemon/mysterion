@@ -34,6 +34,40 @@ type ServiceState = $Values<typeof SERVICE_STATE>
 export { SERVICE_STATE }
 export type { ServiceState }
 
+const parseServiceState = (serviceInfo: string): ServiceState => {
+  const isInstalled: boolean = serviceInfo.indexOf(`SERVICE_NAME: ${SERVICE_NAME}`) > -1
+  if (!isInstalled) {
+    return SERVICE_STATE.UNKNOWN
+  }
+
+  let start = serviceInfo.indexOf('STATE')
+  if (start < 0) {
+    return SERVICE_STATE.UNKNOWN
+  }
+
+  start = serviceInfo.indexOf(':', start)
+  if (start < 0) {
+    return SERVICE_STATE.UNKNOWN
+  }
+
+  start = serviceInfo.indexOf('  ', start) + 2
+  if (start < 0) {
+    return SERVICE_STATE.UNKNOWN
+  }
+
+  const length = serviceInfo.indexOf('\r', start) - start - 1
+  if (length < 0) {
+    return SERVICE_STATE.UNKNOWN
+  }
+
+  const state = serviceInfo.substr(start, length)
+  if (Object.values(SERVICE_STATE).indexOf(state) < 0) {
+    throw new Error('Unknown Windows service state: ' + state)
+  }
+
+  return (state: ServiceState)
+}
+
 export default class ServiceManager {
   _path: string
   _system: System
@@ -71,45 +105,11 @@ export default class ServiceManager {
       logger.error('Service check failed', e.message)
       return SERVICE_STATE.UNKNOWN
     }
-    return ServiceManager._parseServiceState(stdout)
+    return parseServiceState(stdout)
   }
 
   async _execAndGetState (commandName: string) {
     const result = await this._system.sudoExec(`${this._path} --do=${commandName}`)
-    return ServiceManager._parseServiceState(result)
-  }
-
-  static _parseServiceState (serviceInfo: string): ServiceState {
-    const isInstalled: boolean = serviceInfo.indexOf(`SERVICE_NAME: ${SERVICE_NAME}`) > -1
-    if (!isInstalled) {
-      return SERVICE_STATE.UNKNOWN
-    }
-
-    let start = serviceInfo.indexOf('STATE')
-    if (start < 0) {
-      return SERVICE_STATE.UNKNOWN
-    }
-
-    start = serviceInfo.indexOf(':', start)
-    if (start < 0) {
-      return SERVICE_STATE.UNKNOWN
-    }
-
-    start = serviceInfo.indexOf('  ', start) + 2
-    if (start < 0) {
-      return SERVICE_STATE.UNKNOWN
-    }
-
-    const length = serviceInfo.indexOf('\r', start) - start - 1
-    if (length < 0) {
-      return SERVICE_STATE.UNKNOWN
-    }
-
-    const state = serviceInfo.substr(start, length)
-    if (Object.values(SERVICE_STATE).indexOf(state) < 0) {
-      throw new Error('Unknown Windows service state: ' + state)
-    }
-
-    return (state: ServiceState)
+    return parseServiceState(result)
   }
 }
