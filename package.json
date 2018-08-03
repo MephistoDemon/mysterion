@@ -21,11 +21,12 @@
     "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
     "unit": "karma start test/unit/karma.conf.js --single-run=true",
+    "test:coverage": "util_scripts/test-coverage.sh",
     "test:integration": "karma start test/integration/karma.conf.js --single-run=true",
     "test:integration:start-server": "karma start test/integration/karma.conf.js",
     "unit:start-server": "karma start test/unit/karma.conf.js",
     "unit:run": "karma run test/unit/karma.conf.js",
-    "ci": "yarn flow && yarn lint && yarn unit && yarn test:integration"
+    "ci": "yarn flow && yarn lint && yarn unit && yarn test:integration && yarn test:coverage"
   },
   "build": {
     "productName": "Mysterion",
