@@ -62,7 +62,8 @@ describe('ServiceManager', () => {
     it('calls "servicemanager.exe install" with admin rights', async () => {
       await serviceManager.install()
       expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
-      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=install && /service-manager/bin/servicemanager.exe --do=start')
+      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql(
+        '/service-manager/bin/servicemanager.exe --do=install && /service-manager/bin/servicemanager.exe --do=start')
     })
   })
 
