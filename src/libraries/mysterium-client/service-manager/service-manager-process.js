@@ -108,20 +108,20 @@ class ServiceManagerProcess implements Process {
   }
 
   async _waitForHealthCheck (): Promise<void> {
-    let statusCallback: ?StatusCallback
+    let resolveAndClearTimer: ?StatusCallback
     await new Promise((resolve, reject) => {
       const rejectTimer = setTimeout(() => reject(new Error('Unable to start service')), SERVICE_INIT_TIME)
-      statusCallback = (isRunning: boolean) => {
+      resolveAndClearTimer = (isRunning: boolean) => {
         if (isRunning) {
           clearTimeout(rejectTimer)
           resolve()
         }
       }
-      this._monitoring.onStatus(statusCallback)
+      this._monitoring.onStatus(resolveAndClearTimer)
     })
 
-    if (statusCallback) {
-      this._monitoring.removeOnStatus(statusCallback)
+    if (resolveAndClearTimer) {
+      this._monitoring.removeOnStatus(resolveAndClearTimer)
     }
   }
 }
