@@ -19,19 +19,19 @@
 import type from '../types'
 
 import messages from '../../../app/messages'
-import {FunctionLooper} from '../../../libraries/functionLooper'
+import { FunctionLooper } from '../../../libraries/functionLooper'
 import config from '@/config'
-import {ConnectEventTracker, currentUserTime} from '../../../app/statistics/events-connection'
+import { ConnectEventTracker, currentUserTime } from '../../../app/statistics/events-connection'
 import RendererCommunication from '../../../app/communication/renderer-communication'
-import {EventCollector as StatsCollector} from '../../../app/statistics/events'
-import type {EventFactory as StatsEventsFactory} from '../../../app/statistics/events'
-import type {TequilapiClient} from '../../../libraries/mysterium-tequilapi/client'
-import type {ConnectionStatus} from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
+import { EventCollector as StatsCollector } from '../../../app/statistics/events'
+import type { EventFactory as StatsEventsFactory } from '../../../app/statistics/events'
+import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
+import type { ConnectionStatus } from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatusEnum from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatisticsDTO from '../../../libraries/mysterium-tequilapi/dto/connection-statistics'
 import ConnectionRequestDTO from '../../../libraries/mysterium-tequilapi/dto/connection-request'
 import ConsumerLocationDTO from '../../../libraries/mysterium-tequilapi/dto/consumer-location'
-import type {BugReporter} from '../../../app/bug-reporting/interface'
+import type { BugReporter } from '../../../app/bug-reporting/interface'
 import {
   isRequestClosedError,
   isHttpError
@@ -121,7 +121,7 @@ function actionsFactory (
   bugReporter: BugReporter
 ) {
   return {
-    async [type.LOCATION] ({commit}) {
+    async [type.LOCATION] ({ commit }) {
       try {
         const locationDto = await tequilapi.location(config.locationUpdateTimeout)
         commit(type.LOCATION, locationDto)
@@ -132,7 +132,7 @@ function actionsFactory (
         bugReporter.captureErrorException(err)
       }
     },
-    async [type.CONNECTION_IP] ({commit}) {
+    async [type.CONNECTION_IP] ({ commit }) {
       try {
         const ipModel = await tequilapi.connectionIP(config.ipUpdateTimeout)
         commit(type.CONNECTION_IP, ipModel.ip)
@@ -143,7 +143,7 @@ function actionsFactory (
         bugReporter.captureErrorException(err)
       }
     },
-    [type.START_ACTION_LOOPING] ({dispatch, commit, state}, event: ActionLooperConfig): FunctionLooper {
+    [type.START_ACTION_LOOPING] ({ dispatch, commit, state }, event: ActionLooperConfig): FunctionLooper {
       const currentLooper = state.actionLoopers[event.action]
       if (currentLooper) {
         logger.info('Warning: requested to start looping action which is already looping: ' + event.action)
@@ -160,14 +160,14 @@ function actionsFactory (
       commit(type.SET_ACTION_LOOPER, new ActionLooper(event.action, looper))
       return looper
     },
-    async [type.STOP_ACTION_LOOPING] ({commit, state}, action: string) {
+    async [type.STOP_ACTION_LOOPING] ({ commit, state }, action: string) {
       const looper = state.actionLoopers[action]
       if (looper) {
         await looper.stop()
       }
       commit(type.REMOVE_ACTION_LOOPER, action)
     },
-    async [type.FETCH_CONNECTION_STATUS] ({commit, dispatch}) {
+    async [type.FETCH_CONNECTION_STATUS] ({ commit, dispatch }) {
       try {
         const statusModel = await tequilapi.connectionStatus()
         await dispatch(type.SET_CONNECTION_STATUS, statusModel.status)
@@ -175,13 +175,13 @@ function actionsFactory (
         commit(type.SHOW_ERROR, err)
       }
     },
-    async [type.SET_CONNECTION_STATUS] ({commit, dispatch, state}, newStatus: ConnectionStatus) {
+    async [type.SET_CONNECTION_STATUS] ({ commit, dispatch, state }, newStatus: ConnectionStatus) {
       const oldStatus = state.status
       if (oldStatus === newStatus) {
         return
       }
       commit(type.SET_CONNECTION_STATUS, newStatus)
-      rendererCommunication.sendConnectionStatusChange({oldStatus, newStatus})
+      rendererCommunication.sendConnectionStatusChange({ oldStatus, newStatus })
 
       if (newStatus === ConnectionStatusEnum.CONNECTED) {
         await dispatch(type.START_ACTION_LOOPING, new ActionLooperConfig(type.CONNECTION_STATISTICS, config.statisticsUpdateThreshold))
@@ -190,7 +190,7 @@ function actionsFactory (
         await dispatch(type.STOP_ACTION_LOOPING, type.CONNECTION_STATISTICS)
       }
     },
-    async [type.CONNECTION_STATISTICS] ({commit}) {
+    async [type.CONNECTION_STATISTICS] ({ commit }) {
       try {
         const statistics = await tequilapi.connectionStatistics()
         commit(type.CONNECTION_STATISTICS, statistics)
@@ -198,7 +198,7 @@ function actionsFactory (
         commit(type.SHOW_ERROR, err)
       }
     },
-    async [type.CONNECT] ({commit, dispatch, state}, connectionRequest: ConnectionRequestDTO) {
+    async [type.CONNECT] ({ commit, dispatch, state }, connectionRequest: ConnectionRequestDTO) {
       let eventTracker = new ConnectEventTracker(statsCollector, currentUserTime, statsEventsFactory)
       let originalCountry = ''
       if (state.location != null && state.location.originalCountry != null) {
@@ -238,7 +238,7 @@ function actionsFactory (
         }
       }
     },
-    async [type.DISCONNECT] ({commit, dispatch}) {
+    async [type.DISCONNECT] ({ commit, dispatch }) {
       const looper = state.actionLoopers[type.FETCH_CONNECTION_STATUS]
       if (looper) {
         await looper.stop()

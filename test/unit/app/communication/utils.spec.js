@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {onFirstEvent} from '../../../../src/app/communication/utils'
+import { onFirstEvent } from '../../../../src/app/communication/utils'
 
 const subscription = (onResolve) => onResolve('resolution of instant data')
 const subscriptionAsync = async (onResolve) => {

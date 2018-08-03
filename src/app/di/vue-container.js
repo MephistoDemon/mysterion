@@ -16,7 +16,7 @@
  */
 
 // @flow
-import type {Container, ServiceFactory} from './index'
+import type { Container, ServiceFactory } from './index'
 import Vue from 'vue'
 import Injector from 'vue-inject'
 import constants from 'jpex/src/constants'

@@ -47,12 +47,12 @@ describe('CountryList', () => {
   const proposalFetcher = new ProposalFetcherMock()
   const store = new UserSettingsStore('')
 
-  const proposal1 = [new ProposalDTO({id: '1', providerId: '0x1', serviceType: 'mock'})]
+  const proposal1 = [new ProposalDTO({ id: '1', providerId: '0x1', serviceType: 'mock' })]
   const proposal2 = [new ProposalDTO({
     id: '1',
     providerId: '0x2',
     serviceType: 'mock',
-    serviceDefinition: {locationOriginate: {country: 'lt'}}
+    serviceDefinition: { locationOriginate: { country: 'lt' } }
   })]
 
   beforeEach(() => {
@@ -65,11 +65,11 @@ describe('CountryList', () => {
       countryList.onUpdate(cbRec.getCallback())
       proposalFetcher.setFetchData(proposal1)
       proposalFetcher.fetch()
-      expect(cbRec.firstArgument).to.be.eql([{id: '0x1', code: null, name: 'N/A', isFavorite: false}])
+      expect(cbRec.firstArgument).to.be.eql([{ id: '0x1', code: null, name: 'N/A', isFavorite: false }])
 
       proposalFetcher.setFetchData(proposal2)
       proposalFetcher.fetch()
-      expect(cbRec.firstArgument).to.be.eql([{id: '0x2', code: 'lt', name: 'Lithuania', isFavorite: false}])
+      expect(cbRec.firstArgument).to.be.eql([{ id: '0x2', code: 'lt', name: 'Lithuania', isFavorite: false }])
     })
 
     it('notifies subscribers when favorite providers change', () => {
@@ -78,7 +78,7 @@ describe('CountryList', () => {
 
       countryList.onUpdate(cbRec.getCallback())
       store.setFavorite('0x2', true)
-      expect(cbRec.firstArgument).to.be.eql([{id: '0x2', code: 'lt', name: 'Lithuania', isFavorite: true}])
+      expect(cbRec.firstArgument).to.be.eql([{ id: '0x2', code: 'lt', name: 'Lithuania', isFavorite: true }])
     })
   })
 })

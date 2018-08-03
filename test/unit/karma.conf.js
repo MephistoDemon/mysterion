@@ -55,8 +55,8 @@ module.exports = config => {
     coverageReporter: {
       dir: './coverage',
       reporters: [
-        {type: 'lcov', subdir: '.'},
-        {type: 'text-summary'}
+        { type: 'lcov', subdir: '.' },
+        { type: 'text-summary' }
       ]
     },
     customLaunchers: {

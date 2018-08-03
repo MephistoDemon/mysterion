@@ -18,7 +18,7 @@
 import axios from 'axios/index'
 import AxiosAdapter from '../../../../../src/libraries/mysterium-tequilapi/adapters/axios-adapter'
 import MockAdapter from 'axios-mock-adapter'
-import {capturePromiseError} from '../../../../helpers/utils'
+import { capturePromiseError } from '../../../../helpers/utils'
 import {
   isHttpError,
   isTimeoutError
@@ -34,7 +34,7 @@ describe('TequilapiClient AxiosAdapter', () => {
   })
 
   it('handles get response', async () => {
-    const responseExpected = {foo: 'bar'}
+    const responseExpected = { foo: 'bar' }
     mock.onGet('test-url').reply(200, responseExpected)
 
     const response = await adapter.get('test-url')
@@ -42,8 +42,8 @@ describe('TequilapiClient AxiosAdapter', () => {
   })
 
   it('handles post response', async () => {
-    const requestExpected = {param: 'value'}
-    const responseExpected = {foo: 'bar'}
+    const requestExpected = { param: 'value' }
+    const responseExpected = { foo: 'bar' }
     mock.onPost('test-url', requestExpected).reply(200, responseExpected)
 
     const response = await adapter.post('test-url', requestExpected)
@@ -51,8 +51,8 @@ describe('TequilapiClient AxiosAdapter', () => {
   })
 
   it('handles put response', async () => {
-    const requestExpected = {param: 'value'}
-    const responseExpected = {foo: 'bar'}
+    const requestExpected = { param: 'value' }
+    const responseExpected = { foo: 'bar' }
     mock.onPut('test-url', requestExpected).reply(200, responseExpected)
 
     const response = await adapter.put('test-url', requestExpected)
@@ -60,7 +60,7 @@ describe('TequilapiClient AxiosAdapter', () => {
   })
 
   it('handles delete response', async () => {
-    const responseExpected = {foo: 'bar'}
+    const responseExpected = { foo: 'bar' }
     mock.onDelete('test-url').reply(200, responseExpected)
 
     const response = await adapter.delete('test-url')
@@ -86,7 +86,7 @@ describe('TequilapiClient AxiosAdapter', () => {
   })
 
   it('returns 404 response error', async () => {
-    mock.onGet('test-url').reply(404, {message: 'What is wrong'})
+    mock.onGet('test-url').reply(404, { message: 'What is wrong' })
 
     const err = await capturePromiseError(adapter.get('test-url'))
     expect(err).to.be.instanceOf(Error)

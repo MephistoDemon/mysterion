@@ -16,9 +16,9 @@
  */
 
 // @flow
-import {describe, it, expect, before} from '../../../helpers/dependencies'
+import { describe, it, expect, before } from '../../../helpers/dependencies'
 import applyHeaderWrites from '../../../../src/app/window/requestHeaders'
-import type {HeaderRule} from '../../../../src/app/window/requestHeaders'
+import type { HeaderRule } from '../../../../src/app/window/requestHeaders'
 
 let resultHeaders
 let defaultHeaders
@@ -52,7 +52,7 @@ describe('registerHeaderRules', () => {
   ]
 
   before(() => {
-    defaultHeaders = {requestHeaders: {}}
+    defaultHeaders = { requestHeaders: {} }
   })
 
   it('applies given headers', () => {

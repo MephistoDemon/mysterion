@@ -17,8 +17,8 @@
 
 // @flow
 
-import type {Metric} from '../../src/app/bug-reporting/bug-reporter-metrics'
-import type {MapSyncCommunication, MapSyncDTO} from '../../src/libraries/map-sync'
+import type { Metric } from '../../src/app/bug-reporting/bug-reporter-metrics'
+import type { MapSyncCommunication, MapSyncDTO } from '../../src/libraries/map-sync'
 
 /**
  * Allows tracking method invocations.

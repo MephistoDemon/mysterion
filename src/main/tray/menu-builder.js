@@ -17,11 +17,11 @@
 
 // @flow
 
-import type {Country} from '../../app/countries/index'
-import type {MainCommunication} from '../../app/communication/main-communication'
-import {getCountryLabel} from '../../app/countries/index'
+import type { Country } from '../../app/countries/index'
+import type { MainCommunication } from '../../app/communication/main-communication'
+import { getCountryLabel } from '../../app/countries/index'
 import ConnectionStatusEnum from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
-import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
+import type { ConnectionStatus } from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import TrayMenu from './menu'
 import TrayMenuItem from './menu-item'
 import TrayMenuSeparator from './menu-item-separator'
@@ -49,7 +49,7 @@ function getMenuItems (
       label = '* ' + label
     }
     connectSubmenu.add(label, () => {
-      communication.sendConnectionRequest({providerId: country.id})
+      communication.sendConnectionRequest({ providerId: country.id })
     })
   })
 

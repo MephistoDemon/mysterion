@@ -21,4 +21,4 @@
  */
 declare var __static: string
 
-export {__static}
+export { __static }

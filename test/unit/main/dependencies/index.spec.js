@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {bootstrap} from '../../../../src/main/dependencies/index'
+import { bootstrap } from '../../../../src/main/dependencies/index'
 import JpexContainer from '../../../../src/app/di/jpex-container'
 
 describe('MainDependencies', () => {

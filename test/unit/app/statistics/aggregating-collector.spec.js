@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {newEvent} from '../../../../src/app/statistics/events'
+import { newEvent } from '../../../../src/app/statistics/events'
 import AggregatingCollector from '../../../../src/app/statistics/aggregating-collector'
 import lolex from 'lolex'
-import {nextTick} from '../../../helpers/utils'
+import { nextTick } from '../../../helpers/utils'
 
 describe('Aggregating collector', () => {
   let clock

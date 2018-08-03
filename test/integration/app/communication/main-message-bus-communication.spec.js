@@ -53,7 +53,7 @@ describe('MainMessageBusCommunication', () => {
   describe('sendRendererShowError', () => {
     it('sends message through message bus', () => {
       rendererCommunication.onShowRendererError(recorder.getCallback())
-      const errorDto = {fatal: false, hint: 'test hint', message: 'test message'}
+      const errorDto = { fatal: false, hint: 'test hint', message: 'test message' }
       mainCommunication.sendRendererShowError(errorDto)
       expect(recorder.invoked).to.be.true
       expect(recorder.firstArgument).to.eql(errorDto)
@@ -88,7 +88,7 @@ describe('MainMessageBusCommunication', () => {
     it('sends message through message bus', () => {
       rendererCommunication.onCountriesUpdate(recorder.getCallback())
       const countriesDto = [
-        {id: '1', code: 'lt', name: 'Country', isFavorite: false}
+        { id: '1', code: 'lt', name: 'Country', isFavorite: false }
       ]
       mainCommunication.sendCountries(countriesDto)
       expect(recorder.invoked).to.be.true
@@ -136,7 +136,7 @@ describe('MainMessageBusCommunication', () => {
     it('sends message through message bus', () => {
       const callback = recorder.getCallback()
       rendererCommunication.onUserSettings(callback)
-      const settingsDto = {showDisconnectNotifications: true, favoriteProviders: new Set()}
+      const settingsDto = { showDisconnectNotifications: true, favoriteProviders: new Set() }
       mainCommunication.sendUserSettings(settingsDto)
       expect(recorder.invoked).to.be.true
       expect(recorder.firstArgument).to.eql(settingsDto)

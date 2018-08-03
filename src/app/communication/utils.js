@@ -56,4 +56,4 @@ function onFirstEventOrTimeout (subscriber: Subscriber, timeout: number): Promis
   })
 }
 
-export {onFirstEvent, onFirstEventOrTimeout}
+export { onFirstEvent, onFirstEventOrTimeout }

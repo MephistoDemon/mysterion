@@ -30,16 +30,16 @@ describe('WinstonTransportCaching', () => {
     })
 
     it('adds data to error log cache', (done) => {
-      backendCachingTransport.log({level: 'error', message: 'text', timestamp: '<time>'}, () => {
+      backendCachingTransport.log({ level: 'error', message: 'text', timestamp: '<time>' }, () => {
         expect(logCache.get().error).to.be.eql(['<time>text'])
         done()
       })
     })
 
     it('adds data to info log cache for log levels (info, warn, debug)', (done) => {
-      backendCachingTransport.log({level: 'info', message: 'INFO', timestamp: '<time>'}, () => {
-        backendCachingTransport.log({level: 'warn', message: 'WARNING', timestamp: '<time>'}, () => {
-          backendCachingTransport.log({level: 'debug', message: 'DEBUG', timestamp: '<time>'}, () => {
+      backendCachingTransport.log({ level: 'info', message: 'INFO', timestamp: '<time>' }, () => {
+        backendCachingTransport.log({ level: 'warn', message: 'WARNING', timestamp: '<time>' }, () => {
+          backendCachingTransport.log({ level: 'debug', message: 'DEBUG', timestamp: '<time>' }, () => {
             expect(logCache.get().info).to.be.eql(['<time>INFO', '<time>WARNING', '<time>DEBUG'])
             done()
           })

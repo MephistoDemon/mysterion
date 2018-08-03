@@ -28,11 +28,11 @@ class MockIpc implements Ipc {
   }
 
   on (channel: string, listener: EventListener): void {
-    this.addedSubscribers.push({channel, listener})
+    this.addedSubscribers.push({ channel, listener })
   }
 
   removeCallback (channel: string, listener: EventListener): void {
-    this.removedSubscribers.push({channel, listener})
+    this.removedSubscribers.push({ channel, listener })
   }
 }
 

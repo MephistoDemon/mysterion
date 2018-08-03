@@ -43,5 +43,5 @@ function bootstrap (): DIContainer {
   return container
 }
 
-export {bootstrap}
+export { bootstrap }
 export default bootstrap()

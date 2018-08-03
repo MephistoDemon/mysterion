@@ -18,7 +18,7 @@
 // @flow
 import Raven from 'raven'
 import BugReporterMain from '../../../app/bug-reporting/bug-reporter-main'
-import type {Container} from '../../../app/di'
+import type { Container } from '../../../app/di'
 import MainEnvironmentCollector from '../../../app/bug-reporting/environment/main-environment-collector'
 import { createWinstonCachingLogger } from '../../../app/logging/winston'
 import type { EnvironmentCollector } from '../../../app/bug-reporting/environment/environment-collector'

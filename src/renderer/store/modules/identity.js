@@ -19,7 +19,7 @@
 import type from '../types'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../../libraries/mysterium-tequilapi/dto/identity'
-import type {Container} from '../../../app/di'
+import type { Container } from '../../../app/di'
 
 type State = {
   current: ?IdentityDTO,

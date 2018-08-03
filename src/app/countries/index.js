@@ -54,7 +54,7 @@ function limitedLengthString (value: string, maxLength: ?number = null): string 
 
 function countryFavoriteMapper (favorites: FavoriteProviders): (Country) => Country {
   return (country: Country) => {
-    return {...country, isFavorite: favorites.has(country.id)}
+    return { ...country, isFavorite: favorites.has(country.id) }
   }
 }
 
@@ -118,7 +118,7 @@ function getCountryCodeFromProposal (proposal: ProposalDTO): ?string {
   return proposal.serviceDefinition.locationOriginate.country
 }
 
-export type {Country}
+export type { Country }
 export {
   getCountryLabel,
   getSortedCountryListFromProposals,

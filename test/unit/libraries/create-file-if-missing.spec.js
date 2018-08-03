@@ -47,7 +47,7 @@ describe('createFileIfMissing', () => {
 
   it('doesn\'t overwrite file if it exists', async () => {
     await createFileIfMissing(existingFilePath)
-    const existingFileContent = await readFilePromised(existingFilePath, {encoding: 'utf8'})
+    const existingFileContent = await readFilePromised(existingFilePath, { encoding: 'utf8' })
     expect(existingFileContent).to.eql('some data')
   })
 })
