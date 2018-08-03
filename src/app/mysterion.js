@@ -427,6 +427,7 @@ class Mysterion {
       await this.process.repair()
     } catch (e) {
       this.monitoring.stop()
+      this.bugReporter.captureErrorException(e)
       this.communication.sendRendererShowError({
         message: e.toString(),
         hint: 'Try to restart application',

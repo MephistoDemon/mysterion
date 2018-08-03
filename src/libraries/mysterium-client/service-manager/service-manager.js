@@ -117,7 +117,7 @@ export default class ServiceManager {
     try {
       return await this._system.sudoExec(command)
     } catch (e) {
-      throw new Error(`Unable to start "${SERVICE_NAME}" service. ${e}`)
+      throw new Error(`Unable to execute [${command}]. ${e}`)
     }
   }
 }
