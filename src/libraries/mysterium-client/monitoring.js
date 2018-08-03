@@ -39,6 +39,10 @@ class Monitoring {
     this.api = tequilapi
   }
 
+  get isStarted (): boolean {
+    return this._isStarted
+  }
+
   start () {
     if (this._isStarted) {
       return

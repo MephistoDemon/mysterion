@@ -82,7 +82,7 @@ export default class ServiceManager {
   }
 
   async install (): Promise<string> {
-    return this._system.sudoExec(`${this._path} --do=install`)
+    return this._sudoExec(`${this._path} --do=install`)
   }
 
   async start (): Promise<ServiceState> {
@@ -108,8 +108,16 @@ export default class ServiceManager {
     return parseServiceState(stdout)
   }
 
-  async _execAndGetState (commandName: string) {
-    const result = await this._system.sudoExec(`${this._path} --do=${commandName}`)
+  async _execAndGetState (commandName: string): Promise<ServiceState> {
+    const result = await this._sudoExec(`${this._path} --do=${commandName}`)
     return parseServiceState(result)
+  }
+
+  async _sudoExec (command: string): Promise<string> {
+    try {
+      return await this._system.sudoExec(command)
+    } catch (e) {
+      throw new Error(`Unable to start "${SERVICE_NAME}" service. ${e}`)
+    }
   }
 }
