@@ -414,21 +414,25 @@ class Mysterion {
     this.monitoring.onStatus(status => {
       if (status === false) {
         logInfo("Starting 'mysterium_client' process, because it's currently down")
-
-        this.process.repair()
-          .catch(e => {
-            this.monitoring.stop()
-            this.communication.sendRendererShowError({
-              message: e.toString(),
-              hint: 'Try to restart application',
-              fatal: true
-            })
-          })
+        this._repairProcess()
       }
     })
 
     logInfo("Starting 'mysterium_client' monitoring")
     this.monitoring.start()
+  }
+
+  async _repairProcess () {
+    try {
+      await this.process.repair()
+    } catch (e) {
+      this.monitoring.stop()
+      this.communication.sendRendererShowError({
+        message: e.toString(),
+        hint: 'Try to restart application',
+        fatal: true
+      })
+    }
   }
 
   _onProcessReady (callback: () => void) {
