@@ -23,6 +23,7 @@ export interface SystemMockManager {
   writeFileReturnValue: ?string,
   userExecCalledCommands: Array<string>,
   sudoExecCalledCommands: Array<string>,
+  grantSudoPermissions: boolean,
 
   setMockFile (path: string, content: string): void,
   unsetMockFile (path: string): void,
@@ -35,6 +36,7 @@ export default class SystemMock implements System, SystemMockManager {
   writeFileReturnValue: ?string = null
   userExecCalledCommands: string[] = []
   sudoExecCalledCommands: string[] = []
+  grantSudoPermissions: boolean = true
   _files: Map<string, string> = new Map()
   _commands: Map<string, string> = new Map()
 
@@ -77,6 +79,9 @@ export default class SystemMock implements System, SystemMockManager {
   }
 
   async sudoExec (command: string): Promise<string> {
+    if (!this.grantSudoPermissions) {
+      throw new Error('ACCESS_DENIED')
+    }
     const result = this._getExecResult(command)
     this.sudoExecCalledCommands.push(command)
     return result
