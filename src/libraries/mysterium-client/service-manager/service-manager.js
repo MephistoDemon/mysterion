@@ -82,7 +82,7 @@ export default class ServiceManager {
   }
 
   async install (): Promise<string> {
-    return this._sudoExec(`${this._path} --do=install`)
+    return this._sudoExec(`${this._path} --do=install && ${this._path} --do=start`)
   }
 
   async start (): Promise<ServiceState> {
