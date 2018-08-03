@@ -33,16 +33,26 @@ class Monitoring {
   _subscribersStatus: Array<StatusCallback> = []
   _subscribersUp: Array<UpCallback> = []
   _subscribersDown: Array<DownCallback> = []
+  _isStarted: boolean = false
 
   constructor (tequilapi: TequilapiClient) {
     this.api = tequilapi
   }
 
+  get isStarted (): boolean {
+    return this._isStarted
+  }
+
   start () {
+    if (this._isStarted) {
+      return
+    }
+    this._isStarted = true
     this._healthCheckLoop()
   }
 
   stop () {
+    this._isStarted = false
     if (this._timer) {
       clearTimeout(this._timer)
     }
@@ -50,6 +60,16 @@ class Monitoring {
 
   onStatus (callback: StatusCallback) {
     this._subscribersStatus.push(callback)
+    if (this._isStarted) {
+      callback(this._lastIsRunning)
+    }
+  }
+
+  removeOnStatus (callback: StatusCallback) {
+    const i = this._subscribersStatus.indexOf(callback)
+    if (i >= 0) {
+      this._subscribersStatus.splice(i, 1)
+    }
   }
 
   onStatusUp (callback: UpCallback) {
@@ -69,9 +89,14 @@ class Monitoring {
       isRunning = false
     }
 
-    this._notifySubscribers(isRunning)
-
-    this._timer = setTimeout(() => this._healthCheckLoop(), healthCheckInterval)
+    try {
+      this._notifySubscribers(isRunning)
+    } catch (e) {
+      e.message = 'Bad subscriber added to Monitoring: ' + e.message
+      throw e
+    } finally {
+      this._timer = setTimeout(() => this._healthCheckLoop(), healthCheckInterval)
+    }
   }
 
   _notifySubscribers (isRunning: boolean) {

@@ -23,6 +23,7 @@ import logger from '../../../app/logger'
 import type { ClientConfig } from '../config'
 import type { Installer } from '../index'
 import type { System } from '../system'
+import ServiceManager, { SERVICE_STATE } from './service-manager'
 
 const SERVICE_NAME = 'MysteriumClient'
 const SERVICE_MANAGER_BIN = 'servicemanager.exe'
@@ -33,11 +34,13 @@ class ServiceManagerInstaller implements Installer {
   _system: System
   _config: ClientConfig
   _serviceManagerDir: string
+  _serviceManager: ServiceManager
 
-  constructor (system: System, config: ClientConfig, serviceManagerDir: string) {
+  constructor (system: System, config: ClientConfig, serviceManager: ServiceManager) {
     this._system = system
     this._config = config
-    this._serviceManagerDir = serviceManagerDir
+    this._serviceManagerDir = serviceManager.directory
+    this._serviceManager = serviceManager
   }
 
   async needsInstallation (): Promise<boolean> {
@@ -78,7 +81,7 @@ class ServiceManagerInstaller implements Installer {
     if (!await this._serviceInstalled()) {
       logger.info('[install] installing service')
 
-      await this._installService()
+      await this._serviceManager.install()
     }
 
     if (!await this._tapDriversInstalled()) {
@@ -100,15 +103,8 @@ class ServiceManagerInstaller implements Installer {
   }
 
   async _serviceInstalled (): Promise<boolean> {
-    let stdout
-    try {
-      stdout = await this._system.userExec(`sc.exe query "${SERVICE_NAME}"`)
-    } catch (e) {
-      logger.info('Service check failed', e.message)
-      return false
-    }
-
-    return stdout.indexOf(`SERVICE_NAME: ${SERVICE_NAME}`) > -1
+    const state = await this._serviceManager.getServiceState()
+    return state !== SERVICE_STATE.UNKNOWN
   }
 
   async _tapDriversInstalled (): Promise<boolean> {
@@ -137,13 +133,6 @@ class ServiceManagerInstaller implements Installer {
 
   async _installTapDrivers () {
     await this._system.userExec(path.join(this._serviceManagerDir, TAP_DRIVER_BIN))
-  }
-
-  async _installService () {
-    const serviceManagerPath = path.join(this._serviceManagerDir, SERVICE_MANAGER_BIN)
-    const command = `${serviceManagerPath} --do=install && ${serviceManagerPath} --do=start`
-
-    await this._system.sudoExec(command)
   }
 
   _getConfigPath () {
@@ -175,4 +164,5 @@ class ServiceManagerInstaller implements Installer {
   }
 }
 
+export {SERVICE_MANAGER_BIN, SERVICE_NAME}
 export default ServiceManagerInstaller

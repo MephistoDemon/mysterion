@@ -46,6 +46,10 @@ class LaunchDaemonProcess implements Process {
     await this._spawnOsXLaunchDaemon()
   }
 
+  async repair (): Promise<void> {
+    await this.start()
+  }
+
   async stop (): Promise<void> {
     await this._tequilapi.stop()
   }

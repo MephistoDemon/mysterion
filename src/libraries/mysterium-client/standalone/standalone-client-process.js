@@ -48,6 +48,10 @@ class StandaloneClientProcess implements Process {
     ])
   }
 
+  async repair (): Promise<void> {
+    await this.start()
+  }
+
   async stop (): Promise<void> {
     if (!this._child) {
       throw new Error('Cannot stop process. Process has not started.')

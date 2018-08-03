@@ -411,10 +411,10 @@ class Mysterion {
       this.communication.sendMysteriumClientDown()
       this.bugReporterMetrics.set(METRICS.CLIENT_RUNNING, false)
     })
-    this.monitoring.onStatus((status) => {
+    this.monitoring.onStatus(status => {
       if (status === false) {
         logInfo("Starting 'mysterium_client' process, because it's currently down")
-        this.process.start()
+        this._repairProcess()
       }
     })
 
@@ -422,11 +422,26 @@ class Mysterion {
     this.monitoring.start()
   }
 
+  async _repairProcess () {
+    try {
+      await this.process.repair()
+    } catch (e) {
+      this.monitoring.stop()
+      this.communication.sendRendererShowError({
+        message: e.toString(),
+        hint: 'Try to restart application',
+        fatal: true
+      })
+    }
+  }
+
   _onProcessReady (callback: () => void) {
     onFirstEventOrTimeout(this.monitoring.onStatusUp.bind(this.monitoring), MYSTERIUM_CLIENT_STARTUP_THRESHOLD)
       .then(callback)
       .catch(err => {
-        this.communication.sendRendererShowErrorMessage(translations.processStartError)
+        if (this.monitoring.isStarted) {
+          this.communication.sendRendererShowErrorMessage(translations.processStartError)
+        }
         logException("Failed to start 'mysterium_client' process", err)
       })
   }
