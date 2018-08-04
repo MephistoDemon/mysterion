@@ -18,15 +18,15 @@
 // @flow
 
 import ConnectionStatusDTO from '../../libraries/mysterium-tequilapi/dto/connection-status'
-import {BugReporterMetrics, METRICS} from './bug-reporter-metrics'
+import { BugReporterMetrics, METRICS } from './bug-reporter-metrics'
 import type { NodeHealthcheckDTO } from '../../libraries/mysterium-tequilapi/dto/node-healthcheck'
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 import ProposalsFilter from '../../libraries/mysterium-tequilapi/dto/proposals-filter'
-import {TIMEOUT_DISABLED} from '../../libraries/mysterium-tequilapi/timeouts'
+import { TIMEOUT_DISABLED } from '../../libraries/mysterium-tequilapi/timeouts'
 import ConnectionRequestDTO from '../../libraries/mysterium-tequilapi/dto/connection-request'
 import ConnectionStatisticsDTO from '../../libraries/mysterium-tequilapi/dto/connection-statistics'
 import ConnectionIPDTO from '../../libraries/mysterium-tequilapi/dto/connection-ip'
-import type {TequilapiClient} from '../../libraries/mysterium-tequilapi/client'
+import type { TequilapiClient } from '../../libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
 import ConsumerLocationDTO from '../../libraries/mysterium-tequilapi/dto/consumer-location'
 

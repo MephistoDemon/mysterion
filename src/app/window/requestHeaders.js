@@ -24,9 +24,9 @@ type HeaderRule = {
 }
 
 function registerHeaderRules (browserSession: Object, rule: HeaderRule) {
-  const {urls, write} = rule
-  browserSession.webRequest.onBeforeSendHeaders({urls}, (details, next) => {
-    next({requestHeaders: write(details.requestHeaders)})
+  const { urls, write } = rule
+  browserSession.webRequest.onBeforeSendHeaders({ urls }, (details, next) => {
+    next({ requestHeaders: write(details.requestHeaders) })
   })
 }
 

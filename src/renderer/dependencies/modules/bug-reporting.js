@@ -16,9 +16,9 @@
  */
 
 // @flow
-import type {Container} from '../../../app/di'
+import type { Container } from '../../../app/di'
 import BugReporterRenderer from '../../../app/bug-reporting/bug-reporter-renderer'
-import {FeedbackForm} from '../../../app/bug-reporting/feedback-form'
+import { FeedbackForm } from '../../../app/bug-reporting/feedback-form'
 import RavenJs from 'raven-js'
 import Vue from 'vue'
 import RavenVue from 'raven-js/plugins/vue'

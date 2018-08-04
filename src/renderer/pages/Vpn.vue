@@ -69,12 +69,12 @@
 <script>
 import CountrySelect from '../components/CountrySelect'
 import type from '../store/types'
-import {mapGetters, mapMutations} from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import StatsDisplay from '../components/StatsDisplay'
 import ConnectionButton from '../components/ConnectionButton'
 import AppError from '../partials/AppError'
 import config from '../config'
-import {ActionLooperConfig} from '../store/modules/connection'
+import { ActionLooperConfig } from '../store/modules/connection'
 import FavoriteButton from '../components/favorite-button'
 export default {
   name: 'Main',
@@ -121,10 +121,10 @@ export default {
     },
     async toggleFavorite () {
       if (!this.country) return
-      this.country = {...this.country, isFavorite: !this.country.isFavorite}
+      this.country = { ...this.country, isFavorite: !this.country.isFavorite }
       this.countryList.find((c) => c.id === this.country.id).isFavorite = this.country.isFavorite
 
-      this.rendererCommunication.sendToggleFavoriteProvider({id: this.country.id, isFavorite: this.country.isFavorite})
+      this.rendererCommunication.sendToggleFavoriteProvider({ id: this.country.id, isFavorite: this.country.isFavorite })
     },
     onCountriesUpdate (countries) {
       this.countriesAreLoading = false

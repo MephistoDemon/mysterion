@@ -97,7 +97,7 @@ describe('SyncCallbacksInitializer', () => {
 
       communication.logCallback({ level: 'info', data: 'test info' })
       communication.logCallback({ level: 'error', data: 'test error' })
-      expect(logCache.getSerialized()).to.eql({info: 'test info', error: 'test error'})
+      expect(logCache.getSerialized()).to.eql({ info: 'test info', error: 'test error' })
     })
   })
 })

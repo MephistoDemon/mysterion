@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {expect} from 'chai'
+import { expect } from 'chai'
 import NodeBuildInfoDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/node-build-info'
 
 describe('TequilapiClient DTO', () => {

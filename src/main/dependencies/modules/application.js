@@ -16,10 +16,10 @@
  */
 
 // @flow
-import {app, BrowserWindow} from 'electron'
-import type {Container} from '../../../app/di'
+import { app, BrowserWindow } from 'electron'
+import type { Container } from '../../../app/di'
 import Mysterion from '../../../app/mysterion'
-import type {MysterionConfig} from '../../../app/mysterionConfig'
+import type { MysterionConfig } from '../../../app/mysterionConfig'
 import path from 'path'
 import Window from '../../../app/window'
 import Terms from '../../../app/terms'
@@ -60,8 +60,8 @@ function bootstrap (container: Container) {
         staticDirectory: staticDirectory.replace(/\\/g, '\\\\'),
         // Window configuration
         windows: {
-          terms: {width: 800, height: 650},
-          app: {width: 650, height: 650}
+          terms: { width: 800, height: 650 },
+          app: { width: 650, height: 650 }
         }
       }
     }

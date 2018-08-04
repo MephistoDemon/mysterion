@@ -16,10 +16,10 @@
  */
 
 // @flow
-import type {Container} from '../app/di'
-import {BugReporterMetrics} from '../app/bug-reporting/bug-reporter-metrics'
+import type { Container } from '../app/di'
+import { BugReporterMetrics } from '../app/bug-reporting/bug-reporter-metrics'
 import TequilapiClientWithMetrics from '../app/bug-reporting/tequilapi-client-with-metrics'
-import type {TequilapiClient} from '../libraries/mysterium-tequilapi/client'
+import type { TequilapiClient } from '../libraries/mysterium-tequilapi/client'
 import tequilapiClientFactory from '../libraries/mysterium-tequilapi/client-factory'
 
 function bootstrap (container: Container) {

@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {describe, beforeEach, it} from '../../../helpers/dependencies'
+import { describe, beforeEach, it } from '../../../helpers/dependencies'
 import HttpTequilapiClient from '../../../../src/libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../../../src/libraries/mysterium-tequilapi/dto/identity'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
 import AxiosAdapter from '../../../../src/libraries/mysterium-tequilapi/adapters/axios-adapter'
 import axios from 'axios/index'
 import MockAdapter from 'axios-mock-adapter'
-import {capturePromiseError} from '../../../helpers/utils'
+import { capturePromiseError } from '../../../helpers/utils'
 import { parseHealthcheckResponse } from '../../../../src/libraries/mysterium-tequilapi/dto/node-healthcheck'
 import ConnectionStatisticsDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
 import ConnectionIPDTO from '../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
@@ -150,8 +150,8 @@ describe('HttpTequilapiClient', () => {
     it('returns identity DTOs', async () => {
       const response = {
         identities: [
-          {id: '0x1000FACE'},
-          {id: '0x2000FACE'}
+          { id: '0x1000FACE' },
+          { id: '0x2000FACE' }
         ]
       }
       mock.onGet('identities').reply(200, response)
@@ -172,8 +172,8 @@ describe('HttpTequilapiClient', () => {
 
   describe('identityCreate()', () => {
     it('create identity', async () => {
-      const response = {id: '0x0000bEEF'}
-      mock.onPost('identities', {passphrase: 'test'}).reply(200, response)
+      const response = { id: '0x0000bEEF' }
+      mock.onPost('identities', { passphrase: 'test' }).reply(200, response)
 
       const identity = await api.identityCreate('test')
       expect(identity).to.deep.equal(new IdentityDTO(response))
@@ -189,7 +189,7 @@ describe('HttpTequilapiClient', () => {
 
   describe('identityUnlock()', () => {
     it('create identity', async () => {
-      mock.onPut('identities/0x0000bEEF/unlock', {passphrase: 'test'}).reply(200)
+      mock.onPut('identities/0x0000bEEF/unlock', { passphrase: 'test' }).reply(200)
 
       const identity = await api.identityUnlock('0x0000bEEF', 'test')
       expect(identity).to.be.undefined
@@ -265,7 +265,7 @@ describe('HttpTequilapiClient', () => {
 
   describe('connectionIP()', () => {
     it('returns response', async () => {
-      const response = {ip: 'mock ip'}
+      const response = { ip: 'mock ip' }
       mock.onGet('connection/ip').reply(200, response)
 
       const stats = await api.connectionIP()
@@ -304,8 +304,8 @@ describe('HttpTequilapiClient', () => {
   describe('location()', () => {
     it('returns response', async () => {
       const response = {
-        original: {ip: '100.100.100.100', country: 'original country'},
-        current: {ip: '123.123.123.123', country: 'current country'}
+        original: { ip: '100.100.100.100', country: 'original country' },
+        current: { ip: '123.123.123.123', country: 'current country' }
       }
       mock.onGet('location').reply(200, response)
 

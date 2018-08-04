@@ -17,12 +17,12 @@
 
 // @flow
 import path from 'path'
-import {Tray as ElectronTray} from 'electron'
+import { Tray as ElectronTray } from 'electron'
 import TrayMenuBuilder from './menu-builder'
 import translations from './translations'
 import ConnectionStatusEnum from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
-import type {ConnectionStatus} from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
-import type {Country} from '../../app/countries'
+import type { ConnectionStatus } from '../../libraries/mysterium-tequilapi/dto/connection-status-enum'
+import type { Country } from '../../app/countries'
 
 const TrayIcon = {
   active: 'active',
@@ -129,4 +129,4 @@ class Tray {
 }
 
 export default Tray
-export {TrayIcon}
+export { TrayIcon }

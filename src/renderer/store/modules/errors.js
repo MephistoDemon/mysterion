@@ -42,7 +42,7 @@ const getters = {
 }
 
 const actions = {
-  [type.OVERLAY_ERROR] ({commit}, error: OverlayError) {
+  [type.OVERLAY_ERROR] ({ commit }, error: OverlayError) {
     commit(type.OVERLAY_ERROR, error)
   }
 }

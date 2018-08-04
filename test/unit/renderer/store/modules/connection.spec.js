@@ -16,19 +16,19 @@
  */
 
 // @flow
-import {expect} from 'chai'
+import { expect } from 'chai'
 
 import type from '@/store/types'
-import {mutations, actionsFactory} from '@/store/modules/connection'
-import {describe, it, beforeEach} from '../../../../helpers/dependencies'
-import {FunctionLooper} from '@/../libraries/functionLooper'
+import { mutations, actionsFactory } from '@/store/modules/connection'
+import { describe, it, beforeEach } from '../../../../helpers/dependencies'
+import { FunctionLooper } from '@/../libraries/functionLooper'
 import ConnectionStatusEnum from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
 import communication from '@/../app/communication/messages'
 import RendererCommunication from '@/../app/communication/renderer-communication'
 import FakeMessageBus from '../../../../helpers/fake-message-bus'
-import {createEventFactory} from '../../../../../src/app/statistics/events'
-import type {EventFactory as StatsEventsFactory} from '../../../../../src/app/statistics/events'
-import {ActionLooper, ActionLooperConfig} from '../../../../../src/renderer/store/modules/connection'
+import { createEventFactory } from '../../../../../src/app/statistics/events'
+import type { EventFactory as StatsEventsFactory } from '../../../../../src/app/statistics/events'
+import { ActionLooper, ActionLooperConfig } from '../../../../../src/renderer/store/modules/connection'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
 import EmptyTequilapiClientMock from './empty-tequilapi-client-mock'
 import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
@@ -87,7 +87,7 @@ function factoryTequilapiManipulator () {
       if (statisticsFail) {
         throw errorMock
       }
-      return new ConnectionStatisticsDTO({duration: 1})
+      return new ConnectionStatisticsDTO({ duration: 1 })
     }
   }
 
@@ -150,7 +150,7 @@ const fakeCollector = {
 }
 
 function statsEventsFactory (): StatsEventsFactory {
-  return createEventFactory({name: 'Test', version: '1.0.test'})
+  return createEventFactory({ name: 'Test', version: '1.0.test' })
 }
 
 const bugReporterMock = new BugReporterMock()
@@ -158,11 +158,11 @@ const bugReporterMock = new BugReporterMock()
 async function executeAction (action, state = {}, payload = {}) {
   const mutations = []
   const commit = (key, value) => {
-    mutations.push({key, value})
+    mutations.push({ key, value })
   }
 
   const dispatch = (action, payload = {}) => {
-    const context = {commit, dispatch, state}
+    const context = { commit, dispatch, state }
     const actions =
       actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector, statsEventsFactory(), bugReporterMock)
 
@@ -189,10 +189,10 @@ describe('mutations', () => {
 
     it('updates statistics', () => {
       const state = {}
-      const stats = new ConnectionStatisticsDTO({duration: 13320})
+      const stats = new ConnectionStatisticsDTO({ duration: 13320 })
 
       connectionStatistics(state, stats)
-      expect(state).to.eql({statistics: stats})
+      expect(state).to.eql({ statistics: stats })
     })
   })
 
@@ -202,7 +202,7 @@ describe('mutations', () => {
     it('updates ip', () => {
       const state = { ip: 'old' }
       connectionIp(state, 'new')
-      expect(state).to.eql({ip: 'new'})
+      expect(state).to.eql({ ip: 'new' })
     })
   })
 
@@ -272,14 +272,14 @@ describe('actions', () => {
       expect(committed.length).to.eql(2)
 
       expect(committed[0].key).to.eql(type.SET_ACTION_LOOPER)
-      const {action, looper} = committed[0].value
+      const { action, looper } = committed[0].value
       expect(action).to.eql(type.CONNECTION_STATISTICS)
       expect(looper).to.be.an.instanceof(FunctionLooper)
       expect(looper.isRunning()).to.eql(true)
 
       expect(committed[1]).to.eql({
         key: type.CONNECTION_STATISTICS,
-        value: new ConnectionStatisticsDTO({duration: 1})
+        value: new ConnectionStatisticsDTO({ duration: 1 })
       })
     })
 
@@ -415,7 +415,7 @@ describe('actions', () => {
       expect(looper.isRunning()).to.eql(true)
       expect(committed[2]).to.eql({
         key: type.CONNECTION_STATISTICS,
-        value: new ConnectionStatisticsDTO({duration: 1})
+        value: new ConnectionStatisticsDTO({ duration: 1 })
       })
     })
 
@@ -464,7 +464,7 @@ describe('actions', () => {
       const committed = await executeAction(type.CONNECTION_STATISTICS)
       expect(committed).to.eql([{
         key: type.CONNECTION_STATISTICS,
-        value: new ConnectionStatisticsDTO({duration: 1})
+        value: new ConnectionStatisticsDTO({ duration: 1 })
       }])
     })
 
@@ -482,7 +482,7 @@ describe('actions', () => {
     it('marks connecting status, resets statistics, hides error', async () => {
       const state = {
         actionLoopers: {},
-        location: {originalCountry: ''}
+        location: { originalCountry: '' }
       }
       const committed = await executeAction(type.CONNECT, state, new ConnectionRequestDTO('consumer', 'provider'))
       expect(committed).to.eql([
@@ -514,7 +514,7 @@ describe('actions', () => {
         fakeTequilapi.setConnectFail(true)
         const state = {
           actionLoopers: {},
-          location: {originalCountry: ''}
+          location: { originalCountry: '' }
         }
         const committed = await executeAction(type.CONNECT, state)
         expect(committed[committed.length - 1]).to.eql({
@@ -532,7 +532,7 @@ describe('actions', () => {
       it('does not throw error and does not show error', async () => {
         const state = {
           actionLoopers: {},
-          location: {originalCountry: ''}
+          location: { originalCountry: '' }
         }
         const committed = await executeAction(type.CONNECT, state)
         committed.forEach((action) => {

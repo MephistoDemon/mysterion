@@ -19,7 +19,7 @@
   <div/>
 </template>
 <script>
-import {mapState} from 'vuex'
+import { mapState } from 'vuex'
 import type from '@/store/types'
 import messages from '../../app/messages'
 import logger from '../../app/logger'
@@ -29,7 +29,7 @@ import config from '../config'
 export default {
   dependencies: ['bugReporter', 'vpnInitializer', 'sleeper'],
   async mounted () {
-    const {commit, dispatch} = this.$store
+    const { commit, dispatch } = this.$store
     try {
       this.$store.dispatch(type.LOCATION)
       commit(type.INIT_PENDING)

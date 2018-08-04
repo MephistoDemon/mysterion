@@ -37,7 +37,7 @@ describe('UserSettingsStore', () => {
       userSettingsStore.setShowDisconnectNotifications(false)
       userSettingsStore.setFavorite('id_123', true)
       await userSettingsStore.save()
-      const data = readFileSync(saveSettingsPath, {encoding: 'utf8'})
+      const data = readFileSync(saveSettingsPath, { encoding: 'utf8' })
 
       expect(data.toString()).to.eql('{"showDisconnectNotifications":false,"favoriteProviders":["id_123"]}')
     })
@@ -60,7 +60,7 @@ describe('UserSettingsStore', () => {
     before(() => {
       writeFileSync(
         loadSettingsPath,
-        JSON.stringify({showDisconnectNotifications: false, favoriteProviders: new Set(['id_123'])})
+        JSON.stringify({ showDisconnectNotifications: false, favoriteProviders: new Set(['id_123']) })
       )
       writeFileSync(
         invalidJsonPath,

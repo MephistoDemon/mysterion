@@ -108,7 +108,7 @@ class LaunchDaemonInstaller implements Installer {
     let command = `sh -c '${script}'`.replace(/\n/, '')
 
     await writeFile(tempPlistFile, this.template())
-    await sudoExec(command, {name: 'Mysterion'})
+    await sudoExec(command, { name: 'Mysterion' })
     await this._createLogFilesIfMissing()
   }
 

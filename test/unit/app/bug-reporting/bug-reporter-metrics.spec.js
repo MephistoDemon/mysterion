@@ -16,12 +16,12 @@
  */
 
 // @flow
-import {describe, it, expect, beforeEach} from '../../../helpers/dependencies'
-import {BugReporterMetrics, EXTRA, METRICS, NOT_SET, TAGS} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
-import type {Metric} from '../../../../src/app/bug-reporting/bug-reporter-metrics'
-import type {MapSyncDTO} from '../../../../src/libraries/map-sync'
+import { describe, it, expect, beforeEach } from '../../../helpers/dependencies'
+import { BugReporterMetrics, EXTRA, METRICS, NOT_SET, TAGS } from '../../../../src/app/bug-reporting/bug-reporter-metrics'
+import type { Metric } from '../../../../src/app/bug-reporting/bug-reporter-metrics'
+import type { MapSyncDTO } from '../../../../src/libraries/map-sync'
 import FakeMapSyncCommunication from '../../../helpers/fake_map_sync_communication'
-import {MapSync} from '../../../../src/libraries/map-sync'
+import { MapSync } from '../../../../src/libraries/map-sync'
 
 describe('BugReporterMetrics', () => {
   let mapSync: MapSync<Metric>
@@ -51,7 +51,7 @@ describe('BugReporterMetrics', () => {
 
     it('sets extra metric', () => {
       const metricKey = EXTRA.CONNECTION_IP
-      const metricValue = {ip: '192.168.1.1'}
+      const metricValue = { ip: '192.168.1.1' }
 
       expect(mapSync.get(metricKey)).to.be.undefined
       bugReporterMetrics.set(metricKey, metricValue)
@@ -110,7 +110,7 @@ describe('BugReporterMetrics', () => {
       })
 
       const metricKey = METRICS.CONNECTION_IP
-      const metricValue = {ip: '127.0.0.1'}
+      const metricValue = { ip: '127.0.0.1' }
       bugReporterMetrics.set(metricKey, metricValue)
 
       if (lastUpdate == null) {
@@ -126,7 +126,7 @@ describe('BugReporterMetrics', () => {
       bugReporterMetrics.startSyncing(communication)
 
       const metricKey = METRICS.CONNECTION_IP
-      const newValue = {ip: '192.168.1.1'}
+      const newValue = { ip: '192.168.1.1' }
       communication.sendMapUpdate({
         metric: metricKey,
         value: newValue

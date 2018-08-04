@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 import type from '@/store/types'
 import AppVisual from '@/partials/AppVisual'
 import AppNav from '@/partials/AppNav'

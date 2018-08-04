@@ -40,4 +40,4 @@ type MysterionConfig = {
   windows: MysterionWindowsConfig
 }
 
-export type {MysterionConfig, MysterionWindowsConfig, WindowSizeConfig}
+export type { MysterionConfig, MysterionWindowsConfig, WindowSizeConfig }
