@@ -155,14 +155,14 @@ function statsEventsFactory (): StatsEventsFactory {
 
 const bugReporterMock = new BugReporterMock()
 
-async function executeAction (action, state = {}, payload = {}) {
+async function executeAction (action, state = {}, payload = {}, getters = {}) {
   const mutations = []
   const commit = (key, value) => {
     mutations.push({ key, value })
   }
 
   const dispatch = (action, payload = {}) => {
-    const context = { commit, dispatch, state }
+    const context = { commit, dispatch, state, getters }
     const actions =
       actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector, statsEventsFactory(), bugReporterMock)
 
@@ -475,6 +475,37 @@ describe('actions', () => {
         key: type.SHOW_ERROR,
         value: fakeTequilapi.getFakeError()
       }])
+    })
+  })
+
+  describe('RECONNECT', () => {
+    it('calls to connect', async () => {
+      const state = {
+        actionLoopers: {},
+        location: { originalCountry: '' }
+      }
+      const committed = await executeAction(type.RECONNECT, state, null,
+        { currentIdentity: 'current',
+          lastConnectionAttemptProvider: 'lastConnectionProvider'
+        })
+      expect(committed).to.eql([
+        {
+          key: type.SET_CONNECTION_STATUS,
+          value: ConnectionStatusEnum.CONNECTING
+        },
+        {
+          key: type.CONNECTION_STATISTICS_RESET,
+          value: undefined
+        },
+        {
+          key: type.SET_LAST_CONNECTION_PROVIDER,
+          value: 'lastConnectionProvider'
+        },
+        {
+          key: type.HIDE_ERROR,
+          value: undefined
+        }
+      ])
     })
   })
 
