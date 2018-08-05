@@ -206,7 +206,7 @@ function actionsFactory (
         commit(type.SHOW_ERROR, err)
       }
     },
-    async [type.RECONNECT] ({ state, dispatch, getters }) {
+    async [type.RECONNECT] ({ dispatch, getters }) {
       dispatch(type.CONNECT, new ConnectionRequestDTO(getters.currentIdentity, getters.lastConnectionAttemptProvider))
     },
     async [type.CONNECT] ({ commit, dispatch, state }, connectionRequest: ConnectionRequestDTO) {
