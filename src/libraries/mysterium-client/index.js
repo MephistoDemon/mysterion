@@ -32,6 +32,8 @@ interface Installer {
 interface Process {
   start (): Promise<void>,
 
+  repair (): Promise<void>,
+
   stop (): Promise<void>,
 
   onLog (level: string, callback: Function): void,
