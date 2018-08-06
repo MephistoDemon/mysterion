@@ -17,7 +17,7 @@
 
 // @flow
 
-import type {Container} from '../../../app/di'
+import type { Container } from '../../../app/di'
 import Notification from '../../../app/notification/index'
 
 function bootstrap (container: Container) {

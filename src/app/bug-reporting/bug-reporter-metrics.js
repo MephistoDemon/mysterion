@@ -16,8 +16,8 @@
  */
 
 // @flow
-import {MapSync} from '../../libraries/map-sync'
-import type {MapSyncCommunication} from '../../libraries/map-sync'
+import { MapSync } from '../../libraries/map-sync'
+import type { MapSyncCommunication } from '../../libraries/map-sync'
 import { getCurrentTimeISOFormat } from '../../libraries/strings'
 
 /**
@@ -94,4 +94,4 @@ class BugReporterMetrics {
 }
 
 export { BugReporterMetrics, METRICS, NOT_SET, TAGS, EXTRA }
-export type {RavenData, Metric}
+export type { RavenData, Metric }

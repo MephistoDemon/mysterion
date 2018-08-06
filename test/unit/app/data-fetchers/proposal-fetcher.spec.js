@@ -16,11 +16,11 @@
  */
 
 // @flow
-import {describe, it, expect, before, beforeEach, after} from '../../../helpers/dependencies'
+import { describe, it, expect, before, beforeEach, after } from '../../../helpers/dependencies'
 import lolex from 'lolex'
 import TequilapiProposalFetcher from '../../../../src/app/data-fetchers/tequilapi-proposal-fetcher'
 import ProposalDTO from '../../../../src/libraries/mysterium-tequilapi/dto/proposal'
-import {nextTick} from '../../../helpers/utils'
+import { nextTick } from '../../../helpers/utils'
 import EmptyTequilapiClientMock from '../../renderer/store/modules/empty-tequilapi-client-mock'
 import logger from '../../../../src/app/logger'
 
@@ -55,8 +55,8 @@ describe('DataFetchers', () => {
     let clock
     const interval = 1001
     const tequilapi = new IdentityTequilapiClientMock([
-      new ProposalDTO({id: '0x1'}),
-      new ProposalDTO({id: '0x2'})
+      new ProposalDTO({ id: '0x1' }),
+      new ProposalDTO({ id: '0x2' })
     ])
     let fetcher
 
@@ -103,8 +103,8 @@ describe('DataFetchers', () => {
         await tickWithDelay(1000)
 
         expect(proposals.length).to.equal(2)
-        expect(proposals[0]).to.deep.equal(new ProposalDTO({id: '0x1'}))
-        expect(proposals[1]).to.deep.equal(new ProposalDTO({id: '0x2'}))
+        expect(proposals[0]).to.deep.equal(new ProposalDTO({ id: '0x1' }))
+        expect(proposals[1]).to.deep.equal(new ProposalDTO({ id: '0x2' }))
       })
 
       describe('when proposal fetching fails', () => {
@@ -158,8 +158,8 @@ describe('DataFetchers', () => {
         const proposals = await fetcher.fetch()
 
         expect(proposals.length).to.equal(2)
-        expect(proposals[0]).to.deep.equal(new ProposalDTO({id: '0x1'}))
-        expect(proposals[1]).to.deep.equal(new ProposalDTO({id: '0x2'}))
+        expect(proposals[0]).to.deep.equal(new ProposalDTO({ id: '0x1' }))
+        expect(proposals[1]).to.deep.equal(new ProposalDTO({ id: '0x2' }))
       })
     })
   })

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Terms, {termsFileName} from '../../../../src/app/terms/index'
+import Terms, { termsFileName } from '../../../../src/app/terms/index'
 import fs from 'fs'
 import path from 'path'
 import util from 'util'

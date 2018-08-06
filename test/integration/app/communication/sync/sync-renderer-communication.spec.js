@@ -71,9 +71,9 @@ describe('SyncSenderRendererCommunication', () => {
       const mainCommunication = new SyncReceiverMainCommunication(receiver)
 
       const mockLogs: SerializedLogCaches = {
-        backend: {info: 'backend info', error: 'backend error'},
-        frontend: {info: 'frontend info', error: 'frontend error'},
-        mysterium_process: {info: 'mysterium info', error: 'mysterium error'}
+        backend: { info: 'backend info', error: 'backend error' },
+        frontend: { info: 'frontend info', error: 'frontend error' },
+        mysterium_process: { info: 'mysterium info', error: 'mysterium error' }
       }
       mainCommunication.onGetSerializedCaches(() => mockLogs)
       expect(rendererCommunication.getSerializedCaches()).to.eql(mockLogs)

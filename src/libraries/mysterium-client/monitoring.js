@@ -133,4 +133,4 @@ class Monitoring {
 }
 
 export default Monitoring
-export type {StatusCallback, UpCallback, DownCallback}
+export type { StatusCallback, UpCallback, DownCallback }

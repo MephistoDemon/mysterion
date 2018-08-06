@@ -31,8 +31,8 @@ import messages from './messages'
 import type { MessageBus } from './message-bus'
 import type { MainCommunication } from './main-communication'
 import type { UserSettings } from '../user-settings/user-settings'
-import type {MapSyncCommunication, MapSyncDTO} from '../../libraries/map-sync'
-import type {Metric} from '../bug-reporting/bug-reporter-metrics'
+import type { MapSyncCommunication, MapSyncDTO } from '../../libraries/map-sync'
+import type { Metric } from '../bug-reporting/bug-reporter-metrics'
 
 /**
  * This allows main process communicating with renderer process.

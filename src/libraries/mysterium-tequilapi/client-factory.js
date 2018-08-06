@@ -19,7 +19,7 @@
 
 import axios from 'axios'
 import AxiosAdapter from './adapters/axios-adapter'
-import {TIMEOUT_DEFAULT} from './timeouts'
+import { TIMEOUT_DEFAULT } from './timeouts'
 import HttpTequilapiClient from './client'
 
 const TEQUILAPI_URL = 'http://127.0.0.1:4050'

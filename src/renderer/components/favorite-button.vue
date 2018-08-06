@@ -33,7 +33,7 @@ export default {
   props: {
     country: {
       type: [Object],
-      default: () => { return {isFavorite: false} }
+      default: () => { return { isFavorite: false } }
     },
     toggleFavorite: {
       type: Function,

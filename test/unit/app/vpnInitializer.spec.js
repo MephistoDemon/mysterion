@@ -75,7 +75,7 @@ describe('VpnInitializer', () => {
     })
 
     describe('has some identities', () => {
-      const mockIdentity = new IdentityDTO({id: '0xC001FACE'})
+      const mockIdentity = new IdentityDTO({ id: '0xC001FACE' })
 
       beforeEach(() => {
         tequilapiManipulator.tequilapiMockIdentitiesList([mockIdentity])
@@ -98,7 +98,7 @@ describe('VpnInitializer', () => {
     })
 
     describe('has not found preset identities', () => {
-      const mockCreatedIdentity = new IdentityDTO({id: '0xC001FACY'})
+      const mockCreatedIdentity = new IdentityDTO({ id: '0xC001FACY' })
 
       beforeEach(() => {
         tequilapiManipulator.tequilapiMockIdentitiesList([])
@@ -144,7 +144,7 @@ describe('VpnInitializer', () => {
 
       describe('identity unlocking failed', () => {
         beforeEach(() => {
-          tequilapiManipulator.tequilapiMockIdentitiesList([new IdentityDTO({id: '0xC001FACE'})])
+          tequilapiManipulator.tequilapiMockIdentitiesList([new IdentityDTO({ id: '0xC001FACE' })])
           tequilapiManipulator.tequilapiMockIdentityUnlockError(mockError)
         })
 

@@ -16,12 +16,12 @@
  */
 
 // @flow
-import {expect} from 'chai'
+import { expect } from 'chai'
 
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Router from 'vue-router'
-import {createLocalVue, mount} from '@vue/test-utils'
+import { createLocalVue, mount } from '@vue/test-utils'
 
 import idStoreFactory from '@/store/modules/identity'
 import mainStoreFactory from '@/store/modules/main'
@@ -58,7 +58,7 @@ describe('VpnLoader', () => {
     dependencies.constant('rendererCommunication', rendererCommunication)
 
     localVue.use(Router)
-    const router = new Router({routes: []})
+    const router = new Router({ routes: [] })
 
     localVue.use(Vuex)
     const store = new Vuex.Store({

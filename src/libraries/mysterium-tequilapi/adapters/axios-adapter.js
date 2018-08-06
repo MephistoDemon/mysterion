@@ -18,8 +18,8 @@
 // @flow
 
 import axios from 'axios'
-import type {HttpInterface, HttpQueryParams} from './interface'
-import {TIMEOUT_DEFAULT} from '../timeouts'
+import type { HttpInterface, HttpQueryParams } from './interface'
+import { TIMEOUT_DEFAULT } from '../timeouts'
 import { markErrorAsHttp } from '../client-error'
 
 class AxiosAdapter implements HttpInterface {

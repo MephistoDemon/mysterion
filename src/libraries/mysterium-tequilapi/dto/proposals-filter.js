@@ -16,7 +16,7 @@
  */
 
 // @flow
-import type {HttpQueryParams} from '../adapters/interface'
+import type { HttpQueryParams } from '../adapters/interface'
 
 class ProposalsFilter {
   providerId: string

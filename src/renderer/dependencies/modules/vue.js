@@ -16,7 +16,7 @@
  */
 
 // @flow
-import type {Container} from '../../../app/di'
+import type { Container } from '../../../app/di'
 import Vue from 'vue'
 import axios from 'axios'
 import App from '../../App'
@@ -24,7 +24,7 @@ import routerFactory from '../../router/factory'
 import storeFactory from '../../store/factory'
 import mainFactory from '../../store/modules/main'
 import identityFactory from '../../store/modules/identity'
-import connectionFactory, {actionsFactory} from '../../store/modules/connection'
+import connectionFactory, { actionsFactory } from '../../store/modules/connection'
 import errors from '../../store/modules/errors'
 import terms from '../../store/modules/terms'
 import clientProcess from '../../store/modules/clientProcess'
@@ -41,7 +41,7 @@ function bootstrap (container: Container) {
       Vue.config.productionTip = false
 
       return new Vue({
-        components: {App},
+        components: { App },
         router: container.get('vue-router'),
         store: container.get('vue-store'),
         template: '<App/>',

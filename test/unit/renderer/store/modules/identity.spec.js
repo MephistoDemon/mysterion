@@ -27,7 +27,7 @@ describe('getters', () => {
   describe('currentIdentity', () => {
     it('returns id of identity', () => {
       const state: State = {
-        current: new IdentityDTO({id: 'identity id'}),
+        current: new IdentityDTO({ id: 'identity id' }),
         unlocked: false
       }
       expect(getters.currentIdentity(state)).to.eql('identity id')

@@ -16,10 +16,10 @@
  */
 
 // @flow
-import {createLocalVue, mount} from '@vue/test-utils'
+import { createLocalVue, mount } from '@vue/test-utils'
 import { beforeEach, describe, it, expect } from '../../../helpers/dependencies'
 import Vpn from '../../../../src/renderer/pages/Vpn'
-import Vuex, {Store} from 'vuex'
+import Vuex, { Store } from 'vuex'
 import DIContainer from '../../../../src/app/di/vue-container'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import messages from '../../../../src/app/communication/messages'

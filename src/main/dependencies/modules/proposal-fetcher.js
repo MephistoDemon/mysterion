@@ -18,7 +18,7 @@
 // @flow
 
 import TequilapiProposalFetcher from '../../../app/data-fetchers/tequilapi-proposal-fetcher'
-import type {Container} from '../../../app/di'
+import type { Container } from '../../../app/di'
 import { UserSettingsStore } from '../../../app/user-settings/user-settings-store'
 import CountryList from '../../../app/data-fetchers/country-list'
 
