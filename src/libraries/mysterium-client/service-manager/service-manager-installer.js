@@ -164,5 +164,5 @@ class ServiceManagerInstaller implements Installer {
   }
 }
 
-export {SERVICE_MANAGER_BIN, SERVICE_NAME}
+export { SERVICE_MANAGER_BIN, SERVICE_NAME }
 export default ServiceManagerInstaller
