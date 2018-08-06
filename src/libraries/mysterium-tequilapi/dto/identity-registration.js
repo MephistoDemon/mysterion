@@ -22,8 +22,8 @@ class PublicKeyDTO {
   part2: string
 
   constructor (data: Object) {
-    this.part1 = data.Part1
-    this.part2 = data.Part2
+    this.part1 = data.part1
+    this.part2 = data.part2
   }
 }
 
@@ -33,9 +33,9 @@ class SignatureDTO {
   v: string
 
   constructor (data: Object) {
-    this.r = data.R
-    this.s = data.S
-    this.v = data.V
+    this.r = data.r
+    this.s = data.s
+    this.v = data.v
   }
 }
 
@@ -45,9 +45,9 @@ class IdentityRegistrationDTO {
   signature: SignatureDTO
 
   constructor (data: Object) {
-    this.registered = data.Registered
-    this.publicKey = new PublicKeyDTO(data.PublicKey || {})
-    this.signature = new SignatureDTO(data.Signature || {})
+    this.registered = data.registered
+    this.publicKey = new PublicKeyDTO(data.publicKey || {})
+    this.signature = new SignatureDTO(data.signature || {})
   }
 }
 

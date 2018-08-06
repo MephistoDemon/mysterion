@@ -206,21 +206,6 @@ describe('HttpTequilapiClient', () => {
   describe('identityRegistration()', () => {
     it('returns response', async () => {
       const response = {
-        Registered: false,
-        PublicKey: {
-          Part1: '0xfb22c62ed2ddc65eb2994a8af5b1094b239aacc04a6505fd2bc581f55547175a',
-          Part2: '0xef3156a0d95c3832b191c03c272a5900e3e30484b9c8a65a0387f1f8d436867f'
-        },
-        Signature: {
-          R: '0xb48616d33aba008f687d500cac9e9f2ca2b3c275fab6fc21318b81e09571d993',
-          S: '0x49c0d7e1445389dbc805275f0aeb0b7f23e50e26a772b5a3bc4b2cc39f1bb3aa',
-          V: 28
-        }
-      }
-      mock.onGet('identities/0x0000bEEF/registration').reply(200, response)
-
-      const registration = await api.identityRegistration('0x0000bEEF')
-      expect(registration).to.be.deep.equal({
         registered: false,
         publicKey: {
           part1: '0xfb22c62ed2ddc65eb2994a8af5b1094b239aacc04a6505fd2bc581f55547175a',
@@ -231,7 +216,11 @@ describe('HttpTequilapiClient', () => {
           s: '0x49c0d7e1445389dbc805275f0aeb0b7f23e50e26a772b5a3bc4b2cc39f1bb3aa',
           v: 28
         }
-      })
+      }
+      mock.onGet('identities/0x0000bEEF/registration').reply(200, response)
+
+      const registration = await api.identityRegistration('0x0000bEEF')
+      expect(registration).to.be.deep.equal(response)
     })
 
     it('handles error', async () => {
