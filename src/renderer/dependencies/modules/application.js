@@ -19,6 +19,7 @@
 import { Container } from '../../../app/di'
 import RendererCommunication from '../../../app/communication/renderer-communication'
 import RendererIpc from '../../../app/communication/ipc/renderer-ipc'
+import FeatureToggle from '../../../app/feature-toggle'
 import ElkCollector from '../../../app/statistics/elk-collector'
 import AggregatingCollector from '../../../app/statistics/aggregating-collector'
 import NullCollector from '../../../app/statistics/null-collector'
@@ -36,12 +37,11 @@ function bootstrap (container: Container) {
 
   container.service(
     'rendererCommunication',
-    ['bugReporterMetrics'],
-    (bugReporterMetrics) => {
+    [],
+    () => {
       const ipc = new RendererIpc()
       const messageBus = new IpcMessageBus(ipc)
-      const communication = new RendererCommunication(messageBus)
-      return communication
+      return new RendererCommunication(messageBus)
     }
   )
 
@@ -52,6 +52,7 @@ function bootstrap (container: Container) {
       version: mysterionReleaseID
     }
   )
+
   container.service(
     'statsEventFactory',
     ['statsApplicationInfo'],
@@ -59,6 +60,7 @@ function bootstrap (container: Container) {
       return createEventFactory(applicationInfo)
     }
   )
+
   container.service(
     'statsCollector',
     [],
@@ -71,6 +73,16 @@ function bootstrap (container: Container) {
       return new NullCollector()
     }
   )
+
+  container.service(
+    'featureToggle',
+    [],
+    () => {
+      declare var FEATURES: any
+      return new FeatureToggle(FEATURES)
+    }
+  )
+
   container.service(
     'vpnInitializer',
     ['tequilapiClient'],

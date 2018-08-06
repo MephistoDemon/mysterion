@@ -8,6 +8,7 @@ process.env.BABEL_ENV = 'web'
 
 const path = require('path')
 const webpack = require('webpack')
+const features = require('./features')
 
 const BabiliWebpackPlugin = require('babili-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -86,7 +87,8 @@ let webConfig = {
       nodeModules: false
     }),
     new webpack.DefinePlugin({
-      'process.env.IS_WEB': 'true'
+      'process.env.IS_WEB': 'true',
+      'FEATURES': features
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin()

@@ -22,6 +22,7 @@ import type { Installer, Process } from '../libraries/mysterium-client'
 import { logLevels as processLogLevels } from '../libraries/mysterium-client'
 import trayFactory from '../main/tray/factory'
 import { SUDO_PROMT_PERMISSION_DENIED } from '../libraries/mysterium-client/launch-daemon/launch-daemon-installer'
+import FeatureToggle from './feature-toggle'
 import translations from './messages'
 import MainMessageBusCommunication from './communication/main-message-bus-communication'
 import { onFirstEvent, onFirstEventOrTimeout } from './communication/utils'
@@ -68,7 +69,8 @@ type MysterionParams = {
   frontendLogCache: LogCache,
   mysteriumProcessLogCache: LogCache,
   userSettingsStore: UserSettingsStore,
-  disconnectNotification: Notification
+  disconnectNotification: Notification,
+  featureToggle: FeatureToggle
 }
 
 const LOG_PREFIX = '[Mysterion] '
@@ -93,6 +95,7 @@ class Mysterion {
   mysteriumProcessLogCache: LogCache
   userSettingsStore: UserSettingsStore
   disconnectNotification: Notification
+  featureToggle: FeatureToggle
 
   window: Window
   messageBus: MessageBus
@@ -116,6 +119,7 @@ class Mysterion {
     this.mysteriumProcessLogCache = params.mysteriumProcessLogCache
     this.userSettingsStore = params.userSettingsStore
     this.disconnectNotification = params.disconnectNotification
+    this.featureToggle = params.featureToggle
   }
 
   run () {

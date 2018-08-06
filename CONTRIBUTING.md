@@ -75,6 +75,13 @@ TEST_COVERAGE=true yarn unit
 
 HTML report can be found in *test/unit/coverage/lcov-report/index.html*.
 
+## Feature toggle
+
+We have a built-in feature toggling tool, which we use to enable/disable features for specific tester groups and/or environments.
+
+The main file is `features.prod.json` which is used in CI builds and should be committed into the repository.
+If you want a customized build, you can create your own `features.json` file and change the values appropriately, but it shouldn't be committed into the repository.
+
 ## Conventions
 
 We are using [StandardJS](https://standardjs.com/) style.

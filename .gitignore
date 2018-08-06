@@ -13,3 +13,4 @@ yarn-error.log
 .env
 bin/*
 npm-package.json
+features.json

@@ -10,6 +10,7 @@ const path = require('path')
 const {dependencies, version} = require('../package.json')
 const {buildNumber} = require('../build-number.json')
 const webpack = require('webpack')
+const features = require('./features')
 
 const BabiliWebpackPlugin = require('babili-webpack-plugin')
 
@@ -45,7 +46,8 @@ let mainConfig = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.BUILD_NUMBER': JSON.stringify(buildNumber),
-      'process.env.MYSTERION_VERSION': JSON.stringify(version)
+      'process.env.MYSTERION_VERSION': JSON.stringify(version),
+      'FEATURES': features
     }),
     new webpack.NoEmitOnErrorsPlugin()
   ],
