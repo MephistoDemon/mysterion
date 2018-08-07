@@ -43,7 +43,7 @@ type ConnectionStore = {
   location: ?ConsumerLocationDTO,
   status: ConnectionStatus,
   statistics: Object,
-  lastConnectionAttemptProvider: ?string,
+  lastConnectionProvider: ?string,
   actionLoopers: { [string]: FunctionLooper }
 }
 
@@ -73,7 +73,7 @@ const defaultStatistics = {
 const state: ConnectionStore = {
   ip: null,
   location: null,
-  lastConnectionAttemptProvider: null,
+  lastConnectionProvider: null,
   status: ConnectionStatusEnum.NOT_CONNECTED,
   statistics: defaultStatistics,
   actionLoopers: {}
@@ -81,7 +81,7 @@ const state: ConnectionStore = {
 
 const getters = {
   lastConnectionAttemptProvider (state: ConnectionStore): ?string {
-    return state.lastConnectionAttemptProvider
+    return state.lastConnectionProvider
   },
   status (state: ConnectionStore): ConnectionStatus {
     return state.status
@@ -117,7 +117,7 @@ const mutations = {
     delete state.actionLoopers[action]
   },
   [type.SET_LAST_CONNECTION_PROVIDER] (state: ConnectionStore, providerId: string) {
-    state.lastConnectionAttemptProvider = providerId
+    state.lastConnectionProvider = providerId
   }
 }
 
