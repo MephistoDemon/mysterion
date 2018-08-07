@@ -72,7 +72,8 @@ function bootstrap (container: Container) {
     'featureToggle',
     [],
     () => {
-      declare var FEATURES: any
+      declare var FEATURES: { [string]: boolean }
+
       return new FeatureToggle(FEATURES)
     }
   )
