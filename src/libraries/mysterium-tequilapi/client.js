@@ -29,6 +29,7 @@ import ConnectionIPDTO from './dto/connection-ip'
 import ConnectionStatusDTO from './dto/connection-status'
 import ConnectionRequestDTO from './dto/connection-request'
 import ConsumerLocationDTO from './dto/consumer-location'
+import IdentityRegistrationDTO from './dto/identity-registration'
 import { TIMEOUT_DISABLED } from './timeouts'
 
 interface TequilapiClient {
@@ -38,6 +39,7 @@ interface TequilapiClient {
   identitiesList (): Promise<Array<IdentityDTO>>,
   identityCreate (passphrase: string): Promise<IdentityDTO>,
   identityUnlock (id: string, passphrase: string): Promise<void>,
+  identityRegistration (id: string): Promise<IdentityRegistrationDTO>,
 
   findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>>,
 
@@ -88,6 +90,14 @@ class HttpTequilapiClient implements TequilapiClient {
 
   async identityUnlock (id: string, passphrase: string): Promise<void> {
     await this.http.put('identities/' + id + '/unlock', { passphrase })
+  }
+
+  async identityRegistration (id: string): Promise<IdentityRegistrationDTO> {
+    const response = await this.http.get(`identities/${id}/registration`)
+    if (!response) {
+      throw new Error('Identities registration response body is missing')
+    }
+    return new IdentityRegistrationDTO(response)
   }
 
   async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {

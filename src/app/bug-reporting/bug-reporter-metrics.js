@@ -29,6 +29,7 @@ const NOT_SET = 'N/A'
 
 const TAGS = {
   IDENTITY_UNLOCKED: 'identity_unlocked',
+  IDENTITY_REGISTERED: 'identity_registered',
   PROPOSALS_FETCHED_ONCE: 'proposals_fetched_once',
   CONNECTION_ACTIVE: 'connection_active',
   CLIENT_RUNNING: 'client_running',
