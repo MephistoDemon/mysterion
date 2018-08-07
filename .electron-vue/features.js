@@ -3,21 +3,24 @@
 const fs = require('fs')
 const path = require('path')
 
-const getFeatures = function (file) {
-  if (!fs.existsSync(file)) {
+const getFeatureFilePath = (fileName) => path.join(__dirname, '../', fileName)
+
+const getFeaturesFromFile = function (file) {
+  const path = getFeatureFilePath(file)
+  if (!fs.existsSync(path)) {
     return null
   }
 
   try {
-    return JSON.parse(fs.readFileSync(file))
+    return JSON.parse(fs.readFileSync(path))
   } catch (e) {
   }
 
   return null
 }
 
-const productionFeatures = getFeatures(path.join(__dirname, '../', 'features.prod.json'))
-const localFeatures = getFeatures(path.join(__dirname, '../', 'features.json'))
+const productionFeatures = getFeaturesFromFile('features.prod.json')
+const localFeatures = getFeaturesFromFile('features.json')
 
 if (!productionFeatures) {
   throw new Error('Failed to read features.prod.json. This file is required for building.')
