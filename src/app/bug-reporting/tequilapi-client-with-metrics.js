@@ -29,6 +29,7 @@ import ConnectionIPDTO from '../../libraries/mysterium-tequilapi/dto/connection-
 import type { TequilapiClient } from '../../libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../libraries/mysterium-tequilapi/dto/identity'
 import ConsumerLocationDTO from '../../libraries/mysterium-tequilapi/dto/consumer-location'
+import IdentityRegistrationDTO from '../../libraries/mysterium-tequilapi/dto/identity-registration'
 
 class TequilapiClientWithMetrics implements TequilapiClient {
   _bugReporterMetrics: BugReporterMetrics
@@ -61,6 +62,12 @@ class TequilapiClientWithMetrics implements TequilapiClient {
     this._bugReporterMetrics.set(METRICS.IDENTITY_UNLOCKED, false)
     await this._client.identityUnlock(id, passphrase)
     this._bugReporterMetrics.set(METRICS.IDENTITY_UNLOCKED, true)
+  }
+
+  async identityRegistration (id: string): Promise<IdentityRegistrationDTO> {
+    const result = await this._client.identityRegistration(id)
+    this._bugReporterMetrics.set(METRICS.IDENTITY_REGISTERED, result.registered)
+    return result
   }
 
   async findProposals (filter: ?ProposalsFilter): Promise<Array<ProposalDTO>> {
