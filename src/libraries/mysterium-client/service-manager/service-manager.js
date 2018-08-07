@@ -68,6 +68,10 @@ const parseServiceState = (serviceInfo: string): ServiceState => {
   return (state: ServiceState)
 }
 
+const escapePath = (path: string): string => {
+  return `"${path}"`
+}
+
 export default class ServiceManager {
   _path: string
   _system: System
@@ -82,7 +86,7 @@ export default class ServiceManager {
   }
 
   async install (): Promise<string> {
-    return this._sudoExec(`${this._path} --do=install && ${this._path} --do=start`)
+    return this._sudoExec(`${escapePath(this._path)} --do=install && ${escapePath(this._path)} --do=start`)
   }
 
   async start (): Promise<ServiceState> {
@@ -109,7 +113,7 @@ export default class ServiceManager {
   }
 
   async _execAndGetState (commandName: string): Promise<ServiceState> {
-    const result = await this._sudoExec(`${this._path} --do=${commandName}`)
+    const result = await this._sudoExec(`${escapePath(this._path)} --do=${commandName}`)
     return parseServiceState(result)
   }
 
@@ -121,3 +125,5 @@ export default class ServiceManager {
     }
   }
 }
+
+export { escapePath }

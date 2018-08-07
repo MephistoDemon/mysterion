@@ -23,7 +23,7 @@ import logger from '../../../app/logger'
 import type { ClientConfig } from '../config'
 import type { Installer } from '../index'
 import type { System } from '../system'
-import ServiceManager, { SERVICE_STATE } from './service-manager'
+import ServiceManager, { escapePath, SERVICE_STATE } from './service-manager'
 
 const SERVICE_NAME = 'MysteriumClient'
 const SERVICE_MANAGER_BIN = 'servicemanager.exe'
@@ -110,7 +110,7 @@ class ServiceManagerInstaller implements Installer {
   async _tapDriversInstalled (): Promise<boolean> {
     let stdout
     try {
-      stdout = await this._system.userExec(this._config.openVPNBin + ` --show-adapters`)
+      stdout = await this._system.userExec(escapePath(this._config.openVPNBin) + ` --show-adapters`)
     } catch (e) {
       logger.info('Check for tap drivers failed', e.message)
       return false
@@ -132,7 +132,7 @@ class ServiceManagerInstaller implements Installer {
   }
 
   async _installTapDrivers () {
-    await this._system.userExec(path.join(this._serviceManagerDir, TAP_DRIVER_BIN))
+    await this._system.userExec(escapePath(path.join(this._serviceManagerDir, TAP_DRIVER_BIN)))
   }
 
   _getConfigPath () {
@@ -151,6 +151,7 @@ class ServiceManagerInstaller implements Installer {
         `--config-dir=${this._config.configDir}`,
         `--data-dir=${this._config.dataDir}`,
         `--runtime-dir=${this._config.runtimeDir}`,
+        `--openvpn.binary=${this._config.openVPNBin}`,
         `--openvpn.binary=${this._config.openVPNBin}`,
         `--tequilapi.port=${this._config.tequilapiPort}`
       ],
