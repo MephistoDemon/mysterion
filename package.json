@@ -6,8 +6,8 @@
   "license": "GPL-3.0",
   "main": "./dist/electron/main.js",
   "scripts": {
-    "download:bins:osx": "util_scripts/download-osx-binaries.sh",
-    "download:bins:win": "util_scripts/download-win-binaries.sh",
+    "download:bins:osx": "util_scripts/download-osx-binaries.sh && $(npm bin)/download-mysterium-client-bin darwin x64 ./bin",
+    "download:bins:win": "util_scripts/download-win-binaries.sh && $(npm bin)/download-mysterium-client-bin windows x64 ./bin",
     "copy:bins": "util_scripts/copy-binaries.sh",
     "build": "node .electron-vue/build.js && electron-builder --publish never",
     "build:win": "node .electron-vue/build.js && node ./node_modules/electron-builder/out/cli/cli.js --win --publish=never",
@@ -102,6 +102,7 @@
     "less-loader": "^4.0.5",
     "lolex": "^2.3.2",
     "md5": "^2.2.1",
+    "mysterium-client-binary": "^0.2.3",
     "raven": "^2.4.1",
     "raven-js": "^3.22.3",
     "sudo-prompt": "^8.1.0",
