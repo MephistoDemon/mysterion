@@ -16,8 +16,8 @@
  */
 
 // @flow
-import {EventCollector} from './events'
-import type {Event} from './events'
+import { EventCollector } from './events'
+import type { Event } from './events'
 
 class AggregatingCollector implements EventCollector {
   _events: Array<Event>

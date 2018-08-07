@@ -54,5 +54,5 @@ function createEventFactory (applicationInfo: ApplicationInfo): EventFactory {
   }
 }
 
-export type {Event, ApplicationInfo, EventFactory, EventCollector}
-export {newEvent, createEventFactory}
+export type { Event, ApplicationInfo, EventFactory, EventCollector }
+export { newEvent, createEventFactory }

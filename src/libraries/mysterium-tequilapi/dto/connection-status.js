@@ -16,7 +16,7 @@
  */
 
 // @flow
-import type {ConnectionStatus} from './connection-status-enum'
+import type { ConnectionStatus } from './connection-status-enum'
 
 class ConnectionStatusDTO {
   status: ConnectionStatus

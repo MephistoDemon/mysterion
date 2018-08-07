@@ -37,4 +37,4 @@ export function make (targetDir: string): void {
   }, initDir)
 }
 
-export default {make}
+export default { make }

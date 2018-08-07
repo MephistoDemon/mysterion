@@ -47,6 +47,7 @@ module.exports = {
     "no-restricted-globals": ['error', 'event'],
     'no-console': ['error'],
     // TODO: reduce this limit to 120
-    "max-len": ["error", { "code": 140 }]
+    "max-len": ["error", { "code": 140 }],
+    'object-curly-spacing': [2, 'always']
   }
 }

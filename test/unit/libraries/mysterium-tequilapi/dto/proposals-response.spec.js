@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {expect} from 'chai'
+import { expect } from 'chai'
 import ProposalsResponseDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/proposals-response'
 
 describe('TequilapiClient DTO', () => {
   describe('ProposalsResponseDTO', () => {
     it('sets properties with full structure', async () => {
       const response = new ProposalsResponseDTO({
-        proposals: [{id: 100}]
+        proposals: [{ id: 100 }]
       })
 
       expect(response.proposals).to.have.lengthOf(1)

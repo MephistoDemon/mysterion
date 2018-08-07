@@ -19,7 +19,7 @@
 import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-status'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
-import type {TequilapiClient} from '../../../../../src/libraries/mysterium-tequilapi/client'
+import type { TequilapiClient } from '../../../../../src/libraries/mysterium-tequilapi/client'
 import IdentityDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/identity'
 import ProposalsFilter from '../../../../../src/libraries/mysterium-tequilapi/dto/proposals-filter'
 import ProposalDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/proposal'

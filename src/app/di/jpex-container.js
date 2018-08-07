@@ -16,7 +16,7 @@
  */
 
 // @flow
-import type {Container, ServiceFactory} from './index'
+import type { Container, ServiceFactory } from './index'
 import Jpex from 'jpex'
 import constants from 'jpex/src/constants'
 

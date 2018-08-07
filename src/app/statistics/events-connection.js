@@ -16,8 +16,8 @@
  */
 
 // @flow
-import {EventCollector} from './events'
-import type {EventFactory} from './events'
+import { EventCollector } from './events'
+import type { EventFactory } from './events'
 
 type UserTime = {
   localTime: number,
@@ -91,5 +91,5 @@ function currentUserTime () {
   }
 }
 
-export type {UserTime, UserTimeProvider, ConnectDetails}
-export {currentUserTime, ConnectEventTracker}
+export type { UserTime, UserTimeProvider, ConnectDetails }
+export { currentUserTime, ConnectEventTracker }

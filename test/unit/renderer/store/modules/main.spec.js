@@ -17,9 +17,9 @@
 
 // @flow
 
-import {expect} from 'chai'
+import { expect } from 'chai'
 
-import {mutations, actionsFactory} from '@/store/modules/main'
+import { mutations, actionsFactory } from '@/store/modules/main'
 import type from '@/store/types'
 import EmptyTequilapiClientMock from './empty-tequilapi-client-mock'
 import { describe, it } from '../../../../helpers/dependencies'

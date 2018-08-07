@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {expect} from 'chai'
+import { expect } from 'chai'
 import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 
 describe('TequilapiClient DTO', () => {
   describe('ConnectionIPDTO', () => {
     it('sets properties', async () => {
-      const model = new ConnectionIPDTO({ip: 'mock ip'})
+      const model = new ConnectionIPDTO({ ip: 'mock ip' })
 
       expect(model.ip).to.equal('mock ip')
     })

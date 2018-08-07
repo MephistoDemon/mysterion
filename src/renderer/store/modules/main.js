@@ -100,17 +100,17 @@ const mutations = {
 
 function actionsFactory (tequilapi: TequilapiClient) {
   return {
-    switchNav ({commit}, open: boolean) {
+    switchNav ({ commit }, open: boolean) {
       commit(type.SET_NAV_OPEN, open)
     },
-    setVisual ({commit}, visual: ?string) {
+    setVisual ({ commit }, visual: ?string) {
       commit(type.SET_VISUAL, visual)
     },
-    async [type.CLIENT_BUILD_INFO] ({commit}) {
+    async [type.CLIENT_BUILD_INFO] ({ commit }) {
       const res = await tequilapi.healthCheck()
       commit(type.CLIENT_BUILD_INFO, res.buildInfo)
     },
-    setNavVisibility ({commit}, visible: boolean) {
+    setNavVisibility ({ commit }, visible: boolean) {
       commit(type.SET_NAV_VISIBLE, visible)
     }
   }

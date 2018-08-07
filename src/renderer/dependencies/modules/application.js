@@ -16,15 +16,15 @@
  */
 
 // @flow
-import {Container} from '../../../app/di'
+import { Container } from '../../../app/di'
 import RendererCommunication from '../../../app/communication/renderer-communication'
 import RendererIpc from '../../../app/communication/ipc/renderer-ipc'
 import ElkCollector from '../../../app/statistics/elk-collector'
 import AggregatingCollector from '../../../app/statistics/aggregating-collector'
 import NullCollector from '../../../app/statistics/null-collector'
-import {remote} from 'electron'
-import type {ApplicationInfo} from '../../../app/statistics/events'
-import {createEventFactory} from '../../../app/statistics/events'
+import { remote } from 'electron'
+import type { ApplicationInfo } from '../../../app/statistics/events'
+import { createEventFactory } from '../../../app/statistics/events'
 import VpnInitializer from '../../../app/vpnInitializer'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import realSleep from '../../../libraries/sleep'

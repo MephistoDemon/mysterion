@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {newEvent} from '../../../../src/app/statistics/events'
+import { newEvent } from '../../../../src/app/statistics/events'
 import NullCollector from '../../../../src/app/statistics/null-collector'
 
 describe('Null collector', () => {

@@ -18,7 +18,7 @@
 // @flow
 
 import messages from './messages'
-import type {MessageBus} from './message-bus'
+import type { MessageBus } from './message-bus'
 import type {
   ConnectionStatusChangeDTO,
   CurrentIdentityChangeDTO,
@@ -30,9 +30,9 @@ import type {
   FavoriteProviderDTO
 } from './dto'
 
-import type {UserSettings} from '../user-settings/user-settings'
-import type {Metric} from '../bug-reporting/bug-reporter-metrics'
-import type {MapSyncCommunication, MapSyncDTO} from '../../libraries/map-sync'
+import type { UserSettings } from '../user-settings/user-settings'
+import type { Metric } from '../bug-reporting/bug-reporter-metrics'
+import type { MapSyncCommunication, MapSyncDTO } from '../../libraries/map-sync'
 
 /**
  * This allows renderer process communicating with main process.

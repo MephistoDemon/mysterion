@@ -23,6 +23,7 @@ import type { SystemMockManager } from '../../../../helpers/system-mock'
 import type { System } from '../../../../../src/libraries/mysterium-client/system'
 import type { ServiceState } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager'
 import ServiceManager, { SERVICE_STATE } from '../../../../../src/libraries/mysterium-client/service-manager/service-manager'
+import { captureAsyncError } from '../../../../helpers/utils'
 
 const SERVICE_MANAGER_PATH = '/service-manager/bin/servicemanager.exe'
 
@@ -62,7 +63,14 @@ describe('ServiceManager', () => {
     it('calls "servicemanager.exe install" with admin rights', async () => {
       await serviceManager.install()
       expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
-      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=install')
+      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql(
+        '/service-manager/bin/servicemanager.exe --do=install && /service-manager/bin/servicemanager.exe --do=start')
+    })
+
+    it('throws error when sudo persmissions are not granted by user', async () => {
+      systemMockManager.grantSudoPermissions = false
+      const error = await captureAsyncError(() => serviceManager.install())
+      expect(error).to.be.an('error')
     })
   })
 
@@ -70,17 +78,35 @@ describe('ServiceManager', () => {
     it('calls "servicemanager.exe start" with admin rights', async () => {
       await testCommand(serviceManager.start.bind(serviceManager), 'start', SERVICE_STATE.START_PENDING)
     })
+
+    it('throws error when sudo persmissions are not granted by user', async () => {
+      systemMockManager.grantSudoPermissions = false
+      const error = await captureAsyncError(() => serviceManager.start())
+      expect(error).to.be.an('error')
+    })
   })
 
   describe('.stop', () => {
     it('calls "servicemanager.exe stop" with admin rights', async () => {
       await testCommand(serviceManager.stop.bind(serviceManager), 'stop', SERVICE_STATE.STOP_PENDING)
     })
+
+    it('throws error when sudo persmissions are not granted by user', async () => {
+      systemMockManager.grantSudoPermissions = false
+      const error = await captureAsyncError(() => serviceManager.stop())
+      expect(error).to.be.an('error')
+    })
   })
 
   describe('.restart', () => {
     it('calls "servicemanager.exe restart" with admin rights', async () => {
       await testCommand(serviceManager.restart.bind(serviceManager), 'restart', SERVICE_STATE.START_PENDING)
+    })
+
+    it('throws error when sudo persmissions are not granted by user', async () => {
+      systemMockManager.grantSudoPermissions = false
+      const error = await captureAsyncError(() => serviceManager.restart())
+      expect(error).to.be.an('error')
     })
   })
 

@@ -49,7 +49,7 @@ describe('errors', () => {
   describe('isRequestClosedError()', () => {
     it('indicates request closed error', () => {
       let error = (new Error(): Object)
-      error.response = {status: 499}
+      error.response = { status: 499 }
       expect(isRequestClosedError(error)).to.be.true
 
       error = new Error()
@@ -60,7 +60,7 @@ describe('errors', () => {
   describe('isServiceUnavailableError()', () => {
     it('indicates service unavailable error', () => {
       let error = (new Error(): Object)
-      error.response = {status: 503}
+      error.response = { status: 503 }
       expect(isServiceUnavailableError(error)).to.be.true
 
       error = new Error()

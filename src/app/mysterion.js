@@ -41,7 +41,7 @@ import type { MessageBus } from './communication/message-bus'
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import type { CurrentIdentityChangeDTO } from './communication/dto'
 import type { EnvironmentCollector } from './bug-reporting/environment/environment-collector'
-import {BugReporterMetrics, METRICS, TAGS} from '../app/bug-reporting/bug-reporter-metrics'
+import { BugReporterMetrics, METRICS, TAGS } from '../app/bug-reporting/bug-reporter-metrics'
 import LogCache from './logging/log-cache'
 import SyncCallbacksInitializer from './sync-callbacks-initializer'
 import SyncReceiverMainCommunication from './communication/sync/sync-main-communication'
@@ -184,7 +184,7 @@ class Mysterion {
     this.messageBus = new IpcMessageBus(ipc)
     this.communication = new MainMessageBusCommunication(this.messageBus)
     this.communication.onCurrentIdentityChange((identityChange: CurrentIdentityChangeDTO) => {
-      const identity = new IdentityDTO({id: identityChange.id})
+      const identity = new IdentityDTO({ id: identityChange.id })
       this.bugReporter.setUser(identity)
     })
     this.bugReporterMetrics.startSyncing(this.communication)
@@ -427,6 +427,7 @@ class Mysterion {
       await this.process.repair()
     } catch (e) {
       this.monitoring.stop()
+      this.bugReporter.captureErrorException(e)
       this.communication.sendRendererShowError({
         message: e.toString(),
         hint: 'Try to restart application',

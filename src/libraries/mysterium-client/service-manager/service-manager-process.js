@@ -40,7 +40,7 @@ class ServiceManagerProcess implements Process {
   _serviceManager: ServiceManager
   _system: System
   _monitoring: Monitoring
-  _fixIsRunning: boolean = false
+  _repairIsRunning: boolean = false
 
   constructor (
     tequilapi: TequilapiClient,
@@ -61,11 +61,11 @@ class ServiceManagerProcess implements Process {
       return
     }
 
-    await this._fixService(state)
+    await this._repair(state)
   }
 
   async repair (): Promise<void> {
-    await this._fixService()
+    await this._repair()
   }
 
   async stop (): Promise<void> {
@@ -82,11 +82,11 @@ class ServiceManagerProcess implements Process {
     this._logs.onLog(level, cb)
   }
 
-  async _fixService (state: ?ServiceState = null): Promise<void> {
-    if (this._fixIsRunning) {
+  async _repair (state: ?ServiceState = null): Promise<void> {
+    if (this._repairIsRunning) {
       return
     }
-    this._fixIsRunning = true
+    this._repairIsRunning = true
     try {
       state = state || await this._serviceManager.getServiceState()
       logger.info(`Service state: [${state}]`)
@@ -94,7 +94,7 @@ class ServiceManagerProcess implements Process {
         case SERVICE_STATE.START_PENDING:
           return
         case SERVICE_STATE.UNKNOWN:
-          throw new Error('Cannot start non-installed service')
+          throw new Error('Cannot start non-installed or broken service')
         case SERVICE_STATE.RUNNING:
           await this._serviceManager.restart()
           break
@@ -103,7 +103,7 @@ class ServiceManagerProcess implements Process {
       }
       await this._waitForHealthCheck()
     } finally {
-      this._fixIsRunning = false
+      this._repairIsRunning = false
     }
   }
 
