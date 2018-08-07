@@ -17,29 +17,39 @@
 
 // @flow
 
-import type { Callback } from '../subscriber'
-import Monitoring from './monitoring'
-import logLevels from './log-levels'
+class PublicKeyDTO {
+  part1: string
+  part2: string
 
-type LogCallback = Callback<any>
-
-interface Installer {
-  needsInstallation (): Promise<boolean>,
-
-  install (): Promise<void>
+  constructor (data: Object) {
+    this.part1 = data.part1
+    this.part2 = data.part2
+  }
 }
 
-interface Process {
-  start (): Promise<void>,
+class SignatureDTO {
+  r: string
+  s: string
+  v: string
 
-  repair (): Promise<void>,
-
-  stop (): Promise<void>,
-
-  onLog (level: string, callback: Function): void,
-
-  setupLogging (): Promise<void>
+  constructor (data: Object) {
+    this.r = data.r
+    this.s = data.s
+    this.v = data.v
+  }
 }
 
-export { Monitoring, logLevels }
-export type { Installer, Process, LogCallback }
+class IdentityRegistrationDTO {
+  registered: string
+  publicKey: PublicKeyDTO
+  signature: SignatureDTO
+
+  constructor (data: Object) {
+    this.registered = data.registered
+    this.publicKey = new PublicKeyDTO(data.publicKey || {})
+    this.signature = new SignatureDTO(data.signature || {})
+  }
+}
+
+export type { PublicKeyDTO, SignatureDTO }
+export default IdentityRegistrationDTO
