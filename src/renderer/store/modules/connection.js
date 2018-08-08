@@ -43,6 +43,7 @@ type ConnectionStore = {
   location: ?ConsumerLocationDTO,
   status: ConnectionStatus,
   statistics: Object,
+  lastConnectionProvider: ?string,
   actionLoopers: { [string]: FunctionLooper }
 }
 
@@ -72,12 +73,16 @@ const defaultStatistics = {
 const state: ConnectionStore = {
   ip: null,
   location: null,
+  lastConnectionProvider: null,
   status: ConnectionStatusEnum.NOT_CONNECTED,
   statistics: defaultStatistics,
   actionLoopers: {}
 }
 
 const getters = {
+  lastConnectionAttemptProvider (state: ConnectionStore): ?string {
+    return state.lastConnectionProvider
+  },
   status (state: ConnectionStore): ConnectionStatus {
     return state.status
   },
@@ -110,6 +115,9 @@ const mutations = {
   },
   [type.REMOVE_ACTION_LOOPER] (state: ConnectionStore, action: string) {
     delete state.actionLoopers[action]
+  },
+  [type.SET_LAST_CONNECTION_PROVIDER] (state: ConnectionStore, providerId: string) {
+    state.lastConnectionProvider = providerId
   }
 }
 
@@ -198,6 +206,9 @@ function actionsFactory (
         commit(type.SHOW_ERROR, err)
       }
     },
+    async [type.RECONNECT] ({ dispatch, getters }) {
+      dispatch(type.CONNECT, new ConnectionRequestDTO(getters.currentIdentity, getters.lastConnectionAttemptProvider))
+    },
     async [type.CONNECT] ({ commit, dispatch, state }, connectionRequest: ConnectionRequestDTO) {
       let eventTracker = new ConnectEventTracker(statsCollector, currentUserTime, statsEventsFactory)
       let originalCountry = ''
@@ -217,7 +228,7 @@ function actionsFactory (
       }
       await dispatch(type.SET_CONNECTION_STATUS, ConnectionStatusEnum.CONNECTING)
       commit(type.CONNECTION_STATISTICS_RESET)
-
+      commit(type.SET_LAST_CONNECTION_PROVIDER, connectionRequest.providerId)
       try {
         await tequilapi.connectionCreate(connectionRequest)
         eventTracker.connectEnded()

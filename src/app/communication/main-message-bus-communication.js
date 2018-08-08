@@ -83,6 +83,10 @@ class MainMessageBusCommunication implements MainCommunication, MapSyncCommunica
     this._send(messages.CONNECTION_CANCEL)
   }
 
+  sendReconnectRequest () {
+    this._send(messages.RECONNECT_REQUEST)
+  }
+
   sendConnectionRequest (data: RequestConnectionDTO) {
     this._send(messages.CONNECTION_REQUEST, data)
   }

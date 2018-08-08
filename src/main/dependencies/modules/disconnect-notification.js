@@ -16,14 +16,19 @@
  */
 
 // @flow
+import { join } from 'path'
 
 import type { Container } from '../../../app/di'
 import Notification from '../../../app/notification/index'
+import type { MysterionConfig } from '../../../app/mysterionConfig'
 
 function bootstrap (container: Container) {
-  container.constant(
+  container.factory(
     'disconnectNotification',
-    new Notification('Disconnected', 'You have been disconnected from VPN server')
+    ['mysterionApplication.config'],
+    (config: MysterionConfig) => {
+      return new Notification('Disconnected', 'from VPN server', join(config.staticDirectory, 'icons', 'notification.png'))
+    }
   )
 }
 
