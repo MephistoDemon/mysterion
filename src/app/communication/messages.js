@@ -21,6 +21,7 @@ export default {
   CONNECTION_STATUS_CHANGED: 'connection.status.changed',
   CONNECTION_REQUEST: 'connection.request',
   CONNECTION_CANCEL: 'connection.cancel',
+  RECONNECT_REQUEST: 'reconnect.request',
 
   MYSTERIUM_CLIENT_READY: 'mysterium-client.ready',
   MYSTERIUM_CLIENT_LOG: 'mysterium-client.log',

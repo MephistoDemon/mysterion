@@ -3277,6 +3277,13 @@ electron-is-dev@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/electron-is-dev/-/electron-is-dev-0.3.0.tgz#14e6fda5c68e9e4ecbeff9ccf037cbd7c05c5afe"
 
+electron-is@^2.3.0:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/electron-is/-/electron-is-2.4.1.tgz#eb2de19b30179c3ba21658ee9dccdf0564d35d65"
+  dependencies:
+    electron-is-dev "^0.3.0"
+    semver "^5.3.0"
+
 electron-localshortcut@^3.0.0:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/electron-localshortcut/-/electron-localshortcut-3.0.2.tgz#df9cebe64140f4e58b680aacb2bd6278ae38ee61"
@@ -3285,6 +3292,12 @@ electron-localshortcut@^3.0.0:
     electron-is-accelerator "^0.1.0"
     keyboardevent-from-electron-accelerator "^0.7.0"
     keyboardevents-areequal "^0.2.1"
+
+electron-notifications@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/electron-notifications/-/electron-notifications-1.0.0.tgz#b93613e2333f22aa4f6b9d3275cc9f3cf80f4d22"
+  dependencies:
+    electron-is "^2.3.0"
 
 electron-osx-sign@0.4.8:
   version "0.4.8"
