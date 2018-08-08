@@ -89,6 +89,11 @@ export default class ServiceManager {
     return this._sudoExec(`${escapePath(this._path)} --do=install && ${escapePath(this._path)} --do=start`)
   }
 
+  async reinstall (): Promise<string> {
+    return this._sudoExec(
+      `${escapePath(this._path)} --do=uninstall && ${escapePath(this._path)} --do=install && ${escapePath(this._path)} --do=start`)
+  }
+
   async start (): Promise<ServiceState> {
     return this._execAndGetState('start')
   }
@@ -119,9 +124,14 @@ export default class ServiceManager {
 
   async _sudoExec (command: string): Promise<string> {
     try {
+      logger.info('SUDO', command)
       return await this._system.sudoExec(command)
     } catch (e) {
-      throw new Error(`Unable to execute [${command}]. ${e}`)
+      if (e.toString().indexOf('Command failed') >= 0) {
+        return this.reinstall()
+      } else {
+        throw new Error(`Unable to execute [${command}]. ${e}`)
+      }
     }
   }
 }
