@@ -90,8 +90,13 @@ export default class ServiceManager {
   }
 
   async reinstall (): Promise<string> {
-    return this._sudoExec(
-      `${escapePath(this._path)} --do=uninstall && ${escapePath(this._path)} --do=install && ${escapePath(this._path)} --do=start`)
+    let command =
+      `${escapePath(this._path)} --do=uninstall && ${escapePath(this._path)} --do=install && ${escapePath(this._path)} --do=start`
+    const state = this.getServiceState()
+    if (state === SERVICE_STATE.RUNNING) {
+      command = `${escapePath(this._path)} --do=stop & ` + command
+    }
+    return this._sudoExec(command)
   }
 
   async start (): Promise<ServiceState> {
