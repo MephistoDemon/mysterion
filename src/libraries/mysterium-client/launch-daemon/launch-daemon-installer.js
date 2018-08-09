@@ -98,8 +98,10 @@ class LaunchDaemonInstaller implements Installer {
 
   async install (): Promise<void> {
     let tempPlistFile = path.join(this._config.runtimeDir, PROPERTY_LIST_NAME)
+    let envPath = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:'
     let script = `\
       cp ${tempPlistFile} ${PROPERTY_LIST_FILE}\
+      && launchctl setenv PATH "${envPath}" \
       && launchctl load ${PROPERTY_LIST_FILE}\
     `
     if (processInstalled()) {
