@@ -144,7 +144,7 @@ class ServiceManagerInstaller implements Installer {
       Name: SERVICE_NAME,
       DisplayName: 'Mysterium Client',
       Description: 'Mysterium Client service',
-      Directory: this._config.runtimeDir,
+      Directory: this._serviceManagerDir,
       Executable: this._config.clientBin,
       Port: this._config.tequilapiPort,
       Arguments: [
