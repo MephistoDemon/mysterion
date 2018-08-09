@@ -72,6 +72,10 @@ const escapePath = (path: string): string => {
   return `"${path}"`
 }
 
+const needReinstall = (e): boolean => {
+  return e.toString().indexOf('Command failed') >= 0
+}
+
 export default class ServiceManager {
   _path: string
   _system: System
@@ -87,6 +91,16 @@ export default class ServiceManager {
 
   async install (): Promise<string> {
     return this._sudoExec(`${escapePath(this._path)} --do=install && ${escapePath(this._path)} --do=start`)
+  }
+
+  async reinstall (): Promise<string> {
+    let command =
+      `${escapePath(this._path)} --do=uninstall && ${escapePath(this._path)} --do=install && ${escapePath(this._path)} --do=start`
+    const state = this.getServiceState()
+    if (state === SERVICE_STATE.RUNNING) {
+      command = `${escapePath(this._path)} --do=stop & ` + command
+    }
+    return this._sudoExec(command)
   }
 
   async start (): Promise<ServiceState> {
@@ -119,9 +133,14 @@ export default class ServiceManager {
 
   async _sudoExec (command: string): Promise<string> {
     try {
+      logger.info('Execute sudo', command)
       return await this._system.sudoExec(command)
     } catch (e) {
-      throw new Error(`Unable to execute [${command}]. ${e}`)
+      if (needReinstall(e)) {
+        return this.reinstall()
+      } else {
+        throw new Error(`Unable to execute [${command}]. ${e}`)
+      }
     }
   }
 }
