@@ -72,6 +72,10 @@ const escapePath = (path: string): string => {
   return `"${path}"`
 }
 
+const needReinstall = (e): boolean => {
+  return e.toString().indexOf('Command failed') >= 0
+}
+
 export default class ServiceManager {
   _path: string
   _system: System
@@ -129,10 +133,10 @@ export default class ServiceManager {
 
   async _sudoExec (command: string): Promise<string> {
     try {
-      logger.info('SUDO', command)
+      logger.info('Execute sudo', command)
       return await this._system.sudoExec(command)
     } catch (e) {
-      if (e.toString().indexOf('Command failed') >= 0) {
+      if (needReinstall(e)) {
         return this.reinstall()
       } else {
         throw new Error(`Unable to execute [${command}]. ${e}`)
