@@ -71,7 +71,7 @@
     },
     "win": {
       "icon": "build/icons/icon.ico",
-      "requestedExecutionLevel": "highestAvailable",
+      "requestedExecutionLevel": "requireAdministrator",
       "extraFiles": [
         "./bin/openvpn.exe",
         "./bin/mysterium_client.exe",
