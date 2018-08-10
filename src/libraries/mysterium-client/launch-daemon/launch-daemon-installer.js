@@ -48,7 +48,12 @@ class LaunchDaemonInstaller implements Installer {
     return `<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
       <plist version="1.0">
-      <dict>
+        <dict>
+        <key>EnvironmentVariables</key>
+        <dict>
+            <key>PATH</key>
+            <string>/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin/:</string>
+        </dict>
         <key>Label</key>
           <string>${INVERSE_DOMAIN_PACKAGE_NAME}</string>
           <key>Program</key>
