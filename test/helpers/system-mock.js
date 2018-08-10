@@ -29,7 +29,9 @@ export interface SystemMockManager {
   unsetMockFile (path: string): void,
 
   setMockCommand (command: string, response: string): void,
-  unsetMockCommand (command: string): void
+  unsetMockCommand (command: string): void,
+
+  setMockCommandError (command: string, error: mixed): void
 }
 
 export default class SystemMock implements System, SystemMockManager {
@@ -39,6 +41,7 @@ export default class SystemMock implements System, SystemMockManager {
   grantSudoPermissions: boolean = true
   _files: Map<string, string> = new Map()
   _commands: Map<string, string> = new Map()
+  _commandErrors: Map<string, mixed> = new Map()
 
   setMockFile (path: string, content: string): void {
     this._files.set(path, content)
@@ -54,6 +57,10 @@ export default class SystemMock implements System, SystemMockManager {
 
   unsetMockCommand (command: string): void {
     this._commands.delete(command)
+  }
+
+  setMockCommandError (command: string, error: mixed): void {
+    this._commandErrors.set(command, error)
   }
 
   fileExists (file: string): boolean {
@@ -73,8 +80,8 @@ export default class SystemMock implements System, SystemMockManager {
   }
 
   async userExec (command: string): Promise<string> {
-    const result = this._getExecResult(command)
     this.userExecCalledCommands.push(command)
+    const result = this._getExecResult(command)
     return result
   }
 
@@ -82,12 +89,16 @@ export default class SystemMock implements System, SystemMockManager {
     if (!this.grantSudoPermissions) {
       throw new Error('ACCESS_DENIED')
     }
-    const result = this._getExecResult(command)
     this.sudoExecCalledCommands.push(command)
+    const result = this._getExecResult(command)
     return result
   }
 
   _getExecResult (command: string) {
+    const error = this._commandErrors.get(command)
+    if (error) {
+      throw error
+    }
     const result = this._commands.get(command)
     if (result) {
       return result

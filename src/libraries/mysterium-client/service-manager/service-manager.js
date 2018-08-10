@@ -73,7 +73,8 @@ const escapePath = (path: string): string => {
 }
 
 const needReinstall = (e): boolean => {
-  return e.toString().indexOf('Command failed') >= 0
+  const message = e.message || e.toString()
+  return message.indexOf('Command failed') >= 0
 }
 
 export default class ServiceManager {
@@ -95,7 +96,7 @@ export default class ServiceManager {
 
   async reinstall (): Promise<string> {
     let command =
-      `${escapePath(this._path)} --do=uninstall && ${escapePath(this._path)} --do=install && ${escapePath(this._path)} --do=start`
+      `${escapePath(this._path)} --do=uninstall & ${escapePath(this._path)} --do=install && ${escapePath(this._path)} --do=start`
     const state = this.getServiceState()
     if (state === SERVICE_STATE.RUNNING) {
       command = `${escapePath(this._path)} --do=stop & ` + command
@@ -104,7 +105,7 @@ export default class ServiceManager {
   }
 
   async start (): Promise<ServiceState> {
-    return this._execAndGetState('start')
+    return this._execAndGetState('start', true)
   }
 
   async stop (): Promise<ServiceState> {
@@ -112,7 +113,7 @@ export default class ServiceManager {
   }
 
   async restart (): Promise<ServiceState> {
-    return this._execAndGetState('restart')
+    return this._execAndGetState('restart', true)
   }
 
   async getServiceState (): Promise<ServiceState> {
@@ -126,9 +127,19 @@ export default class ServiceManager {
     return parseServiceState(stdout)
   }
 
-  async _execAndGetState (commandName: string): Promise<ServiceState> {
-    const result = await this._sudoExec(`${escapePath(this._path)} --do=${commandName}`)
-    return parseServiceState(result)
+  async _execAndGetState (commandName: string, reinstallOnError: boolean = false): Promise<ServiceState> {
+    let state = SERVICE_STATE.START_PENDING
+    try {
+      const result = await this._sudoExec(`${escapePath(this._path)} --do=${commandName}`)
+      state = parseServiceState(result)
+    } catch (e) {
+      if (reinstallOnError && needReinstall(e)) {
+        await this.reinstall()
+      } else {
+        throw e
+      }
+    }
+    return state
   }
 
   async _sudoExec (command: string): Promise<string> {
@@ -136,11 +147,7 @@ export default class ServiceManager {
       logger.info('Execute sudo', command)
       return await this._system.sudoExec(command)
     } catch (e) {
-      if (needReinstall(e)) {
-        return this.reinstall()
-      } else {
-        throw new Error(`Unable to execute [${command}]. ${e}`)
-      }
+      throw new Error(`Unable to execute [${command}]. ${e}`)
     }
   }
 }

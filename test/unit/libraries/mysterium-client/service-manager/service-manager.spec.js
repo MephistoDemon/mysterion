@@ -86,6 +86,18 @@ describe('ServiceManager', () => {
       const error = await captureAsyncError(() => serviceManager.start())
       expect(error).to.be.an('error')
     })
+
+    it('re-installs broken service', async () => {
+      systemMockManager.setMockCommandError('"/service-manager/bin/servicemanager.exe" --do=start', 'Command failed')
+      await serviceManager.start()
+      expect(systemMockManager.sudoExecCalledCommands).to.have.length(2)
+      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('"/service-manager/bin/servicemanager.exe" --do=start')
+      expect(systemMockManager.sudoExecCalledCommands[1]).to.be.eql(
+        '"/service-manager/bin/servicemanager.exe" --do=uninstall' +
+          ' & "/service-manager/bin/servicemanager.exe" --do=install' +
+          ' && "/service-manager/bin/servicemanager.exe" --do=start'
+      )
+    })
   })
 
   describe('.stop', () => {
@@ -109,6 +121,18 @@ describe('ServiceManager', () => {
       systemMockManager.grantSudoPermissions = false
       const error = await captureAsyncError(() => serviceManager.restart())
       expect(error).to.be.an('error')
+    })
+
+    it('re-installs broken service', async () => {
+      systemMockManager.setMockCommandError('"/service-manager/bin/servicemanager.exe" --do=restart', new Error('Command failed'))
+      await serviceManager.restart()
+      expect(systemMockManager.sudoExecCalledCommands).to.have.length(2)
+      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('"/service-manager/bin/servicemanager.exe" --do=restart')
+      expect(systemMockManager.sudoExecCalledCommands[1]).to.be.eql(
+        '"/service-manager/bin/servicemanager.exe" --do=uninstall' +
+        ' & "/service-manager/bin/servicemanager.exe" --do=install' +
+        ' && "/service-manager/bin/servicemanager.exe" --do=start'
+      )
     })
   })
 
