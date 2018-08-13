@@ -30,14 +30,14 @@ Choose appropriate branch name to clarify what this PR is about.
 We're all people, so have in mind that we can make mistakes, be subjective and have a feelings.
 When communicating in PRs, we should:
 
-- Be **polite** and **friendly** - mis-communicating online is common, so it's very easy to mis-understand other people
+- Be **polite** and **friendly** - miscommunicating online is common, so it's very easy to misunderstand other people
 - Be **objective** when possible - i.e. using statistics or external resources instead of simply expressing your opinion
 - Be **open to different opinions** - everyone has a different mindset and the best solution could be achieved by investigating and considering different approaches
 - Consider **talking in real life** (or even **pair-programming**) when communication online gets tricky
 
-### Making PR
+### Submitting PRs
 
-When making a PR, make sure you've prepared it well in order to save your own time as well as time and energy of your teammates:
+When submitting a PR, make sure you've prepared it well in order to save your own time as well as time and energy of your teammates:
 
 - Make sure **CI passes**
 - Before making a PR, **review changes as if you were the reviewer** - see *Reviewing PR* section
@@ -50,11 +50,11 @@ Not many people think reviewing PRs is fun, so getting feedback is like getting 
 When disagreements happen:
 - Try discussing it and understanding why opinions differ and how to achieve the best solution without conflicts
 - Consider asking opinions of contributors outside of the discussion by tagging them
-- Try referencing topics (articles/documentations) which explains your arguments
+- Try referencing topics (articles/documentations) which explain your arguments
 
-### Reviewing PR
+### Reviewing PRs
 
-When reviewing PR, focus on the coding values first.
+When reviewing a PR, focus on the coding values first.
 It would be good if you could review functionality/business logic first.
 A good start could be making sure that the presented implementation is acceptable or can be improved, followed by reviewing tests that freeze the solution, and only after that commenting on code style and readability improvements.
 
