@@ -21,7 +21,11 @@ import { describe, expect, it } from '../../helpers/dependencies'
 import { getVersionLabel } from '../../../src/libraries/version'
 
 describe('.getVersionLabel', () => {
-  it('returns value', () => {
-    expect(getVersionLabel('0.0.1(123)', '456')).to.eql('v0.0.1(123).456')
+  it('returns label', () => {
+    expect(getVersionLabel('0.0.1(123)', '1.0.0')).to.eql('v0.0.1(123)-1.0.0')
+  })
+
+  it('returns label without client version', () => {
+    expect(getVersionLabel('0.0.1(123)', null)).to.eql('v0.0.1(123)')
   })
 })

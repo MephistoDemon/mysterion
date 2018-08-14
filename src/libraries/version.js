@@ -17,8 +17,11 @@
 
 // @flow
 
-function getVersionLabel (mysterionReleaseId: string, clientVisibleVersion: string) {
-  return `v${mysterionReleaseId}.${clientVisibleVersion}`
+function getVersionLabel (mysterionReleaseId: string, clientVersion: ?string) {
+  if (!clientVersion) {
+    return `v${mysterionReleaseId}`
+  }
+  return `v${mysterionReleaseId}-${clientVersion}`
 }
 
 export { getVersionLabel }

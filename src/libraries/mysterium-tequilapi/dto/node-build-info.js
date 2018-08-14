@@ -18,9 +18,9 @@
 // @flow
 
 class NodeBuildInfoDTO {
-  commit: string
-  branch: string
-  buildNumber: string
+  commit: ?string
+  branch: ?string
+  buildNumber: ?string
 
   constructor (data: Object) {
     this.commit = data.commit

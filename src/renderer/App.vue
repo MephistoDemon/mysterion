@@ -63,10 +63,9 @@ export default {
   },
   dependencies: ['mysterionReleaseID', 'rendererCommunication', 'syncCommunication', 'logger', 'bugReporterMetrics'],
   computed: {
-    ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
+    ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientVersion']),
     version () {
-      const clientVisibleVersion = this.clientBuildInfo.buildNumber || ''
-      return getVersionLabel(this.mysterionReleaseID, clientVisibleVersion)
+      return getVersionLabel(this.mysterionReleaseID, this.clientVersion)
     }
   },
   async mounted () {
