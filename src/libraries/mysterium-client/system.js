@@ -33,7 +33,7 @@ const COMMANDS_SEPARATOR = ' && '
 
 const stringifyCommand = (command: Command) => {
   let commandString = command.path
-  if (command.path.indexOf(' ') >= 0 || command.path.indexOf('/') >= 0) {
+  if (command.path.includes(' ') || command.path.includes('/')) {
     commandString = `"${command.path}"`
   }
   if (command.args && command.args.length) {
@@ -44,7 +44,7 @@ const stringifyCommand = (command: Command) => {
 
 const stringifyCommands = (commands: Command[]) => {
   return commands
-    .map(c => stringifyCommand(c))
+    .map(stringifyCommand)
     .join(COMMANDS_SEPARATOR)
 }
 
