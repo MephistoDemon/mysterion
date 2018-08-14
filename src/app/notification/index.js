@@ -16,22 +16,36 @@
  */
 
 // @flow
-import { Notification as NativeNotification } from 'electron'
+import notifier from 'electron-notifications'
 
 export default class Notification {
   _title: string
   _subtitle: string
+  _reconnect: ?() => void
+  _iconPath: string
 
-  constructor (title: string, subtitle: string) {
+  constructor (title: string, subtitle: string, iconPath: string) {
     this._title = title
     this._subtitle = subtitle
+    this._iconPath = iconPath
+  }
+
+  onReconnect (reconnect: () => void) {
+    this._reconnect = reconnect
   }
 
   show () {
-    const electronNotification = new NativeNotification({
-      title: this._title,
-      subtitle: this._subtitle
+    const disconnect = notifier.notify('Disconnected', {
+      message: this._subtitle,
+      duration: 10000,
+      icon: this._iconPath,
+      buttons: [this._reconnect ? 'reconnect' : null]
     })
-    electronNotification.show()
+
+    if (this._reconnect) {
+      disconnect.on('buttonClicked', () => {
+        if (this._reconnect) this._reconnect()
+      })
+    }
   }
 }

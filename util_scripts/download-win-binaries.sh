@@ -24,18 +24,6 @@ else
     echo $OPENVPN_BINARY" exists and download not forced..."
 fi
 
-# mysterium-client
-
-MYSTERIUM_CLIENT_BINARY=$BIN_DIR/mysterium_client.exe
-
-if [ ! -f "$MYSTERIUM_CLIENT_BINARY" ] || [ ! -z "$FORCE_DOWNLOAD" ]; then
-    MYSTERIUM_CLIENT_PACKAGE=mysterium_client_windows_amd64.zip
-    $SCRIPT_DIR/git-branch-dl.sh MysteriumNetwork build-artifacts mysterium-node $MYSTERIUM_CLIENT_PACKAGE
-    unzip -od "bin" $MYSTERIUM_CLIENT_PACKAGE && rm $MYSTERIUM_CLIENT_PACKAGE
-else
-    echo $MYSTERIUM_CLIENT_BINARY" exists and download not forced..."
-fi
-
 # tap-windows
 
 TAP_WINDOWS_BINARY=$BIN_DIR/tap-windows.exe
