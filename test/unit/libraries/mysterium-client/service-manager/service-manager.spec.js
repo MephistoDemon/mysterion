@@ -94,7 +94,7 @@ describe('ServiceManager', () => {
       expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('"/service-manager/bin/servicemanager.exe" --do=start')
       expect(systemMockManager.sudoExecCalledCommands[1]).to.be.eql(
         '"/service-manager/bin/servicemanager.exe" --do=uninstall' +
-          ' & "/service-manager/bin/servicemanager.exe" --do=install' +
+          ' && "/service-manager/bin/servicemanager.exe" --do=install' +
           ' && "/service-manager/bin/servicemanager.exe" --do=start'
       )
     })
@@ -130,7 +130,7 @@ describe('ServiceManager', () => {
       expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('"/service-manager/bin/servicemanager.exe" --do=restart')
       expect(systemMockManager.sudoExecCalledCommands[1]).to.be.eql(
         '"/service-manager/bin/servicemanager.exe" --do=uninstall' +
-        ' & "/service-manager/bin/servicemanager.exe" --do=install' +
+        ' && "/service-manager/bin/servicemanager.exe" --do=install' +
         ' && "/service-manager/bin/servicemanager.exe" --do=start'
       )
     })

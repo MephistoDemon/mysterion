@@ -82,7 +82,6 @@ export default class SystemMock implements System, SystemMockManager {
 
   async userExec (...commands: Command[]): Promise<string> {
     const command = stringifyCommands(commands)
-    const result = this._getExecResult(command)
     this.userExecCalledCommands.push(command)
     const result = this._getExecResult(command)
     return result
@@ -93,7 +92,6 @@ export default class SystemMock implements System, SystemMockManager {
       throw new Error('ACCESS_DENIED')
     }
     const command = stringifyCommands(commands)
-    const result = this._getExecResult(command)
     this.sudoExecCalledCommands.push(command)
     const result = this._getExecResult(command)
     return result

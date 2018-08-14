@@ -68,10 +68,6 @@ const parseServiceState = (serviceInfo: string): ServiceState => {
   return (state: ServiceState)
 }
 
-const escapePath = (path: string): string => {
-  return `"${path}"`
-}
-
 const needReinstall = (e): boolean => {
   const message = e.message || e.toString()
   return message.indexOf('Command failed') >= 0
@@ -95,13 +91,12 @@ export default class ServiceManager {
   }
 
   async reinstall (): Promise<string> {
-    let command =
-      `${escapePath(this._path)} --do=uninstall & ${escapePath(this._path)} --do=install && ${escapePath(this._path)} --do=start`
+    let commands = ['uninstall', 'install', 'start']
     const state = this.getServiceState()
     if (state === SERVICE_STATE.RUNNING) {
-      command = `${escapePath(this._path)} --do=stop & ` + command
+      commands.unshift('stop')
     }
-    return this._sudoExec(command)
+    return this._execCommands(...commands)
   }
 
   async start (): Promise<ServiceState> {
@@ -151,7 +146,7 @@ export default class ServiceManager {
 
   async _sudoExec (...commands: Command[]): Promise<string> {
     try {
-      logger.info('Execute sudo', command)
+      logger.info('Execute sudo', JSON.stringify(commands))
       return await this._system.sudoExec(...commands)
     } catch (e) {
       throw new Error(`Unable to execute [${JSON.stringify(commands)}]. ${e}`)
