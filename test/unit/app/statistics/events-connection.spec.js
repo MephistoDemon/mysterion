@@ -19,7 +19,7 @@ import { ConnectEventTracker } from '../../../../src/app/statistics/events-conne
 import { capturePromiseError } from '../../../helpers/utils'
 import { describe, it } from '../../../helpers/dependencies'
 
-describe('Connection statistics', () => {
+describe('ConnectEventTracker', () => {
   let mockedCollector = {
     events: [],
     collectEvents: function (...eventArray) {
