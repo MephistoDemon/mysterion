@@ -18,7 +18,7 @@
 // @flow
 
 import path from 'path'
-import type { System } from '../system'
+import type { Command, System } from '../system'
 import logger from '../../../app/logger'
 import { SERVICE_NAME } from './service-manager-installer'
 
@@ -91,7 +91,7 @@ export default class ServiceManager {
   }
 
   async install (): Promise<string> {
-    return this._sudoExec(`${escapePath(this._path)} --do=install && ${escapePath(this._path)} --do=start`)
+    return this._execCommands('install', 'start')
   }
 
   async reinstall (): Promise<string> {
@@ -119,7 +119,10 @@ export default class ServiceManager {
   async getServiceState (): Promise<ServiceState> {
     let stdout
     try {
-      stdout = await this._system.userExec(`sc.exe query "${SERVICE_NAME}"`)
+      stdout = await this._system.userExec({
+        path: 'sc.exe',
+        args: ['query', `"${SERVICE_NAME}"`]
+      })
     } catch (e) {
       logger.error('Service check failed', e.message)
       return SERVICE_STATE.UNKNOWN
@@ -127,10 +130,14 @@ export default class ServiceManager {
     return parseServiceState(stdout)
   }
 
+  async _execCommands (...commandNames: string[]): Promise<string> {
+    return this._sudoExec(...commandNames.map(c => this._createCommand(c)))
+  }
+
   async _execAndGetState (commandName: string, reinstallOnError: boolean = false): Promise<ServiceState> {
     let state = SERVICE_STATE.START_PENDING
     try {
-      const result = await this._sudoExec(`${escapePath(this._path)} --do=${commandName}`)
+      const result = await this._execCommands(commandName)
       state = parseServiceState(result)
     } catch (e) {
       if (reinstallOnError && needReinstall(e)) {
@@ -142,14 +149,19 @@ export default class ServiceManager {
     return state
   }
 
-  async _sudoExec (command: string): Promise<string> {
+  async _sudoExec (...commands: Command[]): Promise<string> {
     try {
       logger.info('Execute sudo', command)
-      return await this._system.sudoExec(command)
+      return await this._system.sudoExec(...commands)
     } catch (e) {
-      throw new Error(`Unable to execute [${command}]. ${e}`)
+      throw new Error(`Unable to execute [${JSON.stringify(commands)}]. ${e}`)
+    }
+  }
+
+  _createCommand (commandName: string): Command {
+    return {
+      path: this._path,
+      args: [`--do=${commandName}`]
     }
   }
 }
-
-export { escapePath }
