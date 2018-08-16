@@ -6382,9 +6382,9 @@ mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
-mysterium-client-binary@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/mysterium-client-binary/-/mysterium-client-binary-0.2.3.tgz#d6b4c2bf2e6c29669526556ab889cc72b85c74dd"
+mysterium-client-bin@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/mysterium-client-bin/-/mysterium-client-bin-0.2.1.tgz#b3535a9c14575e848120a2254c2977b26fe9be20"
   dependencies:
     extract-zip "^1.6.7"
     follow-redirects "^1.5.2"
