@@ -25,11 +25,15 @@ import type { SystemMockManager } from '../../../../helpers/system-mock'
 import type { System } from '../../../../../src/libraries/mysterium-client/system'
 import ServiceManager from '../../../../../src/libraries/mysterium-client/service-manager/service-manager'
 
+const SERVICE_MANAGER_DIR = '/service-manager/bin'
+const SERVICE_MANAGER_PATH = SERVICE_MANAGER_DIR + '/servicemanager.exe'
+const CONFIG_FILE = SERVICE_MANAGER_DIR + '/servicemanager.json'
+
 const STRINGIFIED_CONFIG = JSON.stringify({
   Name: 'MysteriumClient',
   DisplayName: 'Mysterium Client',
   Description: 'Mysterium Client service',
-  Directory: '/tmp/runtime',
+  Directory: SERVICE_MANAGER_DIR,
   Executable: '/tmp/clientbin',
   Port: 4050,
   Arguments: [
@@ -44,10 +48,6 @@ const STRINGIFIED_CONFIG = JSON.stringify({
     Stdout: '/tmp/logs/stdout.log'
   }
 })
-
-const SERVICE_MANAGER_DIR = '/service-manager/bin/'
-const SERVICE_MANAGER_PATH = SERVICE_MANAGER_DIR + 'servicemanager.exe'
-const CONFIG_FILE = SERVICE_MANAGER_DIR + 'servicemanager.json'
 
 const createSystemMock = () => {
   const systemMock = new SystemMock()
