@@ -50,6 +50,8 @@ import type { StringLogger } from './logging/string-logger'
 import logger from './logger'
 import MainIpc from './communication/ipc/main-ipc'
 import IpcMessageBus from './communication/ipc-message-bus'
+import type { EventCollector, EventFactory } from './statistics/events'
+import StartupEventTracker from './statistics/startup-event-tracker'
 
 type MysterionParams = {
   browserWindowFactory: () => BrowserWindow,
@@ -68,7 +70,10 @@ type MysterionParams = {
   frontendLogCache: LogCache,
   mysteriumProcessLogCache: LogCache,
   userSettingsStore: UserSettingsStore,
-  disconnectNotification: Notification
+  disconnectNotification: Notification,
+  // TODO: simplify to require only 1 dependency
+  eventCollector: EventCollector,
+  eventFactory: EventFactory
 }
 
 const LOG_PREFIX = '[Mysterion] '
@@ -93,6 +98,8 @@ class Mysterion {
   mysteriumProcessLogCache: LogCache
   userSettingsStore: UserSettingsStore
   disconnectNotification: Notification
+  _eventCollector: EventCollector
+  _eventFactory: EventFactory
 
   window: Window
   messageBus: MessageBus
@@ -116,6 +123,8 @@ class Mysterion {
     this.mysteriumProcessLogCache = params.mysteriumProcessLogCache
     this.userSettingsStore = params.userSettingsStore
     this.disconnectNotification = params.disconnectNotification
+    this._eventCollector = params.eventCollector
+    this._eventFactory = params.eventFactory
   }
 
   run () {
@@ -174,6 +183,9 @@ class Mysterion {
   }
 
   async bootstrap () {
+    const startupTracker = new StartupEventTracker(this._eventCollector, this._eventFactory)
+    startupTracker.startup()
+
     const showTerms = !this._areTermsAccepted()
     const browserWindow = this._createBrowserWindow()
     const windowSize = this._getWindowSize(showTerms)

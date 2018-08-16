@@ -83,7 +83,9 @@ function bootstrap (container: Container) {
       'mysteriumProcessLogCache',
       'bugReporterMetrics',
       'userSettingsStore',
-      'disconnectNotification'
+      'disconnectNotification',
+      'statsCollector',
+      'statsEventFactory'
     ],
     (
       mysterionConfig: MysterionConfig,
@@ -99,7 +101,9 @@ function bootstrap (container: Container) {
       mysteriumProcessLogCache,
       bugReporterMetrics,
       userSettingsStore,
-      disconnectNotification
+      disconnectNotification,
+      statsCollector,
+      statsEventFactory
     ) => {
       return new Mysterion({
         config: mysterionConfig,
@@ -118,7 +122,9 @@ function bootstrap (container: Container) {
         frontendLogCache,
         mysteriumProcessLogCache,
         userSettingsStore,
-        disconnectNotification
+        disconnectNotification,
+        eventCollector: statsCollector,
+        eventFactory: statsEventFactory
       })
     }
   )
