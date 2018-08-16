@@ -34,9 +34,11 @@ const getServiceInfo = (state: ServiceState) =>
 const createSystemMock = () => {
   const systemMock = new SystemMock()
   systemMock.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.RUNNING))
-  systemMock.setMockCommand('/service-manager/bin/servicemanager.exe --do=start', getServiceInfo(SERVICE_STATE.START_PENDING))
-  systemMock.setMockCommand('/service-manager/bin/servicemanager.exe --do=stop', getServiceInfo(SERVICE_STATE.STOP_PENDING))
-  systemMock.setMockCommand('/service-manager/bin/servicemanager.exe --do=restart', getServiceInfo(SERVICE_STATE.START_PENDING))
+  systemMock.setMockCommand('"/service-manager/bin/servicemanager.exe" --do=start', getServiceInfo(SERVICE_STATE.START_PENDING))
+  systemMock.setMockCommand('"/service-manager/bin/servicemanager.exe" --do=stop', getServiceInfo(SERVICE_STATE.STOP_PENDING))
+  systemMock.setMockCommand('"/service-manager/bin/servicemanager.exe" --do=restart', getServiceInfo(SERVICE_STATE.START_PENDING))
+  systemMock.setMockCommand('"/service-manager/bin/servicemanager.exe" --do=install && "/service-manager/bin/servicemanager.exe"',
+    getServiceInfo(SERVICE_STATE.START_PENDING))
   return systemMock
 }
 
@@ -49,7 +51,7 @@ describe('ServiceManager', () => {
     const state = await command()
     expect(state).to.be.eql(resultState)
     expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
-    expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=' + doCommand)
+    expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('"/service-manager/bin/servicemanager.exe" --do=' + doCommand)
   }
 
   beforeEach(() => {
@@ -64,7 +66,7 @@ describe('ServiceManager', () => {
       await serviceManager.install()
       expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
       expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql(
-        '/service-manager/bin/servicemanager.exe --do=install && /service-manager/bin/servicemanager.exe --do=start')
+        '"/service-manager/bin/servicemanager.exe" --do=install && "/service-manager/bin/servicemanager.exe" --do=start')
     })
 
     it('throws error when sudo persmissions are not granted by user', async () => {

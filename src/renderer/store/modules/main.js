@@ -19,13 +19,12 @@
 // TODO: rename to `vpn.js` to be consistent with `Vpn.vue`
 import type from '../types'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
-import NodeBuildInfoDTO from '../../../libraries/mysterium-tequilapi/dto/node-build-info'
 
 type State = {
   init: string,
   visual: string,
   navOpen: boolean,
-  clientBuildInfo: NodeBuildInfoDTO,
+  clientVersion: ?string,
   navVisible: boolean,
   // TODO: merge `errorMessage` and `error` into one
   errorMessage: ?string,
@@ -37,7 +36,7 @@ const state: State = {
   init: '',
   visual: 'head',
   navOpen: false,
-  clientBuildInfo: new NodeBuildInfoDTO({}),
+  clientVersion: null,
   navVisible: true,
   errorMessage: null,
   error: null,
@@ -49,14 +48,14 @@ const getters = {
   visual: (state: State) => state.visual,
   navOpen: (state: State) => state.navOpen,
   navVisible: (state: State) => state.navVisible && state.init !== type.INIT_PENDING,
-  clientBuildInfo: (state: State) => state.clientBuildInfo,
+  clientVersion: (state: State) => state.clientVersion,
   errorMessage: (state: State) => state.errorMessage,
   showError: (state: State) => state.showError
 }
 
 const mutations = {
-  [type.CLIENT_BUILD_INFO] (state: State, buildInfo: NodeBuildInfoDTO) {
-    state.clientBuildInfo = buildInfo
+  [type.CLIENT_VERSION] (state: State, clientVersion: string) {
+    state.clientVersion = clientVersion
   },
   [type.SET_NAV_OPEN] (state: State, open) {
     state.navOpen = open
@@ -106,9 +105,9 @@ function actionsFactory (tequilapi: TequilapiClient) {
     setVisual ({ commit }, visual: ?string) {
       commit(type.SET_VISUAL, visual)
     },
-    async [type.CLIENT_BUILD_INFO] ({ commit }) {
+    async [type.CLIENT_VERSION] ({ commit }) {
       const res = await tequilapi.healthCheck()
-      commit(type.CLIENT_BUILD_INFO, res.buildInfo)
+      commit(type.CLIENT_VERSION, res.version)
     },
     setNavVisibility ({ commit }, visible: boolean) {
       commit(type.SET_NAV_VISIBLE, visible)
