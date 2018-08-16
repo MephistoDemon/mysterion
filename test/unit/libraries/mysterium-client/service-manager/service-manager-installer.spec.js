@@ -58,7 +58,7 @@ const createSystemMock = () => {
     `SERVICE_NAME: MysteriumClient
       STATE       : 0  RUNNING \r\n`)
 
-  systemMock.setMockCommand('/tmp/ovpnbin --show-adapters', `123
+  systemMock.setMockCommand('"/tmp/ovpnbin" --show-adapters', `123
     'Ethernet' {F1343629-CB94-4D28-9AE4-147F9145798E}
     asd`)
   return systemMock
@@ -114,7 +114,7 @@ describe('ServiceManagerInstaller', () => {
     })
 
     it('returns true when drivers are not installed', async () => {
-      systemMockManager.unsetMockCommand('/tmp/ovpnbin --show-adapters')
+      systemMockManager.unsetMockCommand('"/tmp/ovpnbin" --show-adapters')
       const installer = new ServiceManagerInstaller(system, config, serviceManager)
       expect(await installer.needsInstallation()).to.be.true
     })
@@ -146,16 +146,16 @@ describe('ServiceManagerInstaller', () => {
       await installer.install()
 
       expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql(
-        '/service-manager/bin/servicemanager.exe --do=install && /service-manager/bin/servicemanager.exe --do=start')
+        '"/service-manager/bin/servicemanager.exe" --do=install && "/service-manager/bin/servicemanager.exe" --do=start')
     })
 
     it('installs TAP drivers when they are not installed', async () => {
-      systemMockManager.unsetMockCommand('/tmp/ovpnbin --show-adapters')
+      systemMockManager.unsetMockCommand('"/tmp/ovpnbin" --show-adapters')
 
       const installer = new ServiceManagerInstaller(system, config, serviceManager)
       await installer.install()
 
-      expect(systemMockManager.userExecCalledCommands[2]).to.be.eql('/service-manager/bin/tap-windows.exe')
+      expect(systemMockManager.userExecCalledCommands[2]).to.be.eql('"/service-manager/bin/tap-windows.exe"')
     })
   })
 })

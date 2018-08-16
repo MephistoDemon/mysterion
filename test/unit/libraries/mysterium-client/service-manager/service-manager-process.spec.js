@@ -43,8 +43,8 @@ const getServiceInfo = (state: ServiceState) =>
 const createSystemMock = () => {
   const systemMock = new SystemMock()
   systemMock.setMockCommand('sc.exe query "MysteriumClient"', getServiceInfo(SERVICE_STATE.RUNNING))
-  systemMock.setMockCommand('/service-manager/bin/servicemanager.exe --do=start', getServiceInfo(SERVICE_STATE.START_PENDING))
-  systemMock.setMockCommand('/service-manager/bin/servicemanager.exe --do=restart', getServiceInfo(SERVICE_STATE.START_PENDING))
+  systemMock.setMockCommand('"/service-manager/bin/servicemanager.exe" --do=start', getServiceInfo(SERVICE_STATE.START_PENDING))
+  systemMock.setMockCommand('"/service-manager/bin/servicemanager.exe" --do=restart', getServiceInfo(SERVICE_STATE.START_PENDING))
   return systemMock
 }
 
@@ -160,7 +160,7 @@ describe('ServiceManagerProcess', () => {
       await repairPromise
 
       expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
-      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=restart')
+      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('"/service-manager/bin/servicemanager.exe" --do=restart')
     })
 
     it('starts stopped service and waits for healthcheck', async () => {
@@ -182,7 +182,7 @@ describe('ServiceManagerProcess', () => {
       await repairPromise
 
       expect(systemMockManager.sudoExecCalledCommands).to.have.length(1)
-      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('/service-manager/bin/servicemanager.exe --do=start')
+      expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('"/service-manager/bin/servicemanager.exe" --do=start')
     })
 
     it('throws error when service is not installed', async () => {
