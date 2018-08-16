@@ -85,8 +85,7 @@ function bootstrap (container: Container) {
       'bugReporterMetrics',
       'userSettingsStore',
       'disconnectNotification',
-      'eventCollector',
-      'eventFactory'
+      'eventSender'
     ],
     (
       mysterionConfig: MysterionConfig,
@@ -103,10 +102,9 @@ function bootstrap (container: Container) {
       bugReporterMetrics,
       userSettingsStore,
       disconnectNotification,
-      eventCollector,
-      eventFactory
+      eventSender
     ) => {
-      const startupEventTracker = new StartupEventTracker(eventCollector, eventFactory)
+      const startupEventTracker = new StartupEventTracker(eventSender)
       return new Mysterion({
         config: mysterionConfig,
         browserWindowFactory: () => container.get('mysterionBrowserWindow'),

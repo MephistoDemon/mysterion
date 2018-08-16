@@ -23,8 +23,6 @@ import { FunctionLooper } from '../../../libraries/functionLooper'
 import config from '@/config'
 import { ConnectEventTracker, currentUserTime } from '../../../app/statistics/events-connection'
 import RendererCommunication from '../../../app/communication/renderer-communication'
-import { EventCollector } from '../../../app/statistics/events'
-import type { EventFactory as StatsEventsFactory } from '../../../app/statistics/events'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import type { ConnectionStatus } from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
 import ConnectionStatusEnum from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
@@ -37,6 +35,7 @@ import {
   isHttpError
 } from '../../../libraries/mysterium-tequilapi/client-error'
 import logger from '../../../app/logger'
+import type { EventSender } from '../../../app/statistics/event-sender'
 
 type ConnectionStore = {
   ip: ?string,
@@ -124,8 +123,7 @@ const mutations = {
 function actionsFactory (
   tequilapi: TequilapiClient,
   rendererCommunication: RendererCommunication,
-  eventCollector: EventCollector,
-  statsEventsFactory: StatsEventsFactory,
+  eventSender: EventSender,
   bugReporter: BugReporter
 ) {
   return {
@@ -210,7 +208,7 @@ function actionsFactory (
       dispatch(type.CONNECT, new ConnectionRequestDTO(getters.currentIdentity, getters.lastConnectionAttemptProvider))
     },
     async [type.CONNECT] ({ commit, dispatch, state }, connectionRequest: ConnectionRequestDTO) {
-      let eventTracker = new ConnectEventTracker(eventCollector, currentUserTime, statsEventsFactory)
+      const eventTracker = new ConnectEventTracker(eventSender, currentUserTime)
       let originalCountry = ''
       if (state.location != null && state.location.originalCountry != null) {
         originalCountry = state.location.originalCountry

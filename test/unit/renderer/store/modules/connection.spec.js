@@ -35,6 +35,7 @@ import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilap
 import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 import BugReporterMock from '../../../../helpers/bug-reporter-mock'
 import ConnectionRequestDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-request'
+import CollectorEventSender from '../../../../../src/app/statistics/collector-event-sender'
 
 function factoryTequilapiManipulator () {
   let statusFail = false
@@ -153,6 +154,8 @@ function statsEventsFactory (): StatsEventsFactory {
   return createEventFactory({ name: 'Test', version: '1.0.test' })
 }
 
+const fakeEventSender = new CollectorEventSender(fakeCollector, statsEventsFactory())
+
 const bugReporterMock = new BugReporterMock()
 
 async function executeAction (action, state = {}, payload = {}, getters = {}) {
@@ -164,7 +167,7 @@ async function executeAction (action, state = {}, payload = {}, getters = {}) {
   const dispatch = (action, payload = {}) => {
     const context = { commit, dispatch, state, getters }
     const actions =
-      actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeCollector, statsEventsFactory(), bugReporterMock)
+      actionsFactory(fakeTequilapi.getFakeApi(), rendererCommunication, fakeEventSender, bugReporterMock)
 
     return actions[action](context, payload)
   }

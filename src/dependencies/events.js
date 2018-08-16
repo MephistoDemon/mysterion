@@ -23,6 +23,8 @@ import AggregatingCollector from '../app/statistics/aggregating-collector'
 import type { ApplicationInfo, EventCollector, EventFactory } from '../app/statistics/events'
 import { createEventFactory } from '../app/statistics/events'
 import NullCollector from '../app/statistics/null-collector'
+import CollectorEventSender from '../app/statistics/collector-event-sender'
+import type { EventSender } from '../app/statistics/event-sender'
 
 function bootstrap (container: Container) {
   container.service(
@@ -54,6 +56,14 @@ function bootstrap (container: Container) {
       }
 
       return new NullCollector()
+    }
+  )
+
+  container.service(
+    'eventSender',
+    ['eventCollector', 'eventFactory'],
+    (eventCollector, eventFactory): EventSender => {
+      return new CollectorEventSender(eventCollector, eventFactory)
     }
   )
 }

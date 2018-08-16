@@ -20,30 +20,17 @@
 import { ConnectEventTracker } from '../../../../src/app/statistics/events-connection'
 import { capturePromiseError } from '../../../helpers/utils'
 import { beforeEach, describe, expect, it } from '../../../helpers/dependencies'
-import type { EventFactory } from '../../../../src/app/statistics/events'
-import MockEventCollector from '../../../helpers/statistics/mock-event-collector'
+import MockEventSender from '../../../helpers/statistics/mock-event-sender'
 
 describe('ConnectEventTracker', () => {
   let eventTracker: ConnectEventTracker
 
-  const mockCollector = new MockEventCollector()
   const connectionDetails = {
     consumerId: 'consumerId',
     providerId: 'providerId'
   }
 
-  const mockedEventFactory: EventFactory = (name: string, details: Object) => {
-    return {
-      application: {
-        name: 'mocked application',
-        version: 'mocked version'
-      },
-      eventName: name,
-      createdAt: 123,
-      context: details
-    }
-  }
-
+  let eventSender
   let mockedTimeProvider
 
   beforeEach(() => {
@@ -52,23 +39,19 @@ describe('ConnectEventTracker', () => {
       { utcTime: 246, localTime: 444 }
     ]
     let i = 0
+    eventSender = new MockEventSender()
     mockedTimeProvider = () => {
       return timestamps[i++]
     }
-    eventTracker = new ConnectEventTracker(mockCollector, mockedTimeProvider, mockedEventFactory)
+    eventTracker = new ConnectEventTracker(eventSender, mockedTimeProvider)
   })
 
   it('sends connect failed event', async () => {
     eventTracker.connectStarted(connectionDetails, 'original country')
     await eventTracker.connectEnded('some error')
-    expect(mockCollector.events[0]).to.deep.eql(
+    expect(eventSender.events[0]).to.deep.eql(
       {
-        application: {
-          name: 'mocked application',
-          version: 'mocked version'
-        },
         eventName: 'connect_failed',
-        createdAt: 123,
         context: {
           connectDetails: {
             consumerId: 'consumerId',
@@ -93,14 +76,9 @@ describe('ConnectEventTracker', () => {
   it('sends connect successful event', async () => {
     eventTracker.connectStarted(connectionDetails, 'original country')
     await eventTracker.connectEnded()
-    expect(mockCollector.events[0]).to.deep.eql(
+    expect(eventSender.events[0]).to.deep.eql(
       {
-        application: {
-          name: 'mocked application',
-          version: 'mocked version'
-        },
         eventName: 'connect_successful',
-        createdAt: 123,
         context: {
           connectDetails: {
             consumerId: 'consumerId',
@@ -124,14 +102,9 @@ describe('ConnectEventTracker', () => {
   it('sends connect canceled event', async () => {
     eventTracker.connectStarted(connectionDetails, 'original country')
     await eventTracker.connectCanceled()
-    expect(mockCollector.events[0]).to.deep.eql(
+    expect(eventSender.events[0]).to.deep.eql(
       {
-        application: {
-          name: 'mocked application',
-          version: 'mocked version'
-        },
         eventName: 'connect_canceled',
-        createdAt: 123,
         context: {
           connectDetails: {
             consumerId: 'consumerId',

@@ -17,23 +17,22 @@
 
 // @flow
 
-import { describe, expect, it } from '../../../helpers/dependencies'
-import StartupEventTracker from '../../../../src/app/statistics/startup-event-tracker'
-import MockEventSender from '../../../helpers/statistics/mock-event-sender'
+import type { EventSender } from '../../../src/app/statistics/event-sender'
 
-describe('StartupEventTracker', () => {
-  const mockSender = new MockEventSender()
+type SenderEvent = {
+  eventName: string,
+  context: Object
+}
 
-  const tracker = new StartupEventTracker(mockSender)
+/**
+ * Mock event sender, which saves sent events locally.
+ */
+class MockEventSender implements EventSender {
+  events: SenderEvent[] = []
 
-  describe('.startup', () => {
-    it('collects startup event', async () => {
-      await tracker.startup()
+  async send (eventName: string, context: Object): Promise<void> {
+    this.events.push({ eventName, context })
+  }
+}
 
-      expect(mockSender.events.length).to.eql(1)
-      const event = mockSender.events[0]
-      expect(event.eventName).to.eql('startup')
-      expect(event.context.platform).to.be.a('string')
-    })
-  })
-})
+export default MockEventSender

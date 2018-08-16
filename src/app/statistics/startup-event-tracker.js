@@ -17,32 +17,24 @@
 
 // @flow
 
-import type { EventCollector, EventFactory } from './events'
 import os from 'os'
+import type { EventSender } from './event-sender'
 
 const STARTUP_EVENT_NAME = 'startup'
 
 /**
- * Generates and sends startup event.
+ * Sends startup event.
  */
 class StartupEventTracker {
-  _eventCollector: EventCollector
-  _eventFactory: EventFactory
+  _eventSender: EventSender
 
-  constructor (eventCollector: EventCollector, eventFactory: EventFactory) {
-    this._eventCollector = eventCollector
-    this._eventFactory = eventFactory
+  constructor (eventSender: EventSender) {
+    this._eventSender = eventSender
   }
 
-  startup () {
+  async startup () {
     const context = { platform: os.platform() }
-    this._sendEvent(STARTUP_EVENT_NAME, context)
-  }
-
-  // TODO: reuse this abstraction for connection events
-  _sendEvent (name: string, details: Object) {
-    const event = this._eventFactory(name, details)
-    this._eventCollector.collectEvents(event)
+    await this._eventSender.send(STARTUP_EVENT_NAME, context)
   }
 }
 
