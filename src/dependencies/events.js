@@ -36,18 +36,16 @@ function bootstrap (container: Container) {
     }
   )
 
-  // TODO: rename to 'eventFactory'
   container.service(
-    'statsEventFactory',
+    'eventFactory',
     ['statsApplicationInfo'],
     (applicationInfo: ApplicationInfo): EventFactory => {
       return createEventFactory(applicationInfo)
     }
   )
 
-  // TODO: rename to `eventCollector'
   container.service(
-    'statsCollector',
+    'eventCollector',
     [],
     (): EventCollector => {
       if (process.env.NODE_ENV === 'production') {

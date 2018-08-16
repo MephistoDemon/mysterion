@@ -23,7 +23,7 @@ import { FunctionLooper } from '../../../libraries/functionLooper'
 import config from '@/config'
 import { ConnectEventTracker, currentUserTime } from '../../../app/statistics/events-connection'
 import RendererCommunication from '../../../app/communication/renderer-communication'
-import { EventCollector as StatsCollector } from '../../../app/statistics/events'
+import { EventCollector } from '../../../app/statistics/events'
 import type { EventFactory as StatsEventsFactory } from '../../../app/statistics/events'
 import type { TequilapiClient } from '../../../libraries/mysterium-tequilapi/client'
 import type { ConnectionStatus } from '../../../libraries/mysterium-tequilapi/dto/connection-status-enum'
@@ -124,7 +124,7 @@ const mutations = {
 function actionsFactory (
   tequilapi: TequilapiClient,
   rendererCommunication: RendererCommunication,
-  statsCollector: StatsCollector,
+  eventCollector: EventCollector,
   statsEventsFactory: StatsEventsFactory,
   bugReporter: BugReporter
 ) {
@@ -210,7 +210,7 @@ function actionsFactory (
       dispatch(type.CONNECT, new ConnectionRequestDTO(getters.currentIdentity, getters.lastConnectionAttemptProvider))
     },
     async [type.CONNECT] ({ commit, dispatch, state }, connectionRequest: ConnectionRequestDTO) {
-      let eventTracker = new ConnectEventTracker(statsCollector, currentUserTime, statsEventsFactory)
+      let eventTracker = new ConnectEventTracker(eventCollector, currentUserTime, statsEventsFactory)
       let originalCountry = ''
       if (state.location != null && state.location.originalCountry != null) {
         originalCountry = state.location.originalCountry
