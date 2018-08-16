@@ -110,7 +110,7 @@ class ServiceManagerInstaller implements Installer {
   async _tapDriversInstalled (): Promise<boolean> {
     let stdout
     try {
-      stdout = await this._system.userExec(this._config.openVPNBin + ` --show-adapters`)
+      stdout = await this._system.userExec({ path: this._config.openVPNBin, args: [`--show-adapters`] })
     } catch (e) {
       logger.info('Check for tap drivers failed', e.message)
       return false
@@ -132,7 +132,7 @@ class ServiceManagerInstaller implements Installer {
   }
 
   async _installTapDrivers () {
-    await this._system.userExec(path.join(this._serviceManagerDir, TAP_DRIVER_BIN))
+    await this._system.userExec({ path: path.join(this._serviceManagerDir, TAP_DRIVER_BIN) })
   }
 
   _getConfigPath () {

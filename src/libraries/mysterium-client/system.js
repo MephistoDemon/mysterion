@@ -24,10 +24,34 @@ import fs from 'fs'
 
 const writeFile = promisify(fs.writeFile)
 
-interface System {
-  userExec(command: string): Promise<string>,
+type Command = {
+  path: string,
+  args?: string[]
+}
 
-  sudoExec(command: string): Promise<string>,
+const COMMANDS_SEPARATOR = ' && '
+
+const stringifyCommand = (command: Command) => {
+  let commandString = command.path
+  if (command.path.includes(' ') || command.path.includes('/')) {
+    commandString = `"${command.path}"`
+  }
+  if (command.args && command.args.length) {
+    commandString += ' ' + command.args.join(' ')
+  }
+  return commandString
+}
+
+const stringifyCommands = (commands: Command[]) => {
+  return commands
+    .map(stringifyCommand)
+    .join(COMMANDS_SEPARATOR)
+}
+
+interface System {
+  userExec(...commands: Command[]): Promise<string>,
+
+  sudoExec(...commands: Command[]): Promise<string>,
 
   writeFile(file: string, content: string): Promise<void>,
 
@@ -37,30 +61,12 @@ interface System {
 }
 
 class OSSystem implements System {
-  userExec (command: string): Promise<string> {
-    return new Promise(function (resolve, reject) {
-      exec(command, (error, stdout, stderr) => {
-        if (error) {
-          reject(error)
-          return
-        }
-
-        resolve(stdout.trim())
-      })
-    })
+  async userExec (...commands: Command[]): Promise<string> {
+    return this._userExec(stringifyCommands(commands))
   }
 
-  sudoExec (command: string): Promise<string> {
-    return new Promise(function (resolve, reject) {
-      sudo.exec(command, { name: 'Mysterion' }, (error, stdout, stderr) => {
-        if (error) {
-          reject(error)
-          return
-        }
-
-        resolve(stdout.trim())
-      })
-    })
+  async sudoExec (...commands: Command[]): Promise<string> {
+    return this._sudoExec(stringifyCommands(commands))
   }
 
   async writeFile (file: string, contents: string): Promise<void> {
@@ -74,7 +80,34 @@ class OSSystem implements System {
   fileExists (file: string) {
     return fs.existsSync(file)
   }
+
+  _userExec (command: string): Promise<string> {
+    return new Promise(function (resolve, reject) {
+      exec(command, (error, stdout, stderr) => {
+        if (error) {
+          reject(error)
+          return
+        }
+
+        resolve(stdout.trim())
+      })
+    })
+  }
+
+  _sudoExec (command: string): Promise<string> {
+    return new Promise(function (resolve, reject) {
+      sudo.exec(command, { name: 'Mysterion' }, (error, stdout, stderr) => {
+        if (error) {
+          reject(error)
+          return
+        }
+
+        resolve(stdout.trim())
+      })
+    })
+  }
 }
 
 export default OSSystem
-export type { System }
+export { stringifyCommands }
+export type { System, Command }
