@@ -68,8 +68,13 @@ const parseServiceState = (serviceInfo: string): ServiceState => {
   return (state: ServiceState)
 }
 
-const needReinstall = (e): boolean => {
-  const message = e.message || e.toString()
+const needReinstall = (e: Error | Object): boolean => {
+  let message: string
+  if (e instanceof Error) {
+    message = e.message
+  } else {
+    message = e.toString()
+  }
   return message.indexOf('Command failed') >= 0
 }
 
