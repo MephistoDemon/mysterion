@@ -35,7 +35,7 @@ class VpnInitializer {
 
   async initialize (dispatch: Function, commit: Function, state: IdentityState): Promise<void> {
     await this._prepareIdentity(commit, state)
-    await dispatch(types.CLIENT_BUILD_INFO)
+    await dispatch(types.CLIENT_VERSION)
   }
 
   async _prepareIdentity (commit: Function, state: IdentityState): Promise<void> {

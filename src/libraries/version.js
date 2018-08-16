@@ -17,16 +17,11 @@
 
 // @flow
 
-class NodeBuildInfoDTO {
-  commit: ?string
-  branch: ?string
-  buildNumber: ?string
-
-  constructor (data: Object) {
-    this.commit = data.commit
-    this.branch = data.branch
-    this.buildNumber = data.buildNumber
+function getVersionLabel (mysterionReleaseId: string, clientVersion: ?string) {
+  if (!clientVersion) {
+    return `v${mysterionReleaseId}`
   }
+  return `v${mysterionReleaseId}-${clientVersion}`
 }
 
-export default NodeBuildInfoDTO
+export { getVersionLabel }
