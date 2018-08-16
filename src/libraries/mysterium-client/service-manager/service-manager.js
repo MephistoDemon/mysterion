@@ -31,6 +31,8 @@ const SERVICE_STATE = {
 }
 type ServiceState = $Values<typeof SERVICE_STATE>
 
+type ServiceManagerOperation = 'start' | 'stop' | 'install' | 'uninstall' | 'restart'
+
 export { SERVICE_STATE }
 export type { ServiceState }
 
@@ -92,7 +94,7 @@ export default class ServiceManager {
   }
 
   async install (): Promise<string> {
-    return this._execCommands('install', 'start')
+    return this._execOperations('install', 'start')
   }
 
   async reinstall (): Promise<string> {
@@ -101,7 +103,7 @@ export default class ServiceManager {
     if (state === SERVICE_STATE.RUNNING) {
       commands.unshift('stop')
     }
-    return this._execCommands(...commands)
+    return this._execOperations(...commands)
   }
 
   async start (): Promise<ServiceState> {
@@ -130,14 +132,21 @@ export default class ServiceManager {
     return parseServiceState(stdout)
   }
 
-  async _execCommands (...commandNames: string[]): Promise<string> {
-    return this._sudoExec(...commandNames.map(c => this._createCommand(c)))
+  async _execOperations (...operations: ServiceManagerOperation[]): Promise<string> {
+    return this._sudoExec(...operations.map(c => this._createCommandFromOperation(c)))
   }
 
-  async _execAndGetState (commandName: string, reinstallOnError: boolean = false): Promise<ServiceState> {
+  _createCommandFromOperation (operation: ServiceManagerOperation): Command {
+    return {
+      path: this._path,
+      args: [`--do=${operation}`]
+    }
+  }
+
+  async _execAndGetState (operation: ServiceManagerOperation, reinstallOnError: boolean = false): Promise<ServiceState> {
     let state = SERVICE_STATE.START_PENDING
     try {
-      const result = await this._execCommands(commandName)
+      const result = await this._execOperations(operation)
       state = parseServiceState(result)
     } catch (e) {
       if (reinstallOnError && needReinstall(e)) {
@@ -155,13 +164,6 @@ export default class ServiceManager {
       return await this._system.sudoExec(...commands)
     } catch (e) {
       throw new Error(`Unable to execute [${JSON.stringify(commands)}]. ${e}`)
-    }
-  }
-
-  _createCommand (commandName: string): Command {
-    return {
-      path: this._path,
-      args: [`--do=${commandName}`]
     }
   }
 }
