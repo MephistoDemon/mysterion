@@ -17,7 +17,8 @@
 
 // @flow
 
-import type { System } from '../../src/libraries/mysterium-client/system'
+import type { System, Command } from '../../src/libraries/mysterium-client/system'
+import { stringifyCommands } from '../../src/libraries/mysterium-client/system'
 
 export interface SystemMockManager {
   writeFileReturnValue: ?string,
@@ -72,16 +73,18 @@ export default class SystemMock implements System, SystemMockManager {
     throw new Error('File not found: ' + file)
   }
 
-  async userExec (command: string): Promise<string> {
+  async userExec (...commands: Command[]): Promise<string> {
+    const command = stringifyCommands(commands)
     const result = this._getExecResult(command)
     this.userExecCalledCommands.push(command)
     return result
   }
 
-  async sudoExec (command: string): Promise<string> {
+  async sudoExec (...commands: Command[]): Promise<string> {
     if (!this.grantSudoPermissions) {
       throw new Error('ACCESS_DENIED')
     }
+    const command = stringifyCommands(commands)
     const result = this._getExecResult(command)
     this.sudoExecCalledCommands.push(command)
     return result
