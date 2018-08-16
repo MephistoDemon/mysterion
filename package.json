@@ -27,7 +27,7 @@
     "unit:start-server": "karma start test/unit/karma.conf.js",
     "unit:run": "karma run test/unit/karma.conf.js",
     "ci": "yarn flow && yarn lint && yarn unit && yarn test:integration && yarn test:coverage",
-    "postinstall": "cp -r ./node_modules/mysterium-client-bin/bin/* ./bin/"
+    "postinstall": "mkdir -p ./bin && cp -r ./node_modules/mysterium-client-bin/bin/* ./bin/"
   },
   "build": {
     "productName": "Mysterion",
