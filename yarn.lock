@@ -4173,8 +4173,8 @@ follow-redirects@^1.2.3:
     debug "^3.1.0"
 
 follow-redirects@^1.5.2:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.5.2.tgz#5a9d80e0165957e5ef0c1210678fc5c4acb9fb03"
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.5.5.tgz#3c143ca599a2e22e62876687d68b23d55bad788b"
   dependencies:
     debug "^3.1.0"
 
@@ -6382,9 +6382,9 @@ mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
-mysterium-client-bin@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/mysterium-client-bin/-/mysterium-client-bin-0.2.1.tgz#b3535a9c14575e848120a2254c2977b26fe9be20"
+mysterium-client-bin@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/mysterium-client-bin/-/mysterium-client-bin-0.2.3.tgz#3b8fd8e1fee7f37200cd4552299db95396818301"
   dependencies:
     extract-zip "^1.6.7"
     follow-redirects "^1.5.2"
