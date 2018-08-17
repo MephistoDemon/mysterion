@@ -51,6 +51,7 @@ import AppNav from '@/partials/AppNav'
 import AppError from '@/partials/AppError'
 import AppModal from '@/partials/AppModal'
 import logger from '../app/logger'
+import { getVersionLabel } from '../libraries/version'
 
 export default {
   name: 'App',
@@ -62,10 +63,9 @@ export default {
   },
   dependencies: ['mysterionReleaseID', 'rendererCommunication', 'syncCommunication', 'logger', 'bugReporterMetrics'],
   computed: {
-    ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientBuildInfo']),
+    ...mapGetters(['navVisible', 'loading', 'visual', 'overlayError', 'clientVersion']),
     version () {
-      const clientVisibleVersion = this.clientBuildInfo.buildNumber || ''
-      return `v${this.mysterionReleaseID}.${clientVisibleVersion}`
+      return getVersionLabel(this.mysterionReleaseID, this.clientVersion)
     }
   },
   async mounted () {

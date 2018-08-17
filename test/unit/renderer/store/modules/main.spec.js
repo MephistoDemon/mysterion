@@ -100,22 +100,16 @@ class MainTequilapiClientMock extends EmptyTequilapiClientMock {
 }
 
 describe('actions', () => {
-  describe('CLIENT_BUILD_INFO', () => {
-    it('works', async () => {
+  describe('CLIENT_VERSION', () => {
+    it('commits version from tequilapi', async () => {
       const client = new MainTequilapiClientMock()
       const actions = actionsFactory(client)
       const recorder = new CallbackRecorder()
       const commit = recorder.getCallback()
 
-      await actions[type.CLIENT_BUILD_INFO]({ commit })
+      await actions[type.CLIENT_VERSION]({ commit })
 
-      expect(recorder.arguments.length).to.eql(2)
-      expect(recorder.arguments[0]).to.eql(type.CLIENT_BUILD_INFO)
-      expect(recorder.arguments[1]).to.eql({
-        commit: 'mock commit',
-        branch: 'mock branch',
-        buildNumber: 'mock buildNumber'
-      })
+      expect(recorder.arguments).to.eql([type.CLIENT_VERSION, 'mock version'])
     })
   })
 })

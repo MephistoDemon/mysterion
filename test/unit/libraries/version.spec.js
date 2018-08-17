@@ -17,16 +17,15 @@
 
 // @flow
 
-class NodeBuildInfoDTO {
-  commit: ?string
-  branch: ?string
-  buildNumber: ?string
+import { describe, expect, it } from '../../helpers/dependencies'
+import { getVersionLabel } from '../../../src/libraries/version'
 
-  constructor (data: Object) {
-    this.commit = data.commit
-    this.branch = data.branch
-    this.buildNumber = data.buildNumber
-  }
-}
+describe('.getVersionLabel', () => {
+  it('returns label', () => {
+    expect(getVersionLabel('0.0.1(123)', '1.0.0')).to.eql('v0.0.1(123)-1.0.0')
+  })
 
-export default NodeBuildInfoDTO
+  it('returns label without client version', () => {
+    expect(getVersionLabel('0.0.1(123)', null)).to.eql('v0.0.1(123)')
+  })
+})
