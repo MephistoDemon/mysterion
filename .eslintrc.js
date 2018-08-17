@@ -35,7 +35,8 @@ module.exports = {
   },
   plugins: [
     'eslint-plugin-flowtype',
-    'flowtype'
+    'flowtype',
+    'filenames'
   ],
   'rules': {
     // allow paren-less arrow functions
@@ -46,6 +47,8 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     "no-restricted-globals": ['error', 'event'],
     'no-console': ['error'],
+    // strict file names rules (ex: 'file-name.js')
+    "filenames/match-regex": [2, "^[a-z-]+$", true],
     // TODO: reduce this limit to 120
     "max-len": ["error", { "code": 140 }],
     'object-curly-spacing': [2, 'always']
