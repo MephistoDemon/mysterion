@@ -138,19 +138,17 @@ export default class ServiceManager {
   }
 
   async _execAndGetState (operation: ServiceManagerOperation, reinstallOnError: boolean = false): Promise<ServiceState> {
-    let state = SERVICE_STATE.UNKNOWN
     try {
       const result = await this._execOperations(operation)
-      state = parseServiceState(result)
+      return parseServiceState(result)
     } catch (e) {
       if (e instanceof Error && reinstallOnError && needReinstall(e)) {
         await this.reinstall()
-        state = SERVICE_STATE.START_PENDING
+        return SERVICE_STATE.START_PENDING
       } else {
         throw e
       }
     }
-    return state
   }
 
   async _sudoExec (...commands: Command[]): Promise<string> {
