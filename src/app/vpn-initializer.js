@@ -19,7 +19,7 @@
 
 import IdentityDTO from '../libraries/mysterium-tequilapi/dto/identity'
 import types from '../renderer/store/types'
-import IdentityManager from './identityManager'
+import IdentityManager from './identity-manager'
 import type { TequilapiClient } from '../libraries/mysterium-tequilapi/client'
 import type { State as IdentityState } from '../renderer/store/modules/identity'
 

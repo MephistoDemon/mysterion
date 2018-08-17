@@ -20,7 +20,7 @@ import { join } from 'path'
 
 import type { Container } from '../../../app/di'
 import Notification from '../../../app/notification/index'
-import type { MysterionConfig } from '../../../app/mysterionConfig'
+import type { MysterionConfig } from '../../../app/mysterion-config'
 
 function bootstrap (container: Container) {
   container.factory(

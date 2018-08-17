@@ -22,7 +22,7 @@ import { Tail } from 'tail'
 import type { BugReporter } from '../../../app/bug-reporting/interface'
 
 import type { Container } from '../../../app/di'
-import type { MysterionConfig } from '../../../app/mysterionConfig'
+import type { MysterionConfig } from '../../../app/mysterion-config'
 import type { LogCallback } from '../../../libraries/mysterium-client'
 import type { TailFunction } from '../../../libraries/mysterium-client/client-log-subscriber'
 import type { ClientConfig } from '../../../libraries/mysterium-client/config'

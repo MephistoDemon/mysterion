@@ -19,7 +19,7 @@
 import { app, BrowserWindow } from 'electron'
 import type { Container } from '../../../app/di'
 import Mysterion from '../../../app/mysterion'
-import type { MysterionConfig } from '../../../app/mysterionConfig'
+import type { MysterionConfig } from '../../../app/mysterion-config'
 import path from 'path'
 import Window from '../../../app/window'
 import Terms from '../../../app/terms'

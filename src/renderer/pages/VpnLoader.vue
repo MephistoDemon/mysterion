@@ -23,7 +23,7 @@ import { mapState } from 'vuex'
 import type from '@/store/types'
 import messages from '../../app/messages'
 import logger from '../../app/logger'
-import DelayedRetrier from '../../app/delayedRetrier'
+import DelayedRetrier from '../../app/delayed-retrier'
 import config from '../config'
 
 export default {

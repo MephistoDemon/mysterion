@@ -17,7 +17,7 @@
 
 // @flow
 
-import DelayedRetrier from '../../../src/app/delayedRetrier'
+import DelayedRetrier from '../../../src/app/delayed-retrier'
 import { capturePromiseError } from '../../helpers/utils'
 import { describe, expect, it } from '../../helpers/dependencies'
 
