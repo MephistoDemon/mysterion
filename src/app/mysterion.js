@@ -178,7 +178,7 @@ class Mysterion {
   }
 
   async bootstrap () {
-    this._startupEventTracker.startup()
+    this._startupEventTracker.sendEvent()
 
     const showTerms = !this._areTermsAccepted()
     const browserWindow = this._createBrowserWindow()

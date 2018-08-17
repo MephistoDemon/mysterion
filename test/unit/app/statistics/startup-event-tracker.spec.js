@@ -23,12 +23,11 @@ import MockEventSender from '../../../helpers/statistics/mock-event-sender'
 
 describe('StartupEventTracker', () => {
   const mockSender = new MockEventSender()
-
   const tracker = new StartupEventTracker(mockSender)
 
-  describe('.startup', () => {
+  describe('.sendEvent', () => {
     it('collects startup event', async () => {
-      await tracker.startup()
+      await tracker.sendEvent()
 
       expect(mockSender.events.length).to.eql(1)
       const event = mockSender.events[0]

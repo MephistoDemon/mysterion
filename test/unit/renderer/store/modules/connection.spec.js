@@ -26,8 +26,6 @@ import ConnectionStatusEnum from '../../../../../src/libraries/mysterium-tequila
 import communication from '@/../app/communication/messages'
 import RendererCommunication from '@/../app/communication/renderer-communication'
 import FakeMessageBus from '../../../../helpers/fake-message-bus'
-import { createEventFactory } from '../../../../../src/app/statistics/events'
-import type { EventFactory as StatsEventsFactory } from '../../../../../src/app/statistics/events'
 import { ActionLooper, ActionLooperConfig } from '../../../../../src/renderer/store/modules/connection'
 import ConnectionStatisticsDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-statistics'
 import EmptyTequilapiClientMock from './empty-tequilapi-client-mock'
@@ -35,7 +33,7 @@ import ConnectionStatusDTO from '../../../../../src/libraries/mysterium-tequilap
 import ConnectionIPDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-ip'
 import BugReporterMock from '../../../../helpers/bug-reporter-mock'
 import ConnectionRequestDTO from '../../../../../src/libraries/mysterium-tequilapi/dto/connection-request'
-import CollectorEventSender from '../../../../../src/app/statistics/collector-event-sender'
+import MockEventSender from '../../../../helpers/statistics/mock-event-sender'
 
 function factoryTequilapiManipulator () {
   let statusFail = false
@@ -146,15 +144,7 @@ const fakeTequilapi = factoryTequilapiManipulator()
 const fakeMessageBus = new FakeMessageBus()
 const rendererCommunication = new RendererCommunication(fakeMessageBus)
 
-const fakeCollector = {
-  collectEvents: () => Promise.resolve()
-}
-
-function statsEventsFactory (): StatsEventsFactory {
-  return createEventFactory({ name: 'Test', version: '1.0.test' })
-}
-
-const fakeEventSender = new CollectorEventSender(fakeCollector, statsEventsFactory())
+const fakeEventSender = new MockEventSender()
 
 const bugReporterMock = new BugReporterMock()
 

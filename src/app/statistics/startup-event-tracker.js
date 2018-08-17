@@ -32,7 +32,7 @@ class StartupEventTracker {
     this._eventSender = eventSender
   }
 
-  async startup () {
+  async sendEvent () {
     const context = { platform: os.platform() }
     await this._eventSender.send(STARTUP_EVENT_NAME, context)
   }
