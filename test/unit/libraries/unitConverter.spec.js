@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { bytesReadable, timeDisplay } from '../../../src/libraries/unitConverter'
+import { bytesReadable, timeDisplay } from '../../../src/libraries/unit-converter'
 
 describe('BytesReadable', () => {
   it('returns object with value (fixed 2 decimals) and units ', () => {

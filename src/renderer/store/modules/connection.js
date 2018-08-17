@@ -19,7 +19,7 @@
 import type from '../types'
 
 import messages from '../../../app/messages'
-import { FunctionLooper } from '../../../libraries/functionLooper'
+import { FunctionLooper } from '../../../libraries/function-looper'
 import config from '@/config'
 import { ConnectEventTracker, currentUserTime } from '../../../app/statistics/events-connection'
 import RendererCommunication from '../../../app/communication/renderer-communication'

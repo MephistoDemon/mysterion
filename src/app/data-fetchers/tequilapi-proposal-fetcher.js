@@ -19,7 +19,7 @@
 
 import ProposalDTO from '../../libraries/mysterium-tequilapi/dto/proposal'
 import type { TequilapiClient } from '../../libraries/mysterium-tequilapi/client'
-import { FunctionLooper } from '../../libraries/functionLooper'
+import { FunctionLooper } from '../../libraries/function-looper'
 import type { Callback } from '../../libraries/subscriber'
 import Subscriber from '../../libraries/subscriber'
 import type { ProposalFetcher } from './proposal-fetcher'

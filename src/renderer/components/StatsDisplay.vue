@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { bytesReadable, timeDisplay } from '../../libraries/unitConverter'
+import { bytesReadable, timeDisplay } from '../../libraries/unit-converter'
 
 export default {
   name: 'StatsDisplay',
