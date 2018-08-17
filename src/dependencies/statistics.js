@@ -28,26 +28,19 @@ import type { EventSender } from '../app/statistics/event-sender'
 
 function bootstrap (container: Container) {
   container.service(
-    'statsApplicationInfo',
+    'statsEventFactory',
     ['mysterionReleaseID'],
-    (mysterionReleaseID) => {
-      return {
+    (mysterionReleaseId: string): EventFactory => {
+      const applicationInfo: ApplicationInfo = {
         name: 'mysterion_application',
-        version: mysterionReleaseID
+        version: mysterionReleaseId
       }
-    }
-  )
-
-  container.service(
-    'eventFactory',
-    ['statsApplicationInfo'],
-    (applicationInfo: ApplicationInfo): EventFactory => {
       return createEventFactory(applicationInfo)
     }
   )
 
   container.service(
-    'eventCollector',
+    'statsEventCollector',
     [],
     (): EventCollector => {
       if (process.env.NODE_ENV === 'production') {
@@ -61,9 +54,9 @@ function bootstrap (container: Container) {
 
   container.service(
     'eventSender',
-    ['eventCollector', 'eventFactory'],
-    (eventCollector, eventFactory): EventSender => {
-      return new EventSenderToCollector(eventCollector, eventFactory)
+    ['statsEventCollector', 'statsEventFactory'],
+    (statsEventCollector, statsEventFactory): EventSender => {
+      return new EventSenderToCollector(statsEventCollector, statsEventFactory)
     }
   )
 }
