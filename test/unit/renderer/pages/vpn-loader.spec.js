@@ -26,7 +26,7 @@ import { createLocalVue, mount } from '@vue/test-utils'
 import idStoreFactory from '@/store/modules/identity'
 import mainStoreFactory from '@/store/modules/main'
 import errorStore from '@/store/modules/errors'
-import VpnLoader from '@/pages/VpnLoader'
+import VpnLoader from '@/pages/vpn-loader'
 
 import { describe, it, beforeEach, before } from '../../../helpers/dependencies'
 import messages from '../../../../src/app/messages'
