@@ -16,12 +16,15 @@
  */
 
 // @flow
-import { EventCollector } from './events'
-import type { Event } from './events'
 
-class NullCollector implements EventCollector {
-  async collectEvents (...events: Array<Event>): Promise<void> {
+import type { Event, EventCollector } from '../../../src/app/statistics/events'
+
+class MockEventCollector implements EventCollector {
+  events: Event[] = []
+
+  async collectEvents (...events: Event[]) {
+    this.events = events
   }
 }
 
-export default NullCollector
+export default MockEventCollector

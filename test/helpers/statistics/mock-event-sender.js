@@ -16,12 +16,23 @@
  */
 
 // @flow
-import { EventCollector } from './events'
-import type { Event } from './events'
 
-class NullCollector implements EventCollector {
-  async collectEvents (...events: Array<Event>): Promise<void> {
+import type { EventSender } from '../../../src/app/statistics/event-sender'
+
+type SenderEvent = {
+  eventName: string,
+  context: Object
+}
+
+/**
+ * Mock event sender, which saves sent events locally.
+ */
+class MockEventSender implements EventSender {
+  events: SenderEvent[] = []
+
+  async send (eventName: string, context: Object): Promise<void> {
+    this.events.push({ eventName, context })
   }
 }
 
-export default NullCollector
+export default MockEventSender

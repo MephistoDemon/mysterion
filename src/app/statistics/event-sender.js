@@ -16,12 +16,9 @@
  */
 
 // @flow
-import { EventCollector } from './events'
-import type { Event } from './events'
 
-class NullCollector implements EventCollector {
-  async collectEvents (...events: Array<Event>): Promise<void> {
-  }
+interface EventSender {
+  send (eventName: string, context: Object): Promise<void>
 }
 
-export default NullCollector
+export type { EventSender }

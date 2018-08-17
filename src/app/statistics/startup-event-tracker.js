@@ -16,12 +16,26 @@
  */
 
 // @flow
-import { EventCollector } from './events'
-import type { Event } from './events'
 
-class NullCollector implements EventCollector {
-  async collectEvents (...events: Array<Event>): Promise<void> {
+import os from 'os'
+import type { EventSender } from './event-sender'
+
+const STARTUP_EVENT_NAME = 'startup'
+
+/**
+ * Sends startup event.
+ */
+class StartupEventTracker {
+  _eventSender: EventSender
+
+  constructor (eventSender: EventSender) {
+    this._eventSender = eventSender
+  }
+
+  async sendEvent () {
+    const context = { platform: os.platform() }
+    await this._eventSender.send(STARTUP_EVENT_NAME, context)
   }
 }
 
-export default NullCollector
+export default StartupEventTracker

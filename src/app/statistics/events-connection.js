@@ -16,8 +16,8 @@
  */
 
 // @flow
-import { EventCollector } from './events'
-import type { EventFactory } from './events'
+
+import type { EventSender } from './event-sender'
 
 type UserTime = {
   localTime: number,
@@ -32,15 +32,14 @@ type ConnectDetails = {
 }
 
 class ConnectEventTracker {
-  _collector: EventCollector
+  _eventSender: EventSender
   _userTimeProvider: UserTimeProvider
-  _eventFactory: EventFactory
   _connectStarted: boolean = false
   _eventDetails: Object = {}
-  constructor (collector: EventCollector, userTimeProvider: UserTimeProvider, eventFactory: EventFactory) {
-    this._collector = collector
+
+  constructor (eventSender: EventSender, userTimeProvider: UserTimeProvider) {
+    this._eventSender = eventSender
     this._userTimeProvider = userTimeProvider
-    this._eventFactory = eventFactory
   }
 
   connectStarted (connectDetails: ConnectDetails, originalCountry: string): void {
@@ -57,15 +56,15 @@ class ConnectEventTracker {
     this._insertEndTimesIntoEventDetails()
     if (error) {
       this._eventDetails['error'] = error
-      return this._collector.collectEvents(this._eventFactory('connect_failed', this._eventDetails))
+      return this._eventSender.send('connect_failed', this._eventDetails)
     }
-    return this._collector.collectEvents(this._eventFactory('connect_successful', this._eventDetails))
+    return this._eventSender.send('connect_successful', this._eventDetails)
   }
 
   async connectCanceled (): Promise<any> {
     this._checkConnectStarted()
     this._insertEndTimesIntoEventDetails()
-    return this._collector.collectEvents(this._eventFactory('connect_canceled', this._eventDetails))
+    return this._eventSender.send('connect_canceled', this._eventDetails)
   }
 
   _checkConnectStarted (): void {

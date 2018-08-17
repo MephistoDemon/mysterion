@@ -16,12 +16,23 @@
  */
 
 // @flow
-import { EventCollector } from './events'
-import type { Event } from './events'
 
-class NullCollector implements EventCollector {
-  async collectEvents (...events: Array<Event>): Promise<void> {
-  }
-}
+import { describe, expect, it } from '../../../helpers/dependencies'
+import StartupEventTracker from '../../../../src/app/statistics/startup-event-tracker'
+import MockEventSender from '../../../helpers/statistics/mock-event-sender'
 
-export default NullCollector
+describe('StartupEventTracker', () => {
+  const mockSender = new MockEventSender()
+  const tracker = new StartupEventTracker(mockSender)
+
+  describe('.sendEvent', () => {
+    it('collects startup event', async () => {
+      await tracker.sendEvent()
+
+      expect(mockSender.events.length).to.eql(1)
+      const event = mockSender.events[0]
+      expect(event.eventName).to.eql('startup')
+      expect(event.context.platform).to.be.a('string')
+    })
+  })
+})

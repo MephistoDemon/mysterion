@@ -16,12 +16,26 @@
  */
 
 // @flow
-import { EventCollector } from './events'
-import type { Event } from './events'
 
-class NullCollector implements EventCollector {
-  async collectEvents (...events: Array<Event>): Promise<void> {
+import type { EventCollector, EventFactory } from './events'
+import type { EventSender } from './event-sender'
+
+/**
+ * Event sender, which builds events using `EventFactory` and sends them to `EventCollector`.
+ */
+class EventSenderToCollector implements EventSender {
+  _eventCollector: EventCollector
+  _eventFactory: EventFactory
+
+  constructor (eventCollector: EventCollector, eventFactory: EventFactory) {
+    this._eventCollector = eventCollector
+    this._eventFactory = eventFactory
+  }
+
+  async send (name: string, context: Object) {
+    const event = this._eventFactory(name, context)
+    await this._eventCollector.collectEvents(event)
   }
 }
 
-export default NullCollector
+export default EventSenderToCollector

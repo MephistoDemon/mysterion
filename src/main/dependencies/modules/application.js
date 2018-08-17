@@ -23,6 +23,7 @@ import type { MysterionConfig } from '../../../app/mysterionConfig'
 import path from 'path'
 import Window from '../../../app/window'
 import Terms from '../../../app/terms'
+import StartupEventTracker from '../../../app/statistics/startup-event-tracker'
 
 function bootstrap (container: Container) {
   const version = process.env.MYSTERION_VERSION || ''
@@ -83,7 +84,8 @@ function bootstrap (container: Container) {
       'mysteriumProcessLogCache',
       'bugReporterMetrics',
       'userSettingsStore',
-      'disconnectNotification'
+      'disconnectNotification',
+      'eventSender'
     ],
     (
       mysterionConfig: MysterionConfig,
@@ -99,8 +101,10 @@ function bootstrap (container: Container) {
       mysteriumProcessLogCache,
       bugReporterMetrics,
       userSettingsStore,
-      disconnectNotification
+      disconnectNotification,
+      eventSender
     ) => {
+      const startupEventTracker = new StartupEventTracker(eventSender)
       return new Mysterion({
         config: mysterionConfig,
         browserWindowFactory: () => container.get('mysterionBrowserWindow'),
@@ -118,7 +122,8 @@ function bootstrap (container: Container) {
         frontendLogCache,
         mysteriumProcessLogCache,
         userSettingsStore,
-        disconnectNotification
+        disconnectNotification,
+        startupEventTracker
       })
     }
   )
