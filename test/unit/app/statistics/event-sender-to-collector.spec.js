@@ -19,7 +19,7 @@
 
 import { describe, expect, it } from '../../../helpers/dependencies'
 import MockEventCollector from '../../../helpers/statistics/mock-event-collector'
-import CollectorEventSender from '../../../../src/app/statistics/collector-event-sender'
+import EventSenderToCollector from '../../../../src/app/statistics/event-sender-to-collector'
 import type { EventFactory } from '../../../../src/app/statistics/events'
 
 const mockedEventFactory: EventFactory = (name: string, details: Object) => {
@@ -34,9 +34,9 @@ const mockedEventFactory: EventFactory = (name: string, details: Object) => {
   }
 }
 
-describe('EventSender', () => {
+describe('EventSenderToCollector', () => {
   const mockCollector = new MockEventCollector()
-  const eventSender = new CollectorEventSender(mockCollector, mockedEventFactory)
+  const eventSender = new EventSenderToCollector(mockCollector, mockedEventFactory)
 
   describe('.send', () => {
     it('creates and sends event', async () => {

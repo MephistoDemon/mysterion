@@ -23,7 +23,7 @@ import type { EventSender } from './event-sender'
 /**
  * Event sender, which builds events using `EventFactory` and sends them to `EventCollector`.
  */
-class CollectorEventSender implements EventSender {
+class EventSenderToCollector implements EventSender {
   _eventCollector: EventCollector
   _eventFactory: EventFactory
 
@@ -38,4 +38,4 @@ class CollectorEventSender implements EventSender {
   }
 }
 
-export default CollectorEventSender
+export default EventSenderToCollector
