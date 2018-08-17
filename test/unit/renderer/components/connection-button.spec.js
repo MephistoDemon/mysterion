@@ -18,7 +18,7 @@
 // @flow
 
 import Vuex from 'vuex'
-import ConnectionButton from '../../../../src/renderer/components/ConnectionButton'
+import ConnectionButton from '../../../../src/renderer/components/connection-button'
 import type from '../../../../src/renderer/store/types'
 import ConnectionStatusEnum from '../../../../src/libraries/mysterium-tequilapi/dto/connection-status-enum'
 import { state, mutations, getters } from '@/store/modules/connection'

@@ -19,7 +19,7 @@ import { createLocalVue, mount } from '@vue/test-utils'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import DIContainer from '../../../../src/app/di/vue-container'
 import FakeMessageBus from '../../../helpers/fake-message-bus'
-import DisconnectNotificationSetting from '@/components/DisconnectNotificationSetting'
+import DisconnectNotificationSetting from '@/components/disconnect-notification-setting'
 import { afterEach, beforeEach } from '../../../helpers/dependencies'
 import messages from '../../../../src/app/communication/messages'
 

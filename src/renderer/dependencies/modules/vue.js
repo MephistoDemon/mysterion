@@ -19,7 +19,7 @@
 import type { Container } from '../../../app/di'
 import Vue from 'vue'
 import axios from 'axios'
-import App from '../../App'
+import App from '../../app'
 import routerFactory from '../../router/factory'
 import storeFactory from '../../store/factory'
 import mainFactory from '../../store/modules/main'
@@ -27,7 +27,7 @@ import identityFactory from '../../store/modules/identity'
 import connectionFactory, { actionsFactory } from '../../store/modules/connection'
 import errors from '../../store/modules/errors'
 import terms from '../../store/modules/terms'
-import clientProcess from '../../store/modules/clientProcess'
+import clientProcess from '../../store/modules/client-process'
 
 function bootstrap (container: Container) {
   container.service(

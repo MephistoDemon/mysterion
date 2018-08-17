@@ -67,11 +67,11 @@
 </template>
 
 <script>
-import CountrySelect from '../components/CountrySelect'
+import CountrySelect from '../components/country-select'
 import type from '../store/types'
 import { mapGetters, mapMutations } from 'vuex'
-import StatsDisplay from '../components/StatsDisplay'
-import ConnectionButton from '../components/ConnectionButton'
+import StatsDisplay from '../components/stats-display'
+import ConnectionButton from '../components/connection-button'
 import AppError from '../partials/AppError'
 import config from '../config'
 import { ActionLooperConfig } from '../store/modules/connection'

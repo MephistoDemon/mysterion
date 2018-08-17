@@ -18,7 +18,7 @@
 // @flow
 
 import { createLocalVue, mount } from '@vue/test-utils'
-import CountrySelect from '@/components/CountrySelect'
+import CountrySelect from '@/components/country-select'
 import RendererCommunication from '../../../../src/app/communication/renderer-communication'
 import DIContainer from '../../../../src/app/di/vue-container'
 import FakeMessageBus from '../../../helpers/fake-message-bus'

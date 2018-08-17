@@ -77,7 +77,7 @@ import { mapGetters, mapActions } from 'vuex'
 import IconIssue from '@/assets/img/icon--issue.svg'
 import IconEye from '@/assets/img/icon--eye.svg'
 import IconQuit from '@/assets/img/icon--quit.svg'
-import DisconnectNotificationSettings from '@/components/DisconnectNotificationSetting'
+import DisconnectNotificationSettings from '@/components/disconnect-notification-setting'
 
 export default {
   name: 'AppNav',
