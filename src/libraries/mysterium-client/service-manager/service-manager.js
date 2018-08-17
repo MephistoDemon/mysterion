@@ -37,7 +37,7 @@ export { SERVICE_STATE }
 export type { ServiceState }
 
 const parseServiceState = (serviceInfo: string): ServiceState => {
-  const isInstalled: boolean = serviceInfo.indexOf(`SERVICE_NAME: ${SERVICE_NAME}`) > -1
+  const isInstalled: boolean = serviceInfo.includes(`SERVICE_NAME: ${SERVICE_NAME}`)
   if (!isInstalled) {
     return SERVICE_STATE.UNKNOWN
   }
@@ -70,14 +70,9 @@ const parseServiceState = (serviceInfo: string): ServiceState => {
   return (state: ServiceState)
 }
 
-const needReinstall = (e: Error | Object): boolean => {
-  let message: string
-  if (e instanceof Error) {
-    message = e.message
-  } else {
-    message = e.toString()
-  }
-  return message.indexOf('Command failed') >= 0
+const needReinstall = (e: Error): boolean => {
+  // double check type, because flow can't do that at runtime
+  return e instanceof Error && e.message.includes('Command failed')
 }
 
 export default class ServiceManager {
@@ -98,7 +93,7 @@ export default class ServiceManager {
   }
 
   async reinstall (): Promise<string> {
-    let commands = ['uninstall', 'install', 'start']
+    const commands = ['uninstall', 'install', 'start']
     const state = this.getServiceState()
     if (state === SERVICE_STATE.RUNNING) {
       commands.unshift('stop')
@@ -144,13 +139,14 @@ export default class ServiceManager {
   }
 
   async _execAndGetState (operation: ServiceManagerOperation, reinstallOnError: boolean = false): Promise<ServiceState> {
-    let state = SERVICE_STATE.START_PENDING
+    let state = SERVICE_STATE.UNKNOWN
     try {
       const result = await this._execOperations(operation)
       state = parseServiceState(result)
     } catch (e) {
       if (reinstallOnError && needReinstall(e)) {
         await this.reinstall()
+        state = SERVICE_STATE.START_PENDING
       } else {
         throw e
       }

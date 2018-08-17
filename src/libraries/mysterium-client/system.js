@@ -48,14 +48,14 @@ const stringifyCommands = (commands: Command[]) => {
     .join(COMMANDS_SEPARATOR)
 }
 
-const wrapError = (e: Object): Error => {
+const ensureError = (e: Object): Error => {
   if (e instanceof Error) {
     return e
   }
   const error = new Error(e.toString())
   const errorObj = (error: Object)
   errorObj.original = e
-  throw error
+  return error
 }
 
 interface System {
@@ -95,7 +95,7 @@ class OSSystem implements System {
     return new Promise(function (resolve, reject) {
       exec(command, (error, stdout, stderr) => {
         if (error) {
-          reject(wrapError(error))
+          reject(ensureError(error))
           return
         }
 
@@ -108,7 +108,7 @@ class OSSystem implements System {
     return new Promise(function (resolve, reject) {
       sudo.exec(command, { name: 'Mysterion' }, (error, stdout, stderr) => {
         if (error) {
-          reject(wrapError(error))
+          reject(ensureError(error))
           return
         }
 
