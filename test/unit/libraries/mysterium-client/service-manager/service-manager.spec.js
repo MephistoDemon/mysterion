@@ -88,7 +88,7 @@ describe('ServiceManager', () => {
     })
 
     it('re-installs broken service', async () => {
-      systemMockManager.setMockCommandError('"/service-manager/bin/servicemanager.exe" --do=start', 'Command failed')
+      systemMockManager.setMockCommandError('"/service-manager/bin/servicemanager.exe" --do=start', new Error('Command failed'))
       await serviceManager.start()
       expect(systemMockManager.sudoExecCalledCommands).to.have.length(2)
       expect(systemMockManager.sudoExecCalledCommands[0]).to.be.eql('"/service-manager/bin/servicemanager.exe" --do=start')
