@@ -71,8 +71,7 @@ const parseServiceState = (serviceInfo: string): ServiceState => {
 }
 
 const needReinstall = (e: Error): boolean => {
-  // double check type, because flow can't do that at runtime
-  return e instanceof Error && e.message.includes('Command failed')
+  return e.message.includes('Command failed')
 }
 
 export default class ServiceManager {
@@ -144,7 +143,7 @@ export default class ServiceManager {
       const result = await this._execOperations(operation)
       state = parseServiceState(result)
     } catch (e) {
-      if (reinstallOnError && needReinstall(e)) {
+      if (e instanceof Error && reinstallOnError && needReinstall(e)) {
         await this.reinstall()
         state = SERVICE_STATE.START_PENDING
       } else {
