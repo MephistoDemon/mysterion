@@ -17,11 +17,11 @@
 
 import Vue from 'vue'
 import Router from 'vue-router'
-import VpnLoader from '@/pages/VpnLoader'
-import AppLoading from '@/pages/AppLoading'
-import Vpn from '@/pages/Vpn'
-import Terms from '@/pages/Terms'
-import About from '@/pages/About'
+import VpnLoader from '@/pages/vpn-loader'
+import AppLoading from '@/pages/app-loading'
+import Vpn from '@/pages/vpn'
+import Terms from '@/pages/terms'
+import About from '@/pages/about'
 import logger from '../../app/logger'
 
 function factory (store) {
