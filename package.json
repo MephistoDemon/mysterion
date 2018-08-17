@@ -6,8 +6,8 @@
   "license": "GPL-3.0",
   "main": "./dist/electron/main.js",
   "scripts": {
-    "download:bins:osx": "util_scripts/download-osx-binaries.sh",
-    "download:bins:win": "util_scripts/download-win-binaries.sh",
+    "download:bins:osx": "util_scripts/download-osx-binaries.sh && yarn download-mysterium-client darwin ./bin",
+    "download:bins:win": "util_scripts/download-win-binaries.sh && yarn download-mysterium-client windows ./bin",
     "copy:bins": "util_scripts/copy-binaries.sh",
     "build": "node .electron-vue/build.js && electron-builder --publish never",
     "build:win": "node .electron-vue/build.js && node ./node_modules/electron-builder/out/cli/cli.js --win --publish=never",
@@ -26,7 +26,8 @@
     "test:integration:start-server": "karma start test/integration/karma.conf.js",
     "unit:start-server": "karma start test/unit/karma.conf.js",
     "unit:run": "karma run test/unit/karma.conf.js",
-    "ci": "yarn flow && yarn lint && yarn unit && yarn test:integration && yarn test:coverage"
+    "ci": "yarn flow && yarn lint && yarn unit && yarn test:integration && yarn test:coverage",
+    "postinstall": "mkdir -p ./bin && cp -r ./node_modules/mysterium-client-bin/bin/* ./bin/"
   },
   "build": {
     "productName": "Mysterion",
@@ -103,6 +104,7 @@
     "less-loader": "^4.0.5",
     "lolex": "^2.3.2",
     "md5": "^2.2.1",
+    "mysterium-client-bin": "^0.2.3",
     "raven": "^2.4.1",
     "raven-js": "^3.22.3",
     "sudo-prompt": "^8.1.0",
